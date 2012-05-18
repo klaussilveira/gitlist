@@ -1,0 +1,5 @@
+<ul class="nav nav-tabs">
+    <li{% if page == 'files' %} class="active"{% endif %}><a href="{{ baseurl }}/{{ repo }}/tree/{{ branch }}">Files</a></li>
+    <li{% if page == 'commits' %} class="active"{% endif %}><a href="{{ baseurl }}/{{ repo }}/commits">Commits</a></li>
+    <li{% if page == 'stats' %} class="active"{% endif %}><a href="{{ baseurl }}/{{ repo }}/stats">Stats</a></li>
+</ul>

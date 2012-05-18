@@ -1,0 +1,15 @@
+<div class="btn-group pull-left space-right">
+    <button class="btn dropdown-toggle" data-toggle="dropdown">browsing: <strong>{{ branch }}</strong> <span class="caret"></span></button>
+    <ul class="dropdown-menu">
+    <li class="dropdown-header">Branches</li>
+    {% for item in branches %}
+        <li><a href="{{ baseurl }}/{{ repo }}/tree/{{ item }}">{{ item }}</a></li>
+    {% endfor %}
+    {% if tags %}
+    <li class="dropdown-header">Tags</li>
+    {% for item in tags %}
+        <li><a href="{{ baseurl }}/{{ repo }}/tree/{{ item }}">{{ item }}</a></li>
+    {% endfor %}
+    {% endif %}
+    </ul>
+</div>

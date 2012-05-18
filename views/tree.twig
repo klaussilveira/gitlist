@@ -1,0 +1,57 @@
+{% extends 'layout.twig' %}
+{% block title %}Gitlist{% endblock %}
+
+{% block body %}
+{% include 'navigation.twig' %}
+
+<div class="container">
+    <div class="row">
+        <div class="span12">
+            {% include 'branch_menu.twig' %}
+            {% include 'menu.twig' %}
+        </div>
+    </div>
+
+    <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+        <li{% if loop.last %} class="active"{% endif %}>{% if not loop.last %}<a href="{{ baseurl }}/{{ breadcrumb.path }}">{{ breadcrumb.dir }}</a>{% endif %}{% if loop.last %}{{ breadcrumb.dir }}{% endif %}
+        {%- if not loop.last -%}
+            <span class="divider">/</span></li>
+        {%- else -%}
+            </li>
+        {%- endif -%}
+        {% endfor %}
+        <a href="{{ baseurl }}/{{ repo }}/{{ branch }}/rss/"><i class="rss pull-right"></i></a>
+    </ul>
+
+    <table class="tree">
+        <thead>
+            <tr>
+                <th width="80%">name</th>
+                <th width="10%">mode</th>
+                <th width="10%">size</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if parent is not empty %}
+            <tr>
+                <td><i class="icon-spaced"></i> <a href="{{ baseurl }}/{{ repo }}/tree/{{ branch }}{{ parent }}">..</a></td>
+                <td></td>
+                <td></td>
+            </tr>
+            {% endif %}
+            {% for file in files %}
+            <tr>
+                <td><i class="{{ file.type == "folder" or file.type == "symlink" ? "icon-folder-open" : "icon-file" }} icon-spaced"></i> <a href="{{ baseurl }}/{{ repo }}/{{ file.type == "folder" or file.type == "symlink" ? "tree" : "blob" }}/{{ branch }}/{{ path }}{{ file.type == "symlink" ? file.path : file.name }}">{{ file.name }}</a></td>
+                <td>{{ file.mode }}</td>
+                <td>{% if file.size %}{{ (file.size / 1024) | number_format }} kb{% endif %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <hr>
+
+    {% include 'footer.twig' %}
+</div>
+{% endblock %}

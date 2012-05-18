@@ -1,0 +1,46 @@
+{% extends 'layout.twig' %}
+{% block title %}Gitlist{% endblock %}
+
+{% block body %}
+{% include 'navigation.twig' %}
+
+<div class="container">
+    <div class="row">
+        <div class="span12">
+            {% include 'branch_menu.twig' %}
+            {% include 'menu.twig' %}
+        </div>
+    </div>
+
+    <ul class="breadcrumb">
+        <li><a href="{{ baseurl }}/{{ repo }}">{{ repo }}</a> <span class="divider">/</span></li>
+        <li>Commit history</li>
+    </ul>
+
+    {% for date, commit in commits %}
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th colspan="3">{{ date | date("F j, Y") }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in commit %}
+            <tr>
+                <td width="5%"><img src="http://gravatar.com/avatar/{{ item.getAuthor.getEmail | md5 }}?s=40" /></td>
+                <td width="95%">
+                    <span class="pull-right"><a class="btn btn-small" href="{{ baseurl }}/{{ repo }}/commit/{{ item.getShortHash }}"><i class="icon-list-alt"></i> View {{ item.getShortHash }}</a></span>
+                    <h4>{{ item.getMessage }}</h4>
+                    <span><a href="mailto:{{ item.getAuthor.getEmail }}">{{ item.getAuthor.getName }}</a> authored in {{ item.getDate | date('d/m/Y \\a\\t H:i:s') }}</span>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endfor %}
+
+    <hr>
+
+    {% include 'footer.twig' %}
+</div>
+{% endblock %}

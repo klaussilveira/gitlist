@@ -1,0 +1,58 @@
+{% extends 'layout.twig' %}
+{% block title %}Gitlist{% endblock %}
+
+{% block body %}
+{% include 'navigation.twig' %}
+
+<div class="container">
+    <div class="row">
+        <div class="span12">
+            {% include 'menu.twig' %}
+        </div>
+    </div>
+
+    <ul class="breadcrumb">
+        <li><a href="{{ baseurl }}/{{ repo }}">{{ repo }}</a> <span class="divider">/</span></li>
+        <li>Commit {{ commit.getHash}} </li>
+    </ul>
+
+    <div class="commit-view">
+        <div class="commit-header">
+            <span class="pull-right"><a class="btn btn-small" href="{{ baseurl }}/{{ repo }}/tree/{{ commit.getHash }}/" title="Browse code at this point in history"><i class="icon-list-alt"></i> Browse code</a></span>
+            <h4>{{ commit.getMessage }}</h4>
+        </div>
+        <div class="commit-body">
+            <img src="http://gravatar.com/avatar/{{ commit.getAuthor.getEmail | md5 }}?s=32" class="pull-left space-right" />
+            <span><a href="mailto:{{ commit.getAuthor.getEmail }}">{{ commit.getAuthor.getName }}</a> authored in {{ commit.getDate | date('d/m/Y \\a\\t H:i:s') }}<br />Showing {{ commit.getChangedFiles }} changed files</span>
+        </div>
+    </div>
+
+    <ul class="commit-list">
+        {% for diff in commit.getDiffs %}
+            <li><i class="icon-file"></i> <a href="#{{ loop.index }}">{{ diff.getFile }}</a> <span class="meta pull-right">{{ diff.getIndex }}</span></li>
+        {% endfor %}
+    </ul>
+
+    {% for diff in commit.getDiffs %}
+    <div class="source-view">
+        <div class="source-header">
+            <div class="meta"><a name="{{ loop.index }}">{{ diff.getFile }}</div>
+
+            <div class="btn-group pull-right">
+                <a href="{{ baseurl }}/{{ repo }}/blob/{{ commit.getHash }}/{{ diff.getFile }}" class="btn btn-small"><i class="icon-file"></i> View file @ {{ commit.getShortHash }}</a>
+            </div>
+        </div>
+        
+        <div class="source-diff">
+        {% for line in diff.getLines %}
+            <pre{% if line.getType %} class="{{ line.getType }}"{% endif %}>{{ line.getLine }}</pre>
+        {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+
+    <hr>
+
+    {% include 'footer.twig' %}
+</div>
+{% endblock %}

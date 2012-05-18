@@ -1,0 +1,25 @@
+{% extends 'layout.twig' %}
+{% block title %}Gitlist{% endblock %}
+
+{% block body %}
+{% include 'navigation.twig' %}
+
+<div class="container">
+
+    {% for repository in repositories %}
+    <div class="repository">
+        <div class="repository-header">
+            <i class="icon-folder-open icon-spaced"></i> <a href="{{ baseurl }}/{{ repository.name }}/tree/master/">{{ repository.name }}</a>
+            <a href="{{ baseurl }}/{{ repository.name }}/master/rss/"><i class="rss pull-right"></i></a>
+        </div>
+        <div class="repository-body">
+            <p>{{ repository.description }}</p>
+        </div>
+    </div>
+    {% endfor %}
+
+    <hr>
+
+    {% include 'footer.twig' %}
+</div>
+{% endblock %}
