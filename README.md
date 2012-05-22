@@ -54,7 +54,7 @@ mkdir cache
 chmod 777 cache
 ```
 
-That's it, installation complete!
+That's it, installation complete! If you're having problems, check this [tutorial](http://gofedora.com/insanely-awesome-web-interface-git-repos/) by Kulbir Saini or the [Troubleshooting](https://github.com/klaussilveira/gitlist/wiki/Troubleshooting) page.
 
 ## Further information
 If you want to know more about customizing GitList, check the [Customization](https://github.com/klaussilveira/gitlist/wiki/Customizing) page on the wiki. Also, if you're having problems with GitList, check the [Troubleshooting](https://github.com/klaussilveira/gitlist/wiki/Troubleshooting) page. Don't forget to report issues and suggest new features! :)
