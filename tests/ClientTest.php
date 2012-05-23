@@ -152,9 +152,27 @@ class ClientTest extends PHPUnit_Framework_TestCase
         $this->assertRegExp("/new file:   test_file5.txt/", $repository->getClient()->run($repository, 'status'));
         $this->assertRegExp("/new file:   test_file6.txt/", $repository->getClient()->run($repository, 'status'));
     }
-    
+
     /**
      * @depends testIsAddingAll
+     */
+    public function testIsAddingArrayOfFiles()
+    {
+        $repository = $this->client->getRepository($this->repoPath);
+
+        file_put_contents($this->repoPath . '/test_file7.txt', 'Your mother is so ugly, glCullFace always returns TRUE.');
+        file_put_contents($this->repoPath . '/test_file8.txt', 'Your mother is so ugly, glCullFace always returns TRUE.');
+        file_put_contents($this->repoPath . '/test_file9.txt', 'Your mother is so ugly, glCullFace always returns TRUE.');
+
+        $repository->add(array('test_file7.txt', 'test_file8.txt', 'test_file9.txt'));
+
+        $this->assertRegExp("/new file:   test_file7.txt/", $repository->getClient()->run($repository, 'status'));
+        $this->assertRegExp("/new file:   test_file8.txt/", $repository->getClient()->run($repository, 'status'));
+        $this->assertRegExp("/new file:   test_file9.txt/", $repository->getClient()->run($repository, 'status'));
+    }
+    
+    /**
+     * @depends testIsAddingArrayOfFiles
      */
     public function testIsCommiting()
     {
@@ -332,10 +350,10 @@ class ClientTest extends PHPUnit_Framework_TestCase
         $repository = $this->client->getRepository($this->repoPath);
         $stats = $repository->getStatistics('master');
 
-        $this->assertEquals('7', $stats['extensions']['.txt']);
+        $this->assertEquals('10', $stats['extensions']['.txt']);
         $this->assertEquals('5', $stats['extensions']['.php']);
-        $this->assertEquals('515', $stats['size']);
-        $this->assertEquals('12', $stats['files']);
+        $this->assertEquals('680', $stats['size']);
+        $this->assertEquals('15', $stats['files']);
     }
 
     public function testIsGettingAuthorStatistics()
