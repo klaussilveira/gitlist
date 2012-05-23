@@ -254,6 +254,11 @@ class Repository
     public function getRelatedCommits($hash)
     {
         $logs = $this->getClient()->run($this, 'log --pretty=format:\'"%h": {"hash": "%H", "short_hash": "%h", "tree": "%T", "parent": "%P", "author": "%an", "author_email": "%ae", "date": "%at", "commiter": "%cn", "commiter_email": "%ce", "commiter_date": "%ct", "message": "%f"}\'');
+
+        if (empty($logs)) {
+            throw new \RuntimeException('No commit log available');
+        }
+
         $logs = str_replace("\n", ',', $logs);
         $logs = json_decode("{ $logs }", true);
 
@@ -294,6 +299,11 @@ class Repository
     public function getCommit($commit)
     {
         $logs = $this->getClient()->run($this, 'show --pretty=format:\'{"hash": "%H", "short_hash": "%h", "tree": "%T", "parent": "%P", "author": "%an", "author_email": "%ae", "date": "%at", "commiter": "%cn", "commiter_email": "%ce", "commiter_date": "%ct", "message": "%f"}\' ' . $commit);
+
+        if (empty($logs)) {
+            throw new \RuntimeException('No commit log available');
+        }
+
         $logs = explode("\n", $logs);
 
         // Read commit metadata
@@ -344,6 +354,11 @@ class Repository
     public function getAuthorStatistics()
     {
         $logs = $this->getClient()->run($this, 'log --pretty=format:\'%an||%ae\'');
+
+        if (empty($logs)) {
+            throw new \RuntimeException('No statistics available');
+        }
+
         $logs = explode("\n", $logs);
         $logs = array_count_values($logs);
         arsort($logs);
