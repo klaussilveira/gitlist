@@ -4,7 +4,10 @@ $app->get('{repo}/commits/{branch}', function($repo, $branch) use($app) {
     $repository = $app['git']->getRepository($app['git.repos'] . $repo);
     $pageNumber = $app['request']->get('page');
     $pageNumber = (empty($pageNumber)) ? 0 : $pageNumber;
-    $lastPage = round($repository->getTotalCommits() / 15, 0, PHP_ROUND_HALF_UP);
+    $totalCommits = $repository->getTotalCommits();
+    $lastPage = intval($totalCommits / 15);
+    // If total commits are integral multiple of 15, the lastPage will be commits/15 - 1.
+    $lastPage = ($lastPage * 15 == $totalCommits) ? $lastPage - 1 : $lastPage;
     $commits = $repository->getCommits(null, $pageNumber);
 
     foreach ($commits as $commit) {
