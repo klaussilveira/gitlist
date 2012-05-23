@@ -50,13 +50,30 @@ class Client
      */
     public function getRepositories($path)
     {
+        $repositories = $this->recurseDirectory($path);
+
+        if (!isset($repositories)) {
+            throw new \RuntimeException('There are no GIT repositories in ' . $path);
+        }
+        
+        sort($repositories);
+
+        return $repositories;
+    }
+
+    private function recurseDirectory($path)
+    {
         $dir = new \DirectoryIterator($path);
 
         foreach ($dir as $file) {
+            if ($file->isDot()) {
+                continue;
+            }
+
             $isBare = file_exists($file->getPathname() . '/HEAD');
             $isRepository = file_exists($file->getPathname() . '/.git/HEAD');
             
-            if ($file->isDir() && !$file->isDot() && $isRepository || $isBare) {
+            if ($file->isDir() && $isRepository || $isBare) {
                 if ($isBare) {
                     $description = file_get_contents($file->getPathname() . '/description');
                 } else {
@@ -64,14 +81,13 @@ class Client
                 }
                 
                 $repositories[] = array('name' => $file->getFilename(), 'path' => $file->getPathname(), 'description' => $description);
+                continue;
+            }
+
+            if ($file->isDir()) {
+                $repositories = $this->recurseDirectory($file->getPathname());
             }
         }
-
-        if (!isset($repositories)) {
-            throw new \RuntimeException('There are no GIT repositories in ' . $path);
-        }
-        
-        sort($repositories);
 
         return $repositories;
     }
