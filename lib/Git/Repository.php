@@ -222,9 +222,15 @@ class Repository
      * @access public
      * @return integer Total number of commits
      */
-    public function getTotalCommits()
+    public function getTotalCommits($file = null)
     {
-        $commits = $this->getClient()->run($this, "rev-list --all --count");
+        $command = "rev-list --all --count";
+        
+        if ($file) {
+            $command .= " $file";
+        }
+
+        $commits = $this->getClient()->run($this, $command);
         return $commits;
     }
     

@@ -203,4 +203,21 @@ class Utils
                 return 'text';
         }
     }
+
+    public function getPager($pageNumber, $totalCommits)
+    {
+        $pageNumber = (empty($pageNumber)) ? 0 : $pageNumber;
+        $lastPage = intval($totalCommits / 15);
+        // If total commits are integral multiple of 15, the lastPage will be commits/15 - 1.
+        $lastPage = ($lastPage * 15 == $totalCommits) ? $lastPage - 1 : $lastPage;
+        $nextPage = $pageNumber + 1;
+        $previousPage = $pageNumber - 1;
+
+        return array('current' => $pageNumber,
+                     'next' => $nextPage,
+                     'previous' => $previousPage,
+                     'last' => $lastPage,
+                     'total' => $totalCommits,
+        );
+    }
 }

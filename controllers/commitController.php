@@ -2,13 +2,8 @@
 
 $app->get('{repo}/commits/{branch}', function($repo, $branch) use($app) {
     $repository = $app['git']->getRepository($app['git.repos'] . $repo);
-    $pageNumber = $app['request']->get('page');
-    $pageNumber = (empty($pageNumber)) ? 0 : $pageNumber;
-    $totalCommits = $repository->getTotalCommits();
-    $lastPage = intval($totalCommits / 15);
-    // If total commits are integral multiple of 15, the lastPage will be commits/15 - 1.
-    $lastPage = ($lastPage * 15 == $totalCommits) ? $lastPage - 1 : $lastPage;
-    $commits = $repository->getCommits(null, $pageNumber);
+    $pager = $app['utils']->getPager($app['request']->get('page'), $repository->getTotalCommits());
+    $commits = $repository->getCommits(null, $pager['current']);
 
     foreach ($commits as $commit) {
         $date = $commit->getDate();
@@ -19,8 +14,7 @@ $app->get('{repo}/commits/{branch}', function($repo, $branch) use($app) {
     return $app['twig']->render('commits.twig', array(
         'baseurl'        => $app['baseurl'],
         'page'           => 'commits',
-        'pagenumber'     => $pageNumber,
-        'lastpage'       => $lastPage,
+        'pager'          => $pager,
         'repo'           => $repo,
         'branch'         => $branch,
         'branches'       => $repository->getBranches(),
@@ -33,10 +27,8 @@ $app->get('{repo}/commits/{branch}', function($repo, $branch) use($app) {
 
 $app->get('{repo}/commits/{branch}/{file}/', function($repo, $branch, $file) use($app) {
     $repository = $app['git']->getRepository($app['git.repos'] . $repo);
-    $pageNumber = $app['request']->get('page');
-    $pageNumber = (empty($pageNumber)) ? 0 : $pageNumber;
-    $lastPage = round($repository->getTotalCommits() / 15, 0, PHP_ROUND_HALF_UP);
-    $commits = $repository->getCommits($file, $pagenumber);
+    $pager = $app['utils']->getPager($app['request']->get('page'), $repository->getTotalCommits($file));
+    $commits = $repository->getCommits($file, $pager['current']);
 
     foreach ($commits as $commit) {
         $date = $commit->getDate();
@@ -47,8 +39,7 @@ $app->get('{repo}/commits/{branch}/{file}/', function($repo, $branch, $file) use
     return $app['twig']->render('commits.twig', array(
         'baseurl'        => $app['baseurl'],
         'page'           => 'commits',
-        'pagenumber'     => $pageNumber,
-        'lastpage'       => $lastPage,
+        'pager'          => $pager,
         'repo'           => $repo,
         'branch'         => $branch,
         'branches'       => $repository->getBranches(),

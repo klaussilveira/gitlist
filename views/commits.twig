@@ -40,14 +40,14 @@
     {% endfor %}
 
     <ul class="pager">
-        {% if pagenumber != 0 %}
+        {% if pager.current != 0 %}
         <li class="previous">
-            <a href="?page={{ pagenumber - 1 }}">&larr; Older</a>
+            <a href="?page={{ pager.previous }}">&larr; Older</a>
         </li>
         {% endif %}
-        {% if pagenumber != lastpage %}
+        {% if pager.current != pager.last %}
         <li class="next">
-            <a href="?page={{ pagenumber + 1 }}">Newer &rarr;</a>
+            <a href="?page={{ pager.next }}">Newer &rarr;</a>
         </li>
         {% endif %}
     </ul>
