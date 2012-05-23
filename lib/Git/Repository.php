@@ -215,6 +215,18 @@ class Repository
         
         return $tags;
     }
+
+    /**
+     * Show the amount of commits on the repository
+     * 
+     * @access public
+     * @return integer Total number of commits
+     */
+    public function getTotalCommits()
+    {
+        $commits = $this->getClient()->run($this, "rev-list --all --count");
+        return $commits;
+    }
     
     /**
      * Show the repository commit log

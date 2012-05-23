@@ -45,9 +45,11 @@
             <a href="?page={{ pagenumber - 1 }}">&larr; Older</a>
         </li>
         {% endif %}
+        {% if pagenumber != lastpage %}
         <li class="next">
             <a href="?page={{ pagenumber + 1 }}">Newer &rarr;</a>
         </li>
+        {% endif %}
     </ul>
 
     <hr>

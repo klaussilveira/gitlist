@@ -2,9 +2,10 @@
 
 $app->get('{repo}/commits/{branch}', function($repo, $branch) use($app) {
     $repository = $app['git']->getRepository($app['git.repos'] . $repo);
-    $pagenumber = $app['request']->get('page');
-    $pagenumber = (empty($pagenumber)) ? 0 : $pagenumber;
-    $commits = $repository->getCommits(null, $pagenumber);
+    $pageNumber = $app['request']->get('page');
+    $pageNumber = (empty($pageNumber)) ? 0 : $pageNumber;
+    $lastPage = round($repository->getTotalCommits() / 15, 0, PHP_ROUND_HALF_UP);
+    $commits = $repository->getCommits(null, $pageNumber);
 
     foreach ($commits as $commit) {
         $date = $commit->getDate();
@@ -15,7 +16,8 @@ $app->get('{repo}/commits/{branch}', function($repo, $branch) use($app) {
     return $app['twig']->render('commits.twig', array(
         'baseurl'        => $app['baseurl'],
         'page'           => 'commits',
-        'pagenumber'     => $pagenumber,
+        'pagenumber'     => $pageNumber,
+        'lastpage'       => $lastPage,
         'repo'           => $repo,
         'branch'         => $branch,
         'branches'       => $repository->getBranches(),
@@ -28,8 +30,9 @@ $app->get('{repo}/commits/{branch}', function($repo, $branch) use($app) {
 
 $app->get('{repo}/commits/{branch}/{file}/', function($repo, $branch, $file) use($app) {
     $repository = $app['git']->getRepository($app['git.repos'] . $repo);
-    $pagenumber = $app['request']->get('page');
-    $pagenumber = (empty($pagenumber)) ? 0 : $pagenumber;
+    $pageNumber = $app['request']->get('page');
+    $pageNumber = (empty($pageNumber)) ? 0 : $pageNumber;
+    $lastPage = round($repository->getTotalCommits() / 15, 0, PHP_ROUND_HALF_UP);
     $commits = $repository->getCommits($file, $pagenumber);
 
     foreach ($commits as $commit) {
@@ -41,7 +44,8 @@ $app->get('{repo}/commits/{branch}/{file}/', function($repo, $branch, $file) use
     return $app['twig']->render('commits.twig', array(
         'baseurl'        => $app['baseurl'],
         'page'           => 'commits',
-        'pagenumber'     => $pagenumber,
+        'pagenumber'     => $pageNumber,
+        'lastpage'       => $lastPage,
         'repo'           => $repo,
         'branch'         => $branch,
         'branches'       => $repository->getBranches(),
