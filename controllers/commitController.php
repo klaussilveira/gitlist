@@ -2,7 +2,9 @@
 
 $app->get('{repo}/commits/{branch}', function($repo, $branch) use($app) {
     $repository = $app['git']->getRepository($app['git.repos'] . $repo);
-    $commits = $repository->getCommits();
+    $pagenumber = $app['request']->get('page');
+    $pagenumber = (empty($pagenumber)) ? 0 : $pagenumber;
+    $commits = $repository->getCommits(null, $pagenumber);
 
     foreach ($commits as $commit) {
         $date = $commit->getDate();
@@ -13,6 +15,7 @@ $app->get('{repo}/commits/{branch}', function($repo, $branch) use($app) {
     return $app['twig']->render('commits.twig', array(
         'baseurl'        => $app['baseurl'],
         'page'           => 'commits',
+        'pagenumber'     => $pagenumber,
         'repo'           => $repo,
         'branch'         => $branch,
         'branches'       => $repository->getBranches(),
@@ -25,7 +28,9 @@ $app->get('{repo}/commits/{branch}', function($repo, $branch) use($app) {
 
 $app->get('{repo}/commits/{branch}/{file}/', function($repo, $branch, $file) use($app) {
     $repository = $app['git']->getRepository($app['git.repos'] . $repo);
-    $commits = $repository->getCommits($file);
+    $pagenumber = $app['request']->get('page');
+    $pagenumber = (empty($pagenumber)) ? 0 : $pagenumber;
+    $commits = $repository->getCommits($file, $pagenumber);
 
     foreach ($commits as $commit) {
         $date = $commit->getDate();
@@ -36,6 +41,7 @@ $app->get('{repo}/commits/{branch}/{file}/', function($repo, $branch, $file) use
     return $app['twig']->render('commits.twig', array(
         'baseurl'        => $app['baseurl'],
         'page'           => 'commits',
+        'pagenumber'     => $pagenumber,
         'repo'           => $repo,
         'branch'         => $branch,
         'branches'       => $repository->getBranches(),

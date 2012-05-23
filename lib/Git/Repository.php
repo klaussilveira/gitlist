@@ -222,15 +222,22 @@ class Repository
      * @access public
      * @return array Commit log
      */
-    public function getCommits($file = null)
+    public function getCommits($file = null, $page = 0)
     {
-        $command = 'log --pretty=format:\'"%h": {"hash": "%H", "short_hash": "%h", "tree": "%T", "parent": "%P", "author": "%an", "author_email": "%ae", "date": "%at", "commiter": "%cn", "commiter_email": "%ce", "commiter_date": "%ct", "message": "%f"}\'';
+        $page = 15 * $page;
+        $pager = "--skip=$page --max-count=15";
+        $command = 'log ' . $pager . ' --pretty=format:\'"%h": {"hash": "%H", "short_hash": "%h", "tree": "%T", "parent": "%P", "author": "%an", "author_email": "%ae", "date": "%at", "commiter": "%cn", "commiter_email": "%ce", "commiter_date": "%ct", "message": "%f"}\'';
         
         if ($file) {
             $command .= " $file";
         }
 
         $logs = $this->getClient()->run($this, $command);
+
+        if (empty($logs)) {
+            throw new \RuntimeException('No commit log available');
+        }
+
         $logs = str_replace("\n", ',', $logs);
         $logs = json_decode("{ $logs }", true);
 

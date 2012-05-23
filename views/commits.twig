@@ -39,6 +39,17 @@
     </table>
     {% endfor %}
 
+    <ul class="pager">
+        {% if pagenumber != 0 %}
+        <li class="previous">
+            <a href="?page={{ pagenumber - 1 }}">&larr; Older</a>
+        </li>
+        {% endif %}
+        <li class="next">
+            <a href="?page={{ pagenumber + 1 }}">Newer &rarr;</a>
+        </li>
+    </ul>
+
     <hr>
 
     {% include 'footer.twig' %}
