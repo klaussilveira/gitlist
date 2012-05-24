@@ -3,7 +3,7 @@
 $app->get('{repo}/commits/{branch}', function($repo, $branch) use($app) {
     $repository = $app['git']->getRepository($app['git.repos'] . $repo);
     $pager = $app['utils']->getPager($app['request']->get('page'), $repository->getTotalCommits());
-    $commits = $repository->getCommits(null, $pager['current']);
+    $commits = $repository->getCommits($branch, $pager['current']);
 
     foreach ($commits as $commit) {
         $date = $commit->getDate();
