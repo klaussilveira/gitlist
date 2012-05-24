@@ -14,7 +14,7 @@
 
     <ul class="breadcrumb">
         {% for breadcrumb in breadcrumbs %}
-        <li{% if loop.last %} class="active"{% endif %}>{% if not loop.last %}<a href="{{ baseurl }}/{{ breadcrumb.path }}">{{ breadcrumb.dir }}</a>{% endif %}{% if loop.last %}{{ breadcrumb.dir }}{% endif %}
+        <li{% if loop.last %} class="active"{% endif %}>{% if not loop.last %}<a href="{{ baseurl }}{{ breadcrumb.path }}">{{ breadcrumb.dir }}</a>{% endif %}{% if loop.last %}{{ breadcrumb.dir }}{% endif %}
         {%- if not loop.last -%}
             <span class="divider">/</span></li>
         {%- else -%}
