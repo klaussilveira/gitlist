@@ -5,3 +5,7 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
+<Files config.ini>
+    order allow,deny
+    deny from all
+</Files>
