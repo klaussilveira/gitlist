@@ -258,6 +258,7 @@ table .span24{float:none;width:1884px;margin-left:0;}
 .source-view .source-diff .new{background-color:#DFD;}
 .source-view .source-diff .old{background-color:#FDD;}
 .source-view .source-diff .chunk{background-color:#e8e8e8;color:#999999;}
+.source-view .image-blob{padding:10px;max-width:600px;}
 .blame-view{width:100%;background-color:#f5f5f5;}.blame-view td{vertical-align:top;padding:8px;}
 .blame-view tr{border-bottom:1px solid #cccccc;}
 .blame-view tr:last-child{border-bottom:0;}

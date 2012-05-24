@@ -199,6 +199,16 @@ class Utils
                 return 'yaml';
             case 'yaml':
                 return 'yaml';
+            case 'png':
+                return 'image';
+            case 'jpg':
+                return 'image';
+            case 'gif':
+                return 'image';
+            case 'jpeg':
+                return 'image';
+            case 'bmp':
+                return 'image';
             default:
                 return 'text';
         }

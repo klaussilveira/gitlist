@@ -33,7 +33,11 @@
                 <a href="{{ baseurl }}/{{ repo }}/commits/{{ branch }}/{{ file }}" class="btn btn-small"><i class="icon-list-alt"></i> History</a>
             </div>
         </div>
+        {% if fileType == 'image' %}
+        <center><img src="{{ baseurl }}/{{ repo }}/raw/{{ branch }}/{{ file }}" alt="{{ file }}" class="image-blob" /></center>
+        {% else %}
         <textarea id="sourcecode" language="{{ fileType }}" readonly="readonly">{{ blob }}</textarea>
+        {% endif %}
     </div>
 
     <hr>
