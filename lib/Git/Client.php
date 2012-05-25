@@ -52,7 +52,7 @@ class Client
     {
         $repositories = $this->recurseDirectory($path);
 
-        if (!isset($repositories)) {
+        if (!empty($repositories)) {
             throw new \RuntimeException('There are no GIT repositories in ' . $path);
         }
 
