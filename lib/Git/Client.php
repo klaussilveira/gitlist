@@ -72,6 +72,10 @@ class Client
                 continue;
             }
 
+            if (($pos = strrpos($file->getFilename(), '.')) === 0) {
+                continue;
+            }
+
             $isBare = file_exists($file->getPathname() . '/HEAD');
             $isRepository = file_exists($file->getPathname() . '/.git/HEAD');
 
