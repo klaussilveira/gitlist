@@ -85,10 +85,6 @@ class Client
                 $repositories[] = array('name' => $file->getFilename(), 'path' => $file->getPathname(), 'description' => $description);
                 continue;
             }
-
-            if ($file->isDir()) {
-                $repositories = $this->recurseDirectory($file->getPathname());
-            }
         }
 
         return $repositories;
