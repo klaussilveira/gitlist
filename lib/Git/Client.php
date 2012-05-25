@@ -65,8 +65,7 @@ class Client
     {
         $dir = new \DirectoryIterator($path);
 
-        // Good practice defined a variable before using it
-        $repositories = null;
+        $repositories = array();
 
         foreach ($dir as $file) {
             if ($file->isDot()) {
