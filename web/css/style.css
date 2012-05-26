@@ -742,7 +742,7 @@ a.label:hover,a.badge:hover{color:#ffffff;text-decoration:none;cursor:pointer;}
 .invisible{visibility:hidden;}
 .space-right{padding:0 8px 0 0;}
 .space-left{padding:0 0 0 8px;}
-.CodeMirror{line-height:1em;font-family:monospace;}
+.CodeMirror{line-height:1em;font-family:Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;}
 .CodeMirror-scroll{overflow:auto;height:500px;position:relative;outline:none;}
 .CodeMirror-gutter{position:absolute;left:0;top:0;z-index:10;background-color:#f7f7f7;border-right:1px solid #eee;min-width:2em;height:100%;}
 .CodeMirror-gutter-text{color:#aaa;text-align:right;padding:.4em .2em .4em .4em;white-space:pre !important;}

@@ -72,6 +72,10 @@ class Client
                 continue;
             }
 
+            if (($pos = strrpos($file->getFilename(), '.')) === 0) {
+                continue;
+            }
+
             $isBare = file_exists($file->getPathname() . '/HEAD');
             $isRepository = file_exists($file->getPathname() . '/.git/HEAD');
 
@@ -84,10 +88,6 @@ class Client
 
                 $repositories[] = array('name' => $file->getFilename(), 'path' => $file->getPathname(), 'description' => $description);
                 continue;
-            }
-
-            if ($file->isDir()) {
-                $repositories = $this->recurseDirectory($file->getPathname());
             }
         }
 
