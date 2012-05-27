@@ -357,6 +357,15 @@ class Repository
                 continue;
             }
 
+            // Handle binary files properly.
+            if ('Binary' === substr($log, 0, 6)) {
+                $m = array();
+                if (preg_match('/Binary files (.+) and (.+) differ/', $log, $m)) {
+                    $diff->setOld($m[1]);
+                    $diff->setNew("    {$m[2]}");
+                }
+            }
+
             $diff->addLine($log);
         }
 
