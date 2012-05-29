@@ -48,10 +48,10 @@ class Repository
 
         return $this;
     }
-    
+
     /**
      * Add untracked files
-     * 
+     *
      * @access public
      * @param mixed $files Files to be added to the repository
      */
@@ -60,7 +60,7 @@ class Repository
         if(is_array($files)) {
             $files = implode(' ', $files);
         }
-        
+
         $this->getClient()->run($this, "add $files");
 
         return $this;
@@ -68,7 +68,7 @@ class Repository
 
     /**
      * Add all untracked files
-     * 
+     *
      * @access public
      */
     public function addAll()
@@ -77,10 +77,10 @@ class Repository
 
         return $this;
     }
-    
+
     /**
      * Commit changes to the repository
-     * 
+     *
      * @access public
      * @param string $message Description of the changes made
      */
@@ -90,10 +90,10 @@ class Repository
 
         return $this;
     }
-    
+
     /**
      * Checkout a branch
-     * 
+     *
      * @access public
      * @param string $branch Branch to be checked out
      */
@@ -106,7 +106,7 @@ class Repository
 
     /**
      * Pull repository changes
-     * 
+     *
      * @access public
      */
     public function pull()
@@ -115,10 +115,10 @@ class Repository
 
         return $this;
     }
-    
+
     /**
      * Update remote references
-     * 
+     *
      * @access public
      * @param string $repository Repository to be pushed
      * @param string $refspec Refspec for the push
@@ -126,23 +126,23 @@ class Repository
     public function push($repository = null, $refspec = null)
     {
         $command = "push";
-        
+
         if($repository) {
             $command .= " $repository";
-        } 
-        
+        }
+
         if($refspec) {
             $command .= " $refspec";
         }
-        
+
         $this->getClient()->run($this, $command);
 
         return $this;
     }
-    
+
     /**
      * Show a list of the repository branches
-     * 
+     *
      * @access public
      * @return array List of branches
      */
@@ -151,13 +151,13 @@ class Repository
         $branches = $this->getClient()->run($this, "branch");
         $branches = explode("\n", $branches);
         $branches = array_filter(preg_replace('/[\*\s]/', '', $branches));
-        
+
         return $branches;
     }
-    
+
     /**
      * Show the current repository branch
-     * 
+     *
      * @access public
      * @return string Current repository branch
      */
@@ -165,17 +165,17 @@ class Repository
     {
         $branches = $this->getClient()->run($this, "branch");
         $branches = explode("\n", $branches);
-        
+
         foreach($branches as $branch) {
             if($branch[0] == '*') {
                 return substr($branch, 2);
             }
         }
     }
-    
+
     /**
      * Check if a specified branch exists
-     * 
+     *
      * @access public
      * @param string $branch Branch to be checked
      * @return boolean True if the branch exists
@@ -189,7 +189,7 @@ class Repository
 
     /**
      * Create a new repository branch
-     * 
+     *
      * @access public
      * @param string $branch Branch name
      */
@@ -197,10 +197,10 @@ class Repository
     {
         $this->getClient()->run($this, "branch $branch");
     }
-    
+
     /**
      * Show a list of the repository tags
-     * 
+     *
      * @access public
      * @return array List of tags
      */
@@ -212,20 +212,20 @@ class Repository
         if (empty($tags[0])) {
             return NULL;
         }
-        
+
         return $tags;
     }
 
     /**
      * Show the amount of commits on the repository
-     * 
+     *
      * @access public
      * @return integer Total number of commits
      */
     public function getTotalCommits($file = null)
     {
         $command = "rev-list --all --count";
-        
+
         if ($file) {
             $command .= " $file";
         }
@@ -233,10 +233,10 @@ class Repository
         $commits = $this->getClient()->run($this, $command);
         return $commits;
     }
-    
+
     /**
      * Show the repository commit log
-     * 
+     *
      * @access public
      * @return array Commit log
      */
@@ -245,7 +245,7 @@ class Repository
         $page = 15 * $page;
         $pager = "--skip=$page --max-count=15";
         $command = 'log ' . $pager . ' --pretty=format:\'"%h": {"hash": "%H", "short_hash": "%h", "tree": "%T", "parent": "%P", "author": "%an", "author_email": "%ae", "date": "%at", "commiter": "%cn", "commiter_email": "%ce", "commiter_date": "%ct", "message": "%f"}\'';
-        
+
         if ($file) {
             $command .= " $file";
         }
@@ -331,6 +331,8 @@ class Repository
         $commit->importData($data);
         unset($logs[0]);
 
+        $diff = null;
+
         // Read diff logs
         foreach ($logs as $log) {
             if ('diff' === substr($log, 0, 4)) {
@@ -366,7 +368,9 @@ class Repository
                 }
             }
 
-            $diff->addLine($log);
+            if (!is_null($diff)) {
+                $diff->addLine($log);
+            }
         }
 
         if (isset($diff)) {
@@ -392,9 +396,9 @@ class Repository
 
         foreach ($logs as $user => $count) {
             $user = explode('||', $user);
-            $data[] = array('name' => $user[0], 'email' => $user[1], 'commits' => $count); 
+            $data[] = array('name' => $user[0], 'email' => $user[1], 'commits' => $count);
         }
-        
+
         return $data;
     }
 
@@ -439,7 +443,7 @@ class Repository
 
     /**
      * Get the Tree for the provided folder
-     * 
+     *
      * @param string $tree Folder that will be parsed
      * @return Tree Instance of Tree for the provided folder
      */
@@ -452,7 +456,7 @@ class Repository
 
     /**
      * Get the Blob for the provided file
-     * 
+     *
      * @param string $blob File that will be parsed
      * @return Blob Instance of Blob for the provided file
      */
@@ -463,7 +467,7 @@ class Repository
 
     /**
      * Blames the provided file and parses the output
-     * 
+     *
      * @param string $file File that will be blamed
      * @return array Commits hashes containing the lines
      */
@@ -494,7 +498,7 @@ class Repository
 
     /**
      * Get the current Repository path
-     * 
+     *
      * @return string Path where the repository is located
      */
     public function getPath()
@@ -504,7 +508,7 @@ class Repository
 
     /**
      * Set the current Repository path
-     * 
+     *
      * @param string $path Path where the repository is located
      */
     public function setPath($path)
