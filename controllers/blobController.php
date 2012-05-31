@@ -2,7 +2,7 @@
 
 $app->get('{repo}/blob/{branch}/{file}/', function($repo, $branch, $file) use($app) {
     $repository = $app['git']->getRepository($app['git.repos'] . $repo);
-    $blob = $repository->getBlob("$branch:$file");
+    $blob = $repository->getBlob("$branch:'$file'");
     $breadcrumbs = $app['utils']->getBreadcrumbs("$repo/tree/$branch/$file");
     $fileType = $app['utils']->getFileType($file);
 
@@ -24,7 +24,7 @@ $app->get('{repo}/blob/{branch}/{file}/', function($repo, $branch, $file) use($a
 
 $app->get('{repo}/raw/{branch}/{file}', function($repo, $branch, $file) use($app) {
     $repository = $app['git']->getRepository($app['git.repos'] . $repo);
-    $blob = $repository->getBlob("$branch:$file")->output();
+    $blob = $repository->getBlob("$branch:'$file'")->output();
 
     return new Symfony\Component\HttpFoundation\Response($blob, 200, array('Content-Type' => 'text/plain'));
 })->assert('file', '.+')

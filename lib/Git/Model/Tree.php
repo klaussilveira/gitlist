@@ -33,7 +33,7 @@ class Tree extends ScopeAware implements \RecursiveIterator
                 continue;
             }
 
-            $files[] = preg_split("/[\s]+/", $line);
+            $files[] = preg_split("/[\s]+/", $line, 5);
         }
 
         foreach ($files as $file) {
