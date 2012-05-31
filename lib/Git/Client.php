@@ -107,15 +107,25 @@ class Client
      */
     public function run(Repository $repository, $command)
     {
-        $descriptors = array(0 => array("pipe", "r"), 1 => array("pipe", "w"));
+        $descriptors = array(0 => array("pipe", "r"), 1 => array("pipe", "w"), 2 => array("pipe", "w"));
         $process = proc_open($this->getPath() . ' ' . $command, $descriptors, $pipes, $repository->getPath());
 
-        if (is_resource($process)) {
-            $stdout = stream_get_contents($pipes[1]);
-            fclose($pipes[1]);
-            proc_close($process);
-            return $stdout;
+        if (!is_resource($process)) {
+            throw new \RuntimeException('Unable to execute command: ' . $command);
         }
+        
+        $stderr = stream_get_contents($pipes[2]);
+        fclose($pipes[2]);
+        
+        if (!empty($stderr)) {
+            throw new \RuntimeException($stderr);
+        }
+        
+        $stdout = stream_get_contents($pipes[1]);
+        fclose($pipes[1]);
+
+        proc_close($process);
+        return $stdout;
     }
 
     /**
