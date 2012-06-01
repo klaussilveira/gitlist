@@ -27,8 +27,8 @@ $app->get('{repo}/commits/{branch}', function($repo, $branch) use($app) {
 
 $app->get('{repo}/commits/{branch}/{file}/', function($repo, $branch, $file) use($app) {
     $repository = $app['git']->getRepository($app['git.repos'] . $repo);
-    $pager = $app['utils']->getPager($app['request']->get('page'), $repository->getTotalCommits($file));
-    $commits = $repository->getCommits($file, $pager['current']);
+    $pager = $app['utils']->getPager($app['request']->get('page'), $repository->getTotalCommits("$branch -- $file"));
+    $commits = $repository->getCommits("$branch -- $file", $pager['current']);
 
     foreach ($commits as $commit) {
         $date = $commit->getDate();
@@ -66,7 +66,7 @@ $app->get('{repo}/commit/{commit}/', function($repo, $commit) use($app) {
 
 $app->get('{repo}/blame/{branch}/{file}/', function($repo, $branch, $file) use($app) {
     $repository = $app['git']->getRepository($app['git.repos'] . $repo);
-    $blames = $repository->getBlame($file);
+    $blames = $repository->getBlame("$branch -- $file");
 
     return $app['twig']->render('blame.twig', array(
         'baseurl'        => $app['baseurl'],
