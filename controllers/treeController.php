@@ -41,7 +41,7 @@ $app->get('{repo}/tree/{branch}/', function($repo, $branch) use($app) {
 
 $app->get('{repo}/tree/{branch}/{tree}/', function($repo, $branch, $tree) use($app) {
     $repository = $app['git']->getRepository($app['git.repos'] . $repo);
-    $files = $repository->getTree("$branch:$tree/");
+    $files = $repository->getTree("$branch:'$tree'/");
     $breadcrumbs = $app['utils']->getBreadcrumbs("$repo/tree/$branch/$tree");
 
     if (($slash = strrpos($tree, '/')) !== false) {
