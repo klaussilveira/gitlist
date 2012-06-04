@@ -30,6 +30,12 @@ $app->register(new Git\GitServiceProvider(), array(
 ));
 $app->register(new Application\UtilsServiceProvider());
 
+/**
+ * Auth
+ */
+$app['autoloader']->registerNamespace('Auth', __DIR__.'/lib');
+Auth\Loader::run($app, $config);
+
 // Add the md5() function to Twig scope
 $app['twig']->addFilter('md5', new Twig_Filter_Function('md5'));
 

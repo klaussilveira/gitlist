@@ -9,6 +9,15 @@
             <a class="brand" href="{{ baseurl }}">Gitlist</a>
             <div class="nav-collapse">
                 <ul class="nav pull-right">
+                    {% if app.auth.isEnabled %}
+                        <li>
+                            {% if app.auth.isAuthenticated == false %}
+                                <a href="{{ baseurl }}/login">Login</a>
+                            {% else %}
+                                <a href="{{ baseurl }}/logout">Logout</a>
+                            {% endif %}
+                        </li>
+                    {% endif %}
                     <li><a href="https://github.com/klaussilveira/gitlist/">About</a></li>
                     <li><a href="https://github.com/klaussilveira/gitlist/issues/new">Report bug</a></li>
                     <li><a href="https://github.com/klaussilveira/gitlist/wiki">Help</a></li>

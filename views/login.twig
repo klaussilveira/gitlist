@@ -1,0 +1,41 @@
+{% extends 'layout.twig' %}
+{% block title %}Gitlist{% endblock %}
+
+{% block body %}
+{% include 'navigation.twig' %}
+
+<div class="container">
+    {% if error %}
+        <div class="alert alert-error">
+            <strong>Oops!</strong> Invalid login or password.
+        </div>
+    {% endif %}
+    <div class="row">
+        <div class="span6 offset3">
+            <form class="form-horizontal" method="post">
+                <fieldset>
+                    <div class="control-group">
+                        <label class="control-label" for="login">Login</label>
+                        <div class="controls">
+                            <input type="text" class="input-medium" id="login" name="login">
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="password">Password</label>
+                        <div class="controls">
+                            <input type="password" class="input-medium" id="password" name="password">
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <div class="controls">
+                            <button class="btn">Login</button>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+    <hr>
+    {% include 'footer.twig' %}
+</div>
+{% endblock %}
