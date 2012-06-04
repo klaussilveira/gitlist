@@ -37,7 +37,7 @@ You can also see a live demo [here](http://git.gofedora.com).
 ## Requirements
 In order to run GitList on your server, you'll need:
 
-* git
+* git 1.7.6 or higher
 * Apache and mod_rewrite enabled
 * PHP 5.3.3
 
