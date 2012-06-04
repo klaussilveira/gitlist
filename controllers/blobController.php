@@ -6,6 +6,15 @@ $app->get('{repo}/blob/{branch}/{file}/', function($repo, $branch, $file) use($a
     $breadcrumbs = $app['utils']->getBreadcrumbs("$repo/tree/$branch/$file");
     $fileType = $app['utils']->getFileType($file);
 
+    if (isset($app['customfiletypes']) && is_array($app['customfiletypes'])) {
+      if (($pos = strrpos($file, '.')) !== FALSE) {
+        $fileExtension = substr($file, $pos + 1);
+        if (array_key_exists($fileExtension, $app['customfiletypes'])) {
+          $fileType = $app['customfiletypes'][$fileExtension];
+        }
+      }
+    }
+
     return $app['twig']->render('file.twig', array(
         'baseurl'        => $app['baseurl'],
         'page'           => 'files',
