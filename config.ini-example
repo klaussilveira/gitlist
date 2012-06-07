@@ -1,6 +1,14 @@
 [git]
 client = '/usr/bin/git' ; Your git executable path
-repositories = '/home/git/' ; Path to your repositories (with ending slash)
+repositories = '/var/www/projects/' ; Path to your repositories (with ending slash)
+
+; You can hide repositories from GitList, just copy this for each repository you want to hide
+; hidden[] = '/var/www/projects/BetaTest' 
 
 [app]
-baseurl = 'http://localhost/gitlist' ; Base URL of the application (without ending slash)
+baseurl = 'http://localhost/git' ; Base URL of the application (without ending slash)
+
+; If you need to specify custom filetypes for certain extensions, do this here
+[filetypes]
+; extension = type
+; dist = xml
