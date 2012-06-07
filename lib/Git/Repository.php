@@ -224,7 +224,7 @@ class Repository
      */
     public function getTotalCommits($file = null)
     {
-        $command = "rev-list --all --count";
+        $command = "rev-list --all | wc -l";
         
         if ($file) {
             $command .= " $file";
