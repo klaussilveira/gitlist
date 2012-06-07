@@ -341,6 +341,8 @@ class Repository
                 }
 
                 $diff = new Diff;
+                preg_match('/^diff --[\S]+ (a\/)?([\S]+)( b\/)?/', $log, $name);
+                $diff->setFile($name[2]);
                 continue;
             }
 

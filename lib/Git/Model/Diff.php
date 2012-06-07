@@ -45,12 +45,16 @@ class Diff
     public function setNew($new)
     {
         $this->new = $new;
-        $this->file = substr($new, 6);
     }
 
     public function getNew()
     {
         return $this->new;
+    }
+
+    public function setFile($file)
+    {
+        $this->file = $file;
     }
 
     public function getFile()
