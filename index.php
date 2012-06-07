@@ -7,7 +7,7 @@
 
 $config = parse_ini_file('config.ini', true);
 
-if (empty($config['git']['repositories'])) {
+if (empty($config['git']['repositories']) || !is_dir($config['git']['repositories'])) {
     die("Please, edit the config.ini file and provide your repositories directory");
 }
 
