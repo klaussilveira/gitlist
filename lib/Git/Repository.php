@@ -224,11 +224,13 @@ class Repository
      */
     public function getTotalCommits($file = null)
     {
-        $command = "rev-list --all | wc -l";
+        $command = "rev-list --all";
         
         if ($file) {
             $command .= " $file";
         }
+
+        $command .= " | wc -l";
 
         $commits = $this->getClient()->run($this, $command);
         return $commits;
