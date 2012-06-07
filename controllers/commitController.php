@@ -12,6 +12,7 @@ $app->get('{repo}/commits/{branch}', function($repo, $branch) use($app) {
     }
 
     return $app['twig']->render('commits.twig', array(
+        'app_title'      => $app['app.title'],
         'baseurl'        => $app['baseurl'],
         'page'           => 'commits',
         'pager'          => $pager,
@@ -37,6 +38,7 @@ $app->get('{repo}/commits/{branch}/{file}/', function($repo, $branch, $file) use
     }
 
     return $app['twig']->render('commits.twig', array(
+        'app_title'      => $app['app.title'],
         'baseurl'        => $app['baseurl'],
         'page'           => 'commits',
         'pager'          => $pager,
@@ -55,6 +57,7 @@ $app->get('{repo}/commit/{commit}/', function($repo, $commit) use($app) {
     $commit = $repository->getCommit($commit);
 
     return $app['twig']->render('commit.twig', array(
+        'app_title'      => $app['app.title'],
         'baseurl'        => $app['baseurl'],
         'page'           => 'commits',
         'branch'         => 'master',
@@ -69,6 +72,7 @@ $app->get('{repo}/blame/{branch}/{file}/', function($repo, $branch, $file) use($
     $blames = $repository->getBlame("$branch -- $file");
 
     return $app['twig']->render('blame.twig', array(
+        'app_title'      => $app['app.title'],
         'baseurl'        => $app['baseurl'],
         'page'           => 'commits',
         'file'           => $file,

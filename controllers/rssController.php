@@ -5,6 +5,7 @@ $app->get('{repo}/{branch}/rss/', function($repo, $branch) use($app) {
     $commits = $repository->getCommits($branch);
 
     $html = $app['twig']->render('rss.twig', array(
+        'app_title'      => $app['app.title'],
         'baseurl'        => $app['baseurl'],
         'repo'           => $repo,
         'branch'         => $branch,
