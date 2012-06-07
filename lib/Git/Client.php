@@ -81,9 +81,15 @@ class Client
 
             if ($file->isDir() && $isRepository || $isBare) {
                 if ($isBare) {
-                    $description = file_get_contents($file->getPathname() . '/description');
+                    $description = $file->getPathname() . '/description';
                 } else {
-                    $description = file_get_contents($file->getPathname() . '/.git/description');
+                    $description = $file->getPathname() . '/.git/description';
+                }
+
+                if (file_exists($description)) {
+                    $description = file_get_contents($description);
+                } else {
+                    $description = 'There is no repository description file. Please, create one to remove this message.';
                 }
 
                 $repositories[] = array('name' => $file->getFilename(), 'path' => $file->getPathname(), 'description' => $description);
