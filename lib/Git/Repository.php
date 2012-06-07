@@ -333,6 +333,10 @@ class Repository
         $commit->importData($data);
         unset($logs[0]);
 
+        if (empty($logs[1])) {
+            throw new \RuntimeException('No commit log available');
+        }
+
         // Read diff logs
         foreach ($logs as $log) {
             if ('diff' === substr($log, 0, 4)) {
