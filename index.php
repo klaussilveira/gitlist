@@ -15,6 +15,7 @@ require_once __DIR__.'/vendor/silex.phar';
 
 $app = new Silex\Application();
 $app['baseurl'] = $config['app']['baseurl'];
+$app['filetypes'] = $config['filetypes'];
 
 // Register Git and Twig libraries
 $app['autoloader']->registerNamespace('Git', __DIR__.'/lib');
