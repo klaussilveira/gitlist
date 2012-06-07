@@ -6,6 +6,7 @@ $app->get('{repo}/', function($repo) use($app) {
     $breadcrumbs = $app['utils']->getBreadcrumbs("$repo/");
 
     return $app['twig']->render('tree.twig', array(
+        'app_title'      => $app['app.title'],
         'baseurl'        => $app['baseurl'],
         'page'           => 'files',
         'files'          => $tree->output(),
@@ -25,6 +26,7 @@ $app->get('{repo}/tree/{branch}/', function($repo, $branch) use($app) {
     $breadcrumbs = $app['utils']->getBreadcrumbs("$repo/");
 
     return $app['twig']->render('tree.twig', array(
+        'app_title'      => $app['app.title'],
         'baseurl'        => $app['baseurl'],
         'page'           => 'files',
         'files'          => $tree->output(),
@@ -51,6 +53,7 @@ $app->get('{repo}/tree/{branch}/{tree}/', function($repo, $branch, $tree) use($a
     }
 
     return $app['twig']->render('tree.twig', array(
+        'app_title'      => $app['app.title'],
         'baseurl'        => $app['baseurl'],
         'page'           => 'files',
         'files'          => $files->output(),
