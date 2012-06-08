@@ -17,28 +17,83 @@ class Commit
 
     public function importData(array $data)
     {
-        $this->setHash($data['hash']);
-        $this->setShortHash($data['short_hash']);
-        $this->setTreeHash($data['tree']);
-        $this->setParentHash($data['parent']);
+        if (empty($data)) {
+            throw new \RuntimeException('Error: could not import commit data.');
+        }
+	
+        if (!isset($data['hash'])) {
+            throw new \RuntimeException('Error: could not import commit hash data.');
+        }
+        else {
+            $this->setHash($data['hash']);
+        }
 
-        $this->setAuthor(
-            new Author($data['author'], $data['author_email'])
-        );
+        if (!isset($data['short_hash'])) {
+            throw new \RuntimeException('Error: could not import commit hash data.');
+        }
+        else {
+            $this->setShortHash($data['short_hash']);
+        }
 
-        $this->setDate(
-            new \DateTime('@' . $data['date'])
-        );
+        if (!isset($data['tree'])) {
+            throw new \RuntimeException('Error: could not import commit tree data.');
+        }
+        else {
+            $this->setTreeHash($data['tree']);
+        }
 
-        $this->setCommiter(
-            new Author($data['commiter'], $data['commiter_email'])
-        );
+        if (!isset($data['parent'])) {
+            throw new \RuntimeException('Error: could not import commit parent data.');
+        }
+        else {
+            $this->setParentHash($data['parent']);
+        }
 
-        $this->setCommiterDate(
-            new \DateTime('@' . $data['commiter_date'])
-        );
+        if (!isset($data['author'])) {
+            throw new \RuntimeException('Error: could not import commit author data.');
+        }
+        elseif (!isset($data['author_email'])) {
+            throw new \RuntimeException('Error: could not import commit author email data.');
+        }
+        else {
+            $this->setAuthor(
+                new Author($data['author'], $data['author_email'])
+            );
+        }
 
-        $this->setMessage($data['message']);
+        if (!isset($data['date'])) {
+            throw new \RuntimeException('Error: could not import commit date data.');
+        }
+        else {
+	    $this->setDate(
+                new \DateTime('@' . $data['date'])
+            );
+        }
+
+        if (!isset($data['commiter_email'])) {
+            throw new \RuntimeException('Error: could not import commit commiter email data.');
+        }
+        else {
+            $this->setCommiter(
+                new Author($data['commiter'], $data['commiter_email'])
+            );
+        }
+
+        if (!isset($data['commiter_date'])) {
+            throw new \RuntimeException('Error: could not import commit commiter date data.');
+        }
+        else {
+            $this->setCommiterDate(
+                new \DateTime('@' . $data['commiter_date'])
+            );
+        }
+
+        if (!isset($data['message'])) {
+            throw new \RuntimeException('Error: could not import commit commiter date data.');
+        }
+        else {
+            $this->setMessage($data['message']);
+        }
     }
 
     public function getHash()

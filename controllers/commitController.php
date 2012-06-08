@@ -5,10 +5,15 @@ $app->get('{repo}/commits/{branch}', function($repo, $branch) use($app) {
     $pager = $app['utils']->getPager($app['request']->get('page'), $repository->getTotalCommits());
     $commits = $repository->getCommits($branch, $pager['current']);
 
-    foreach ($commits as $commit) {
-        $date = $commit->getDate();
-        $date = $date->format('m/d/Y');
-        $categorized[$date][] = $commit;
+    if (!empty($commits)) {
+        foreach ($commits as $commit) {
+            $date = $commit->getDate();
+            $date = $date->format('m/d/Y');
+            $categorized[$date][] = $commit;
+        }
+    }
+    else {
+        throw new \RuntimeException('Error: no commits found.');
     }
 
     return $app['twig']->render('commits.twig', array(
