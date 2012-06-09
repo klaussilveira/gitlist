@@ -11,7 +11,7 @@ if (empty($config['git']['repositories']) || !is_dir($config['git']['repositorie
     die("Please, edit the config.ini file and provide your repositories directory");
 }
 
-require_once __DIR__.'/vendor/silex.phar';
+require_once 'phar://'.__DIR__.'/vendor/silex.phar';
 
 $app = new Silex\Application();
 $app['baseurl'] = $config['app']['baseurl'];
