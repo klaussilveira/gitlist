@@ -259,13 +259,27 @@ class Repository
         }
 
         $logs = str_replace("\n", ',', $logs);
-        $logs = json_decode("{ $logs }", true);
+        
+        // Clean json quoted
+        $logs = str_replace('\"', '"', $logs);
+        $logs = str_replace('\"', '"', $logs);
+        $logs = str_replace('\{', '{', $logs);
+        $logs = str_replace('\}', '}', $logs);
 
-        foreach ($logs as $log) {
-            $log['message'] = str_replace('-', ' ', $log['message']);
-            $commit = new Commit;
-            $commit->importData($log);
-            $commits[] = $commit;
+        $logs = json_decode('{ ' . $logs . ' }', true);
+
+        $commits = array(); // Initialize return result
+
+        if (!empty($logs)) {
+            foreach ($logs as $log) {
+                $log['message'] = str_replace('-', ' ', $log['message']);
+                $commit = new Commit;
+                $commit->importData($log);
+                $commits[] = $commit;
+            }
+        }
+        else {
+            throw new \RuntimeException('Json decodification failed. No commit log available.');
         }
 
         return $commits;
@@ -326,9 +340,21 @@ class Repository
 
         $logs = explode("\n", $logs);
 
+        // Clean json data quoted
+        $logs =	str_replace('\"', '"', $logs);
+        $logs = str_replace('\"', '"', $logs);
+        $logs = str_replace('\{', '{', $logs);
+        $logs =	str_replace('\}', '}', $logs);
+
         // Read commit metadata
         $data = json_decode($logs[0], true);
+
+        if (empty($data)) {
+            throw new \RuntimeException('Json decodification failed. No commit log available.');
+        }
+
         $data['message'] = str_replace('-', ' ', $data['message']);
+
         $commit = new Commit;
         $commit->importData($data);
         unset($logs[0]);
@@ -395,11 +421,17 @@ class Repository
         }
 
         $logs = explode("\n", $logs);
+
         $logs = array_count_values($logs);
         arsort($logs);
 
+        $data = array(); // Initialize return result
+
         foreach ($logs as $user => $count) {
-            $user = explode('||', $user);
+        // Clean quoted data
+        $user = str_replace('\|', '|', $user);
+            
+        $user = explode('||', $user);
             $data[] = array('name' => $user[0], 'email' => $user[1], 'commits' => $count); 
         }
         
