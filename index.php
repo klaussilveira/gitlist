@@ -26,15 +26,13 @@ $app['autoloader']->registerNamespace('Authorization', __DIR__.'/lib');
 $app->register(new Silex\Provider\TwigServiceProvider(), array(
     'twig.path'       => __DIR__.'/views',
     'twig.class_path' => __DIR__.'/vendor',
-    'twig.options'    => array('cache' => __DIR__.'/cache', 'debug' => true),
+    'twig.options'    => array('cache' => __DIR__.'/cache'),
 ));
 $app->register(new Git\GitServiceProvider(), array(
     'git.client'      => $config['git']['client'],
     'git.repos'       => $config['git']['repositories'],
 ));
 $app->register(new Application\UtilsServiceProvider());
-
-$app['debug'] = true;
 
 $app->register(new Silex\Provider\SessionServiceProvider());
 $app->register(new Authorization\AuthorizationServiceProvider(), array(
