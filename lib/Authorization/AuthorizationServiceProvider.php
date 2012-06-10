@@ -8,9 +8,9 @@ use Silex\ServiceProviderInterface;
 class AuthorizationServiceProvider implements ServiceProviderInterface {
     
     public function register(Application $app) {
-        $app['auth'] = $app->share(function () use ($app) {
+        $app['authorization'] = $app->share(function () use ($app) {
             $auth = new Authorization($app['session']);
-            $auth->setPasswordFile($app['auth.file']);
+            $auth->setPasswordFile($app['authorization.file']);
             return $auth;
         });
     }

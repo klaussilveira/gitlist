@@ -36,7 +36,7 @@ $app->register(new Application\UtilsServiceProvider());
 
 $app->register(new Silex\Provider\SessionServiceProvider());
 $app->register(new Authorization\AuthorizationServiceProvider(), array(
-    'auth.file'       => isset($config['authorization']['file']) ? $config['authorization']['file'] : false,
+    'authorization.file'    => isset($config['authorization']['file']) ? $config['authorization']['file'] : false,
 ));
 
 // Auth filter
