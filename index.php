@@ -14,9 +14,10 @@ if (empty($config['git']['repositories']) || !is_dir($config['git']['repositorie
 require_once 'phar://'.__DIR__.'/vendor/silex.phar';
 
 $app = new Silex\Application();
-$app['baseurl'] = $config['app']['baseurl'];
+$app['baseurl'] = rtrim($config['app']['baseurl'], '/');
 $app['filetypes'] = $config['filetypes'];
 $app['hidden'] = isset($config['git']['hidden']) ? $config['git']['hidden'] : array();
+$config['git']['repositories'] = rtrim($config['git']['repositories'], DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
 
 // Register Git and Twig libraries
 $app['autoloader']->registerNamespace('Git', __DIR__.'/lib');
