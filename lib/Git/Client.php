@@ -2,12 +2,17 @@
 
 namespace Git;
 
+use Silex\Application;
+
 class Client
 {
+    protected $app;
     protected $path;
 
-    public function __construct($path)
+    public function __construct(Application $app)
     {
+        $this->app = $app;
+        $path = $this->app['git.client'] ? $this->app['git.client'] : '/usr/bin/git';
         $this->setPath($path);
     }
 
@@ -37,6 +42,10 @@ class Client
     {
         if (!file_exists($path) || !file_exists($path . '/.git/HEAD') && !file_exists($path . '/HEAD')) {
             throw new \RuntimeException('There is no GIT repository at ' . $path);
+        }
+
+        if (in_array($path, $this->app['hidden'])) {
+            throw new \RuntimeException('You don\'t have access to this repository');
         }
 
         return new Repository($path, $this);
@@ -80,10 +89,20 @@ class Client
             $isRepository = file_exists($file->getPathname() . '/.git/HEAD');
 
             if ($file->isDir() && $isRepository || $isBare) {
+                if (in_array($file->getPathname(), $this->app['hidden'])) {
+                    continue;
+                }
+
                 if ($isBare) {
-                    $description = file_get_contents($file->getPathname() . '/description');
+                    $description = $file->getPathname() . '/description';
                 } else {
-                    $description = file_get_contents($file->getPathname() . '/.git/description');
+                    $description = $file->getPathname() . '/.git/description';
+                }
+
+                if (file_exists($description)) {
+                    $description = file_get_contents($description);
+                } else {
+                    $description = 'There is no repository description file. Please, create one to remove this message.';
                 }
 
                 $repositories[] = array('name' => $file->getFilename(), 'path' => $file->getPathname(), 'description' => $description);

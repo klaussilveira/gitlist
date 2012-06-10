@@ -224,11 +224,13 @@ class Repository
      */
     public function getTotalCommits($file = null)
     {
-        $command = "rev-list --all --count";
+        $command = "rev-list --all";
         
         if ($file) {
             $command .= " $file";
         }
+
+        $command .= " | wc -l";
 
         $commits = $this->getClient()->run($this, $command);
         return $commits;
@@ -331,6 +333,10 @@ class Repository
         $commit->importData($data);
         unset($logs[0]);
 
+        if (empty($logs[1])) {
+            throw new \RuntimeException('No commit log available');
+        }
+
         // Read diff logs
         foreach ($logs as $log) {
             if ('diff' === substr($log, 0, 4)) {
@@ -339,6 +345,8 @@ class Repository
                 }
 
                 $diff = new Diff;
+                preg_match('/^diff --[\S]+ (a\/)?([\S]+)( b\/)?/', $log, $name);
+                $diff->setFile($name[2]);
                 continue;
             }
 

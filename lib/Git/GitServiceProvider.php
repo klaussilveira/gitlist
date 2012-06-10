@@ -16,8 +16,7 @@ class GitServiceProvider implements ServiceProviderInterface
     public function register(Application $app)
     {
         $app['git'] = function () use ($app) {
-            $default = $app['git.client'] ? $app['git.client'] : '/usr/bin/git';
-            return new Client($app['git.client']);
+            return new Client($app);
         };
     }
 }
