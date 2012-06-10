@@ -27,3 +27,4 @@ nbproject
 .idea
 node_modules
 config.ini
+.htpasswd

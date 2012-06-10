@@ -12,3 +12,6 @@ baseurl = 'http://localhost/git' ; Base URL of the application
 [filetypes]
 ; extension = type
 ; dist = xml
+
+[authorization]
+; file = '/var/www/.htpasswd'
