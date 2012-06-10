@@ -9,7 +9,7 @@
             <a class="brand" href="{{ baseurl }}">Gitlist</a>
             <div class="nav-collapse">
                 <ul class="nav pull-right">
-                    {% if app.auth.isEnabled %}
+                    {% if app.authorization.isEnabled %}
                         <li><a href="{{ baseurl }}/logout">Logout</a></li>
                     {% endif %}
                     <li><a href="https://github.com/klaussilveira/gitlist/">About</a></li>
