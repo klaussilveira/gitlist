@@ -7,14 +7,17 @@
 
 $config = parse_ini_file('config.ini', true);
 
-if (empty($config['git']['repositories'])) {
+if (empty($config['git']['repositories']) || !is_dir($config['git']['repositories'])) {
     die("Please, edit the config.ini file and provide your repositories directory");
 }
 
-require_once __DIR__.'/vendor/silex.phar';
+require_once 'phar://'.__DIR__.'/vendor/silex.phar';
 
 $app = new Silex\Application();
-$app['baseurl'] = $config['app']['baseurl'];
+$app['baseurl'] = rtrim($config['app']['baseurl'], '/');
+$app['filetypes'] = $config['filetypes'];
+$app['hidden'] = isset($config['git']['hidden']) ? $config['git']['hidden'] : array();
+$config['git']['repositories'] = rtrim($config['git']['repositories'], DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
 
 // Register Git and Twig libraries
 $app['autoloader']->registerNamespace('Git', __DIR__.'/lib');

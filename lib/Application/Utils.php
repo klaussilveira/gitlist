@@ -2,11 +2,20 @@
 
 namespace Application;
 
+use Silex\Application;
+
 /**
  * General helper class, mostly used for string parsing inside the application controllers
  */
 class Utils
 {
+    protected $app;
+
+    public function __construct(Application $app)
+    {
+        $this->app = $app;
+    }
+
     /**
      * Builds a breadcrumb array based on a path spec
      * 
@@ -209,8 +218,14 @@ class Utils
                 return 'image';
             case 'bmp':
                 return 'image';
-            default:
-                return 'text';
+        }
+
+        if (!empty($this->app['filetypes'])) {
+            foreach ($this->app['filetypes'] as $ext => $type) {
+                if ($fileType == $ext) {
+                    return $type;
+                }
+            }
         }
     }
 

@@ -16,7 +16,7 @@ class UtilsServiceProvider implements ServiceProviderInterface
     public function register(Application $app)
     {
         $app['utils'] = function () use ($app) {
-            return new Utils;
+            return new Utils($app);
         };
     }
 }

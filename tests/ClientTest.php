@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__.'/../vendor/silex.phar';
+
 use Git\Client;
 use Git\Repository;
 
@@ -52,7 +54,10 @@ class ClientTest extends PHPUnit_Framework_TestCase
             $this->markTestSkipped('There are no write permissions in order to create test repositories.');
         }
 
-        $this->client = new Client('/usr/bin/git');
+        $app = new Silex\Application();
+        $app['git.client'] = '/usr/bin/git';
+        $app['hidden'] = array();
+        $this->client = new Client($app);
     }
 
     /**
