@@ -49,6 +49,14 @@
             {% endfor %}
         </tbody>
     </table>
+    {% if readme is not empty %}
+        <div class="readme-view">
+            <div class="readme-header">
+                <div class="meta">{{ readme.filename }}</div>
+            </div>
+            <div id="readme-content">{{ readme.content }}</div>
+        </div>
+    {% endif %}
 
     <hr>
 

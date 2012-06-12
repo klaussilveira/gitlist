@@ -245,4 +245,19 @@ class Utils
                      'total' => $totalCommits,
         );
     }
+
+    public function getReadme($repo, $branch = 'master')
+    {
+        $repository = $this->app['git']->getRepository($this->app['git.repos'] . $repo);
+        $files = $repository->getTree('master')->output();
+
+        foreach ($files as $fileInfo)
+            if (preg_match('/^readme(\.md|\.markdown|)$/i', $fileInfo['name'])) {
+                $readmeFile = $fileInfo['name'];
+                break;
+            }
+
+        if ($readmeFile) return array('filename' => $readmeFile, 'content' => $repository->getBlob("$branch:'$readmeFile'")->output());
+        return array();
+    }
 }

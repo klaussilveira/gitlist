@@ -16,6 +16,7 @@ $app->get('{repo}/', function($repo) use($app) {
         'breadcrumbs'    => $breadcrumbs,
         'branches'       => $repository->getBranches(),
         'tags'           => $repository->getTags(),
+        'readme'         => $app['utils']->getReadme($repo),
     ));
 })->assert('repo', '[\w-._]+');
 
@@ -35,6 +36,7 @@ $app->get('{repo}/tree/{branch}/', function($repo, $branch) use($app) {
         'breadcrumbs'    => $breadcrumbs,
         'branches'       => $repository->getBranches(),
         'tags'           => $repository->getTags(),
+        'readme'         => $app['utils']->getReadme($repo, $branch),
     ));
 })->assert('repo', '[\w-._]+')
   ->assert('branch', '[\w-._]+');
