@@ -519,4 +519,22 @@ class Repository
     {
         $this->path = $path;
     }
+
+    /**
+     * get the readme file in the tree
+     * 
+     * @param string $tree
+     */
+    public function getReadme($tree)
+    {
+ 	$files=$tree->output();
+	
+        foreach ($files as $file){ 
+	  if (preg_match('/^readme/i', $file['name']) > 0){
+	    return $file['name'];
+	  }
+	} 
+	return null;
+    }
+
 }

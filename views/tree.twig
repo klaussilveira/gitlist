@@ -50,8 +50,24 @@
         </tbody>
     </table>
 
-    <hr>
+        {% if blob %}
+	<table class="tree">
+          <thead>
+            <tr>
+                <th>README</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+                <td>
+		{% markdown %}{{blob|markdown|raw}}{% endmarkdown %}
+		</td>
+            </tr>
+          </tbody>
+        </table>-
 
+	{% endif %}
+    <hr>
     {% include 'footer.twig' %}
 </div>
 {% endblock %}
