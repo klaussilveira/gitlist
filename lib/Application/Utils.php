@@ -252,12 +252,9 @@ class Utils
         $files = $repository->getTree('master')->output();
 
         foreach ($files as $fileInfo)
-            if (preg_match('/^readme(\.md|\.markdown|)$/i', $fileInfo['name'])) {
-                $readmeFile = $fileInfo['name'];
-                break;
+            if (preg_match('/^readme*/i', $fileInfo['name'])) {
+                return array('filename' => $fileInfo['name'], 'content' => $repository->getBlob("$branch:'".$fileInfo['name']."'")->output());
             }
-
-        if ($readmeFile) return array('filename' => $readmeFile, 'content' => $repository->getBlob("$branch:'$readmeFile'")->output());
         return array();
     }
 }
