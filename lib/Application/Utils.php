@@ -245,4 +245,16 @@ class Utils
                      'total' => $totalCommits,
         );
     }
+
+    public function getReadme($repo, $branch = 'master')
+    {
+        $repository = $this->app['git']->getRepository($this->app['git.repos'] . $repo);
+        $files = $repository->getTree('master')->output();
+
+        foreach ($files as $fileInfo)
+            if (preg_match('/^readme*/i', $fileInfo['name'])) {
+                return array('filename' => $fileInfo['name'], 'content' => $repository->getBlob("$branch:'".$fileInfo['name']."'")->output());
+            }
+        return array();
+    }
 }
