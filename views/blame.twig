@@ -21,9 +21,9 @@
             <div class="meta">{{ file }}</div>
         </div>
         <table class="blame-view">
-        {% for commit, blame in blames %}
+        {% for blame in blames %}
             <tr>
-                <td class="commit"><a href="{{ baseurl }}/{{ repo }}/commit/{{ commit }}/">{{ commit }}</a></td>
+                <td class="commit"><a href="{{ baseurl }}/{{ repo }}/commit/{{ blame.commit }}/">{{ blame.commit }}</a></td>
                 <td><pre>{{ blame.line }}</pre></td>
             </tr>
         {% endfor %}
