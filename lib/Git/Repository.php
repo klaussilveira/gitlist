@@ -406,6 +406,25 @@ class Repository
         return $data;
     }
 
+    /**
+     * Get the current HEAD.
+     *
+     * @return string the name of the HEAD branch.
+     */
+    public function getHead()
+    {
+        $file = file_get_contents($this->getPath() . '/.git/HEAD');
+        foreach (explode("\n", $file) as $line) {
+            $m = array();
+            if (preg_match('#ref:\srefs/heads/(.+)#', $line, $m)) {
+                return $m[1];
+            }
+        }
+
+        // Default to something sane if in a detached HEAD state.
+        return 'master';
+    }
+
     public function getStatistics($branch)
     {
         // Calculate amount of files, extensions and file size
