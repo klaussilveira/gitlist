@@ -9,7 +9,7 @@
     {% for repository in repositories %}
     <div class="repository">
         <div class="repository-header">
-            <i class="icon-folder-open icon-spaced"></i> <a href="{{ baseurl }}/{{ repository.name }}/tree/master/">{{ repository.name }}</a>
+            <i class="icon-folder-open icon-spaced"></i> <a href="{{ baseurl }}/{{ repository.name }}">{{ repository.name }}</a>
             <a href="{{ baseurl }}/{{ repository.name }}/master/rss/"><i class="rss pull-right"></i></a>
         </div>
         <div class="repository-body">

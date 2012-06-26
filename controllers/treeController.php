@@ -2,7 +2,8 @@
 
 $app->get('{repo}/', function($repo) use($app) {
     $repository = $app['git']->getRepository($app['git.repos'] . $repo);
-    $tree = $repository->getTree('master');
+    $defaultBranch = $repository->getHead();
+    $tree = $repository->getTree($defaultBranch);
     $breadcrumbs = $app['utils']->getBreadcrumbs("$repo/");
 
     return $app['twig']->render('tree.twig', array(
@@ -10,7 +11,7 @@ $app->get('{repo}/', function($repo) use($app) {
         'page'           => 'files',
         'files'          => $tree->output(),
         'repo'           => $repo,
-        'branch'         => 'master',
+        'branch'         => $defaultBranch,
         'path'           => '',
         'parent'         => '',
         'breadcrumbs'    => $breadcrumbs,
