@@ -477,24 +477,27 @@ class Repository
      */
     public function getBlame($file)
     {
+        $blame = array();
         $logs = $this->getClient()->run($this, "blame -s $file");
         $logs = explode("\n", $logs);
 
+        $i = 0;
+        $previous_commit = '';
         foreach ($logs as $log) {
             if ($log == '') {
                 continue;
             }
 
-            $split = preg_split("/[a-zA-Z0-9^]{8}[\s]+[0-9]+\)/", $log);
-            preg_match_all("/([a-zA-Z0-9^]{8})[\s]+([0-9]+)\)/", $log, $match);
+            preg_match_all("/([a-zA-Z0-9^]{8})[\s]+(.+)[\s]+([0-9]+)\)(.+)/", $log, $match);
 
-            $commit = $match[1][0];
-
-            if (!isset($blame[$commit]['line'])) {
-                $blame[$commit]['line'] = '';
+            $current_commit = $match[1][0];
+            if ($current_commit != $previous_commit) {
+                ++$i;
+                $blame[$i] = array('line' => '', 'commit' => $current_commit);
             }
 
-            $blame[$commit]['line'] .= PHP_EOL . $split[1];
+            $blame[$i]['line'] .= PHP_EOL . $match[4][0];
+            $previous_commit = $current_commit;
         }
 
         return $blame;
