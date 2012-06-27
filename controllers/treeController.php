@@ -17,7 +17,7 @@ $app->get('{repo}/', function($repo) use($app) {
         'breadcrumbs'    => $breadcrumbs,
         'branches'       => $repository->getBranches(),
         'tags'           => $repository->getTags(),
-        'readme'         => $app['utils']->getReadme($repo),
+        'readme'         => $app['utils']->getReadme($repo, $defaultBranch),
     ));
 })->assert('repo', '[\w-._]+');
 
