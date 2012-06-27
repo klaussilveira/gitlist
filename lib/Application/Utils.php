@@ -249,7 +249,7 @@ class Utils
     public function getReadme($repo, $branch = 'master')
     {
         $repository = $this->app['git']->getRepository($this->app['git.repos'] . $repo);
-        $files = $repository->getTree('master')->output();
+        $files = $repository->getTree($branch)->output();
 
         foreach ($files as $fileInfo)
             if (preg_match('/^readme*/i', $fileInfo['name'])) {
