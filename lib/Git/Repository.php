@@ -510,7 +510,7 @@ class Repository
                 continue;
             }
 
-            preg_match_all("/([a-zA-Z0-9^]{8})[\s]+(.+)[\s]+([0-9]+)\)(.+)/", $log, $match);
+            preg_match_all("/([a-zA-Z0-9^]{8})[\s]+([0-9]+)\)(.+)/", $log, $match);
 
             $current_commit = $match[1][0];
             if ($current_commit != $previous_commit) {
@@ -518,7 +518,7 @@ class Repository
                 $blame[$i] = array('line' => '', 'commit' => $current_commit);
             }
 
-            $blame[$i]['line'] .= PHP_EOL . $match[4][0];
+            $blame[$i]['line'] .= PHP_EOL . $match[3][0];
             $previous_commit = $current_commit;
         }
 
