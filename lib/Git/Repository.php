@@ -413,9 +413,14 @@ class Repository
      */
     public function getHead()
     {
-        $file = file_get_contents($this->getPath() . '/.git/HEAD');
-        if ($file === FALSE) {
-          $file = file_get_contents($this->getPath() . '/HEAD');
+        if (file_exists($this->getPath() . '/.git/HEAD')) {
+          $file = @file_get_contents($this->getPath() . '/.git/HEAD');
+        }
+        else if (file_exists($this->getPath() . '/HEAD')) {
+          $file = @file_get_contents($this->getPath() . '/HEAD');
+        }
+        else  {
+          return 'master';
         }
         foreach (explode("\n", $file) as $line) {
             $m = array();
