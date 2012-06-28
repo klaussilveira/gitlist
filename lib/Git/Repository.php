@@ -414,6 +414,9 @@ class Repository
     public function getHead()
     {
         $file = file_get_contents($this->getPath() . '/.git/HEAD');
+        if ($file === FALSE) {
+          $file = file_get_contents($this->getPath() . '/HEAD');
+        }
         foreach (explode("\n", $file) as $line) {
             $m = array();
             if (preg_match('#ref:\srefs/heads/(.+)#', $line, $m)) {
