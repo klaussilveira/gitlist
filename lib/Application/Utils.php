@@ -69,13 +69,13 @@ class Utils
             case 'cpp':
                 return 'clike';
             case 'cs':
-                return 'clike';
+                return 'csharp';
             case 'm':
                 return 'clike';
             case 'mm':
                 return 'clike';
             case 'java':
-                return 'clike';
+                return 'java';
             case 'clj':
                 return 'clojure';
             case 'coffee':
