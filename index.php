@@ -5,6 +5,10 @@
  * https://github.com/klaussilveira/gitlist
  */
 
+if (!file_exists('config.ini')) {
+    die("Please, create the config.ini file.");
+}
+
 $config = parse_ini_file('config.ini', true);
 
 if (empty($config['git']['repositories']) || !is_dir($config['git']['repositories'])) {
