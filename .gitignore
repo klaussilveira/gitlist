@@ -1,4 +1,5 @@
 cache/
+vendor/
 *.diff
 *.err
 *.orig

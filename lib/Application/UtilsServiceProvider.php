@@ -19,4 +19,8 @@ class UtilsServiceProvider implements ServiceProviderInterface
             return new Utils($app);
         };
     }
+
+    public function boot(Application $app)
+    {
+    }
 }

@@ -11,7 +11,7 @@ if (empty($config['git']['repositories']) || !is_dir($config['git']['repositorie
     die("Please, edit the config.ini file and provide your repositories directory");
 }
 
-require_once 'phar://'.__DIR__.'/vendor/silex.phar';
+require 'vendor/autoload.php';
 
 $app = new Silex\Application();
 $app['baseurl'] = rtrim($config['app']['baseurl'], '/');
@@ -19,12 +19,9 @@ $app['filetypes'] = $config['filetypes'];
 $app['hidden'] = isset($config['git']['hidden']) ? $config['git']['hidden'] : array();
 $config['git']['repositories'] = rtrim($config['git']['repositories'], DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
 
-// Register Git and Twig libraries
-$app['autoloader']->registerNamespace('Git', __DIR__.'/lib');
-$app['autoloader']->registerNamespace('Application', __DIR__.'/lib');
+// Register Git and Twig service providersclass_path
 $app->register(new Silex\Provider\TwigServiceProvider(), array(
     'twig.path'       => __DIR__.'/views',
-    'twig.class_path' => __DIR__.'/vendor',
     'twig.options'    => array('cache' => __DIR__.'/cache'),
 ));
 $app->register(new Git\GitServiceProvider(), array(
