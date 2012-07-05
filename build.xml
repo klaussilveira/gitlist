@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="gitlist" default="build">
-    <target name="build" depends="prepare,lint,phploc,pdepend,phpmd,phpcpd,phpunit" />
+    <target name="build" depends="prepare,lint,phploc,pdepend,phpmd,phpcpd,phpunit,package" />
 
     <target name="clean" description="Clean build artifacts">
         <delete dir="${basedir}/build"/>
@@ -71,5 +71,14 @@
 
     <target name="phpunit" description="Run unit tests with PHPUnit">
         <exec executable="phpunit" failonerror="true"/>
+    </target>
+
+    <target name="package" description="Package the application for distribution">
+        <tar destfile="${basedir}/build/gitlist.tar.gz"
+            basedir="${basedir}/"
+            excludes="build/**, tests/**, cache/**, phpunit.xml.dist, cache.properties, .gitignore, .travis.yml, build.xml, composer.json, composer.lock"
+            compression="gzip"
+            longfile="gnu"
+        />
     </target>
 </project>
