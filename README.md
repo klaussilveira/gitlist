@@ -48,6 +48,18 @@ Download the GitList latest package and decompress to your `/var/www/gitlist` fo
 git clone https://github.com/klaussilveira/gitlist.git /var/www/gitlist
 ```
 
+Download composer.phar:
+
+```
+curl -s http://getcomposer.org/installer | php
+```
+
+Install vendors using composer:
+
+```
+php composer.phar install
+```
+
 Rename the `config.ini-example` file to `config.ini`. Now open up the `config.ini` and configure your installation. You'll have to provide where your repositories are located and the base GitList URL (in our case, http://localhost/gitlist). Now, let's create the cache folder and give the correct permissions:
 
 ```
