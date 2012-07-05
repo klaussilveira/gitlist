@@ -38,17 +38,14 @@ You can also see a live demo [here](http://git.gofedora.com).
 In order to run GitList on your server, you'll need:
 
 * git
-* Apache and mod_rewrite enabled
+* Apache with mod_rewrite enabled or nginx
 * PHP 5.3.3
 
 ## Installing
-Download the GitList latest package and decompress to your `/var/www/gitlist` folder, or anywhere else you want to place GitList. You can also clone the repository:
-
-```
-git clone https://github.com/klaussilveira/gitlist.git /var/www/gitlist
-```
-
-Rename the `config.ini-example` file to `config.ini`. Now open up the `config.ini` and configure your installation. You'll have to provide where your repositories are located and the base GitList URL (in our case, http://localhost/gitlist). Now, let's create the cache folder and give the correct permissions:
+* Download GitList from [gitlist.org](http://gitlist.org/) and decompress to your `/var/www/gitlist` folder, or anywhere else you want to place GitList. 
+* Rename the `config.ini-example` file to `config.ini`.
+* Open up the `config.ini` and configure your installation. You'll have to provide where your repositories are located and the base GitList URL (in our case, http://localhost/gitlist).
+* Create the cache folder and give the correct permissions:
 
 ```
 cd /var/www/gitlist
@@ -57,6 +54,26 @@ chmod 777 cache
 ```
 
 That's it, installation complete! If you're having problems, check this [tutorial](http://gofedora.com/insanely-awesome-web-interface-git-repos/) by Kulbir Saini or the [Troubleshooting](https://github.com/klaussilveira/gitlist/wiki/Troubleshooting) page.
+
+## Building
+GitList uses [Composer](http://getcomposer.org/) to manage dependencies and [Ant](http://ant.apache.org/) to build the project. In order to run all the targets in the build script, you will need [PHPUnit](http://www.phpunit.de/), [phpcpd](https://github.com/sebastianbergmann/phpcpd), [phploc](https://github.com/sebastianbergmann/phploc), [PHPMD](http://phpmd.org/) and [PHP_Depend](http://pdepend.org).
+
+Once you have all the dependencies set, you can clone the repository and run Ant:
+
+```
+git clone https://github.com/klaussilveira/gitlist.git
+ant
+```
+
+If you just want to get the project dependencies, instead of building everything:
+
+```
+git clone https://github.com/klaussilveira/gitlist.git
+curl -s http://getcomposer.org/installer | php
+php composer.phar install
+```
+
+If you have Composer in your path, things get easier. But you know the drill.
 
 ## Further information
 If you want to know more about customizing GitList, check the [Customization](https://github.com/klaussilveira/gitlist/wiki/Customizing) page on the wiki. Also, if you're having problems with GitList, check the [Troubleshooting](https://github.com/klaussilveira/gitlist/wiki/Troubleshooting) page. Don't forget to report issues and suggest new features! :)
