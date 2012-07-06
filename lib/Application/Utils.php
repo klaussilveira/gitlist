@@ -29,16 +29,11 @@ class Utils
 
         foreach ($paths as $path) {
             $dir['dir'] = $path;
-            $dir['path'] = "$last/$path";
+            $dir['path'] = "$last$path";
             $breadcrumbs[] = $dir;
-            $last .= '/' . $path;
+            $last .= $path . '/';
         }
 
-        if (isset($paths[2])) {
-            $breadcrumbs[0]['path'] .= '/' . $paths[1] . '/' . $paths[2];
-        }
-        
-        unset($breadcrumbs[1], $breadcrumbs[2]);
         return $breadcrumbs;
     }
 

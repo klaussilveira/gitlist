@@ -13,7 +13,7 @@
     </div>
 
     <ul class="breadcrumb">
-        <li><a href="{{ baseurl }}/{{ repo }}">{{ repo }}</a> <span class="divider">/</span></li>
+        <li><a href="{{ path('repository', {repo: repo}) }}">{{ repo }}</a> <span class="divider">/</span></li>
         <li>Commit history</li>
     </ul>
 
@@ -29,7 +29,7 @@
             <tr>
                 <td width="5%"><img src="http://gravatar.com/avatar/{{ item.getAuthor.getEmail | md5 }}?s=40" /></td>
                 <td width="95%">
-                    <span class="pull-right"><a class="btn btn-small" href="{{ baseurl }}/{{ repo }}/commit/{{ item.getShortHash }}"><i class="icon-list-alt"></i> View {{ item.getShortHash }}</a></span>
+                    <span class="pull-right"><a class="btn btn-small" href="{{ path('commit', {repo: repo, commit: item.getShortHash}) }}"><i class="icon-list-alt"></i> View {{ item.getShortHash }}</a></span>
                     <h4>{{ item.getMessage }}</h4>
                     <span><a href="mailto:{{ item.getAuthor.getEmail }}">{{ item.getAuthor.getName }}</a> authored in {{ item.getDate | date('d/m/Y \\a\\t H:i:s') }}</span>
                 </td>

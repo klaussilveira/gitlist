@@ -12,13 +12,13 @@
     </div>
 
     <ul class="breadcrumb">
-        <li><a href="{{ baseurl }}/{{ repo }}">{{ repo }}</a> <span class="divider">/</span></li>
+        <li><a href="{{ path('repository', {repo: repo}) }}">{{ repo }}</a> <span class="divider">/</span></li>
         <li>Commit {{ commit.getHash}} </li>
     </ul>
 
     <div class="commit-view">
         <div class="commit-header">
-            <span class="pull-right"><a class="btn btn-small" href="{{ baseurl }}/{{ repo }}/tree/{{ commit.getHash }}/" title="Browse code at this point in history"><i class="icon-list-alt"></i> Browse code</a></span>
+            <span class="pull-right"><a class="btn btn-small" href="{{ path('tree', {repo: repo, branch: commit.getHash}) }}" title="Browse code at this point in history"><i class="icon-list-alt"></i> Browse code</a></span>
             <h4>{{ commit.getMessage }}</h4>
         </div>
         <div class="commit-body">
@@ -39,7 +39,7 @@
             <div class="meta"><a name="{{ loop.index }}">{{ diff.getFile }}</div>
 
             <div class="btn-group pull-right">
-                <a href="{{ baseurl }}/{{ repo }}/blob/{{ commit.getHash }}/{{ diff.getFile }}" class="btn btn-small"><i class="icon-file"></i> View file @ {{ commit.getShortHash }}</a>
+                <a href="{{ path('blob', {repo: repo, branch: commit.getHash, file: diff.getFile}) }}" class="btn btn-small"><i class="icon-file"></i> View file @ {{ commit.getShortHash }}</a>
             </div>
         </div>
         

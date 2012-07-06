@@ -13,13 +13,10 @@
     </div>
 
     <ul class="breadcrumb">
+        <li><a href="{{ path('repository', {repo: repo}) }}">{{ repo }}</a></li>
         {% for breadcrumb in breadcrumbs %}
-        <li{% if loop.last %} class="active"{% endif %}>{% if not loop.last %}<a href="{{ baseurl }}{{ breadcrumb.path }}">{{ breadcrumb.dir }}</a>{% endif %}{% if loop.last %}{{ breadcrumb.dir }}{% endif %}
-        {%- if not loop.last -%}
-            <span class="divider">/</span></li>
-        {%- else -%}
-            </li>
-        {%- endif -%}
+        <span class="divider">/</span>
+        <li{% if loop.last %} class="active"{% endif %}>{% if not loop.last %}<a href="{{ path('tree_dir', {repo: repo, branch: branch, tree: breadcrumb.path}) }}">{{ breadcrumb.dir }}</a>{% endif %}{% if loop.last %}{{ breadcrumb.dir }}{% endif %}</li>
         {% endfor %}
     </ul>
 
@@ -28,13 +25,13 @@
             <div class="meta"></div>
 
             <div class="btn-group pull-right">
-                <a href="{{ baseurl }}/{{ repo }}/raw/{{ branch }}/{{ file }}" class="btn btn-small"><i class="icon-file"></i> Raw</a>
-                <a href="{{ baseurl }}/{{ repo }}/blame/{{ branch }}/{{ file }}" class="btn btn-small"><i class="icon-bullhorn"></i> Blame</a>
-                <a href="{{ baseurl }}/{{ repo }}/commits/{{ branch }}/{{ file }}" class="btn btn-small"><i class="icon-list-alt"></i> History</a>
+                <a href="{{ path('blob_raw', {repo: repo, branch: branch, file: file}) }}" class="btn btn-small"><i class="icon-file"></i> Raw</a>
+                <a href="{{ path('blame', {repo: repo, branch: branch, file: file}) }}" class="btn btn-small"><i class="icon-bullhorn"></i> Blame</a>
+                <a href="{{ path('commits', {repo: repo, branch: branch, file: file}) }}" class="btn btn-small"><i class="icon-list-alt"></i> History</a>
             </div>
         </div>
         {% if fileType == 'image' %}
-        <center><img src="{{ baseurl }}/{{ repo }}/raw/{{ branch }}/{{ file }}" alt="{{ file }}" class="image-blob" /></center>
+        <center><img src="{{ path('blob_raw', {repo: repo, branch: branch, file: file}) }}" alt="{{ file }}" class="image-blob" /></center>
         {% else %}
         <pre id="sourcecode" language="{{ fileType }}">{{ blob }}</pre>
         {% endif %}

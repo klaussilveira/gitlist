@@ -13,15 +13,12 @@
     </div>
 
     <ul class="breadcrumb">
+        <li><a href="{{ path('repository', {repo: repo}) }}">{{ repo }}</a></li>
         {% for breadcrumb in breadcrumbs %}
-        <li{% if loop.last %} class="active"{% endif %}>{% if not loop.last %}<a href="{{ baseurl }}{{ breadcrumb.path }}">{{ breadcrumb.dir }}</a>{% endif %}{% if loop.last %}{{ breadcrumb.dir }}{% endif %}
-        {%- if not loop.last -%}
-            <span class="divider">/</span></li>
-        {%- else -%}
-            </li>
-        {%- endif -%}
+        <span class="divider">/</span>
+        <li{% if loop.last %} class="active"{% endif %}>{% if not loop.last %}<a href="{{ path('tree_dir', {repo: repo, branch: branch, tree: breadcrumb.path}) }}">{{ breadcrumb.dir }}</a>{% endif %}{% if loop.last %}{{ breadcrumb.dir }}{% endif %}</li>
         {% endfor %}
-        <a href="{{ baseurl }}/{{ repo }}/{{ branch }}/rss/"><i class="rss pull-right"></i></a>
+        <a href="{{ path('rss', {repo: repo, branch: branch}) }}"><i class="rss pull-right"></i></a>
     </ul>
 
     <table class="tree">
@@ -35,14 +32,20 @@
         <tbody>
             {% if parent is not empty %}
             <tr>
-                <td><i class="icon-spaced"></i> <a href="{{ baseurl }}/{{ repo }}/tree/{{ branch }}{{ parent }}">..</a></td>
+                <td><i class="icon-spaced"></i> <a href="{{ path('tree_dir', {repo: repo, branch: branch, tree: parent}) }}">..</a></td>
                 <td></td>
                 <td></td>
             </tr>
             {% endif %}
             {% for file in files %}
             <tr>
-                <td><i class="{{ file.type == "folder" or file.type == "symlink" ? "icon-folder-open" : "icon-file" }} icon-spaced"></i> <a href="{{ baseurl }}/{{ repo }}/{{ file.type == "folder" or file.type == "symlink" ? "tree" : "blob" }}/{{ branch }}/{{ path }}{{ file.type == "symlink" ? file.path : file.name }}">{{ file.name }}</a></td>
+                <td><i class="{{ file.type == "folder" or file.type == "symlink" ? "icon-folder-open" : "icon-file" }} icon-spaced"></i> <a href="
+                    {%- if file.type == "folder" or file.type == "symlink" %}
+                        {{ path('tree_dir', {repo: repo, branch: branch, tree: path ~ (file.type == "symlink" ? file.path : file.name)}) }}
+                    {% else %}
+                        {{ path('blob', {repo: repo, branch: branch, file: path ~ (file.type == "symlink" ? file.path : file.name)}) }}
+                    {% endif -%}
+                ">{{ file.name }}</a></td>
                 <td>{{ file.mode }}</td>
                 <td>{% if file.size %}{{ (file.size / 1024) | number_format }} kb{% endif %}</td>
             </tr>

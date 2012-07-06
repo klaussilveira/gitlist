@@ -12,7 +12,7 @@
     </div>
 
     <ul class="breadcrumb">
-        <li><a href="{{ baseurl }}/{{ repo }}">{{ repo }}</a> <span class="divider">/</span></li>
+        <li><a href="{{ path('repository', {repo: repo}) }}">{{ repo }}</a> <span class="divider">/</span></li>
         <li>Blame</li>
     </ul>
 
@@ -23,7 +23,7 @@
         <table class="blame-view">
         {% for blame in blames %}
             <tr>
-                <td class="commit"><a href="{{ baseurl }}/{{ repo }}/commit/{{ blame.commit }}/">{{ blame.commit }}</a></td>
+                <td class="commit"><a href="{{ path('commit', {repo: repo, commit: blame.commit}) }}">{{ blame.commit }}</a></td>
                 <td><pre>{{ blame.line }}</pre></td>
             </tr>
         {% endfor %}

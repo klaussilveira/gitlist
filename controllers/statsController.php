@@ -6,7 +6,6 @@ $app->get('{repo}/stats/{branch}', function($repo, $branch) use($app) {
     $authors = $repository->getAuthorStatistics();
 
     return $app['twig']->render('stats.twig', array(
-        'baseurl'        => $app['baseurl'],
         'page'           => 'stats',
         'repo'           => $repo,
         'branch'         => $branch,
@@ -17,4 +16,5 @@ $app->get('{repo}/stats/{branch}', function($repo, $branch) use($app) {
     ));
 })->assert('repo', '[\w-._]+')
   ->assert('branch', '[\w-._]+')
-  ->value('branch', 'master');
+  ->value('branch', 'master')
+  ->bind('stats');
