@@ -6,7 +6,6 @@ $app->get('{repo}/stats/{branch}', function($repo, $branch) use($app) {
     $authors = $repository->getAuthorStatistics();
 
     return $app['twig']->render('stats.twig', array(
-        'page'           => 'stats',
         'repo'           => $repo,
         'branch'         => $branch,
         'branches'       => $repository->getBranches(),

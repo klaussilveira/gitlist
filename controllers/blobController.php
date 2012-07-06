@@ -7,7 +7,6 @@ $app->get('{repo}/blob/{branch}/{file}/', function($repo, $branch, $file) use($a
     $fileType = $app['utils']->getFileType($file);
 
     return $app['twig']->render('file.twig', array(
-        'page'           => 'files',
         'file'           => $file,
         'fileType'       => $fileType,
         'blob'           => $blob->output(),

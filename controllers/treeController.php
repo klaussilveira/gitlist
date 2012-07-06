@@ -16,7 +16,6 @@ $app->get('{repo}/tree/{branch}/{tree}/', $treeController = function($repo, $bra
     }
 
     return $app['twig']->render('tree.twig', array(
-        'page'           => 'files',
         'files'          => $files->output(),
         'repo'           => $repo,
         'branch'         => $branch,
