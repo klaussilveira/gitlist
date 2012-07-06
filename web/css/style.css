@@ -272,7 +272,7 @@ table .span24{float:none;width:1884px;margin-left:0;}
 .repository{margin-bottom:18px;border:1px solid #d7d7d7;-webkit-border-radius:4px;-moz-border-radius:4px;border-radius:4px;}.repository .repository-header{border-bottom:1px solid #d7d7d7;text-shadow:1px 1px 1px #ffffff;padding:8px;font-weight:700;font-size:14px;}
 .repository .repository-body{padding:8px;background-color:#f7f7f7;}.repository .repository-body p{margin:0;}
 .readme-view{width:100%;margin-bottom:18px;border:1px solid #cacaca;}.readme-view .readme-header{padding:8px;line-height:18px;text-align:left;vertical-align:bottom;background-color:#f4f4f4;background-image:-moz-linear-gradient(top, #fafafa, #eaeaea);background-image:-ms-linear-gradient(top, #fafafa, #eaeaea);background-image:-webkit-gradient(linear, 0 0, 0 100%, from(#fafafa), to(#eaeaea));background-image:-webkit-linear-gradient(top, #fafafa, #eaeaea);background-image:-o-linear-gradient(top, #fafafa, #eaeaea);background-image:linear-gradient(top, #fafafa, #eaeaea);background-repeat:repeat-x;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#fafafa', endColorstr='#eaeaea', GradientType=0);border-bottom:1px solid #d7d7d7;font-weight:bold;color:#555555;text-shadow:1px 1px 1px #ffffff;height:28px;}.readme-view .readme-header .meta{float:left;padding:4px 0;font-size:14px;}
-.readme-view #readme-content{padding:30px;color:#000;}
+.readme-view #readme-content{padding:30px;color:#000000;}
 .rss{display:inline-block;width:16px;height:16px;*margin-right:.3em;line-height:16px;vertical-align:text-top;background-image:url("../img/feed.png");background-position:0 0;background-repeat:no-repeat;}.rss:last-child{*margin-left:0;}
 [class^="icon-"],[class*=" icon-"]{display:inline-block;width:14px;height:14px;*margin-right:.3em;line-height:14px;vertical-align:text-top;background-image:url("../img/glyphicons-halflings.png");background-position:14px 14px;background-repeat:no-repeat;}[class^="icon-"]:last-child,[class*=" icon-"]:last-child{*margin-left:0;}
 .icon-white{background-image:url("../img/glyphicons-halflings-white.png");}
@@ -744,11 +744,17 @@ a.label:hover,a.badge:hover{color:#ffffff;text-decoration:none;cursor:pointer;}
 .invisible{visibility:hidden;}
 .space-right{padding:0 8px 0 0;}
 .space-left{padding:0 0 0 8px;}
-.CodeMirror{line-height:1em;font-family:Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;}
-.CodeMirror-scroll{overflow:auto;height:500px;position:relative;outline:none;}
+.CodeMirror{line-height:1em;font-family:Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;position:relative;overflow:hidden;}
+.CodeMirror-scroll{overflow-x:auto;overflow-y:hidden;height:500px;position:relative;outline:none;}
+.CodeMirror-scrollbar{float:right;overflow-x:hidden;overflow-y:scroll;margin-left:-1px;}
+.CodeMirror-scrollbar-inner{width:1px;}
+.CodeMirror-scrollbar.cm-sb-overlap{position:absolute;z-index:1;float:none;right:0;min-width:12px;}
+.CodeMirror-scrollbar.cm-sb-nonoverlap{min-width:12px;}
+.CodeMirror-scrollbar.cm-sb-ie7{min-width:18px;}
 .CodeMirror-gutter{position:absolute;left:0;top:0;z-index:10;background-color:#f7f7f7;border-right:1px solid #eee;min-width:2em;height:100%;}
 .CodeMirror-gutter-text{color:#aaa;text-align:right;padding:.4em .2em .4em .4em;white-space:pre !important;}
-.CodeMirror-lines{padding:.4em;white-space:pre;}
+.CodeMirror-lines{padding:.4em;white-space:pre;cursor:text;}
+.CodeMirror-lines *{pointer-events:none;}
 .CodeMirror pre{-moz-border-radius:0;-webkit-border-radius:0;-o-border-radius:0;border-radius:0;border-width:0;margin:0;padding:0;background:transparent;font-family:inherit;font-size:inherit;padding:0;margin:0;white-space:pre;word-wrap:normal;line-height:inherit;color:inherit;}
 .CodeMirror-wrap pre{word-wrap:break-word;white-space:pre-wrap;word-break:normal;}
 .CodeMirror-wrap .CodeMirror-scroll{overflow-x:hidden;}

@@ -36,7 +36,7 @@
         {% if fileType == 'image' %}
         <center><img src="{{ baseurl }}/{{ repo }}/raw/{{ branch }}/{{ file }}" alt="{{ file }}" class="image-blob" /></center>
         {% else %}
-        <textarea id="sourcecode" language="{{ fileType }}" readonly="readonly">{{ blob }}</textarea>
+        <pre id="sourcecode" language="{{ fileType }}">{{ blob }}</pre>
         {% endif %}
     </div>
 
