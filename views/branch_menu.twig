@@ -3,12 +3,12 @@
     <ul class="dropdown-menu">
     <li class="dropdown-header">Branches</li>
     {% for item in branches %}
-        <li><a href="{{ path('tree', {repo: repo, branch: item}) }}">{{ item }}</a></li>
+        <li><a href="{{ path('branch', {repo: repo, branch: item}) }}">{{ item }}</a></li>
     {% endfor %}
     {% if tags %}
     <li class="dropdown-header">Tags</li>
     {% for item in tags %}
-        <li><a href="{{ path('tree', {repo: repo, branch: item}) }}">{{ item }}</a></li>
+        <li><a href="{{ path('branch', {repo: repo, branch: item}) }}">{{ item }}</a></li>
     {% endfor %}
     {% endif %}
     </ul>

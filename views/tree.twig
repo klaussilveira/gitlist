@@ -18,9 +18,15 @@
             </tr>
         </thead>
         <tbody>
-            {% if parent is not empty %}
+            {% if parent is not null %}
             <tr>
-                <td><i class="icon-spaced"></i> <a href="{{ path('tree_dir', {repo: repo, branch: branch, tree: parent}) }}">..</a></td>
+                <td><i class="icon-spaced"></i>
+                    {% if not parent %}
+                        <a href="{{ path('branch', {repo: repo, branch: branch}) }}">..</a>
+                    {% else %}
+                        <a href="{{ path('tree', {repo: repo, branch: branch, tree: parent}) }}">..</a>
+                    {% endif %}
+                </td>
                 <td></td>
                 <td></td>
             </tr>
@@ -29,7 +35,7 @@
             <tr>
                 <td><i class="{{ file.type == "folder" or file.type == "symlink" ? "icon-folder-open" : "icon-file" }} icon-spaced"></i> <a href="
                     {%- if file.type == "folder" or file.type == "symlink" %}
-                        {{ path('tree_dir', {repo: repo, branch: branch, tree: path ~ (file.type == "symlink" ? file.path : file.name)}) }}
+                        {{ path('tree', {repo: repo, branch: branch, tree: path ~ (file.type == "symlink" ? file.path : file.name)}) }}
                     {% else %}
                         {{ path('blob', {repo: repo, branch: branch, file: path ~ (file.type == "symlink" ? file.path : file.name)}) }}
                     {% endif -%}

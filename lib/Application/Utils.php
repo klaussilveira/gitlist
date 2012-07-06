@@ -24,6 +24,10 @@ class Utils
      */
     public function getBreadcrumbs($spec)
     {
+        if (!$spec) {
+            return array();
+        }
+
         $paths = explode('/', $spec);
 
         foreach ($paths as $i => $path) {

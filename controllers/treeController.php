@@ -1,53 +1,17 @@
 <?php
 
-$app->get('{repo}/', function($repo) use($app) {
+$app->get('{repo}/tree/{branch}/{tree}/', $treeController = function($repo, $branch = '', $tree = '') use($app) {
     $repository = $app['git']->getRepository($app['git.repos'] . $repo);
-    $defaultBranch = $repository->getHead();
-    $tree = $repository->getTree($defaultBranch);
-
-    return $app['twig']->render('tree.twig', array(
-        'page'           => 'files',
-        'files'          => $tree->output(),
-        'repo'           => $repo,
-        'branch'         => $defaultBranch,
-        'path'           => '',
-        'parent'         => '',
-        'breadcrumbs'    => array(),
-        'branches'       => $repository->getBranches(),
-        'tags'           => $repository->getTags(),
-        'readme'         => $app['utils']->getReadme($repo, $defaultBranch),
-    ));
-})->assert('repo', '[\w-._]+')
-  ->bind('repository');
-
-$app->get('{repo}/tree/{branch}/', function($repo, $branch) use($app) {
-    $repository = $app['git']->getRepository($app['git.repos'] . $repo);
-    $tree = $repository->getTree($branch);
-
-    return $app['twig']->render('tree.twig', array(
-        'page'           => 'files',
-        'files'          => $tree->output(),
-        'repo'           => $repo,
-        'branch'         => $branch,
-        'path'           => '',
-        'parent'         => '',
-        'breadcrumbs'    => array(),
-        'branches'       => $repository->getBranches(),
-        'tags'           => $repository->getTags(),
-        'readme'         => $app['utils']->getReadme($repo, $branch),
-    ));
-})->assert('repo', '[\w-._]+')
-  ->assert('branch', '[\w-._]+')
-  ->bind('tree');
-
-$app->get('{repo}/tree/{branch}/{tree}/', function($repo, $branch, $tree) use($app) {
-    $repository = $app['git']->getRepository($app['git.repos'] . $repo);
-    $files = $repository->getTree("$branch:'$tree'/");
+    if (!$branch) {
+        $branch = $repository->getHead();
+    }
+    $files = $repository->getTree($tree ? "$branch:'$tree'/" : $branch);
     $breadcrumbs = $app['utils']->getBreadcrumbs($tree);
 
+    $parent = null;
     if (($slash = strrpos($tree, '/')) !== false) {
         $parent = substr($tree, 0, $slash);
-    } else {
+    } elseif (!empty($tree)) {
         $parent = '';
     }
 
@@ -56,14 +20,25 @@ $app->get('{repo}/tree/{branch}/{tree}/', function($repo, $branch, $tree) use($a
         'files'          => $files->output(),
         'repo'           => $repo,
         'branch'         => $branch,
-        'path'           => "$tree/",
+        'path'           => $tree ? $tree.'/' : $tree,
         'parent'         => $parent,
         'breadcrumbs'    => $breadcrumbs,
         'branches'       => $repository->getBranches(),
         'tags'           => $repository->getTags(),
         'readme'         => $app['utils']->getReadme($repo, $branch),
     ));
-})->assert('tree', '.+')
-  ->assert('repo', '[\w-._]+')
+})->assert('repo', '[\w-._]+')
   ->assert('branch', '[\w-._]+')
-  ->bind('tree_dir');
+  ->assert('tree', '.+')
+  ->bind('tree');
+
+$app->get('{repo}/{branch}/', function($repo, $branch) use($app, $treeController) {
+    return $treeController($repo, $branch);
+})->assert('repo', '[\w-._]+')
+  ->assert('branch', '[\w-._]+')
+  ->bind('branch');
+
+$app->get('{repo}/', function($repo) use($app, $treeController) {
+    return $treeController($repo);
+})->assert('repo', '[\w-._]+')
+  ->bind('repository');
