@@ -1,17 +1,8 @@
-{% extends 'layout.twig' %}
+{% extends 'layout_page.twig' %}
+
 {% block title %}GitList{% endblock %}
 
-{% block body %}
-{% include 'navigation.twig' %}
-
-<div class="container">
-    <div class="row">
-        <div class="span12">
-            {% include 'branch_menu.twig' %}
-            {% include 'menu.twig' %}
-        </div>
-    </div>
-
+{% block content %}
     {% include 'breadcrumb.twig' with {breadcrumbs: [{dir: 'Statistics', path:''}]} %}
 
     <table class="table table-striped table-bordered">
@@ -52,7 +43,4 @@
     </table>
 
     <hr>
-
-    {% include 'footer.twig' %}
-</div>
 {% endblock %}

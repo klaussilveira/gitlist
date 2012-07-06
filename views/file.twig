@@ -1,17 +1,8 @@
-{% extends 'layout.twig' %}
+{% extends 'layout_page.twig' %}
+
 {% block title %}GitList{% endblock %}
 
-{% block body %}
-{% include 'navigation.twig' %}
-
-<div class="container">
-    <div class="row">
-        <div class="span12">
-            {% include 'branch_menu.twig' %}
-            {% include 'menu.twig' %}
-        </div>
-    </div>
-
+{% block content %}
     {% include 'breadcrumb.twig' with {breadcrumbs: breadcrumbs} %}
 
     <div class="source-view">
@@ -32,7 +23,4 @@
     </div>
 
     <hr>
-
-    {% include 'footer.twig' %}
-</div>
 {% endblock %}

@@ -1,17 +1,8 @@
-{% extends 'layout.twig' %}
+{% extends 'layout_page.twig' %}
+
 {% block title %}GitList{% endblock %}
 
-{% block body %}
-{% include 'navigation.twig' %}
-
-<div class="container">
-    <div class="row">
-        <div class="span12">
-            {% include 'branch_menu.twig' %}
-            {% include 'menu.twig' %}
-        </div>
-    </div>
-
+{% block content %}
     {% embed 'breadcrumb.twig' with {breadcrumbs: breadcrumbs} %}
         {% block extra %}
             <a href="{{ path('rss', {repo: repo, branch: branch}) }}"><i class="rss pull-right"></i></a>
@@ -57,9 +48,4 @@
             <div id="readme-content">{{ readme.content }}</div>
         </div>
     {% endif %}
-
-    <hr>
-
-    {% include 'footer.twig' %}
-</div>
 {% endblock %}
