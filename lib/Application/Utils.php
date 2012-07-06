@@ -25,13 +25,12 @@ class Utils
     public function getBreadcrumbs($spec)
     {
         $paths = explode('/', $spec);
-        $last = '';
 
-        foreach ($paths as $path) {
-            $dir['dir'] = $path;
-            $dir['path'] = "$last$path";
-            $breadcrumbs[] = $dir;
-            $last .= $path . '/';
+        foreach ($paths as $i => $path) {
+            $breadcrumbs[] = array(
+                'dir'  => $path,
+                'path' => implode('/', array_slice($paths, 0, $i + 1)),
+            );
         }
 
         return $breadcrumbs;
