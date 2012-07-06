@@ -12,10 +12,7 @@
         </div>
     </div>
 
-    <ul class="breadcrumb">
-        <li><a href="{{ path('repository', {repo: repo}) }}">{{ repo }}</a> <span class="divider">/</span></li>
-        <li>Statistics</li>
-    </ul>
+    {% include 'breadcrumb.twig' with {breadcrumbs: [{dir: 'Statistics', path:''}]} %}
 
     <table class="table table-striped table-bordered">
         <thead>

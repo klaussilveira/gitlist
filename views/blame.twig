@@ -11,10 +11,7 @@
         </div>
     </div>
 
-    <ul class="breadcrumb">
-        <li><a href="{{ path('repository', {repo: repo}) }}">{{ repo }}</a> <span class="divider">/</span></li>
-        <li>Blame</li>
-    </ul>
+    {% include 'breadcrumb.twig' with {breadcrumbs: [{dir: 'Blame', path:''}]} %}
 
     <div class="source-view">
         <div class="source-header">

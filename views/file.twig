@@ -12,13 +12,7 @@
         </div>
     </div>
 
-    <ul class="breadcrumb">
-        <li><a href="{{ path('repository', {repo: repo}) }}">{{ repo }}</a></li>
-        {% for breadcrumb in breadcrumbs %}
-        <span class="divider">/</span>
-        <li{% if loop.last %} class="active"{% endif %}>{% if not loop.last %}<a href="{{ path('tree_dir', {repo: repo, branch: branch, tree: breadcrumb.path}) }}">{{ breadcrumb.dir }}</a>{% endif %}{% if loop.last %}{{ breadcrumb.dir }}{% endif %}</li>
-        {% endfor %}
-    </ul>
+    {% include 'breadcrumb.twig' with {breadcrumbs: breadcrumbs} %}
 
     <div class="source-view">
         <div class="source-header">

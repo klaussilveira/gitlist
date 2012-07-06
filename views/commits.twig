@@ -12,10 +12,7 @@
         </div>
     </div>
 
-    <ul class="breadcrumb">
-        <li><a href="{{ path('repository', {repo: repo}) }}">{{ repo }}</a> <span class="divider">/</span></li>
-        <li>Commit history</li>
-    </ul>
+    {% include 'breadcrumb.twig' with {breadcrumbs: [{dir: 'Commit history', path:''}]} %}
 
     {% for date, commit in commits %}
     <table class="table table-striped table-bordered">
