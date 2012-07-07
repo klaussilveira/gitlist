@@ -1,0 +1,22 @@
+{% extends 'layout.twig' %}
+
+{% block body %}
+    {% include 'navigation.twig' %}
+
+    <div class="container">
+        <div class="row">
+            <div class="span12">
+                {% if branches is defined %}
+                    {% include 'branch_menu.twig' %}
+                {% endif %}
+                {% include 'menu.twig' %}
+            </div>
+        </div>
+
+        {% block content %}{% endblock %}
+
+        <hr>
+
+        {% include 'footer.twig' %}
+    </div>
+{% endblock %}

@@ -1,5 +1,5 @@
 {
-    "hash": "3a86b6a3e837b125e3cebc503fd8cf38",
+    "hash": "8909d5f3ac695303e7845fe5cb0658ad",
     "packages": [
         {
             "package": "pimple/pimple",
@@ -22,8 +22,8 @@
         {
             "package": "silex/silex",
             "version": "dev-master",
-            "source-reference": "13eb2ba916e39d5b8b1d054aaa441cf8e1004d85",
-            "commit-date": "1341343086"
+            "source-reference": "23dc19c334e2f74ec4de037568f5426bceaff421",
+            "commit-date": "1341597562"
         },
         {
             "package": "symfony/event-dispatcher",
@@ -74,16 +74,20 @@
             "commit-date": "1341312726"
         },
         {
-            "package": "twig/twig",
+            "package": "symfony/twig-bridge",
             "version": "dev-master",
-            "alias-pretty-version": "1.8.x-dev",
-            "alias-version": "1.8.9999999.9999999-dev"
+            "alias-pretty-version": "2.1.x-dev",
+            "alias-version": "2.1.9999999.9999999-dev"
+        },
+        {
+            "package": "symfony/twig-bridge",
+            "version": "dev-master",
+            "source-reference": "2a577b6cf0fe32f383acf4a972c1d5d8f48ae1e2",
+            "commit-date": "1340549862"
         },
         {
             "package": "twig/twig",
-            "version": "dev-master",
-            "source-reference": "73da773aaad0f97f2e967ec8241b8adf7b1e03d2",
-            "commit-date": "1340890758"
+            "version": "v1.8.3"
         }
     ],
     "packages-dev": null,

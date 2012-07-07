@@ -24,21 +24,19 @@ class Utils
      */
     public function getBreadcrumbs($spec)
     {
+        if (!$spec) {
+            return array();
+        }
+
         $paths = explode('/', $spec);
-        $last = '';
 
-        foreach ($paths as $path) {
-            $dir['dir'] = $path;
-            $dir['path'] = "$last/$path";
-            $breadcrumbs[] = $dir;
-            $last .= '/' . $path;
+        foreach ($paths as $i => $path) {
+            $breadcrumbs[] = array(
+                'dir'  => $path,
+                'path' => implode('/', array_slice($paths, 0, $i + 1)),
+            );
         }
 
-        if (isset($paths[2])) {
-            $breadcrumbs[0]['path'] .= '/' . $paths[1] . '/' . $paths[2];
-        }
-        
-        unset($breadcrumbs[1], $breadcrumbs[2]);
         return $breadcrumbs;
     }
 
