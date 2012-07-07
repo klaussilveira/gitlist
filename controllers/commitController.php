@@ -1,9 +1,10 @@
 <?php
 
-$app->get('{repo}/commits/{branch}', function($repo, $branch) use($app) {
+$app->get('{repo}/commits/{branch}/{file}', function($repo, $branch, $file) use($app) {
     $repository = $app['git']->getRepository($app['git.repos'] . $repo);
-    $pager = $app['utils']->getPager($app['request']->get('page'), $repository->getTotalCommits());
-    $commits = $repository->getCommits($branch, $pager['current']);
+    $type = $file ? "$branch -- $file" : $branch;
+    $pager = $app['utils']->getPager($app['request']->get('page'), $repository->getTotalCommits($type));
+    $commits = $repository->getCommits($type, $pager['current']);
 
     foreach ($commits as $commit) {
         $date = $commit->getDate();
@@ -18,34 +19,14 @@ $app->get('{repo}/commits/{branch}', function($repo, $branch) use($app) {
         'branches'       => $repository->getBranches(),
         'tags'           => $repository->getTags(),
         'commits'        => $categorized,
+        'file'           => $file,
     ));
 })->assert('repo', '[\w-._]+')
   ->assert('branch', '[\w-._]+')
-  ->value('branch', 'master')
-  ->bind('commits');
-
-$app->get('{repo}/commits/{branch}/{file}/', function($repo, $branch, $file) use($app) {
-    $repository = $app['git']->getRepository($app['git.repos'] . $repo);
-    $pager = $app['utils']->getPager($app['request']->get('page'), $repository->getTotalCommits("$branch -- $file"));
-    $commits = $repository->getCommits("$branch -- $file", $pager['current']);
-
-    foreach ($commits as $commit) {
-        $date = $commit->getDate();
-        $date = $date->format('m/d/Y');
-        $categorized[$date][] = $commit;
-    }
-
-    return $app['twig']->render('commits.twig', array(
-        'pager'          => $pager,
-        'repo'           => $repo,
-        'branch'         => $branch,
-        'branches'       => $repository->getBranches(),
-        'tags'           => $repository->getTags(),
-        'commits'        => $categorized,
-    ));
-})->assert('repo', '[\w-._]+')
   ->assert('file', '.+')
-  ->assert('branch', '[\w-._]+');
+  ->value('branch', 'master')
+  ->value('file', '')
+  ->bind('commits');
 
 $app->get('{repo}/commit/{commit}/', function($repo, $commit) use($app) {
     $repository = $app['git']->getRepository($app['git.repos'] . $repo);
