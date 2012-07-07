@@ -1,6 +1,6 @@
 <?php
 
-$app->get('{repo}/blob/{branch}/{file}/', function($repo, $branch, $file) use($app) {
+$app->get('{repo}/blob/{branch}/{file}', function($repo, $branch, $file) use($app) {
     $repository = $app['git']->getRepository($app['git.repos'] . $repo);
     $blob = $repository->getBlob("$branch:'$file'");
     $breadcrumbs = $app['utils']->getBreadcrumbs($file);

@@ -41,7 +41,7 @@ $app->get('{repo}/commit/{commit}/', function($repo, $commit) use($app) {
   ->assert('commit', '[a-f0-9]+')
   ->bind('commit');
 
-$app->get('{repo}/blame/{branch}/{file}/', function($repo, $branch, $file) use($app) {
+$app->get('{repo}/blame/{branch}/{file}', function($repo, $branch, $file) use($app) {
     $repository = $app['git']->getRepository($app['git.repos'] . $repo);
     $blames = $repository->getBlame("$branch -- $file");
 
