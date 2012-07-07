@@ -515,7 +515,7 @@ class Repository
                 continue;
             }
 
-            preg_match_all("/([a-zA-Z0-9^]{8})[\s]+([0-9]+)\)(.+)/", $log, $match);
+            preg_match_all("/([a-zA-Z0-9^]{8})\s+.*?([0-9]+)\)(.+)/", $log, $match);
 
             $current_commit = $match[1][0];
             if ($current_commit != $previous_commit) {
