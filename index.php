@@ -14,7 +14,6 @@ if (empty($config['git']['repositories']) || !is_dir($config['git']['repositorie
 require 'vendor/autoload.php';
 
 $app = new Silex\Application();
-$app['baseurl'] = rtrim($config['app']['baseurl'], '/');
 $app['filetypes'] = $config['filetypes'];
 $app['hidden'] = isset($config['git']['hidden']) ? $config['git']['hidden'] : array();
 $config['git']['repositories'] = rtrim($config['git']['repositories'], DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
@@ -29,9 +28,14 @@ $app->register(new Git\GitServiceProvider(), array(
     'git.repos'       => $config['git']['repositories'],
 ));
 $app->register(new Application\UtilsServiceProvider());
+$app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 
-// Add the md5() function to Twig scope
-$app['twig']->addFilter('md5', new Twig_Filter_Function('md5'));
+$app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
+    // Add the md5() function to Twig scope
+    $twig->addFilter('md5', new Twig_Filter_Function('md5'));
+
+    return $twig;
+}));
 
 // Load controllers
 include 'controllers/indexController.php';
@@ -44,8 +48,7 @@ include 'controllers/rssController.php';
 // Error handling
 $app->error(function (\Exception $e, $code) use ($app) {
     return $app['twig']->render('error.twig', array(
-        'baseurl'   => $app['baseurl'],
-        'message'   => $e->getMessage(),
+        'message' => $e->getMessage(),
     ));
 });
 

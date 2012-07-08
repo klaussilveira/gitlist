@@ -5,7 +5,6 @@ $app->get('{repo}/{branch}/rss/', function($repo, $branch) use($app) {
     $commits = $repository->getCommits($branch);
 
     $html = $app['twig']->render('rss.twig', array(
-        'baseurl'        => $app['baseurl'],
         'repo'           => $repo,
         'branch'         => $branch,
         'commits'        => $commits,
@@ -13,4 +12,5 @@ $app->get('{repo}/{branch}/rss/', function($repo, $branch) use($app) {
 
     return new Symfony\Component\HttpFoundation\Response($html, 200, array('Content-Type' => 'application/rss+xml'));
 })->assert('repo', '[\w-._]+')
-  ->assert('branch', '[\w-._]+');
+  ->assert('branch', '[\w-._]+')
+  ->bind('rss');

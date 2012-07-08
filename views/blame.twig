@@ -1,20 +1,11 @@
-{% extends 'layout.twig' %}
+{% extends 'layout_page.twig' %}
+
+{% set page = 'commits' %}
+
 {% block title %}GitList{% endblock %}
 
-{% block body %}
-{% include 'navigation.twig' %}
-
-<div class="container">
-    <div class="row">
-        <div class="span12">
-            {% include 'menu.twig' %}
-        </div>
-    </div>
-
-    <ul class="breadcrumb">
-        <li><a href="{{ baseurl }}/{{ repo }}">{{ repo }}</a> <span class="divider">/</span></li>
-        <li>Blame</li>
-    </ul>
+{% block content %}
+    {% include 'breadcrumb.twig' with {breadcrumbs: [{dir: 'Blame', path:''}]} %}
 
     <div class="source-view">
         <div class="source-header">
@@ -23,7 +14,7 @@
         <table class="blame-view">
         {% for blame in blames %}
             <tr>
-                <td class="commit"><a href="{{ baseurl }}/{{ repo }}/commit/{{ blame.commit }}/">{{ blame.commit }}</a></td>
+                <td class="commit"><a href="{{ path('commit', {repo: repo, commit: blame.commit}) }}">{{ blame.commit }}</a></td>
                 <td><pre>{{ blame.line }}</pre></td>
             </tr>
         {% endfor %}
@@ -31,7 +22,4 @@
     </div>
 
     <hr>
-
-    {% include 'footer.twig' %}
-</div>
 {% endblock %}
