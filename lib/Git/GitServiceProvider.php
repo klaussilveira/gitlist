@@ -19,4 +19,8 @@ class GitServiceProvider implements ServiceProviderInterface
             return new Client($app);
         };
     }
+
+    public function boot(Application $app)
+    {
+    }
 }

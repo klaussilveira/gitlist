@@ -406,6 +406,33 @@ class Repository
         return $data;
     }
 
+    /**
+     * Get the current HEAD.
+     *
+     * @return string the name of the HEAD branch.
+     */
+    public function getHead()
+    {
+        if (file_exists($this->getPath() . '/.git/HEAD')) {
+          $file = @file_get_contents($this->getPath() . '/.git/HEAD');
+        }
+        else if (file_exists($this->getPath() . '/HEAD')) {
+          $file = @file_get_contents($this->getPath() . '/HEAD');
+        }
+        else  {
+          return 'master';
+        }
+        foreach (explode("\n", $file) as $line) {
+            $m = array();
+            if (preg_match('#ref:\srefs/heads/(.+)#', $line, $m)) {
+                return $m[1];
+            }
+        }
+
+        // Default to something sane if in a detached HEAD state.
+        return 'master';
+    }
+
     public function getStatistics($branch)
     {
         // Calculate amount of files, extensions and file size
@@ -477,24 +504,27 @@ class Repository
      */
     public function getBlame($file)
     {
+        $blame = array();
         $logs = $this->getClient()->run($this, "blame -s $file");
         $logs = explode("\n", $logs);
 
+        $i = 0;
+        $previous_commit = '';
         foreach ($logs as $log) {
             if ($log == '') {
                 continue;
             }
 
-            $split = preg_split("/[a-zA-Z0-9^]{8}[\s]+[0-9]+\)/", $log);
-            preg_match_all("/([a-zA-Z0-9^]{8})[\s]+([0-9]+)\)/", $log, $match);
+            preg_match_all("/([a-zA-Z0-9^]{8})\s+.*?([0-9]+)\)(.+)/", $log, $match);
 
-            $commit = $match[1][0];
-
-            if (!isset($blame[$commit]['line'])) {
-                $blame[$commit]['line'] = '';
+            $current_commit = $match[1][0];
+            if ($current_commit != $previous_commit) {
+                ++$i;
+                $blame[$i] = array('line' => '', 'commit' => $current_commit);
             }
 
-            $blame[$commit]['line'] .= PHP_EOL . $split[1];
+            $blame[$i]['line'] .= PHP_EOL . $match[3][0];
+            $previous_commit = $current_commit;
         }
 
         return $blame;

@@ -1,67 +1,43 @@
 <?php
 
-$app->get('{repo}/', function($repo) use($app) {
+$app->get('{repo}/tree/{branch}/{tree}/', $treeController = function($repo, $branch = '', $tree = '') use($app) {
     $repository = $app['git']->getRepository($app['git.repos'] . $repo);
-    $tree = $repository->getTree('master');
-    $breadcrumbs = $app['utils']->getBreadcrumbs("$repo/");
+    if (!$branch) {
+        $branch = $repository->getHead();
+    }
+    $files = $repository->getTree($tree ? "$branch:'$tree'/" : $branch);
+    $breadcrumbs = $app['utils']->getBreadcrumbs($tree);
 
-    return $app['twig']->render('tree.twig', array(
-        'baseurl'        => $app['baseurl'],
-        'page'           => 'files',
-        'files'          => $tree->output(),
-        'repo'           => $repo,
-        'branch'         => 'master',
-        'path'           => '',
-        'parent'         => '',
-        'breadcrumbs'    => $breadcrumbs,
-        'branches'       => $repository->getBranches(),
-        'tags'           => $repository->getTags(),
-    ));
-})->assert('repo', '[\w-._]+');
-
-$app->get('{repo}/tree/{branch}/', function($repo, $branch) use($app) {
-    $repository = $app['git']->getRepository($app['git.repos'] . $repo);
-    $tree = $repository->getTree($branch);
-    $breadcrumbs = $app['utils']->getBreadcrumbs("$repo/");
-
-    return $app['twig']->render('tree.twig', array(
-        'baseurl'        => $app['baseurl'],
-        'page'           => 'files',
-        'files'          => $tree->output(),
-        'repo'           => $repo,
-        'branch'         => $branch,
-        'path'           => '',
-        'parent'         => '',
-        'breadcrumbs'    => $breadcrumbs,
-        'branches'       => $repository->getBranches(),
-        'tags'           => $repository->getTags(),
-    ));
-})->assert('repo', '[\w-._]+')
-  ->assert('branch', '[\w-._]+');
-
-$app->get('{repo}/tree/{branch}/{tree}/', function($repo, $branch, $tree) use($app) {
-    $repository = $app['git']->getRepository($app['git.repos'] . $repo);
-    $files = $repository->getTree("$branch:'$tree'/");
-    $breadcrumbs = $app['utils']->getBreadcrumbs("$repo/tree/$branch/$tree");
-
+    $parent = null;
     if (($slash = strrpos($tree, '/')) !== false) {
-        $parent = '/' . substr($tree, 0, $slash);
-    } else {
-        $parent = '/';
+        $parent = substr($tree, 0, $slash);
+    } elseif (!empty($tree)) {
+        $parent = '';
     }
 
     return $app['twig']->render('tree.twig', array(
-        'baseurl'        => $app['baseurl'],
-        'page'           => 'files',
         'files'          => $files->output(),
         'repo'           => $repo,
         'branch'         => $branch,
-        'path'           => "$tree/",
+        'path'           => $tree ? $tree.'/' : $tree,
         'parent'         => $parent,
         'breadcrumbs'    => $breadcrumbs,
         'branches'       => $repository->getBranches(),
         'tags'           => $repository->getTags(),
+        'readme'         => $app['utils']->getReadme($repo, $branch),
     ));
-})->assert('tree', '.+')
-  ->assert('repo', '[\w-._]+')
-  ->assert('branch', '[\w-._]+');
+})->assert('repo', '[\w-._]+')
+  ->assert('branch', '[\w-._]+')
+  ->assert('tree', '.+')
+  ->bind('tree');
+
+$app->get('{repo}/{branch}/', function($repo, $branch) use($app, $treeController) {
+    return $treeController($repo, $branch);
+})->assert('repo', '[\w-._]+')
+  ->assert('branch', '[\w-._]+')
+  ->bind('branch');
+
+$app->get('{repo}/', function($repo) use($app, $treeController) {
+    return $treeController($repo);
+})->assert('repo', '[\w-._]+')
+  ->bind('repository');

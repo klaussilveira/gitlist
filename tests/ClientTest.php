@@ -1,21 +1,9 @@
 <?php
 
-require_once __DIR__.'/../vendor/silex.phar';
+require 'vendor/autoload.php';
 
 use Git\Client;
 use Git\Repository;
-
-spl_autoload_register(function($class)
-{
-    if (0 === strpos($class, 'Git\\')) {
-        $file = __DIR__ . '/../lib/' . str_replace('\\', '/', $class) . '.php';
-
-        if (file_exists($file)) {
-            require_once $file;
-            return true;
-        }
-    }
-});
 
 function recursiveDelete($dir)
 {

@@ -24,21 +24,19 @@ class Utils
      */
     public function getBreadcrumbs($spec)
     {
+        if (!$spec) {
+            return array();
+        }
+
         $paths = explode('/', $spec);
-        $last = '';
 
-        foreach ($paths as $path) {
-            $dir['dir'] = $path;
-            $dir['path'] = "$last/$path";
-            $breadcrumbs[] = $dir;
-            $last .= '/' . $path;
+        foreach ($paths as $i => $path) {
+            $breadcrumbs[] = array(
+                'dir'  => $path,
+                'path' => implode('/', array_slice($paths, 0, $i + 1)),
+            );
         }
 
-        if (isset($paths[2])) {
-            $breadcrumbs[0]['path'] .= '/' . $paths[1] . '/' . $paths[2];
-        }
-        
-        unset($breadcrumbs[1], $breadcrumbs[2]);
         return $breadcrumbs;
     }
 
@@ -69,13 +67,13 @@ class Utils
             case 'cpp':
                 return 'clike';
             case 'cs':
-                return 'clike';
+                return 'csharp';
             case 'm':
                 return 'clike';
             case 'mm':
                 return 'clike';
             case 'java':
-                return 'clike';
+                return 'java';
             case 'clj':
                 return 'clojure';
             case 'coffee':
@@ -244,5 +242,17 @@ class Utils
                      'last' => $lastPage,
                      'total' => $totalCommits,
         );
+    }
+
+    public function getReadme($repo, $branch = 'master')
+    {
+        $repository = $this->app['git']->getRepository($this->app['git.repos'] . $repo);
+        $files = $repository->getTree($branch)->output();
+
+        foreach ($files as $fileInfo)
+            if (preg_match('/^readme*/i', $fileInfo['name'])) {
+                return array('filename' => $fileInfo['name'], 'content' => $repository->getBlob("$branch:'".$fileInfo['name']."'")->output());
+            }
+        return array();
     }
 }
