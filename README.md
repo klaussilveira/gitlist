@@ -78,9 +78,9 @@ If you have Composer in your path, things get easier. But you know the drill.
 ## Contributing
 If you are a developer, we need your help. GitList is a young project and we have lot's of stuff to do. Some developers are contributing with new features, others with bug fixes. But you can also dedicate yourself to refactoring the current codebase and improving what we already have. This is very important, we want GitList to be a state-of-the-art application, and we need your help for that.
 
-* Stay tuned to possible bugs, suboptimal code, duplicated code, overcomplicated expressions and unused code with [PHPMD](http://ci.gitlist.org:8080/job/GitList%20(master)/9/pmdResult/?) in our CI server
-* Try to fix any [violations](http://ci.gitlist.org:8080/job/GitList%20(master)/violations/) reported
-* Improve the [test coverage](http://ci.gitlist.org:8080/job/GitList%20(master)/9/cloverphp-report/) by creating unit and functional tests
+* Stay tuned to possible bugs, suboptimal code, duplicated code, overcomplicated expressions and unused code with [PHPMD](http://ci.gitlist.org:8080/job/GitList%20\(master\)/9/pmdResult/?) in our CI server
+* Try to fix any [violations](http://ci.gitlist.org:8080/job/GitList%20\(master\)/violations/) reported
+* Improve the [test coverage](http://ci.gitlist.org:8080/job/GitList%20\(master\)/9/cloverphp-report/) by creating unit and functional tests
 
 ## Further information
 If you want to know more about customizing GitList, check the [Customization](https://github.com/klaussilveira/gitlist/wiki/Customizing) page on the wiki. Also, if you're having problems with GitList, check the [Troubleshooting](https://github.com/klaussilveira/gitlist/wiki/Troubleshooting) page. Don't forget to report issues and suggest new features! :)
