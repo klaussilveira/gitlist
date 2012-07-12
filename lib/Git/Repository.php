@@ -529,6 +529,18 @@ class Repository
 
         return $blame;
     }
+    
+    /**
+     * Get the latest commit info for a particular file.
+     * 
+     * @param string $file File to get info for
+     * @param string $format Format to pass to git log
+     * @return string Commit information based on format
+     */
+    public function getLatestCommitInfo($file, $format="%h|%an|%cr|%s")
+    {
+        return $this->getClient()->run($this, "log -1 --format='$format' -- $file");
+    }
 
     /**
      * Get the current Repository path
