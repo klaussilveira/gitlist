@@ -67,7 +67,7 @@ class Utils
             case 'cpp':
                 return 'clike';
             case 'cs':
-                return 'csharp';
+                return 'text/x-csharp';
             case 'm':
                 return 'clike';
             case 'mm':
@@ -216,6 +216,8 @@ class Utils
                 return 'image';
             case 'bmp':
                 return 'image';
+            case 'csproj':
+                return 'xml';
         }
 
         if (!empty($this->app['filetypes'])) {
