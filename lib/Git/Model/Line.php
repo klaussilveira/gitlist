@@ -6,20 +6,31 @@ class Line
 {
     protected $line;
     protected $type;
+    protected $numOld;
+    protected $numNew;
 
-    public function __construct($data)
+    public function __construct($data, $numOld, $numNew)
     {
         if (!empty($data)) {
-            if ($data[0] == '@') {
-                $this->setType('chunk');
-            }
-
-            if ($data[0] == '-') {
-                $this->setType('old');
-            }
-
-            if ($data[0] == '+') {
-                $this->setType('new');
+            switch ($data[0]) {
+                case '@':
+                    $this->setType('chunk');
+                    $this->setNumNew('...');
+                    $this->setNumOld('...');
+                    break;
+                case '-':
+                    $this->setType('old');
+                    $this->setNumOld($numOld);
+                    $this->setNumNew('');
+                    break;
+                case '+':
+                    $this->setType('new');
+                    $this->setNumNew($numNew);
+                    $this->setNumOld('');
+                    break;
+                default:
+                    $this->setNumOld($numOld);
+                    $this->setNumNew($numNew);
             }
         }
 
@@ -44,5 +55,25 @@ class Line
     public function setType($type)
     {
         $this->type = $type;
+    }
+    
+    public function getNumOld()
+    {
+        return $this->numOld;
+    }
+
+    public function setNumOld($num)
+    {
+        $this->numOld = $num;
+    }
+    
+    public function getNumNew()
+    {
+        return $this->numNew;
+    }
+
+    public function setNumNew($num)
+    {
+        $this->numNew = $num;
     }
 }

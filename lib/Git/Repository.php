@@ -338,6 +338,8 @@ class Repository
         }
 
         // Read diff logs
+        $lineNumOld = 0;
+        $lineNumNew = 0;
         foreach ($logs as $log) {
             if ('diff' === substr($log, 0, 4)) {
                 if (isset($diff)) {
@@ -373,8 +375,26 @@ class Repository
                     $diff->setNew("    {$m[2]}");
                 }
             }
+            
+            switch ($log[0]) {
+                case "@":
+                    // Set the line numbers
+                    preg_match('/@@ -([0-9]+)/', $log, $matches);
+                    $lineNumOld = $matches[1] - 1;
+                    $lineNumNew = $matches[1] - 1;
+                    break;
+                case "-":
+                    $lineNumOld++;
+                    break;
+                case "+":
+                    $lineNumNew++;
+                    break;
+                default:
+                    $lineNumOld++;
+                    $lineNumNew++;
+            }
 
-            $diff->addLine($log);
+            $diff->addLine($log, $lineNumOld, $lineNumNew);
         }
 
         if (isset($diff)) {
