@@ -4,6 +4,9 @@
         "twig/twig": "1.8.*",
         "symfony/twig-bridge": "2.1.*"
     },
+    "require-dev": {
+        "symfony/filesystem": "2.1.*"
+    },
     "minimum-stability": "dev",
     "autoload": {
         "psr-0": {
