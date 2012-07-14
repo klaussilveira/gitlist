@@ -20,12 +20,12 @@ require 'vendor/autoload.php';
 $app = new Application\Application(__DIR__, $config);
 
 // Load controllers
-include 'controllers/archiveController.php';
-include 'controllers/indexController.php';
-include 'controllers/treeController.php';
-include 'controllers/blobController.php';
-include 'controllers/commitController.php';
-include 'controllers/statsController.php';
-include 'controllers/rssController.php';
+$app->mount('', new Application\Controller\ArchiveController());
+$app->mount('', new Application\Controller\IndexController());
+$app->mount('', new Application\Controller\TreeController());
+$app->mount('', new Application\Controller\BlobController());
+$app->mount('', new Application\Controller\CommitController());
+$app->mount('', new Application\Controller\StatsController());
+$app->mount('', new Application\Controller\RssController());
 
 $app->run();
