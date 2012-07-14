@@ -22,6 +22,8 @@ $app['filetypes'] = $config['filetypes'];
 $app['hidden'] = isset($config['git']['hidden']) ? $config['git']['hidden'] : array();
 $config['git']['repositories'] = rtrim($config['git']['repositories'], DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
 
+$app['cache.archives'] = __DIR__.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR.'archives';
+
 // Register Git and Twig service providersclass_path
 $app->register(new Silex\Provider\TwigServiceProvider(), array(
     'twig.path'       => __DIR__.'/views',
@@ -42,6 +44,7 @@ $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
 }));
 
 // Load controllers
+include 'controllers/archiveController.php';
 include 'controllers/indexController.php';
 include 'controllers/treeController.php';
 include 'controllers/blobController.php';
