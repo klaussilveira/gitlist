@@ -174,13 +174,14 @@ class Utils
         $repository = $this->app['git']->getRepository($this->app['git.repos'] . $repo);
         $files = $repository->getTree($branch)->output();
 
-        foreach ($files as $fileInfo)
-            if (preg_match('/^readme*/i', $fileInfo['name'])) {
+        foreach ($files as $file) {
+            if (preg_match('/^readme*/i', $file['name'])) {
                 return array(
-                    'filename' => $fileInfo['name'],
-                    'content'  => $repository->getBlob("$branch:'".$fileInfo['name']."'")->output()
+                    'filename' => $file['name'],
+                    'content'  => $repository->getBlob("$branch:'{$file['name']}'")->output()
                 );
             }
+        }
 
         return array();
     }
