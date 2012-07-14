@@ -10,7 +10,7 @@
         <mkdir dir="${basedir}/build/logs"/>
         <mkdir dir="${basedir}/build/pdepend"/>
         <exec executable="composer" failonerror="true">
-            <arg value="install" />
+            <arg value="install --dev" />
         </exec>
     </target>
 
