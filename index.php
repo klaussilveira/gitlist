@@ -18,6 +18,7 @@ if (empty($config['git']['repositories']) || !is_dir($config['git']['repositorie
 require 'vendor/autoload.php';
 
 $app = new Silex\Application();
+$app['debug'] = isset($config['app']['debug']) && $config['app']['debug'];
 $app['filetypes'] = $config['filetypes'];
 $app['hidden'] = isset($config['git']['hidden']) ? $config['git']['hidden'] : array();
 $config['git']['repositories'] = rtrim($config['git']['repositories'], DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;

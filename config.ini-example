@@ -6,6 +6,7 @@ repositories = '/var/www/projects/' ; Path to your repositories
 ; hidden[] = '/var/www/projects/BetaTest'
 
 [app]
+debug = false
 
 ; If you need to specify custom filetypes for certain extensions, do this here
 [filetypes]
