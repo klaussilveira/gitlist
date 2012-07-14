@@ -73,10 +73,10 @@ class ClientTest extends PHPUnit_Framework_TestCase
     {
         $repository = $this->client->getRepository($this->repoPath);
         $repository->setConfig('user.name', 'Luke Skywalker');
-        $repository->setConfig('user.email', 'luke@republic.com');
+        $repository->setConfig('user.email', 'luke@rebel.org');
 
         $this->assertEquals($repository->getConfig('user.name'), 'Luke Skywalker');
-        $this->assertEquals($repository->getConfig('user.email'), 'luke@republic.com');
+        $this->assertEquals($repository->getConfig('user.email'), 'luke@rebel.org');
     }
     
     /**
@@ -185,9 +185,9 @@ class ClientTest extends PHPUnit_Framework_TestCase
             $this->assertTrue($commit->getMessage() === 'The truth unveiled');
             $this->assertInstanceOf('Git\Commit\Author', $commit->getAuthor());
             $this->assertEquals($commit->getAuthor()->getName(), 'Luke Skywalker');
-            $this->assertEquals($commit->getAuthor()->getEmail(), 'luke@republic.com');
+            $this->assertEquals($commit->getAuthor()->getEmail(), 'luke@rebel.org');
             $this->assertEquals($commit->getCommiter()->getName(), 'Luke Skywalker');
-            $this->assertEquals($commit->getCommiter()->getEmail(), 'luke@republic.com');
+            $this->assertEquals($commit->getCommiter()->getEmail(), 'luke@rebel.org');
             $this->assertEquals($commit->getParentHash(), '');
             $this->assertInstanceOf('DateTime', $commit->getDate());
             $this->assertInstanceOf('DateTime', $commit->getCommiterDate());
@@ -210,7 +210,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
             $this->assertTrue($commit->getMessage() === 'The truth unveiled');
             $this->assertInstanceOf('Git\Commit\Author', $commit->getAuthor());
             $this->assertEquals($commit->getAuthor()->getName(), 'Luke Skywalker');
-            $this->assertEquals($commit->getAuthor()->getEmail(), 'luke@republic.com');
+            $this->assertEquals($commit->getAuthor()->getEmail(), 'luke@rebel.org');
         }
     }
 
@@ -335,7 +335,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
         $stats = $repository->getAuthorStatistics();
 
         $this->assertEquals('Luke Skywalker', $stats[0]['name']);
-        $this->assertEquals('luke@republic.com', $stats[0]['email']);
+        $this->assertEquals('luke@rebel.org', $stats[0]['email']);
         $this->assertEquals('2', $stats[0]['commits']);
 
         $repository->setConfig('user.name', 'Princess Leia');
@@ -347,7 +347,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
         $stats = $repository->getAuthorStatistics();
 
         $this->assertEquals('Luke Skywalker', $stats[0]['name']);
-        $this->assertEquals('luke@republic.com', $stats[0]['email']);
+        $this->assertEquals('luke@rebel.org', $stats[0]['email']);
         $this->assertEquals('2', $stats[0]['commits']);
 
         $this->assertEquals('Princess Leia', $stats[1]['name']);
