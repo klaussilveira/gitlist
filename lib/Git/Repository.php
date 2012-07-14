@@ -376,22 +376,27 @@ class Repository
                 }
             }
             
-            switch ($log[0]) {
-                case "@":
-                    // Set the line numbers
-                    preg_match('/@@ -([0-9]+)/', $log, $matches);
-                    $lineNumOld = $matches[1] - 1;
-                    $lineNumNew = $matches[1] - 1;
-                    break;
-                case "-":
-                    $lineNumOld++;
-                    break;
-                case "+":
-                    $lineNumNew++;
-                    break;
-                default:
-                    $lineNumOld++;
-                    $lineNumNew++;
+            if (!empty($log)) {
+                switch ($log[0]) {
+                    case "@":
+                        // Set the line numbers
+                        preg_match('/@@ -([0-9]+)/', $log, $matches);
+                        $lineNumOld = $matches[1] - 1;
+                        $lineNumNew = $matches[1] - 1;
+                        break;
+                    case "-":
+                        $lineNumOld++;
+                        break;
+                    case "+":
+                        $lineNumNew++;
+                        break;
+                    default:
+                        $lineNumOld++;
+                        $lineNumNew++;
+                }
+            } else {
+                $lineNumOld++;
+                $lineNumNew++;
             }
 
             $diff->addLine($log, $lineNumOld, $lineNumNew);
