@@ -4,27 +4,7 @@ require 'vendor/autoload.php';
 
 use Git\Client;
 use Git\Repository;
-
-function recursiveDelete($dir)
-{
-    $files = scandir($dir);
-
-    foreach ($files as $file) {
-        if ($file == '.' || $file == '..') {
-            continue;
-        }
-        
-        $path = "$dir/$file";
-        
-        if (is_dir($path)) {
-            recursiveDelete($path);
-        } else {
-            unlink($path);
-        }
-    }
-
-    rmdir($dir);
-}
+use Symfony\Component\Filesystem\Filesystem;
 
 class ClientTest extends PHPUnit_Framework_TestCase
 {
@@ -43,7 +23,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
         }
 
         $app = new Silex\Application();
-        $app['git.client'] = '/usr/bin/git';
+        $app['git.client'] = getenv('GIT_CLIENT') ?: '/usr/bin/git';
         $app['hidden'] = array();
         $this->client = new Client($app);
     }
@@ -377,6 +357,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
     
     public static function tearDownAfterClass()
     {
-        recursiveDelete('/tmp/gitlist');
+        $fs = new Filesystem();
+        $fs->remove('/tmp/gitlist');
     }
 }
