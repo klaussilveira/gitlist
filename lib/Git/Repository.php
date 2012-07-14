@@ -388,7 +388,7 @@ class Repository
 
     public function getAuthorStatistics()
     {
-        $logs = $this->getClient()->run($this, 'log --pretty=format:\'%an||%ae\'');
+        $logs = $this->getClient()->run($this, 'log --pretty=format:\'%an||%ae\' ' . $this->getHead());
 
         if (empty($logs)) {
             throw new \RuntimeException('No statistics available');
