@@ -8,6 +8,11 @@
     {% embed 'breadcrumb.twig' with {breadcrumbs: breadcrumbs} %}
         {% block extra %}
             <a href="{{ path('rss', {repo: repo, branch: branch}) }}"><i class="rss pull-right"></i></a>
+            <div class="btn-group pull-right">
+                <a href="{{ path('archive', {repo: repo, branch: branch, format: 'zip'}) }}" class="btn btn-mini" title="Download ZIP archive">ZIP</a>
+                <a href="{{ path('archive', {repo: repo, branch: branch, format: 'tar'}) }}" class="btn btn-mini" title="Download TAR archive">TAR</a>
+                &nbsp;
+            </div>
         {% endblock %}
     {% endembed %}
 
