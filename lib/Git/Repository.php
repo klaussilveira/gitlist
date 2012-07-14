@@ -6,6 +6,7 @@ use Git\Commit\Commit;
 use Git\Model\Tree;
 use Git\Model\Blob;
 use Git\Model\Diff;
+use Symfony\Component\Filesystem\Filesystem;
 
 class Repository
 {
@@ -489,7 +490,7 @@ class Repository
      */
     public function getBranchTree($branch)
     {
-        $hash = $this->getClient()->run($this, "log --pretty='%T' --max-count=1 $refspec");
+        $hash = $this->getClient()->run($this, "log --pretty='%T' --max-count=1 $branch");
         $hash = trim($hash, "\r\n ");
 
         return $hash ? : false;
@@ -504,10 +505,8 @@ class Repository
      */
     public function createArchive($tree, $output, $format = 'zip')
     {
-        if (!file_exists($dir = dirname($output)) && !@mkdir($dir, 0777, true)) {
-            throw new \RuntimeException("Unable to create directory $dir");
-        }
-
+        $fs = new Filesystem;
+        $fs->mkdir(dirname($output));
         $this->getClient()->run($this, "archive --format=$format --output=$output $tree");
     }
 
