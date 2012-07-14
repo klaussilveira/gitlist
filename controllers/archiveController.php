@@ -28,7 +28,6 @@ $app->get('{repo}/{format}ball/{branch}', function($repo, $format, $branch) use 
         'Content-Description' => 'File Transfer',
         'Content-Disposition' => 'attachment; filename="'.$repo.'-'.substr($tree, 0, 6).'.'.$format.'"',
         'Content-Transfer-Encoding' => 'binary',
-        'Content-Length' => filesize($file),
     ));
 })->assert('format', '(zip|tar)')
   ->assert('repo', '[\w-._]+')
