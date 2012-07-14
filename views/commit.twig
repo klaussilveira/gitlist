@@ -30,14 +30,23 @@
             <div class="meta"><a name="{{ loop.index }}">{{ diff.getFile }}</div>
 
             <div class="btn-group pull-right">
+                <a href="{{ path('commits', {repo: repo, branch: commit.getHash, file: diff.getFile}) }}" class="btn btn-small"><i class="icon-list-alt"></i> History</a>
                 <a href="{{ path('blob', {repo: repo, branch: commit.getHash, file: diff.getFile}) }}" class="btn btn-small"><i class="icon-file"></i> View file @ {{ commit.getShortHash }}</a>
             </div>
         </div>
         
         <div class="source-diff">
+        <table>
         {% for line in diff.getLines %}
-            <pre{% if line.getType %} class="{{ line.getType }}"{% endif %}>{{ line.getLine }}</pre>
+            <tr>
+                <td class="lineNo">{{ line.getNumOld }}</td>
+                <td class="lineNo">{{ line.getNumNew }}</td>
+                <td style="width: 100%">
+                    <pre{% if line.getType %} class="{{ line.getType }}"{% endif %}>{{ line.getLine }}</pre>
+                </td>
+            </tr>
         {% endfor %}
+        </table>
         </div>
     </div>
     {% endfor %}
