@@ -2,7 +2,7 @@
 
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
-$app->get('{repo}/{format}ball/{branch}', function($repo, $format, $branch) use($app) {
+$app->get('{repo}/{format}ball/{branch}', function($repo, $format, $branch) use ($app) {
     $repository = $app['git']->getRepository($app['git.repos'] . $repo);
     $tree = $repository->getBranchTree($branch);
 
@@ -21,7 +21,7 @@ $app->get('{repo}/{format}ball/{branch}', function($repo, $format, $branch) use(
         $repository->createArchive($tree, $file, $format);
     }
 
-    return new StreamedResponse(function () use($file) {
+    return new StreamedResponse(function () use ($file) {
         readfile($file);
     }, 200, array(
         'Content-type' => ('zip' === $format) ? 'application/zip' : 'application/x-tar',

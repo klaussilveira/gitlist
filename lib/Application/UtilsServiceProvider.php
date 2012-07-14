@@ -9,7 +9,7 @@ class UtilsServiceProvider implements ServiceProviderInterface
 {
     /**
      * Register the Utils class on the Application ServiceProvider
-     * 
+     *
      * @param Application $app Silex Application
      */
     public function register(Application $app)

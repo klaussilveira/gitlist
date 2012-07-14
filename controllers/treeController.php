@@ -1,6 +1,6 @@
 <?php
 
-$app->get('{repo}/tree/{branch}/{tree}/', $treeController = function($repo, $branch = '', $tree = '') use($app) {
+$app->get('{repo}/tree/{branch}/{tree}/', $treeController = function($repo, $branch = '', $tree = '') use ($app) {
     $repository = $app['git']->getRepository($app['git.repos'] . $repo);
     if (!$branch) {
         $branch = $repository->getHead();
@@ -31,13 +31,13 @@ $app->get('{repo}/tree/{branch}/{tree}/', $treeController = function($repo, $bra
   ->assert('tree', '.+')
   ->bind('tree');
 
-$app->get('{repo}/{branch}/', function($repo, $branch) use($app, $treeController) {
+$app->get('{repo}/{branch}/', function($repo, $branch) use ($app, $treeController) {
     return $treeController($repo, $branch);
 })->assert('repo', '[\w-._]+')
   ->assert('branch', '[\w-._]+')
   ->bind('branch');
 
-$app->get('{repo}/', function($repo) use($app, $treeController) {
+$app->get('{repo}/', function($repo) use ($app, $treeController) {
     return $treeController($repo);
 })->assert('repo', '[\w-._]+')
   ->bind('repository');

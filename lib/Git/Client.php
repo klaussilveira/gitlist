@@ -19,7 +19,7 @@ class Client
     /**
      * Creates a new repository on the specified path
      *
-     * @param string $path Path where the new repository will be created
+     * @param  string     $path Path where the new repository will be created
      * @return Repository Instance of Repository
      */
     public function createRepository($path)
@@ -29,13 +29,14 @@ class Client
         }
 
         $repository = new Repository($path, $this);
+
         return $repository->create();
     }
 
     /**
      * Opens a repository at the specified path
      *
-     * @param string $path Path where the repository is located
+     * @param  string     $path Path where the repository is located
      * @return Repository Instance of Repository
      */
     public function getRepository($path)
@@ -54,8 +55,8 @@ class Client
     /**
      * Searches for valid repositories on the specified path
      *
-     * @param string $path Path where repositories will be searched
-     * @return array Found repositories, containing their name, path and description
+     * @param  string $path Path where repositories will be searched
+     * @return array  Found repositories, containing their name, path and description
      */
     public function getRepositories($path)
     {
@@ -122,9 +123,9 @@ class Client
      * run git commands. Once the command has been run, the method will
      * return the command line output.
      *
-     * @param Repository $repository Repository where the command will be run
-     * @param string $command Git command to be run
-     * @return string Returns the command output
+     * @param  Repository $repository Repository where the command will be run
+     * @param  string     $command    Git command to be run
+     * @return string     Returns the command output
      */
     public function run(Repository $repository, $command)
     {
@@ -134,18 +135,19 @@ class Client
         if (!is_resource($process)) {
             throw new \RuntimeException('Unable to execute command: ' . $command);
         }
-        
+
         $stderr = stream_get_contents($pipes[2]);
         fclose($pipes[2]);
-        
+
         if (!empty($stderr)) {
             throw new \RuntimeException($stderr);
         }
-        
+
         $stdout = stream_get_contents($pipes[1]);
         fclose($pipes[1]);
 
         proc_close($process);
+
         return $stdout;
     }
 

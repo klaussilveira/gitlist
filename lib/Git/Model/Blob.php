@@ -13,7 +13,8 @@ class Blob extends ScopeAware
     protected $name;
     protected $size;
 
-    public function __construct($hash, Client $client, Repository $repository) {
+    public function __construct($hash, Client $client, Repository $repository)
+    {
         $this->setClient($client);
         $this->setRepository($repository);
         $this->setHash($hash);
@@ -22,6 +23,7 @@ class Blob extends ScopeAware
     public function output()
     {
         $data = $this->getClient()->run($this->getRepository(), 'show ' . $this->getHash());
+
         return $data;
     }
 

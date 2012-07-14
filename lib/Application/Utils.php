@@ -101,8 +101,8 @@ class Utils
     /**
      * Builds a breadcrumb array based on a path spec
      *
-     * @param string $spec Path spec
-     * @return array Array with parts of the breadcrumb
+     * @param  string $spec Path spec
+     * @return array  Array with parts of the breadcrumb
      */
     public function getBreadcrumbs($spec)
     {
@@ -182,6 +182,7 @@ class Utils
                     'content'  => $repository->getBlob("$branch:'".$fileInfo['name']."'")->output()
                 );
             }
+
         return array();
     }
 }

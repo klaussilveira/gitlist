@@ -1,6 +1,6 @@
 <?php
 
-$app->get('{repo}/{branch}/rss/', function($repo, $branch) use($app) {
+$app->get('{repo}/{branch}/rss/', function($repo, $branch) use ($app) {
     $repository = $app['git']->getRepository($app['git.repos'] . $repo);
     $commits = $repository->getCommits($branch);
 

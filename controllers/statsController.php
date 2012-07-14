@@ -1,6 +1,6 @@
 <?php
 
-$app->get('{repo}/stats/{branch}', function($repo, $branch) use($app) {
+$app->get('{repo}/stats/{branch}', function($repo, $branch) use ($app) {
     $repository = $app['git']->getRepository($app['git.repos'] . $repo);
     $stats = $repository->getStatistics($branch);
     $authors = $repository->getAuthorStatistics();

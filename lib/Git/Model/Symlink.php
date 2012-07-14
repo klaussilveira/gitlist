@@ -2,10 +2,6 @@
 
 namespace Git\Model;
 
-use Git\Client;
-use Git\Repository;
-use Git\ScopeAware;
-
 class Symlink
 {
     protected $mode;
