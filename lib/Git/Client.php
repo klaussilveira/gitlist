@@ -85,28 +85,30 @@ class Client
                 continue;
             }
 
-            $isBare = file_exists($file->getPathname() . '/HEAD');
-            $isRepository = file_exists($file->getPathname() . '/.git/HEAD');
+            if ($file->isDir()) {
+                $isBare = file_exists($file->getPathname() . '/HEAD');
+                $isRepository = file_exists($file->getPathname() . '/.git/HEAD');
 
-            if ($file->isDir() && $isRepository || $isBare) {
-                if (in_array($file->getPathname(), $this->app['hidden'])) {
+                if ($isRepository || $isBare) {
+                    if (in_array($file->getPathname(), $this->app['hidden'])) {
+                        continue;
+                    }
+
+                    if ($isBare) {
+                        $description = $file->getPathname() . '/description';
+                    } else {
+                        $description = $file->getPathname() . '/.git/description';
+                    }
+
+                    if (file_exists($description)) {
+                        $description = file_get_contents($description);
+                    } else {
+                        $description = 'There is no repository description file. Please, create one to remove this message.';
+                    }
+
+                    $repositories[] = array('name' => $file->getFilename(), 'path' => $file->getPathname(), 'description' => $description);
                     continue;
                 }
-
-                if ($isBare) {
-                    $description = $file->getPathname() . '/description';
-                } else {
-                    $description = $file->getPathname() . '/.git/description';
-                }
-
-                if (file_exists($description)) {
-                    $description = file_get_contents($description);
-                } else {
-                    $description = 'There is no repository description file. Please, create one to remove this message.';
-                }
-
-                $repositories[] = array('name' => $file->getFilename(), 'path' => $file->getPathname(), 'description' => $description);
-                continue;
             }
         }
 
