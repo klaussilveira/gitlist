@@ -1,5 +1,5 @@
 {
-    "hash": "dc3d686dcf8316d609533312d943dba3",
+    "hash": "b427463ed7f2ba35a378678440029596",
     "packages": [
         {
             "package": "pimple/pimple",
@@ -38,6 +38,18 @@
             "commit-date": "1342207366"
         },
         {
+            "package": "symfony/filesystem",
+            "version": "dev-master",
+            "alias-pretty-version": "2.1.x-dev",
+            "alias-version": "2.1.9999999.9999999-dev"
+        },
+        {
+            "package": "symfony/filesystem",
+            "version": "dev-master",
+            "source-reference": "7d1b311f8c37136bd99510c069878d72ecff1897",
+            "commit-date": "1342207366"
+        },
+        {
             "package": "symfony/http-foundation",
             "version": "dev-master",
             "alias-pretty-version": "2.1.x-dev",
@@ -58,8 +70,8 @@
         {
             "package": "symfony/http-kernel",
             "version": "dev-master",
-            "source-reference": "7f671472f009231f9c1f5ec9b81fc6fbfcd9a955",
-            "commit-date": "1342207366"
+            "source-reference": "efedca5d30added6a21fc6ae8356617ad1c80de7",
+            "commit-date": "1342271095"
         },
         {
             "package": "symfony/routing",
@@ -82,8 +94,8 @@
         {
             "package": "symfony/twig-bridge",
             "version": "dev-master",
-            "source-reference": "b86963b52d5d305ab2a64973a10aca6642659ecb",
-            "commit-date": "1342207366"
+            "source-reference": "944be0979f02e929b61d0a6633dd51bef0f5c618",
+            "commit-date": "1342260629"
         },
         {
             "package": "twig/twig",
