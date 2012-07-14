@@ -129,8 +129,7 @@ class Utils
      * GitList, to properly highlight the blob syntax (if it's a source-code)
      *
      * @param string $file File name
-     *
-     * @return null|string File type
+     * @return mixed File type
      */
     public function getFileType($file)
     {
