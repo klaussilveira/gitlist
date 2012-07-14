@@ -7,7 +7,7 @@ $app->get('{repo}/{format}ball/{branch}', function($repo, $format, $branch) use 
     $tree = $repository->getBranchTree($branch);
 
     if (false === $tree) {
-        return $app->abort(404, 'Invalid commit or tree reference: '. $branch);
+        return $app->abort(404, 'Invalid commit or tree reference: ' . $branch);
     }
 
     $file = $app['cache.archives'] . DIRECTORY_SEPARATOR
