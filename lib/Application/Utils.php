@@ -148,6 +148,8 @@ class Utils
                 return $this->app['filetypes'][$fileType];
             }
         }
+
+        return 'text';
     }
 
     public function getPager($pageNumber, $totalCommits)
