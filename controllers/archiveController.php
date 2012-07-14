@@ -33,5 +33,4 @@ $app->get('{repo}/{format}ball/{branch}', function($repo, $format, $branch) use 
 })->assert('format', '(zip|tar)')
   ->assert('repo', '[\w-._]+')
   ->assert('branch', '[\w-._]+')
-  ->value('format', 'zip')
   ->bind('archive');
