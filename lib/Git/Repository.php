@@ -473,6 +473,37 @@ class Repository
     }
 
     /**
+     * Extract the tree hash for a given branch or tree reference
+     *
+     * @param string $branch
+     * @return string
+     */
+    public function getBranchTree($branch)
+    {
+        $hash = $this->getClient()->run($this, "log --pretty='%T' --max-count=1 $refspec");
+
+        $hash = trim($hash, "\r\n ");
+
+        return $hash ? : false;
+    }
+
+    /**
+     * Create a TAR or ZIP archive of a git tree
+     *
+     * @param string $tree   Tree-ish reference
+     * @param string $output Output File name
+     * @param string $format Archive format
+     */
+    public function createArchive($tree, $output, $format = 'zip')
+    {
+        if (!file_exists($dir = dirname($output)) && !@mkdir($dir, 0777, true)) {
+            throw new \RuntimeException("Unable to create directory $dir");
+        }
+
+        $this->getClient()->run($this, "archive --format=$format --output=$output $tree");
+    }
+
+    /**
      * Get the Tree for the provided folder
      * 
      * @param string $tree Folder that will be parsed
