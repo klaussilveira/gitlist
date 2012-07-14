@@ -2,8 +2,6 @@
 
 namespace Application;
 
-use Silex\Application;
-
 /**
  * General helper class, mostly used for string parsing inside the application controllers
  */
