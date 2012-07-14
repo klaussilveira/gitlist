@@ -388,7 +388,7 @@ class Repository
 
     public function getAuthorStatistics()
     {
-        $logs = $this->getClient()->run($this, 'log --pretty=format:\'%an||%ae\'');
+        $logs = $this->getClient()->run($this, 'log --pretty=format:\'%an||%ae\' ' . $this->getHead());
 
         if (empty($logs)) {
             throw new \RuntimeException('No statistics available');
@@ -422,14 +422,21 @@ class Repository
         else  {
           return 'master';
         }
+        // Find first existing branch
         foreach (explode("\n", $file) as $line) {
             $m = array();
             if (preg_match('#ref:\srefs/heads/(.+)#', $line, $m)) {
-                return $m[1];
+                if ($this->hasBranch($m[1])) {
+                  return $m[1];
+                }
             }
         }
 
         // Default to something sane if in a detached HEAD state.
+        $branches = $this->getBranches();
+        if (!empty($branches)) {
+          return current($branches);
+        }
         return 'master';
     }
 
