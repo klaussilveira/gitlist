@@ -7,10 +7,10 @@
 
         {% for commit in commits %}
         <item>
-            <title>{{ commit.getMessage }}</title>
-            <description>{{ commit.getAuthor.getName }} authored {{ commit.getShortHash }} in {{ commit.getDate | date('d/m/Y \\a\\t H:i:s') }}</description>
-            <link>{{ path('commit', {repo: repo, commit: commit.getShortHash}) }}</link>
-            <pubDate>{{ commit.getDate | date('r') }}</pubDate>
+            <title>{{ commit.message }}</title>
+            <description>{{ commit.author.name }} authored {{ commit.shortHash }} in {{ commit.date | date('d/m/Y \\a\\t H:i:s') }}</description>
+            <link>{{ path('commit', {repo: repo, commit: commit.shortHash}) }}</link>
+            <pubDate>{{ commit.date | date('r') }}</pubDate>
         </item>
         {% endfor %}
     </channel>
