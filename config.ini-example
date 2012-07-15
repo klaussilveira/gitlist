@@ -6,7 +6,7 @@ repositories = '/var/www/projects/' ; Path to your repositories
 ; hidden[] = '/var/www/projects/BetaTest'
 
 [app]
-baseurl = 'http://localhost/git' ; Base URL of the application
+debug = false
 
 ; If you need to specify custom filetypes for certain extensions, do this here
 [filetypes]

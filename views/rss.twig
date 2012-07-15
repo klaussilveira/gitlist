@@ -2,14 +2,14 @@
 <rss version="2.0">
     <channel>
         <title>Latest commits in {{ repo }}:{{ branch }}</title>
-        <description>RSS provided by Gitlist</description>
-        <link>{{ baseurl }}/</link>
+        <description>RSS provided by GitList</description>
+        <link>{{ path('homepage') }}</link>
 
         {% for commit in commits %}
         <item>
             <title>{{ commit.getMessage }}</title>
             <description>{{ commit.getAuthor.getName }} authored {{ commit.getShortHash }} in {{ commit.getDate | date('d/m/Y \\a\\t H:i:s') }}</description>
-            <link>{{ baseurl }}/{{ repo }}/commit/{{ commit.getShortHash }}</link>
+            <link>{{ path('commit', {repo: repo, commit: commit.getShortHash}) }}</link>
             <pubDate>{{ commit.getDate | date('r') }}</pubDate>
         </item>
         {% endfor %}

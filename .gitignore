@@ -1,4 +1,6 @@
 cache/
+vendor/
+build/
 *.diff
 *.err
 *.orig
@@ -27,3 +29,4 @@ nbproject
 .idea
 node_modules
 config.ini
+cache.properties

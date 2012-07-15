@@ -1,28 +1,21 @@
-{% extends 'layout.twig' %}
-{% block title %}Gitlist{% endblock %}
+{% extends 'layout_page.twig' %}
 
-{% block body %}
-{% include 'navigation.twig' %}
+{% set page = 'files' %}
 
-<div class="container">
-    <div class="row">
-        <div class="span12">
-            {% include 'branch_menu.twig' %}
-            {% include 'menu.twig' %}
-        </div>
-    </div>
+{% block title %}GitList{% endblock %}
 
-    <ul class="breadcrumb">
-        {% for breadcrumb in breadcrumbs %}
-        <li{% if loop.last %} class="active"{% endif %}>{% if not loop.last %}<a href="{{ baseurl }}{{ breadcrumb.path }}">{{ breadcrumb.dir }}</a>{% endif %}{% if loop.last %}{{ breadcrumb.dir }}{% endif %}
-        {%- if not loop.last -%}
-            <span class="divider">/</span></li>
-        {%- else -%}
-            </li>
-        {%- endif -%}
-        {% endfor %}
-        <a href="{{ baseurl }}/{{ repo }}/{{ branch }}/rss/"><i class="rss pull-right"></i></a>
-    </ul>
+{% block content %}
+    {% embed 'breadcrumb.twig' with {breadcrumbs: breadcrumbs} %}
+        {% block extra %}
+            <div class="pull-right">
+                <div class="btn-group download-buttons">
+                    <a href="{{ path('archive', {repo: repo, branch: branch, format: 'zip'}) }}" class="btn btn-mini" title="Download '{{ branch }}' as a ZIP archive">ZIP</a>
+                    <a href="{{ path('archive', {repo: repo, branch: branch, format: 'tar'}) }}" class="btn btn-mini" title="Download '{{ branch }}' as a TAR archive">TAR</a>
+                </div>
+                <a href="{{ path('rss', {repo: repo, branch: branch}) }}" class="rss-icon"><i class="rss"></i></a>
+            </div>
+        {% endblock %}
+    {% endembed %}
 
     <table class="tree">
         <thead>
@@ -33,25 +26,40 @@
             </tr>
         </thead>
         <tbody>
-            {% if parent is not empty %}
+            {% if parent is not null %}
             <tr>
-                <td><i class="icon-spaced"></i> <a href="{{ baseurl }}/{{ repo }}/tree/{{ branch }}{{ parent }}">..</a></td>
+                <td><i class="icon-spaced"></i>
+                    {% if not parent %}
+                        <a href="{{ path('branch', {repo: repo, branch: branch}) }}">..</a>
+                    {% else %}
+                        <a href="{{ path('tree', {repo: repo, branch: branch, tree: parent}) }}">..</a>
+                    {% endif %}
+                </td>
                 <td></td>
                 <td></td>
             </tr>
             {% endif %}
             {% for file in files %}
             <tr>
-                <td><i class="{{ file.type == "folder" or file.type == "symlink" ? "icon-folder-open" : "icon-file" }} icon-spaced"></i> <a href="{{ baseurl }}/{{ repo }}/{{ file.type == "folder" or file.type == "symlink" ? "tree" : "blob" }}/{{ branch }}/{{ path }}{{ file.type == "symlink" ? file.path : file.name }}">{{ file.name }}</a></td>
+                <td><i class="{{ file.type == "folder" or file.type == "symlink" ? "icon-folder-open" : "icon-file" }} icon-spaced"></i> <a href="
+                    {%- if file.type == "folder" or file.type == "symlink" %}
+                        {{ path('tree', {repo: repo, branch: branch, tree: path ~ (file.type == "symlink" ? file.path : file.name)}) }}
+                    {% else %}
+                        {{ path('blob', {repo: repo, branch: branch, file: path ~ (file.type == "symlink" ? file.path : file.name)}) }}
+                    {% endif -%}
+                ">{{ file.name }}</a></td>
                 <td>{{ file.mode }}</td>
                 <td>{% if file.size %}{{ (file.size / 1024) | number_format }} kb{% endif %}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-
-    <hr>
-
-    {% include 'footer.twig' %}
-</div>
+    {% if readme is not empty %}
+        <div class="readme-view">
+            <div class="readme-header">
+                <div class="meta">{{ readme.filename }}</div>
+            </div>
+            <div id="readme-content">{{ readme.content }}</div>
+        </div>
+    {% endif %}
 {% endblock %}
