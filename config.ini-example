@@ -12,3 +12,6 @@ debug = false
 [filetypes]
 ; extension = type
 ; dist = xml
+
+[authorization]
+; file = '/home/mablo/Projects/gitlist/.htpasswd'

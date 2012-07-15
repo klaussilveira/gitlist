@@ -9,6 +9,9 @@
             <a class="brand" href="{{ path('homepage') }}">GitList</a>
             <div class="nav-collapse">
                 <ul class="nav pull-right">
+                    {% if app.authorization.isEnabled %}
+                        <li><a href="{{ path('homepage') }}logout">Logout</a></li>
+                    {% endif %}
                     <li><a href="http://gitlist.org/">About</a></li>
                     <li><a href="https://github.com/klaussilveira/gitlist/issues/new">Report bug</a></li>
                     <li><a href="https://github.com/klaussilveira/gitlist/wiki">Help</a></li>
