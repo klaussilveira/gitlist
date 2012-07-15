@@ -23,9 +23,9 @@ class ClientTest extends PHPUnit_Framework_TestCase
         }
 
         $app = new Silex\Application();
-        $app['git.client'] = getenv('GIT_CLIENT') ?: '/usr/bin/git';
-        $app['hidden'] = array();
-        $this->client = new Client($app);
+        $options['path'] = getenv('GIT_CLIENT') ?: '/usr/bin/git';
+        $options['hidden'] = array();
+        $this->client = new Client($options);
     }
 
     /**
