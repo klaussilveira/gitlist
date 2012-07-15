@@ -15,7 +15,6 @@ $config->set('git', 'repositories', rtrim($config->get('git', 'repositories'), D
 $app = new Silex\Application();
 $app['debug'] = $config->get('app', 'debug');
 $app['filetypes'] = $config->getSection('filetypes');
-$app['hidden'] = $config->get('git', 'hidden') ? $config->get('git', 'hidden') : array();
 $app['cache.archives'] = __DIR__ . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'archives';
 
 // Register services
@@ -26,6 +25,7 @@ $app->register(new Silex\Provider\TwigServiceProvider(), array(
 $app->register(new GitList\Provider\GitServiceProvider(), array(
     'git.client'      => $config->get('git', 'client'),
     'git.repos'       => $config->get('git', 'repositories'),
+    'git.hidden'      => $config->get('git', 'hidden') ? $config->get('git', 'hidden') : array(),
 ));
 $app->register(new GitList\Provider\ViewUtilServiceProvider());
 $app->register(new GitList\Provider\RepositoryUtilServiceProvider());

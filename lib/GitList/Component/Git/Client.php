@@ -6,14 +6,13 @@ use Silex\Application;
 
 class Client
 {
-    protected $app;
     protected $path;
+    protected $hidden;
 
-    public function __construct(Application $app)
+    public function __construct($options = null)
     {
-        $this->app = $app;
-        $path = $this->app['git.client'] ? $this->app['git.client'] : '/usr/bin/git';
-        $this->setPath($path);
+        $this->setPath($options['path']);
+        $this->setHidden($options['hidden']);
     }
 
     /**
@@ -45,7 +44,7 @@ class Client
             throw new \RuntimeException('There is no GIT repository at ' . $path);
         }
 
-        if (in_array($path, $this->app['hidden'])) {
+        if (in_array($path, $this->getHidden())) {
             throw new \RuntimeException('You don\'t have access to this repository');
         }
 
@@ -91,7 +90,7 @@ class Client
                 $isRepository = file_exists($file->getPathname() . '/.git/HEAD');
 
                 if ($isRepository || $isBare) {
-                    if (in_array($file->getPathname(), $this->app['hidden'])) {
+                    if (in_array($file->getPathname(), $this->getHidden())) {
                         continue;
                     }
 
@@ -169,5 +168,25 @@ class Client
     protected function setPath($path)
     {
         $this->path = $path;
+    }
+
+    /**
+     * Get hidden repository list
+     *
+     * @return array List of repositories to hide
+     */
+    protected function getHidden()
+    {
+        return $this->hidden;
+    }
+
+    /**
+     * Set the hidden repository list
+     *
+     * @param array $hidden List of repositories to hide
+     */
+    protected function setHidden($hidden)
+    {
+        $this->hidden = $hidden;
     }
 }
