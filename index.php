@@ -30,6 +30,12 @@ $app->register(new GitList\Provider\GitServiceProvider(), array(
 $app->register(new GitList\Provider\ViewUtilServiceProvider());
 $app->register(new GitList\Provider\RepositoryUtilServiceProvider());
 $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
+$app->register(new Silex\Provider\SessionServiceProvider());
+$app->register(new GitList\Provider\AuthorizationServiceProvider(), array(
+    'authorization.file' => $config->get('authorization', 'file') ? $config->get('authorization', 'file') : false,
+));
+// Auth filter
+GitList\Component\Authorization\AuthorizationFilter::before($app);
 
 $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
     $twig->addFilter('md5', new Twig_Filter_Function('md5'));
@@ -41,6 +47,7 @@ $app->mount('', new GitList\Controller\MainController());
 $app->mount('', new GitList\Controller\BlobController());
 $app->mount('', new GitList\Controller\CommitController());
 $app->mount('', new GitList\Controller\TreeController());
+$app->mount('', new GitList\Controller\AuthorizationController());
 
 // Handle errors
 $app->error(function (\Exception $e, $code) use ($app) {
