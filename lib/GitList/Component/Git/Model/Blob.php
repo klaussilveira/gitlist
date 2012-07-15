@@ -1,10 +1,10 @@
 <?php
 
-namespace Git\Model;
+namespace GitList\Component\Git\Model;
 
-use Git\Client;
-use Git\Repository;
-use Git\ScopeAware;
+use GitList\Component\Git\Client;
+use GitList\Component\Git\Repository;
+use GitList\Component\Git\ScopeAware;
 
 class Blob extends ScopeAware
 {

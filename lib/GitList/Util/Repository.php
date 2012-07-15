@@ -1,13 +1,10 @@
 <?php
 
-namespace Application;
+namespace GitList\Util;
 
 use Silex\Application;
 
-/**
- * General helper class, mostly used for string parsing inside the application controllers
- */
-class Utils
+class Repository
 {
     protected $app;
 
@@ -99,30 +96,6 @@ class Utils
     }
 
     /**
-     * Builds a breadcrumb array based on a path spec
-     *
-     * @param  string $spec Path spec
-     * @return array  Array with parts of the breadcrumb
-     */
-    public function getBreadcrumbs($spec)
-    {
-        if (!$spec) {
-            return array();
-        }
-
-        $paths = explode('/', $spec);
-
-        foreach ($paths as $i => $path) {
-            $breadcrumbs[] = array(
-                'dir'  => $path,
-                'path' => implode('/', array_slice($paths, 0, $i + 1)),
-            );
-        }
-
-        return $breadcrumbs;
-    }
-
-    /**
      * Returns the file type based on filename by treating the extension
      *
      * The file type is used by CodeMirror, a Javascript-based IDE implemented in
@@ -150,23 +123,6 @@ class Utils
         }
 
         return 'text';
-    }
-
-    public function getPager($pageNumber, $totalCommits)
-    {
-        $pageNumber = (empty($pageNumber)) ? 0 : $pageNumber;
-        $lastPage = intval($totalCommits / 15);
-        // If total commits are integral multiple of 15, the lastPage will be commits/15 - 1.
-        $lastPage = ($lastPage * 15 == $totalCommits) ? $lastPage - 1 : $lastPage;
-        $nextPage = $pageNumber + 1;
-        $previousPage = $pageNumber - 1;
-
-        return array('current' => $pageNumber,
-                     'next' => $nextPage,
-                     'previous' => $previousPage,
-                     'last' => $lastPage,
-                     'total' => $totalCommits,
-        );
     }
 
     public function getReadme($repo, $branch = 'master')

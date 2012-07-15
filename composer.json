@@ -8,8 +8,7 @@
     "minimum-stability": "dev",
     "autoload": {
         "psr-0": {
-            "Application": "lib/",
-            "Git": "lib/"
+            "GitList": "lib/"
         }
     }
 }

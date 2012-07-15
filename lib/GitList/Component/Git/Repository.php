@@ -1,11 +1,11 @@
 <?php
 
-namespace Git;
+namespace GitList\Component\Git;
 
-use Git\Commit\Commit;
-use Git\Model\Tree;
-use Git\Model\Blob;
-use Git\Model\Diff;
+use GitList\Component\Git\Commit\Commit;
+use GitList\Component\Git\Model\Tree;
+use GitList\Component\Git\Model\Blob;
+use GitList\Component\Git\Model\Diff;
 use Symfony\Component\Filesystem\Filesystem;
 
 class Repository

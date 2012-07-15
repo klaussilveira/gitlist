@@ -1,8 +1,8 @@
 <?php
 
-namespace Git\Model;
+namespace GitList\Component\Git\Model;
 
-use Git\Model\Line;
+use GitList\Component\Git\Model\Line;
 
 class Diff
 {

@@ -2,8 +2,8 @@
 
 require 'vendor/autoload.php';
 
-use Git\Client;
-use Git\Repository;
+use GitList\Component\Git\Client;
+use GitList\Component\Git\Repository;
 use Symfony\Component\Filesystem\Filesystem;
 
 class ClientTest extends PHPUnit_Framework_TestCase
@@ -181,9 +181,9 @@ class ClientTest extends PHPUnit_Framework_TestCase
         $commits = $repository->getCommits();
         
         foreach ($commits as $commit) {
-            $this->assertInstanceOf('Git\Commit\Commit', $commit);
+            $this->assertInstanceOf('GitList\Component\Git\Commit\Commit', $commit);
             $this->assertTrue($commit->getMessage() === 'The truth unveiled');
-            $this->assertInstanceOf('Git\Commit\Author', $commit->getAuthor());
+            $this->assertInstanceOf('GitList\Component\Git\Commit\Author', $commit->getAuthor());
             $this->assertEquals($commit->getAuthor()->getName(), 'Luke Skywalker');
             $this->assertEquals($commit->getAuthor()->getEmail(), 'luke@rebel.org');
             $this->assertEquals($commit->getCommiter()->getName(), 'Luke Skywalker');
@@ -206,9 +206,9 @@ class ClientTest extends PHPUnit_Framework_TestCase
         $commits = $repository->getCommits('test_file4.txt');
         
         foreach ($commits as $commit) {
-            $this->assertInstanceOf('Git\Commit\Commit', $commit);
+            $this->assertInstanceOf('GitList\Component\Git\Commit\Commit', $commit);
             $this->assertTrue($commit->getMessage() === 'The truth unveiled');
-            $this->assertInstanceOf('Git\Commit\Author', $commit->getAuthor());
+            $this->assertInstanceOf('GitList\Component\Git\Commit\Author', $commit->getAuthor());
             $this->assertEquals($commit->getAuthor()->getName(), 'Luke Skywalker');
             $this->assertEquals($commit->getAuthor()->getEmail(), 'luke@rebel.org');
         }
@@ -220,7 +220,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
         $files = $repository->getTree('master');
         
         foreach ($files as $file) {
-            $this->assertInstanceOf('Git\Model\Blob', $file);
+            $this->assertInstanceOf('GitList\Component\Git\Model\Blob', $file);
             $this->assertRegExp('/test_file[0-9]*.txt/', $file->getName());
             $this->assertEquals($file->getSize(), '55');
             $this->assertEquals($file->getMode(), '100644');

@@ -1,6 +1,6 @@
 <?php
 
-namespace Git\Commit;
+namespace GitList\Component\Git\Commit;
 
 class Commit
 {

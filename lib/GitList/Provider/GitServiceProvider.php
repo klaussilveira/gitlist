@@ -1,7 +1,8 @@
 <?php
 
-namespace Git;
+namespace GitList\Provider;
 
+use GitList\Component\Git\Client;
 use Silex\Application;
 use Silex\ServiceProviderInterface;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Git\Model;
+namespace GitList\Component\Git\Model;
 
 class Line
 {
