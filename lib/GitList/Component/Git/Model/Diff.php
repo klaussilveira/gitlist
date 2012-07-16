@@ -12,9 +12,9 @@ class Diff
     protected $new;
     protected $file;
 
-    public function addLine($line)
+    public function addLine($line, $oldNo, $newNo)
     {
-        $this->lines[] = new Line($line);
+        $this->lines[] = new DiffLine($line, $oldNo, $newNo);
     }
 
     public function getLines()
