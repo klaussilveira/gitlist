@@ -32,7 +32,7 @@ $app->register(new GitList\Provider\RepositoryUtilServiceProvider());
 $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 $app->register(new Silex\Provider\SessionServiceProvider());
 $app->register(new GitList\Provider\AuthorizationServiceProvider(), array(
-    'authorization.file' => $config->get('authorization', 'file') ? $config->get('authorization', 'file') : false,
+    'authorization.file' => $config->get('authorization', 'file'),
 ));
 // Auth filter
 GitList\Component\Authorization\AuthorizationFilter::before($app);
