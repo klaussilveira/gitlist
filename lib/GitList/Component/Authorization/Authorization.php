@@ -49,12 +49,11 @@ class Authorization {
                     $users = array();
                     foreach(file($this->passwordFile, FILE_IGNORE_NEW_LINES) as $row) {
                         list($username, $password) = explode(':', $row);
-                        $users[$username] = $password;
-                    }
 
-                    if (isset($users[$rUsername]) && $users[$rUsername] == $rPassword) {
-                        $this->session->set('isAuthenticated', true);
-                        return true;
+                        if ($username === $rUsername && $password == $rPassword) {
+                            $this->session->set('isAuthenticated', true);
+                            return true;
+                        }
                     }
                 }
             }
