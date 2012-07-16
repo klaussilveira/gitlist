@@ -35,9 +35,17 @@
         </div>
 
         <div class="source-diff">
-        {% for line in diff.lines %}
-            <pre{% if line.type %} class="{{ line.type }}"{% endif %}>{{ line.line }}</pre>
+        <table>
+        {% for line in diff.getLines %}
+            <tr>
+                <td class="lineNo">{{ line.getNumOld }}</td>
+                <td class="lineNo">{{ line.getNumNew }}</td>
+                <td style="width: 100%">
+                    <pre{% if line.getType %} class="{{ line.getType }}"{% endif %}>{{ line.getLine }}</pre>
+                </td>
+            </tr>
         {% endfor %}
+        </table>
         </div>
     </div>
     {% endfor %}
