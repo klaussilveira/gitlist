@@ -2,7 +2,6 @@
 
 namespace GitList\Component\Authorization;
 
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class Authorization {
@@ -10,9 +9,14 @@ class Authorization {
     protected $session = null;
     protected $passwordFile = null;
 
-    public function __construct($session) {
+    public function __construct($session, $request = null) {
         $this->session = $session;
+        $this->request = $request;
         $this->session->start();
+    }
+
+    public function setRequest($request) {
+        $this->request = $request;
     }
 
     public function setPasswordFile($file) {
@@ -32,7 +36,7 @@ class Authorization {
             return false;
 
         if (!file_exists($this->passwordFile))
-            throw new \Exception('Password file don\'t exists.', 1);
+            throw new \RuntimeException('Password file don\'t exists.', 1);
 
         if ($this->session->get('logout', false)) {
             $this->session->remove('logout');
@@ -40,17 +44,14 @@ class Authorization {
             if ($this->session->get('isAuthenticated', false)) {
                 return true;
             } else {
-                $request = Request::createFromGlobals();
+                $rUsername = $this->request->server->get('PHP_AUTH_USER', null);
+                $rPassword = $this->request->server->get('PHP_AUTH_PW', null);
 
-                $rUsername = $request->server->get('PHP_AUTH_USER', null);
-                $rPassword = $request->server->get('PHP_AUTH_PW', null);
-
-                if ($request->server->get('PHP_AUTH_USER', null) !== null) {
-                    $users = array();
+                if ($this->request->server->get('PHP_AUTH_USER', null) !== null) {
                     foreach(file($this->passwordFile, FILE_IGNORE_NEW_LINES) as $row) {
                         list($username, $password) = explode(':', $row);
 
-                        if ($username === $rUsername && $password == $rPassword) {
+                        if ($username === $rUsername && $password === $rPassword) {
                             $this->session->set('isAuthenticated', true);
                             return true;
                         }
