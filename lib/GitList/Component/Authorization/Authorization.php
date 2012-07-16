@@ -38,7 +38,7 @@ class Authorization {
             $this->session->remove('logout');
         } else {
             if ($this->session->get('isAuthenticated', false)) {
-            return true;
+                return true;
             } else {
                 $request = Request::createFromGlobals();
 
@@ -47,7 +47,7 @@ class Authorization {
 
                 if ($request->server->get('PHP_AUTH_USER', null) !== null) {
                     $users = array();
-                    foreach(file($this->passwordFile) as $row) {
+                    foreach(file($this->passwordFile, FILE_IGNORE_NEW_LINES) as $row) {
                         list($username, $password) = explode(':', $row);
                         $users[$username] = $password;
                     }

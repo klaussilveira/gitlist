@@ -16,5 +16,11 @@ class AuthorizationServiceProvider implements ServiceProviderInterface {
         });
     }
 
-    public function boot(Application $app) {}
+    public function boot(Application $app) {
+        if ($app['authorization']->isEnabled()) {
+            $app->before(function () use ($app) {
+                return $app['authorization']->authenticate();
+            });
+        }
+    }
 }

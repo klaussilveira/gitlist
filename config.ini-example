@@ -14,4 +14,4 @@ debug = false
 ; dist = xml
 
 [authorization]
-; file = '/home/mablo/Projects/gitlist/.htpasswd'
+; file = '/var/www/.htpasswd'

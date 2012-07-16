@@ -34,8 +34,6 @@ $app->register(new Silex\Provider\SessionServiceProvider());
 $app->register(new GitList\Provider\AuthorizationServiceProvider(), array(
     'authorization.file' => $config->get('authorization', 'file'),
 ));
-// Auth filter
-GitList\Component\Authorization\AuthorizationFilter::before($app);
 
 $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
     $twig->addFilter('md5', new Twig_Filter_Function('md5'));
