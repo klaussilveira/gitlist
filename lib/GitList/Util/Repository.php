@@ -15,7 +15,7 @@ class Repository
         'cpp'      => 'clike',
         'm'        => 'clike',
         'mm'       => 'clike',
-        'cs'       => 'csharp',
+        'cs'       => 'text/x-csharp',
         'java'     => 'java',
         'clj'      => 'clojure',
         'coffee'   => 'coffeescript',
@@ -88,6 +88,7 @@ class Repository
         'gif'      => 'image',
         'jpeg'     => 'image',
         'bmp'      => 'image',
+        'csproj'   => 'xml',
     );
 
     public function __construct(Application $app)
