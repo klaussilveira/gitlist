@@ -21,10 +21,10 @@
         <thead>
             <tr>
                 <th width="30%">name</th>
-                <th width="12%">age</th>
-                <th width="48%">message</th>
+                <th width="17%">age</th>
+                <th>message</th>
                 <!--<th width="10%">mode</th>-->
-                <th width="10%">size</th>
+                <th width="7%">size</th>
             </tr>
         </thead>
         <tbody>
@@ -51,7 +51,7 @@
                     {% endif -%}
                 ">{{ file.name }}</a></td>
                 <td>{{ file.commit.age }}</td>
-                <td>{{ file.commit.message[0:60] }} [<a href="{{ path('commit', {repo: repo, branch: branch, commit: file.commit.hash}) }}">{{ file.commit.hash }}</a>]</td>
+                <td>{{ file.commit.message[0:60] }} [<a href="{{ path('commit', {repo: repo, commit: file.commit.hash}) }}">{{ file.commit.hash }}</a>]</td>
                 <!--<td>{{ file.mode }}</td>-->
                 <td>{% if file.size %}{{ (file.size / 1024) | number_format }} kb{% endif %}</td>
             </tr>
