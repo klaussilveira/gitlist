@@ -2,7 +2,7 @@
 
 namespace GitList\Component\Git\Model;
 
-use GitList\Component\Git\Model\Line;
+use GitList\Component\Git\Model\DiffLine;
 
 class Diff
 {
