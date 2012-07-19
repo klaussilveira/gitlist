@@ -17,29 +17,27 @@ class Application extends SilexApplication
     /**
      * Constructor initialize services.
      *
-     * @param Config $config
      * @param string $root   Base path of the application files (views, cache)
      */
-    public function __construct(Config $config, $root = null)
+    public function __construct($root)
     {
         parent::__construct();
 
         $app = $this;
         $root = realpath($root);
 
-        $this['debug'] = $config->get('app', 'debug');
-        $this['filetypes'] = $config->getSection('filetypes');
         $this['cache.archives'] = $root . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'archives';
 
         // Register services
         $this->register(new TwigServiceProvider(), array(
-            'twig.path'       => $root . DIRECTORY_SEPARATOR . 'views',
-            'twig.options'    => array('cache' => $root . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'views'),
+            'twig.path'    => $root . DIRECTORY_SEPARATOR . 'views',
+            'twig.options' => array('cache' => $root . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'views'),
         ));
+
         $this->register(new GitServiceProvider(), array(
-            'git.client'      => $config->get('git', 'client'),
-            'git.repos'       => $config->get('git', 'repositories'),
-            'git.hidden'      => $config->get('git', 'hidden') ? $config->get('git', 'hidden') : array(),
+            'git.client' => $app->share(function ($app) { return $this['git.client2']; }),
+            'git.repos'  => $app->share(function ($app) { return $this['git.repositories']; }),
+            'git.hidden' => $app->share(function ($app) { return $this['git.hidden2'] ?: array(); }),
         ));
         $this->register(new ViewUtilServiceProvider());
         $this->register(new RepositoryUtilServiceProvider());
