@@ -17,7 +17,7 @@ class Application extends SilexApplication
     /**
      * Constructor initialize services.
      *
-     * @param string $root   Base path of the application files (views, cache)
+     * @param string $root Base path of the application files (views, cache)
      */
     public function __construct($root)
     {

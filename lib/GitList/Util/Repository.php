@@ -102,8 +102,8 @@ class Repository
      * The file type is used by CodeMirror, a Javascript-based IDE implemented in
      * GitList, to properly highlight the blob syntax (if it's a source-code)
      *
-     * @param string $file File name
-     * @return mixed File type
+     * @param  string $file File name
+     * @return mixed  File type
      */
     public function getFileType($file)
     {

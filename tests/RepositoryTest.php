@@ -46,7 +46,7 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($repository->getConfig('user.name'), 'Luke Skywalker');
         $this->assertEquals($repository->getConfig('user.email'), 'luke@rebel.org');
     }
-    
+
     public function testIsAdding()
     {
         $repository = $this->client->getRepository(RepositoryTest::PATH . '/testrepo');
@@ -85,7 +85,7 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
         file_put_contents(RepositoryTest::PATH . '/testrepo/test_file6.txt', 'Your mother is so ugly, glCullFace always returns TRUE.');
 
         $repository->addAll();
-        
+
         $this->assertRegExp("/new file:   test_file4.txt/", $repository->getClient()->run($repository, 'status'));
         $this->assertRegExp("/new file:   test_file5.txt/", $repository->getClient()->run($repository, 'status'));
         $this->assertRegExp("/new file:   test_file6.txt/", $repository->getClient()->run($repository, 'status'));
@@ -108,7 +108,7 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
         $this->assertRegExp("/new file:   test_file8.txt/", $repository->getClient()->run($repository, 'status'));
         $this->assertRegExp("/new file:   test_file9.txt/", $repository->getClient()->run($repository, 'status'));
     }
-    
+
     /**
      * @depends testIsAddingArrayOfFiles
      */
@@ -144,7 +144,7 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
     {
         $repository = $this->client->getRepository(RepositoryTest::PATH . '/testrepo');
         $commits = $repository->getCommits();
-        
+
         foreach ($commits as $commit) {
             $this->assertInstanceOf('GitList\Component\Git\Commit\Commit', $commit);
             $this->assertTrue($commit->getMessage() === 'The truth unveiled');
@@ -169,7 +169,7 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
     {
         $repository = $this->client->getRepository(RepositoryTest::PATH . '/testrepo');
         $commits = $repository->getCommits('test_file4.txt');
-        
+
         foreach ($commits as $commit) {
             $this->assertInstanceOf('GitList\Component\Git\Commit\Commit', $commit);
             $this->assertTrue($commit->getMessage() === 'The truth unveiled');
@@ -183,7 +183,7 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
     {
         $repository = $this->client->getRepository(RepositoryTest::PATH . '/testrepo');
         $files = $repository->getTree('master');
-        
+
         foreach ($files as $file) {
             $this->assertInstanceOf('GitList\Component\Git\Model\Blob', $file);
             $this->assertRegExp('/test_file[0-9]*.txt/', $file->getName());
@@ -197,7 +197,7 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
     {
         $repository = $this->client->getRepository(RepositoryTest::PATH . '/testrepo');
         $files = $repository->getTree('master')->output();
-        
+
         foreach ($files as $file) {
             $this->assertEquals('blob', $file['type']);
             $this->assertRegExp('/test_file[0-9]*.txt/', $file['name']);
@@ -335,6 +335,7 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
                 $this->assertEquals($file->getPath(), RepositoryTest::PATH . '/testrepo/original_file.txt');
                 $this->assertEquals($file->getName(), 'link.txt');
                 $this->assertEquals($file->getMode(), '120000');
+
                 return;
             }
         }
@@ -357,6 +358,7 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
                 $this->assertEquals($file['path'], RepositoryTest::PATH . '/testrepo/original_file.txt');
                 $this->assertEquals($file['name'], 'link.txt');
                 $this->assertEquals($file['mode'], '120000');
+
                 return;
             }
         }
