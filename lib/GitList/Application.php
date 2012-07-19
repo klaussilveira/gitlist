@@ -34,11 +34,7 @@ class Application extends SilexApplication
             'twig.options' => array('cache' => $root . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'views'),
         ));
 
-        $this->register(new GitServiceProvider(), array(
-            'git.client' => $app->share(function ($app) { return $this['git.client2']; }),
-            'git.repos'  => $app->share(function ($app) { return $this['git.repositories']; }),
-            'git.hidden' => $app->share(function ($app) { return $this['git.hidden2'] ?: array(); }),
-        ));
+        $this->register(new GitServiceProvider());
         $this->register(new ViewUtilServiceProvider());
         $this->register(new RepositoryUtilServiceProvider());
         $this->register(new UrlGeneratorServiceProvider());

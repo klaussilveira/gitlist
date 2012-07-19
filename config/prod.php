@@ -4,9 +4,9 @@
 $app['debug'] = false;
 
 // Git :
-$app['git.client2']      = '/usr/bin/git'; // Your git executable path
-$app['git.repositories'] = '/home/gregoire/dev/' ; // Path to your repositories; Do not forgot the trainlings /
-$app['git.hidden2']      = array(
+$app['git.client'] = '/usr/bin/git'; // Your git executable path
+$app['git.repos']  = '/home/gregoire/dev/' ; // Path to your repositories; Do not forgot the trainlings /
+$app['git.hidden'] = array(
     '/var/www/dev/BetaTest',
 ); // You can hide repositories from GitList, just copy this for each repository you want to hide
 
