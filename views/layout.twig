@@ -3,18 +3,18 @@
     <head>
         <meta charset="UTF-8" />
         <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="stylesheet" type="text/css" href="{{ app.request.basepath }}/web/css/style.css">
+        <link rel="stylesheet" type="text/css" href="{{ app.request.basepath }}/css/style.css">
         <!--[if lt IE 9]>
-        <script src="{{ app.request.basepath }}/web/js/html5.js"></script>
+        <script src="{{ app.request.basepath }}/js/html5.js"></script>
         <![endif]-->
     </head>
 
     <body>
         {% block body %}{% endblock %}
-        <script src="{{ app.request.basepath }}/web/js/jquery.js"></script>
-        <script src="{{ app.request.basepath }}/web/js/bootstrap.js"></script>
-        <script src="{{ app.request.basepath }}/web/js/codemirror.js"></script>
-        <script src="{{ app.request.basepath }}/web/js/showdown.js"></script>
-        <script src="{{ app.request.basepath }}/web/js/main.js"></script>
+        <script src="{{ app.request.basepath }}/js/jquery.js"></script>
+        <script src="{{ app.request.basepath }}/js/bootstrap.js"></script>
+        <script src="{{ app.request.basepath }}/js/codemirror.js"></script>
+        <script src="{{ app.request.basepath }}/js/showdown.js"></script>
+        <script src="{{ app.request.basepath }}/js/main.js"></script>
     </body>
 </html>
