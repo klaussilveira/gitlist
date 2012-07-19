@@ -77,7 +77,7 @@
     <target name="package" description="Package the application for distribution">
         <tar destfile="${basedir}/build/gitlist.tar.gz"
             basedir="${basedir}/"
-            excludes="build/**, tests/**, cache/**, phpunit.xml.dist, cache.properties, .gitignore, .travis.yml, build.xml, composer.json, composer.lock"
+            excludes="build/**, tests/**, phpunit.xml.dist, cache.properties, .gitignore, .travis.yml, build.xml, composer.json, composer.lock"
             compression="gzip"
             longfile="gnu"
         />
