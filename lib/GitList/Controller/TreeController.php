@@ -29,8 +29,32 @@ class TreeController implements ControllerProviderInterface
                 $parent = '';
             }
 
+            $filesOutput = $files->output();
+            foreach ($filesOutput as &$file)
+            {
+                if ($tree)
+                {
+                    $path = $tree . '/' . $file['name'];
+                }
+                else
+                {
+                    $path = $file['name'];
+                }
+
+                $info = $repository->getLatestCommitInfo($path);
+
+                $parts = explode('|', $info);
+
+                $file['commit'] = array(
+                    'hash' => $parts[0],
+                    'author' => $parts[1],
+                    'age' => $parts[2],
+                    'message' => count($parts) >= 3 ? $parts[3] : ''
+                );
+            }
+
             return $app['twig']->render('tree.twig', array(
-                'files'          => $files->output(),
+                'files'          => $filesOutput,
                 'repo'           => $repo,
                 'branch'         => $branch,
                 'path'           => $tree ? $tree . '/' : $tree,
