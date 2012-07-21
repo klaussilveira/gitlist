@@ -34,12 +34,18 @@
   }
   .source-diff {
     background-color: #f5f5f5;
-    padding:12px;
     pre {
       margin: 0;
-      padding: 0;
+      padding: 0 0 0 6px;
       border: none;
       .border-radius(0);
+
+      &:hover {
+        background-color: #ffc;
+      }
+    }
+    table td {
+      padding: 0px;
     }
     .new {
       background-color:#DFD;
@@ -50,6 +56,14 @@
     .chunk {
       background-color:darken(#f5f5f5, 5%);
       color:@grayLight;
+    }
+    .lineNo {
+      color: #aaa;
+      background-color: #e8e8e8;
+      padding: 0 6px;
+      text-align: right;
+      border-right: 1px solid #ddd;
+      font-family: monospace;
     }
   }
   .image-blob {
