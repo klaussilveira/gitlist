@@ -39,8 +39,26 @@
         <table>
         {% for line in diff.getLines %}
             <tr>
-                <td class="lineNo">{{ line.getNumOld }}</td>
-                <td class="lineNo">{{ line.getNumNew }}</td>
+                <td class="lineNo">
+                    {% if line.getType != 'chunk' %}
+                        <a name="L{{ loop.index }}R{{ line.getNumOld }}"></a>
+                        <a href="#L{{ loop.index }}L{{ line.getNumOld }}">
+                    {% endif %}
+                    {{ line.getNumOld }}
+                    {% if line.getType != 'chunk' %}
+                        </a>
+                    {% endif %}
+                </td>
+                <td class="lineNo">
+                    {% if line.getType != 'chunk' %}
+                        <a name="L{{ loop.index }}L{{ line.getNumNew }}"></a>
+                        <a href="#L{{ loop.index }}L{{ line.getNumNew }}">
+                    {% endif %}
+                    {{ line.getNumNew }}
+                    {% if line.getType != 'chunk' %}
+                        </a>
+                    {% endif %}
+                </td>
                 <td style="width: 100%">
                     <pre{% if line.getType %} class="{{ line.getType }}"{% endif %}>{{ line.getLine }}</pre>
                 </td>
