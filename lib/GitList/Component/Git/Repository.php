@@ -320,9 +320,9 @@ class Repository
         return $commits;
     }
 
-    public function getCommit($commit)
+    public function getCommit($commitHash)
     {
-        $logs = $this->getClient()->run($this, 'show --pretty=format:\'{"hash": "%H", "short_hash": "%h", "tree": "%T", "parent": "%P", "author": "%an", "author_email": "%ae", "date": "%at", "commiter": "%cn", "commiter_email": "%ce", "commiter_date": "%ct", "message": "%f"}\' ' . $commit);
+        $logs = $this->getClient()->run($this, 'show --pretty=format:\'{"hash": "%H", "short_hash": "%h", "tree": "%T", "parent": "%P", "author": "%an", "author_email": "%ae", "date": "%at", "commiter": "%cn", "commiter_email": "%ce", "commiter_date": "%ct", "message": "%f"}\' ' . $commitHash);
 
         if (empty($logs)) {
             throw new \RuntimeException('No commit log available');
@@ -338,7 +338,7 @@ class Repository
         unset($logs[0]);
 
         if (empty($logs[1])) {
-            throw new \RuntimeException('No commit log available');
+            $logs = explode("\n", $this->getClient()->run($this, 'diff '.$commitHash.'~1..'.$commitHash));
         }
 
         // Read diff logs
