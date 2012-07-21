@@ -7,40 +7,7 @@
 {% block content %}
     {% include 'breadcrumb.twig' with {breadcrumbs: [{dir: 'Commit history', path:''}]} %}
 
-    {% for date, commit in commits %}
-    <table class="table table-striped table-bordered">
-        <thead>
-            <tr>
-                <th colspan="3">{{ date | date("F j, Y") }}</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in commit %}
-            <tr>
-                <td width="5%"><img src="http://gravatar.com/avatar/{{ item.author.email | md5 }}?s=40" /></td>
-                <td width="95%">
-                    <span class="pull-right"><a class="btn btn-small" href="{{ path('commit', {repo: repo, commit: item.shortHash}) }}"><i class="icon-list-alt"></i> View {{ item.shortHash }}</a></span>
-                    <h4>{{ item.message }}</h4>
-                    <span><a href="mailto:{{ item.author.email }}">{{ item.author.name }}</a> authored in {{ item.date | date('d/m/Y \\a\\t H:i:s') }}</span>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% endfor %}
-
-    <ul class="pager">
-        {% if pager.current != 0 %}
-        <li class="previous">
-            <a href="?page={{ pager.previous }}">&larr; Newer</a>
-        </li>
-        {% endif %}
-        {% if pager.current != pager.last %}
-        <li class="next">
-            <a href="?page={{ pager.next }}">Older &rarr;</a>
-        </li>
-        {% endif %}
-    </ul>
+    {% include 'commits_list.twig' %}
 
     <hr>
 {% endblock %}

@@ -25,7 +25,9 @@ class CommitController implements ControllerProviderInterface
                 $categorized[$date][] = $commit;
             }
 
-            return $app['twig']->render('commits.twig', array(
+            $template = $app['request']->isXmlHttpRequest() ? 'commits_list.twig' : 'commits.twig';
+
+            return $app['twig']->render($template, array(
                 'pager'          => $pager,
                 'repo'           => $repo,
                 'branch'         => $branch,
