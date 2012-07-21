@@ -30,6 +30,7 @@
             <div class="meta"><a name="{{ loop.index }}">{{ diff.file }}</div>
 
             <div class="btn-group pull-right">
+                <a href="{{ path('commits', {repo: repo, branch: commit.hash, file: diff.file}) }}" class="btn btn-small"><i class="icon-list-alt"></i> History</a>
                 <a href="{{ path('blob', {repo: repo, branch: commit.hash, file: diff.file}) }}" class="btn btn-small"><i class="icon-file"></i> View file @ {{ commit.shortHash }}</a>
             </div>
         </div>
