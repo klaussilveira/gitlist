@@ -6,7 +6,8 @@
         "symfony/filesystem": "2.1.*"
     },
     "require-dev": {
-        "symfony/browser-kit": "2.1.*"
+        "symfony/browser-kit": "2.1.*",
+        "symfony/css-selector": "2.1.*"
     },
     "minimum-stability": "dev",
     "autoload": {
