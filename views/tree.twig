@@ -42,11 +42,11 @@
             {% for file in files %}
             <tr>
                 <td><i class="{{ file.type == "folder" or file.type == "symlink" ? "icon-folder-open" : "icon-file" }} icon-spaced"></i> <a href="
-                    {%- if file.type == "folder" or file.type == "symlink" %}
+                    {%- if file.type == "folder" or file.type == "symlink" -%}
                         {{ path('tree', {repo: repo, branch: branch, tree: path ~ (file.type == "symlink" ? file.path : file.name)}) }}
-                    {% else %}
+                    {%- else -%}
                         {{ path('blob', {repo: repo, branch: branch, file: path ~ (file.type == "symlink" ? file.path : file.name)}) }}
-                    {% endif -%}
+                    {%- endif -%}
                 ">{{ file.name }}</a></td>
                 <td>{{ file.mode }}</td>
                 <td>{% if file.size %}{{ (file.size / 1024) | number_format }} kb{% endif %}</td>
