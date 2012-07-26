@@ -40,20 +40,23 @@ class Application extends SilexApplication
             'twig.path'    => $root . DIRECTORY_SEPARATOR . 'views',
             'twig.options' => array('cache' => $root . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'views'),
         ));
-
-        $this->register(new GitServiceProvider());
-        $this->register(new ViewUtilServiceProvider());
-        $this->register(new RepositoryUtilServiceProvider());
-        $this->register(new UrlGeneratorServiceProvider());
-
         $this['twig'] = $this->share($this->extend('twig', function($twig, $app) {
             $twig->addFilter('md5', new \Twig_Filter_Function('md5'));
 
             return $twig;
         }));
 
+        $this->register(new GitServiceProvider());
+        $this->register(new ViewUtilServiceProvider());
+        $this->register(new RepositoryUtilServiceProvider());
+        $this->register(new UrlGeneratorServiceProvider());
+
         // Handle errors
         $this->error(function (\Exception $e, $code) use ($app) {
+            if ($app['debug']) {
+                return;
+            }
+
             return $app['twig']->render('error.twig', array(
                 'message' => $e->getMessage(),
             ));
