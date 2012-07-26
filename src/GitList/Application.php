@@ -53,6 +53,9 @@ class Application extends SilexApplication
 
         // Handle errors
         $this->error(function (\Exception $e, $code) use ($app) {
+            if ($app['debug']) {
+                return;
+            }
             return $app['twig']->render('error.twig', array(
                 'message' => $e->getMessage(),
             ));
