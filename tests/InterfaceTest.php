@@ -80,6 +80,11 @@ class InterfaceTest extends WebTestCase
         $this->assertCount(1, $crawler->filter('.tree tr:contains("test.php")'));
         $this->assertCount(1, $crawler->filter('.readme-header:contains("README.md")'));
         $this->assertEquals("## GitTest\nGitTest is a *test* repository!", $crawler->filter('#readme-content')->eq(0)->text());
+        $this->assertEquals('/GitTest/blob/master/README.md', $crawler->filter('.tree tr td')->eq(0)->filter('a')->eq(0)->attr('href'));
+        $this->assertEquals('/GitTest/blob/master/test.php', $crawler->filter('.tree tr td')->eq(3)->filter('a')->eq(0)->attr('href'));
+        $this->assertEquals('issue12', $crawler->filter('.dropdown-menu li')->eq(1)->text());
+        $this->assertEquals('issue42', $crawler->filter('.dropdown-menu li')->eq(2)->text());
+        $this->assertEquals('master', $crawler->filter('.dropdown-menu li')->eq(3)->text());
 
         $crawler = $client->request('GET', '/foobar/');
         $this->assertTrue($client->getResponse()->isOk());
@@ -87,7 +92,10 @@ class InterfaceTest extends WebTestCase
         $this->assertCount(1, $crawler->filter('.tree tr:contains("testfolder")'));
         $this->assertCount(1, $crawler->filter('.tree tr:contains("bar.json")'));
         $this->assertEquals('/foobar/tree/master/myfolder/', $crawler->filter('.tree tr td')->eq(0)->filter('a')->eq(0)->attr('href'));
+        $this->assertEquals('/foobar/tree/master/testfolder/', $crawler->filter('.tree tr td')->eq(3)->filter('a')->eq(0)->attr('href'));
+        $this->assertEquals('/foobar/blob/master/bar.json', $crawler->filter('.tree tr td')->eq(6)->filter('a')->eq(0)->attr('href'));
         $this->assertCount(0, $crawler->filter('.readme-header'));
+        $this->assertEquals('master', $crawler->filter('.dropdown-menu li')->eq(1)->text());
     }
 
     public static function tearDownAfterClass()
