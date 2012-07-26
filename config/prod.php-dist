@@ -1,0 +1,15 @@
+<?php
+
+// configure your app for the production environment
+$app['debug'] = false;
+
+// Git :
+$app['git.client'] = '/usr/bin/git'; // Your git executable path
+$app['git.repos']  = '/var/www/projects/' ; // Path to your repositories; Do not forgot the trainlings /
+$app['git.hidden'] = array(
+    '/var/www/dev/BetaTest',
+); // You can hide repositories from GitList, just copy this for each repository you want to hide
+
+// If you need to specify custom filetypes for certain extensions, do this here
+//$app['filetypes.extension'] = 'type';
+//$app['filetypes.dist'] = 'xml';

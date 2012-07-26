@@ -16,9 +16,12 @@ class GitServiceProvider implements ServiceProviderInterface
      */
     public function register(Application $app)
     {
-        $app['git'] = function () use ($app) {
-            $options['path'] = $app['git.client'];
-            $options['hidden'] = $app['git.hidden'];
+        $app['git'] = function($app) {
+            $options = array(
+                'path'   => $app['git.client'],
+                'hidden' => $app['git.hidden'],
+            );
+
             return new Client($options);
         };
     }

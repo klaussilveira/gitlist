@@ -1,7 +1,7 @@
 # GitList: an elegant and modern git repository viewer
 [![Build Status](https://secure.travis-ci.org/klaussilveira/gitlist.png)](http://travis-ci.org/klaussilveira/gitlist)
 
-GitList is an elegant and modern web interface for interacting with multiple git repositories. It allows you to browse repositories using your favorite browser, viewing files under different revisions, commit history, diffs. It also generates RSS feeds for each repository, allowing you to stay up-to-date with the latest changes anytime, anywhere. GitList was written in PHP, on top of the [Silex](http://silex.sensiolabs.org/) microframework and powered by the Twig template engine. This means that GitList is easy to install and easy to customize. Also, the GitList gorgeous interface was made possible due to [Bootstrap](http://twitter.github.com/bootstrap/). 
+GitList is an elegant and modern web interface for interacting with multiple git repositories. It allows you to browse repositories using your favorite browser, viewing files under different revisions, commit history, diffs. It also generates RSS feeds for each repository, allowing you to stay up-to-date with the latest changes anytime, anywhere. GitList was written in PHP, on top of the [Silex](http://silex.sensiolabs.org/) microframework and powered by the Twig template engine. This means that GitList is easy to install and easy to customize. Also, the GitList gorgeous interface was made possible due to [Bootstrap](http://twitter.github.com/bootstrap/).
 
 ## Features
 * Multiple repository support
@@ -42,13 +42,13 @@ In order to run GitList on your server, you'll need:
 * PHP 5.3.3
 
 ## Installing
-* Download GitList from [gitlist.org](http://gitlist.org/) and decompress to your `/var/www/gitlist` folder, or anywhere else you want to place GitList. 
-* Rename the `config.ini-example` file to `config.ini`.
-* Open up the `config.ini` and configure your installation. You'll have to provide where your repositories are located and the base GitList URL (in our case, http://localhost/gitlist).
-* Create the cache folder and give read/write permissions to your web server user:
+* Download GitList from [gitlist.org](http://gitlist.org/) and decompress to your `/var/www/gitlist` folder, or anywhere else you want to place GitList.
+* Copy `config/prod.php-dist` file to `config/prod.php`.
+* Copy `config/dev.php-dist` file to `config/dev.php`.
+* Open up the `config/prod.php` and configure your installation. You'll have to provide where your repositories are located and the base GitList URL (in our case, http://localhost/gitlist).
+* Create the cache folder and give the correct permissions:
 
 ```
-cd /var/www/gitlist
 mkdir cache
 chmod 777 cache
 ```
