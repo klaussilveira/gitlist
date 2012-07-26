@@ -1,29 +1,37 @@
 <?php
 
-require 'vendor/autoload.php';
+namespace GitList\Tests\Component\Git;
 
 use GitList\Component\Git\Client;
 use GitList\Component\Git\Repository;
+
 use Symfony\Component\Filesystem\Filesystem;
 
-class ClientTest extends PHPUnit_Framework_TestCase
+class ClientTest extends \PHPUnit_Framework_TestCase
 {
-    const PATH = '/tmp/gitlist';
+    public static $path;
     protected $client;
 
     public static function setUpBeforeClass()
     {
-        mkdir(ClientTest::PATH);
+        self::$path = sprintf('%s/gitlist/%s', sys_get_temp_dir(), time());
+
+        $fs = new Filesystem();
+        try {
+            $fs->mkdir(self::$path);
+        } catch (IOException $e) {
+            $this->markTestSkipped('There are no write permissions in order to create test repositories.');
+        }
     }
 
     public function setUp()
     {
-        if (!is_writable(ClientTest::PATH)) {
+        if (!is_writable(self::$path)) {
             $this->markTestSkipped('There are no write permissions in order to create test repositories.');
         }
 
         $options['path'] = getenv('GIT_CLIENT') ?: '/usr/bin/git';
-        $options['hidden'] = array(ClientTest::PATH . '/hiddenrepo');
+        $options['hidden'] = array(self::$path . '/hiddenrepo');
         $this->client = new Client($options);
     }
 
@@ -32,7 +40,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
      */
     public function testIsNotFindingRepositories()
     {
-        $this->client->getRepositories(ClientTest::PATH . '/testrepo');
+        $this->client->getRepositories(self::$path . '/testrepo');
     }
 
     /**
@@ -40,7 +48,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
      */
     public function testIsNotAbleToGetUnexistingRepository()
     {
-        $this->client->getRepository(ClientTest::PATH . '/testrepo');
+        $this->client->getRepository(self::$path . '/testrepo');
     }
 
     /**
@@ -53,7 +61,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
 
     public function testIsCreatingRepository()
     {
-        $repository = $this->client->createRepository(ClientTest::PATH . '/testrepo');
+        $repository = $this->client->createRepository(self::$path . '/testrepo');
         $this->assertRegExp("/nothing to commit/", $repository->getClient()->run($repository, 'status'));
     }
 
@@ -62,14 +70,14 @@ class ClientTest extends PHPUnit_Framework_TestCase
      */
     public function testIsNotAbleToCreateRepositoryDueToExistingOne()
     {
-        $this->client->createRepository(ClientTest::PATH . '/testrepo');
+        $this->client->createRepository(self::$path . '/testrepo');
     }
 
     public function testIsListingRepositories()
     {
-        $this->client->createRepository(ClientTest::PATH . '/anothertestrepo');
-        $this->client->createRepository(ClientTest::PATH . '/bigbadrepo');
-        $repositories = $this->client->getRepositories(ClientTest::PATH);
+        $this->client->createRepository(self::$path . '/anothertestrepo');
+        $this->client->createRepository(self::$path . '/bigbadrepo');
+        $repositories = $this->client->getRepositories(self::$path);
 
         $this->assertEquals($repositories[0]['name'], 'anothertestrepo');
         $this->assertEquals($repositories[1]['name'], 'bigbadrepo');
@@ -78,8 +86,8 @@ class ClientTest extends PHPUnit_Framework_TestCase
 
     public function testIsNotListingHiddenRepositories()
     {
-        $this->client->createRepository(ClientTest::PATH . '/hiddenrepo');
-        $repositories = $this->client->getRepositories(ClientTest::PATH);
+        $this->client->createRepository(self::$path . '/hiddenrepo');
+        $repositories = $this->client->getRepositories(self::$path);
 
         $this->assertEquals($repositories[0]['name'], 'anothertestrepo');
         $this->assertEquals($repositories[1]['name'], 'bigbadrepo');
@@ -92,7 +100,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
      */
     public function testIsNotOpeningHiddenRepositories()
     {
-        $this->client->getRepository(ClientTest::PATH . '/hiddenrepo');
+        $this->client->getRepository(self::$path . '/hiddenrepo');
     }
 
     /**
@@ -100,13 +108,13 @@ class ClientTest extends PHPUnit_Framework_TestCase
      */
     public function testIsCatchingGitCommandErrors()
     {
-        $repository = $this->client->getRepository(ClientTest::PATH . '/testrepo');
+        $repository = $this->client->getRepository(self::$path . '/testrepo');
         $repository->getClient()->run($repository, 'wrong');
     }
 
     public static function tearDownAfterClass()
     {
         $fs = new Filesystem();
-        $fs->remove(ClientTest::PATH);
+        $fs->remove(self::$path);
     }
 }

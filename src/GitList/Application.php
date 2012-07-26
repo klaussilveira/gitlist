@@ -19,11 +19,15 @@ class Application extends SilexApplication
      *
      * @param string $root Base path of the application files (views, cache)
      */
-    public function __construct($root)
+    public function __construct($root = null)
     {
         parent::__construct();
 
         $app = $this;
+
+        if (null == $root) {
+            $root == __DIR__ . "/..";
+        }
         $root = realpath($root);
 
         $this['cache.archives'] = $root . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'archives';

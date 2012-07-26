@@ -9,12 +9,21 @@
          processIsolation="false"
          stopOnFailure="false"
          syntaxCheck="true"
+         bootstrap="./vendor/autoload.php"
 >
     <testsuites>
         <testsuite name="GitList Test Suite">
-            <directory>./tests/</directory>
+            <directory>./src/GitList/Tests/</directory>
         </testsuite>
     </testsuites>
+    <filter>
+        <whitelist>
+            <directory>./src/GitList</directory>
+            <exclude>
+                <directory>./src/GitList/Tests</directory>
+            </exclude>
+        </whitelist>
+    </filter>
     <logging>
         <log type="coverage-clover" target="build/logs/clover.xml" />
         <log type="junit" target="build/logs/junit.xml" logIncompleteSkipped="false" />
