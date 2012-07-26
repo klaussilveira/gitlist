@@ -19,16 +19,19 @@ class Application extends SilexApplication
      *
      * @param string $root Base path of the application files (views, cache)
      */
-    public function __construct($root = null)
+    public function __construct($env = 'prod')
     {
         parent::__construct();
 
         $app = $this;
 
-        if (null == $root) {
-            $root == __DIR__ . "/..";
+        $root = realpath(__DIR__ . "/../..");
+
+        $configFile = sprintf($root.'/config/%s.php', $env);
+        if (!file_exists($configFile)) {
+            throw new \RuntimeException(sprintf('Can not find config file: "%s"', $configFile));
         }
-        $root = realpath($root);
+        require $configFile;
 
         $this['cache.archives'] = $root . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'archives';
 

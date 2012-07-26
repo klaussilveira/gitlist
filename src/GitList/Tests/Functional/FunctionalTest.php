@@ -54,7 +54,7 @@ class FunctionalTest extends WebTestCase
 
     public function createApplication()
     {
-        $app = new Application();
+        $app = new Application('test');
         $app['debug'] = true;
         $app['git.client'] = '/usr/bin/git';
         $app['git.hidden'] = array();
