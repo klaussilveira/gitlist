@@ -50,7 +50,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
     {
         $this->client->getRepositories('/tmp');
     }
-    
+
     public function testIsCreatingRepository()
     {
         $repository = $this->client->createRepository(ClientTest::PATH . '/testrepo');
@@ -103,7 +103,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
         $repository = $this->client->getRepository(ClientTest::PATH . '/testrepo');
         $repository->getClient()->run($repository, 'wrong');
     }
-    
+
     public static function tearDownAfterClass()
     {
         $fs = new Filesystem();

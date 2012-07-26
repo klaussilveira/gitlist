@@ -2,8 +2,6 @@
 
 namespace GitList\Component\Git;
 
-use Silex\Application;
-
 class Client
 {
     protected $path;
