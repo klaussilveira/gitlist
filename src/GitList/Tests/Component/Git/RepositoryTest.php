@@ -1,24 +1,31 @@
 <?php
 
-require 'vendor/autoload.php';
+namespace GitList\Tests\Component\Git;
 
 use GitList\Component\Git\Client;
 use GitList\Component\Git\Repository;
 use Symfony\Component\Filesystem\Filesystem;
 
-class RepositoryTest extends PHPUnit_Framework_TestCase
+class RepositoryTest extends \PHPUnit_Framework_TestCase
 {
-    const PATH = '/tmp/gitlist';
+    public static $path;
     protected $client;
 
     public static function setUpBeforeClass()
     {
-        mkdir(RepositoryTest::PATH);
+        self::$path = sprintf('%s/gitlist/%s', sys_get_temp_dir(), time());
+
+        $fs = new Filesystem();
+        try {
+            $fs->mkdir(self::$path);
+        } catch (IOException $e) {
+            $this->markTestSkipped('There are no write permissions in order to create test repositories.');
+        }
     }
 
     public function setUp()
     {
-        if (!is_writable(RepositoryTest::PATH)) {
+        if (!is_writable(self::$path)) {
             $this->markTestSkipped('There are no write permissions in order to create test repositories.');
         }
 
@@ -29,9 +36,9 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
 
     public function testIsCreatingRepositoryFixtures()
     {
-        $a = $this->client->createRepository(RepositoryTest::PATH . '/testrepo');
-        $b = $this->client->createRepository(RepositoryTest::PATH . '/anothertestrepo');
-        $c = $this->client->createRepository(RepositoryTest::PATH . '/bigbadrepo');
+        $a = $this->client->createRepository(self::$path . '/testrepo');
+        $b = $this->client->createRepository(self::$path . '/anothertestrepo');
+        $c = $this->client->createRepository(self::$path . '/bigbadrepo');
         $this->assertRegExp("/nothing to commit/", $a->getClient()->run($a, 'status'));
         $this->assertRegExp("/nothing to commit/", $b->getClient()->run($b, 'status'));
         $this->assertRegExp("/nothing to commit/", $c->getClient()->run($c, 'status'));
@@ -39,18 +46,18 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
 
     public function testIsConfiguratingRepository()
     {
-        $repository = $this->client->getRepository(RepositoryTest::PATH . '/testrepo');
+        $repository = $this->client->getRepository(self::$path . '/testrepo');
         $repository->setConfig('user.name', 'Luke Skywalker');
         $repository->setConfig('user.email', 'luke@rebel.org');
 
         $this->assertEquals($repository->getConfig('user.name'), 'Luke Skywalker');
         $this->assertEquals($repository->getConfig('user.email'), 'luke@rebel.org');
     }
-    
+
     public function testIsAdding()
     {
-        $repository = $this->client->getRepository(RepositoryTest::PATH . '/testrepo');
-        file_put_contents(RepositoryTest::PATH . '/testrepo/test_file.txt', 'Your mother is so ugly, glCullFace always returns TRUE.');
+        $repository = $this->client->getRepository(self::$path . '/testrepo');
+        file_put_contents(self::$path . '/testrepo/test_file.txt', 'Your mother is so ugly, glCullFace always returns TRUE.');
         $repository->add('test_file.txt');
         $this->assertRegExp("/new file:   test_file.txt/", $repository->getClient()->run($repository, 'status'));
     }
@@ -60,11 +67,11 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
      */
     public function testIsAddingDot()
     {
-        $repository = $this->client->getRepository(RepositoryTest::PATH . '/testrepo');
+        $repository = $this->client->getRepository(self::$path . '/testrepo');
 
-        file_put_contents(RepositoryTest::PATH . '/testrepo/test_file1.txt', 'Your mother is so ugly, glCullFace always returns TRUE.');
-        file_put_contents(RepositoryTest::PATH . '/testrepo/test_file2.txt', 'Your mother is so ugly, glCullFace always returns TRUE.');
-        file_put_contents(RepositoryTest::PATH . '/testrepo/test_file3.txt', 'Your mother is so ugly, glCullFace always returns TRUE.');
+        file_put_contents(self::$path . '/testrepo/test_file1.txt', 'Your mother is so ugly, glCullFace always returns TRUE.');
+        file_put_contents(self::$path . '/testrepo/test_file2.txt', 'Your mother is so ugly, glCullFace always returns TRUE.');
+        file_put_contents(self::$path . '/testrepo/test_file3.txt', 'Your mother is so ugly, glCullFace always returns TRUE.');
 
         $repository->add();
 
@@ -78,14 +85,14 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
      */
     public function testIsAddingAll()
     {
-        $repository = $this->client->getRepository(RepositoryTest::PATH . '/testrepo');
+        $repository = $this->client->getRepository(self::$path . '/testrepo');
 
-        file_put_contents(RepositoryTest::PATH . '/testrepo/test_file4.txt', 'Your mother is so ugly, glCullFace always returns TRUE.');
-        file_put_contents(RepositoryTest::PATH . '/testrepo/test_file5.txt', 'Your mother is so ugly, glCullFace always returns TRUE.');
-        file_put_contents(RepositoryTest::PATH . '/testrepo/test_file6.txt', 'Your mother is so ugly, glCullFace always returns TRUE.');
+        file_put_contents(self::$path . '/testrepo/test_file4.txt', 'Your mother is so ugly, glCullFace always returns TRUE.');
+        file_put_contents(self::$path . '/testrepo/test_file5.txt', 'Your mother is so ugly, glCullFace always returns TRUE.');
+        file_put_contents(self::$path . '/testrepo/test_file6.txt', 'Your mother is so ugly, glCullFace always returns TRUE.');
 
         $repository->addAll();
-        
+
         $this->assertRegExp("/new file:   test_file4.txt/", $repository->getClient()->run($repository, 'status'));
         $this->assertRegExp("/new file:   test_file5.txt/", $repository->getClient()->run($repository, 'status'));
         $this->assertRegExp("/new file:   test_file6.txt/", $repository->getClient()->run($repository, 'status'));
@@ -96,11 +103,11 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
      */
     public function testIsAddingArrayOfFiles()
     {
-        $repository = $this->client->getRepository(RepositoryTest::PATH . '/testrepo');
+        $repository = $this->client->getRepository(self::$path . '/testrepo');
 
-        file_put_contents(RepositoryTest::PATH . '/testrepo/test_file7.txt', 'Your mother is so ugly, glCullFace always returns TRUE.');
-        file_put_contents(RepositoryTest::PATH . '/testrepo/test_file8.txt', 'Your mother is so ugly, glCullFace always returns TRUE.');
-        file_put_contents(RepositoryTest::PATH . '/testrepo/test_file9.txt', 'Your mother is so ugly, glCullFace always returns TRUE.');
+        file_put_contents(self::$path . '/testrepo/test_file7.txt', 'Your mother is so ugly, glCullFace always returns TRUE.');
+        file_put_contents(self::$path . '/testrepo/test_file8.txt', 'Your mother is so ugly, glCullFace always returns TRUE.');
+        file_put_contents(self::$path . '/testrepo/test_file9.txt', 'Your mother is so ugly, glCullFace always returns TRUE.');
 
         $repository->add(array('test_file7.txt', 'test_file8.txt', 'test_file9.txt'));
 
@@ -108,20 +115,20 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
         $this->assertRegExp("/new file:   test_file8.txt/", $repository->getClient()->run($repository, 'status'));
         $this->assertRegExp("/new file:   test_file9.txt/", $repository->getClient()->run($repository, 'status'));
     }
-    
+
     /**
      * @depends testIsAddingArrayOfFiles
      */
     public function testIsCommiting()
     {
-        $repository = $this->client->getRepository(RepositoryTest::PATH . '/testrepo');
+        $repository = $this->client->getRepository(self::$path . '/testrepo');
         $repository->commit("The truth unveiled");
         $this->assertRegExp("/The truth unveiled/", $repository->getClient()->run($repository, 'log'));
     }
 
     public function testIsCreatingBranches()
     {
-        $repository = $this->client->getRepository(RepositoryTest::PATH . '/testrepo');
+        $repository = $this->client->getRepository(self::$path . '/testrepo');
         $repository->createBranch('issue12');
         $repository->createBranch('issue42');
         $branches = $repository->getBranches();
@@ -132,7 +139,7 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
 
     public function testIsGettingCurrentBranch()
     {
-        $repository = $this->client->getRepository(RepositoryTest::PATH . '/testrepo');
+        $repository = $this->client->getRepository(self::$path . '/testrepo');
         $branch = $repository->getCurrentBranch();
         $this->assertTrue($branch === 'master');
     }
@@ -142,9 +149,9 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
      */
     public function testIsGettingCommits()
     {
-        $repository = $this->client->getRepository(RepositoryTest::PATH . '/testrepo');
+        $repository = $this->client->getRepository(self::$path . '/testrepo');
         $commits = $repository->getCommits();
-        
+
         foreach ($commits as $commit) {
             $this->assertInstanceOf('GitList\Component\Git\Commit\Commit', $commit);
             $this->assertTrue($commit->getMessage() === 'The truth unveiled');
@@ -167,9 +174,9 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
      */
     public function testIsGettingCommitsFromSpecificFile()
     {
-        $repository = $this->client->getRepository(RepositoryTest::PATH . '/testrepo');
+        $repository = $this->client->getRepository(self::$path . '/testrepo');
         $commits = $repository->getCommits('test_file4.txt');
-        
+
         foreach ($commits as $commit) {
             $this->assertInstanceOf('GitList\Component\Git\Commit\Commit', $commit);
             $this->assertTrue($commit->getMessage() === 'The truth unveiled');
@@ -181,9 +188,9 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
 
     public function testIsGettingTree()
     {
-        $repository = $this->client->getRepository(RepositoryTest::PATH . '/testrepo');
+        $repository = $this->client->getRepository(self::$path . '/testrepo');
         $files = $repository->getTree('master');
-        
+
         foreach ($files as $file) {
             $this->assertInstanceOf('GitList\Component\Git\Model\Blob', $file);
             $this->assertRegExp('/test_file[0-9]*.txt/', $file->getName());
@@ -195,9 +202,9 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
 
     public function testIsGettingTreeOutput()
     {
-        $repository = $this->client->getRepository(RepositoryTest::PATH . '/testrepo');
+        $repository = $this->client->getRepository(self::$path . '/testrepo');
         $files = $repository->getTree('master')->output();
-        
+
         foreach ($files as $file) {
             $this->assertEquals('blob', $file['type']);
             $this->assertRegExp('/test_file[0-9]*.txt/', $file['name']);
@@ -209,19 +216,19 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
 
     public function testIsGettingTreesWithinTree()
     {
-        $repository = $this->client->getRepository(RepositoryTest::PATH . '/testrepo');
+        $repository = $this->client->getRepository(self::$path . '/testrepo');
 
         // Creating folders
-        mkdir(RepositoryTest::PATH . '/testrepo/MyFolder');
-        mkdir(RepositoryTest::PATH . '/testrepo/MyTest');
-        mkdir(RepositoryTest::PATH . '/testrepo/MyFolder/Tests');
+        mkdir(self::$path . '/testrepo/MyFolder');
+        mkdir(self::$path . '/testrepo/MyTest');
+        mkdir(self::$path . '/testrepo/MyFolder/Tests');
 
         // Populating created folders
-        file_put_contents(RepositoryTest::PATH . '/testrepo/MyFolder/crazy.php', 'Lorem ipsum dolor sit amet');
-        file_put_contents(RepositoryTest::PATH . '/testrepo/MyFolder/skywalker.php', 'Lorem ipsum dolor sit amet');
-        file_put_contents(RepositoryTest::PATH . '/testrepo/MyTest/fortytwo.php', 'Lorem ipsum dolor sit amet');
-        file_put_contents(RepositoryTest::PATH . '/testrepo/MyFolder/Tests/web.php', 'Lorem ipsum dolor sit amet');
-        file_put_contents(RepositoryTest::PATH . '/testrepo/MyFolder/Tests/cli.php', 'Lorem ipsum dolor sit amet');
+        file_put_contents(self::$path . '/testrepo/MyFolder/crazy.php', 'Lorem ipsum dolor sit amet');
+        file_put_contents(self::$path . '/testrepo/MyFolder/skywalker.php', 'Lorem ipsum dolor sit amet');
+        file_put_contents(self::$path . '/testrepo/MyTest/fortytwo.php', 'Lorem ipsum dolor sit amet');
+        file_put_contents(self::$path . '/testrepo/MyFolder/Tests/web.php', 'Lorem ipsum dolor sit amet');
+        file_put_contents(self::$path . '/testrepo/MyFolder/Tests/cli.php', 'Lorem ipsum dolor sit amet');
 
         // Adding and commiting
         $repository->addAll();
@@ -251,7 +258,7 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
 
     public function testIsGettingBlobsWithinTrees()
     {
-        $repository = $this->client->getRepository(RepositoryTest::PATH . '/testrepo');
+        $repository = $this->client->getRepository(self::$path . '/testrepo');
         $files = $repository->getTree('master:MyFolder/')->output();
 
         $this->assertEquals('folder', $files[0]['type']);
@@ -275,7 +282,7 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
 
     public function testIsGettingBlobOutput()
     {
-        $repository = $this->client->getRepository(RepositoryTest::PATH . '/testrepo');
+        $repository = $this->client->getRepository(self::$path . '/testrepo');
         $blob = $repository->getBlob('master:MyFolder/crazy.php')->output();
         $this->assertEquals('Lorem ipsum dolor sit amet', $blob);
 
@@ -285,7 +292,7 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
 
     public function testIsGettingStatistics()
     {
-        $repository = $this->client->getRepository(RepositoryTest::PATH . '/testrepo');
+        $repository = $this->client->getRepository(self::$path . '/testrepo');
         $stats = $repository->getStatistics('master');
 
         $this->assertEquals('10', $stats['extensions']['.txt']);
@@ -296,7 +303,7 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
 
     public function testIsGettingAuthorStatistics()
     {
-        $repository = $this->client->getRepository(RepositoryTest::PATH . '/testrepo');
+        $repository = $this->client->getRepository(self::$path . '/testrepo');
         $stats = $repository->getAuthorStatistics();
 
         $this->assertEquals('Luke Skywalker', $stats[0]['name']);
@@ -305,7 +312,7 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
 
         $repository->setConfig('user.name', 'Princess Leia');
         $repository->setConfig('user.email', 'sexyleia@republic.com');
-        file_put_contents(RepositoryTest::PATH . '/testrepo/MyFolder/crazy.php', 'Lorem ipsum dolor sit AMET');
+        file_put_contents(self::$path . '/testrepo/MyFolder/crazy.php', 'Lorem ipsum dolor sit AMET');
         $repository->addAll();
         $repository->commit("Fixing AMET case");
 
@@ -322,19 +329,20 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
 
     public function testIsGettingSymlinksWithinTrees()
     {
-        $repository = $this->client->getRepository(RepositoryTest::PATH . '/testrepo');
+        $repository = $this->client->getRepository(self::$path . '/testrepo');
         $fs = new Filesystem();
-        $fs->touch(RepositoryTest::PATH . '/testrepo/original_file.txt');
-        $fs->symlink(RepositoryTest::PATH . '/testrepo/original_file.txt', RepositoryTest::PATH . '/testrepo/link.txt');
+        $fs->touch(self::$path . '/testrepo/original_file.txt');
+        $fs->symlink(self::$path . '/testrepo/original_file.txt', self::$path . '/testrepo/link.txt');
         $repository->addAll();
         $repository->commit("Testing symlinks");
         $files = $repository->getTree('master');
 
         foreach ($files as $file) {
-            if ($file instanceof GitList\Component\Git\Model\Symlink) {
-                $this->assertEquals($file->getPath(), RepositoryTest::PATH . '/testrepo/original_file.txt');
+            if ($file instanceof \GitList\Component\Git\Model\Symlink) {
+                $this->assertEquals($file->getPath(), self::$path . '/testrepo/original_file.txt');
                 $this->assertEquals($file->getName(), 'link.txt');
                 $this->assertEquals($file->getMode(), '120000');
+
                 return;
             }
         }
@@ -344,19 +352,20 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
 
     public function testIsGettingSymlinksWithinTreesOutput()
     {
-        $repository = $this->client->getRepository(RepositoryTest::PATH . '/testrepo');
+        $repository = $this->client->getRepository(self::$path . '/testrepo');
         $fs = new Filesystem();
-        $fs->touch(RepositoryTest::PATH . '/testrepo/original_file.txt');
-        $fs->symlink(RepositoryTest::PATH . '/testrepo/original_file.txt', RepositoryTest::PATH . '/testrepo/link.txt');
+        $fs->touch(self::$path . '/testrepo/original_file.txt');
+        $fs->symlink(self::$path . '/testrepo/original_file.txt', self::$path . '/testrepo/link.txt');
         $repository->addAll();
         $repository->commit("Testing symlinks");
         $files = $repository->getTree('master')->output();
 
         foreach ($files as $file) {
             if ($file['type'] == 'symlink') {
-                $this->assertEquals($file['path'], RepositoryTest::PATH . '/testrepo/original_file.txt');
+                $this->assertEquals($file['path'], self::$path . '/testrepo/original_file.txt');
                 $this->assertEquals($file['name'], 'link.txt');
                 $this->assertEquals($file['mode'], '120000');
+
                 return;
             }
         }
@@ -367,6 +376,6 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
     public static function tearDownAfterClass()
     {
         $fs = new Filesystem();
-        $fs->remove(RepositoryTest::PATH);
+        $fs->remove(self::$path);
     }
 }

@@ -1,56 +1,67 @@
 <?php
 
-require 'vendor/autoload.php';
+namespace GitList\Tests\Functional;
 
-use Silex\WebTestCase;
-use Symfony\Component\Filesystem\Filesystem;
+use GitList\Application;
 use GitList\Component\Git\Client;
 
-class InterfaceTest extends WebTestCase
+use Silex\WebTestCase;
+
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\Exception\IOException;
+
+class FunctionalTest extends WebTestCase
 {
-    const PATH = '/tmp/gitlist/';
+    public static $path;
 
     public static function setUpBeforeClass()
     {
-        $fs = new Filesystem();
-        $fs->mkdir(InterfaceTest::PATH);
+        self::$path = sprintf('%s/gitlist/%s', sys_get_temp_dir(), time());
 
-        if (!is_writable(InterfaceTest::PATH)) {
+        $fs = new Filesystem();
+        try {
+            $fs->mkdir(self::$path);
+        } catch (IOException $e) {
             $this->markTestSkipped('There are no write permissions in order to create test repositories.');
         }
 
         $options['path'] = getenv('GIT_CLIENT') ?: '/usr/bin/git';
-        $options['hidden'] = array(InterfaceTest::PATH . '/hiddenrepo');
+        $options['hidden'] = array(self::$path . '/hiddenrepo');
         $git = new Client($options);
 
         // GitTest repository fixture
-        $git->createRepository(InterfaceTest::PATH . 'GitTest');
-        $repository = $git->getRepository(InterfaceTest::PATH . 'GitTest');
-        file_put_contents(InterfaceTest::PATH . 'GitTest/README.md', "## GitTest\nGitTest is a *test* repository!");
-        file_put_contents(InterfaceTest::PATH . 'GitTest/test.php', "<?php\necho 'Hello World'; // This is a test");
+        $git->createRepository(self::$path . '/GitTest');
+        $repository = $git->getRepository(self::$path . '/GitTest');
+        file_put_contents(self::$path . '/GitTest/README.md', "## GitTest\nGitTest is a *test* repository!");
+        file_put_contents(self::$path . '/GitTest/test.php', "<?php\necho 'Hello World'; // This is a test");
         $repository->addAll();
         $repository->commit("Initial commit");
         $repository->createBranch('issue12');
         $repository->createBranch('issue42');
 
         // foobar repository fixture
-        $git->createRepository(InterfaceTest::PATH . 'foobar');
-        $repository = $git->getRepository(InterfaceTest::PATH . '/foobar');
-        file_put_contents(InterfaceTest::PATH . 'foobar/bar.json', "{\n\"name\": \"foobar\"\n}");
-        file_put_contents(InterfaceTest::PATH . 'foobar/.git/description', 'This is a test repo!');
-        $fs->mkdir(InterfaceTest::PATH . 'foobar/myfolder');
-        $fs->mkdir(InterfaceTest::PATH . 'foobar/testfolder');
-        file_put_contents(InterfaceTest::PATH . 'foobar/myfolder/mytest.php', "<?php\necho 'Hello World'; // This is my test");
-        file_put_contents(InterfaceTest::PATH . 'foobar/testfolder/test.php', "<?php\necho 'Hello World'; // This is a test");
+        $git->createRepository(self::$path . '/foobar');
+        $repository = $git->getRepository(self::$path . '/foobar');
+        file_put_contents(self::$path . '/foobar/bar.json', "{\n\"name\": \"foobar\"\n}");
+        file_put_contents(self::$path . '/foobar/.git/description', 'This is a test repo!');
+        $fs->mkdir(self::$path . '/foobar/myfolder');
+        $fs->mkdir(self::$path . '/foobar/testfolder');
+        file_put_contents(self::$path . '/foobar/myfolder/mytest.php', "<?php\necho 'Hello World'; // This is my test");
+        file_put_contents(self::$path . '/foobar/testfolder/test.php', "<?php\necho 'Hello World'; // This is a test");
         $repository->addAll();
         $repository->commit("First commit");
     }
 
     public function createApplication()
     {
-        $app = require 'boot.php';
+        $app = new Application('test');
         $app['debug'] = true;
-        $app['git.repos'] = InterfaceTest::PATH;
+        $app['git.client'] = '/usr/bin/git';
+        $app['git.hidden'] = array();
+        $app['git.repos'] = self::$path.'/';
+
+        require __DIR__.'/../../../controllers.php';
+
         return $app;
     }
 
@@ -101,6 +112,6 @@ class InterfaceTest extends WebTestCase
     public static function tearDownAfterClass()
     {
         $fs = new Filesystem();
-        $fs->remove(InterfaceTest::PATH);
+        $fs->remove(self::$path);
     }
 }

@@ -2,8 +2,6 @@
 
 namespace GitList\Component\Git;
 
-use Silex\Application;
-
 class Client
 {
     protected $path;
@@ -129,7 +127,7 @@ class Client
     public function run(Repository $repository, $command)
     {
         $descriptors = array(0 => array("pipe", "r"), 1 => array("pipe", "w"), 2 => array("pipe", "w"));
-        $process = proc_open($this->getPath() . ' ' . $command, $descriptors, $pipes, $repository->getPath());
+        $process = proc_open($this->getPath() . ' -c "color.ui"=false ' . $command, $descriptors, $pipes, $repository->getPath());
 
         if (!is_resource($process)) {
             throw new \RuntimeException('Unable to execute command: ' . $command);

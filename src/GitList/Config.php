@@ -12,7 +12,7 @@ class Config
             die("Please, create the config.ini file.");
         }
 
-        $this->data = parse_ini_file('config.ini', true);
+        $this->data = parse_ini_file($file, true);
         $this->validateOptions();
     }
 

@@ -4,8 +4,6 @@ namespace GitList\Controller;
 
 use Silex\Application;
 use Silex\ControllerProviderInterface;
-use Silex\ControllerCollection;
-use Symfony\Component\HttpFoundation\Response;
 
 class CommitController implements ControllerProviderInterface
 {

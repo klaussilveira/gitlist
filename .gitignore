@@ -28,6 +28,9 @@ nbproject
 .CVS
 .idea
 node_modules
-config.ini
-cache.properties
 composer.phar
+cache.properties
+
+config/dev.php
+config/prod.php
+config/test.php
