@@ -49,7 +49,7 @@ class InterfaceTest extends WebTestCase
 
     public function createApplication()
     {
-        $app = new Application('test');
+        $app = new Application(__DIR__ . '/../config/test.php');
         require __DIR__.'/../src/controllers.php';
 
         $app['debug'] = true;

@@ -17,17 +17,20 @@ class Application extends SilexApplication
     /**
      * Constructor initialize services.
      *
-     * @param string $env The environment to load.
+     * @param string $configFile The config file to load.
+     * @param string $root       Base path of the application files (views, cache)
      */
-    public function __construct($env = 'prod')
+    public function __construct($configFile, $root = null)
     {
         parent::__construct();
 
         $app = $this;
 
-        $root = realpath(__DIR__ . "/../..");
+        if (null == $root) {
+            $root = __DIR__ . "/../..";
+        }
+        $root = realpath($root);
 
-        $configFile = sprintf($root.'/config/%s.php', $env);
         if (!file_exists($configFile)) {
             throw new \RuntimeException(sprintf('Can not find config file: "%s"', $configFile));
         }
