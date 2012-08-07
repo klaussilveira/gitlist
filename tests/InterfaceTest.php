@@ -28,6 +28,8 @@ class InterfaceTest extends WebTestCase
         $repository = $git->getRepository(InterfaceTest::PATH . 'GitTest');
         file_put_contents(InterfaceTest::PATH . 'GitTest/README.md', "## GitTest\nGitTest is a *test* repository!");
         file_put_contents(InterfaceTest::PATH . 'GitTest/test.php', "<?php\necho 'Hello World'; // This is a test");
+        $repository->setConfig('user.name', 'Luke Skywalker');
+        $repository->setConfig('user.email', 'luke@rebel.org');
         $repository->addAll();
         $repository->commit("Initial commit");
         $repository->createBranch('issue12');
@@ -42,6 +44,8 @@ class InterfaceTest extends WebTestCase
         $fs->mkdir(InterfaceTest::PATH . 'foobar/testfolder');
         file_put_contents(InterfaceTest::PATH . 'foobar/myfolder/mytest.php', "<?php\necho 'Hello World'; // This is my test");
         file_put_contents(InterfaceTest::PATH . 'foobar/testfolder/test.php', "<?php\necho 'Hello World'; // This is a test");
+        $repository->setConfig('user.name', 'Luke Skywalker');
+        $repository->setConfig('user.email', 'luke@rebel.org');
         $repository->addAll();
         $repository->commit("First commit");
     }
@@ -96,6 +100,94 @@ class InterfaceTest extends WebTestCase
         $this->assertEquals('/foobar/blob/master/bar.json', $crawler->filter('.tree tr td')->eq(6)->filter('a')->eq(0)->attr('href'));
         $this->assertCount(0, $crawler->filter('.readme-header'));
         $this->assertEquals('master', $crawler->filter('.dropdown-menu li')->eq(1)->text());
+    }
+
+    public function testBlobPage()
+    {
+        $client = $this->createClient();
+
+        $crawler = $client->request('GET', '/GitTest/blob/master/test.php');
+        $this->assertTrue($client->getResponse()->isOk());
+        $this->assertCount(1, $crawler->filter('.breadcrumb .active:contains("test.php")'));
+        $this->assertEquals('/GitTest/raw/master/test.php', $crawler->filter('.source-header .btn-group a')->eq(0)->attr('href'));
+        $this->assertEquals('/GitTest/blame/master/test.php', $crawler->filter('.source-header .btn-group a')->eq(1)->attr('href'));
+        $this->assertEquals('/GitTest/commits/master/test.php', $crawler->filter('.source-header .btn-group a')->eq(2)->attr('href'));
+    }
+
+    public function testRawPage()
+    {
+        $client = $this->createClient();
+
+        $crawler = $client->request('GET', '/GitTest/raw/master/test.php');
+        $this->assertTrue($client->getResponse()->isOk());
+        $this->assertEquals("<?php\necho 'Hello World'; // This is a test", $client->getResponse()->getContent());
+    }
+
+    public function testBlamePage()
+    {
+        $client = $this->createClient();
+
+        $crawler = $client->request('GET', '/GitTest/blame/master/test.php');
+        $this->assertTrue($client->getResponse()->isOk());
+        $this->assertCount(1, $crawler->filter('.source-header .meta:contains("test.php")'));
+        $this->assertRegexp('/\/GitTest\/commit\/[a-zA-Z0-9%]+\//', $crawler->filter('.blame-view .commit')->eq(0)->filter('a')->attr('href'));
+
+        $crawler = $client->request('GET', '/foobar/blame/master/bar.json');
+        $this->assertTrue($client->getResponse()->isOk());
+        $this->assertCount(1, $crawler->filter('.source-header .meta:contains("bar.json")'));
+        $this->assertRegexp('/\/foobar\/commit\/[a-zA-Z0-9%]+\//', $crawler->filter('.blame-view .commit')->eq(0)->filter('a')->attr('href'));
+    }
+
+    public function testHistoryPage()
+    {
+        $client = $this->createClient();
+
+        $crawler = $client->request('GET', '/GitTest/commits/master/test.php');
+        $this->assertTrue($client->getResponse()->isOk());
+        $this->assertEquals('Initial commit', $crawler->filter('.table tbody tr td h4')->eq(0)->text());
+
+        $crawler = $client->request('GET', '/GitTest/commits/master/README.md');
+        $this->assertTrue($client->getResponse()->isOk());
+        $this->assertEquals('Initial commit', $crawler->filter('.table tbody tr td h4')->eq(0)->text());
+
+        $crawler = $client->request('GET', '/foobar/commits/master/bar.json');
+        $this->assertTrue($client->getResponse()->isOk());
+        $this->assertEquals('First commit', $crawler->filter('.table tbody tr td h4')->eq(0)->text());
+    }
+
+    public function testCommitsPage()
+    {
+        $client = $this->createClient();
+
+        $crawler = $client->request('GET', '/GitTest/commits');
+        $this->assertTrue($client->getResponse()->isOk());
+        $this->assertEquals('Initial commit', $crawler->filter('.table tbody tr td h4')->eq(0)->text());
+
+        $crawler = $client->request('GET', '/foobar/commits');
+        $this->assertTrue($client->getResponse()->isOk());
+        $this->assertEquals('First commit', $crawler->filter('.table tbody tr td h4')->eq(0)->text());
+    }
+
+    public function testStatsPage()
+    {
+        $client = $this->createClient();
+
+        $crawler = $client->request('GET', '/GitTest/stats');
+        $this->assertTrue($client->getResponse()->isOk());
+        $this->assertRegexp('/.php: 1 files/', $crawler->filter('.table tbody')->eq(0)->text());
+        $this->assertRegexp('/.md: 1 files/', $crawler->filter('.table tbody')->eq(0)->text());
+        $this->assertRegexp('/Total files: 2/', $crawler->filter('.table tbody')->eq(0)->text());
+        $this->assertRegexp('/Luke Skywalker: 1 commits/', $crawler->filter('.table tbody')->eq(0)->text());
+    }
+
+    public function testRssPage()
+    {
+        $client = $this->createClient();
+
+        $crawler = $client->request('GET', '/GitTest/master/rss/');
+        $this->assertTrue($client->getResponse()->isOk());
+        $this->assertRegexp('/Latest commits in GitTest:master/', $client->getResponse()->getContent());
+        $this->assertRegexp('/Initial commit/', $client->getResponse()->getContent());
     }
 
     public static function tearDownAfterClass()
