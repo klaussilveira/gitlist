@@ -53,7 +53,7 @@ class CommitController implements ControllerProviderInterface
                 'commit'         => $commit,
             ));
         })->assert('repo', '[\w-._]+')
-          ->assert('commit', '[a-f0-9]+')
+          ->assert('commit', '[a-f0-9^]+')
           ->bind('commit');
 
         $route->get('{repo}/blame/{branch}/{file}', function($repo, $branch, $file) use ($app) {
