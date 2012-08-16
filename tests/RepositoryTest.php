@@ -347,7 +347,7 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
         $repository = $this->client->getRepository(RepositoryTest::PATH . '/testrepo');
         $fs = new Filesystem();
         $fs->touch(RepositoryTest::PATH . '/testrepo/original_file.txt');
-        $fs->symlink(RepositoryTest::PATH . '/testrepo/original_file.txt', RepositoryTest::PATH . '/testrepo/link.txt');
+        $fs->symlink(RepositoryTest::PATH . '/testrepo/original_file.txt', RepositoryTest::PATH . '/testrepo/link2.txt');
         $repository->addAll();
         $repository->commit("Testing symlinks");
         $files = $repository->getTree('master')->output();
