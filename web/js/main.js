@@ -13,7 +13,10 @@ $(function () {
             matchBrackets: true,
             lineWrapping: true,
             readOnly: true,
-            mode: mode
+            mode: mode,
+            lineNumberFormatter: function(ln) {
+                return '<a name="L'+ ln +'"></a><a href="#L'+ ln +'">'+ ln +'</a>';
+            }
         });
     }
 
