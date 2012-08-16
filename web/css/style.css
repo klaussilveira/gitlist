@@ -749,15 +749,15 @@ a.label:hover,a.badge:hover{color:#ffffff;text-decoration:none;cursor:pointer;}
 .space-right{padding:0 8px 0 0;}
 .space-left{padding:0 0 0 8px;}
 .CodeMirror{line-height:16px;font-family:Consolas,"Liberation Mono",Courier,monospace;font-size:12px;position:relative;overflow:hidden;}
-.CodeMirror-scroll{overflow-x:auto;overflow-y:hidden;height:500px;position:relative;outline:none;}
+.CodeMirror-scroll{overflow-x:auto;overflow-y:hidden;height:auto;position:relative;outline:none;}
 .CodeMirror-scrollbar{float:right;overflow-x:hidden;overflow-y:scroll;margin-left:-1px;}
 .CodeMirror-scrollbar-inner{width:1px;}
 .CodeMirror-scrollbar.cm-sb-overlap{position:absolute;z-index:1;float:none;right:0;min-width:12px;}
 .CodeMirror-scrollbar.cm-sb-nonoverlap{min-width:12px;}
 .CodeMirror-scrollbar.cm-sb-ie7{min-width:18px;}
-.CodeMirror-gutter{position:absolute;left:0;top:0;z-index:10;background-color:#f7f7f7;border-right:1px solid #eee;min-width:2em;height:100%;}
+.CodeMirror-gutter{position:absolute;left:0;top:0;z-index:10;background-color:#f7f7f7;border-right:1px solid #eee;min-width:2em;height:100%;padding-right:3px;}
 .CodeMirror-gutter-text{color:#aaa;text-align:right;padding:.4em .2em .4em .4em;white-space:pre !important;}
-.CodeMirror-lines{padding:.4em;white-space:pre;cursor:text;}
+.CodeMirror-lines{padding:.4em;white-space:pre;cursor:text;margin-left:5px;}
 .CodeMirror-lines *{pointer-events:none;}
 .CodeMirror pre{-moz-border-radius:0;-webkit-border-radius:0;-o-border-radius:0;border-radius:0;border-width:0;margin:0;padding:0;background:transparent;font-family:inherit;font-size:inherit;padding:0;margin:0;white-space:pre;word-wrap:normal;line-height:inherit;color:inherit;}
 .CodeMirror-wrap pre{word-wrap:break-word;white-space:pre-wrap;word-break:normal;}

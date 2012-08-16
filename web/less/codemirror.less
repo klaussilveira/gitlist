@@ -11,7 +11,7 @@
 .CodeMirror-scroll {
   overflow-x: auto;
   overflow-y: hidden;
-  height: 500px;
+  height: auto;
   /* This is needed to prevent an IE[67] bug where the scrolled content
      is visible outside of the scrolling box. */
   position: relative;
@@ -56,6 +56,7 @@
   border-right: 1px solid #eee;
   min-width: 2em;
   height: 100%;
+  padding-right:3px;
 }
 .CodeMirror-gutter-text {
   color: #aaa;
@@ -67,6 +68,7 @@
   padding: .4em;
   white-space: pre;
   cursor: text;
+  margin-left:5px;
 }
 .CodeMirror-lines * {
   /* Necessary for throw-scrolling to decelerate properly on Safari. */
