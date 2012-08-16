@@ -17,30 +17,34 @@ class Application extends SilexApplication
     /**
      * Constructor initialize services.
      *
-     * @param Config $config
-     * @param string $root   Base path of the application files (views, cache)
+     * @param string $configFile The config file to load.
+     * @param string $root       Base path of the application files (views, cache)
      */
-    public function __construct(Config $config, $root = null)
+    public function __construct($configFile, $root = null)
     {
         parent::__construct();
 
         $app = $this;
+
+        if (null == $root) {
+            $root = __DIR__ . "/../..";
+        }
         $root = realpath($root);
 
-        $this['debug'] = $config->get('app', 'debug');
-        $this['filetypes'] = $config->getSection('filetypes');
+        if (!file_exists($configFile)) {
+            throw new \RuntimeException(sprintf('Can not find config file: "%s"', $configFile));
+        }
+        require $configFile;
+
         $this['cache.archives'] = $root . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'archives';
 
         // Register services
         $this->register(new TwigServiceProvider(), array(
-            'twig.path'       => $root . DIRECTORY_SEPARATOR . 'views',
-            'twig.options'    => array('cache' => $root . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'views'),
+            'twig.path'    => $root . DIRECTORY_SEPARATOR . 'views',
+            'twig.options' => array('cache' => $root . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'views'),
         ));
-        $this->register(new GitServiceProvider(), array(
-            'git.client'      => $config->get('git', 'client'),
-            'git.repos'       => $config->get('git', 'repositories'),
-            'git.hidden'      => $config->get('git', 'hidden') ? $config->get('git', 'hidden') : array(),
-        ));
+
+        $this->register(new GitServiceProvider());
         $this->register(new ViewUtilServiceProvider());
         $this->register(new RepositoryUtilServiceProvider());
         $this->register(new UrlGeneratorServiceProvider());

@@ -5,6 +5,7 @@ require 'vendor/autoload.php';
 use Silex\WebTestCase;
 use Symfony\Component\Filesystem\Filesystem;
 use GitList\Component\Git\Client;
+use GitList\Application;
 
 class InterfaceTest extends WebTestCase
 {
@@ -52,7 +53,9 @@ class InterfaceTest extends WebTestCase
 
     public function createApplication()
     {
-        $app = require 'boot.php';
+        $app = new Application(__DIR__ . '/../config/test.php');
+        require __DIR__.'/../src/controllers.php';
+
         $app['debug'] = true;
         $app['git.repos'] = InterfaceTest::PATH;
         return $app;
