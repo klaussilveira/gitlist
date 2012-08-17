@@ -88,7 +88,7 @@ class Repository
      */
     public function commit($message)
     {
-        $this->getClient()->run($this, "commit -m '$message'");
+        $this->getClient()->run($this, "commit -m \"$message\"");
 
         return $this;
     }
@@ -227,13 +227,11 @@ class Repository
      */
     public function getTotalCommits($file = null)
     {
-        $command = "rev-list --all";
-
-        if ($file) {
-            $command .= " $file";
+        if (WINDOWS_BUILD) {
+            $command = "rev-list --count --all $file";
+        } else {
+            $command = "rev-list --all $file | wc -l";
         }
-
-        $command .= " | wc -l";
 
         $commits = $this->getClient()->run($this, $command);
 
@@ -250,7 +248,7 @@ class Repository
     {
         $page = 15 * $page;
         $pager = "--skip=$page --max-count=15";
-        $command = 'log ' . $pager . ' --pretty=format:\'"%h": {"hash": "%H", "short_hash": "%h", "tree": "%T", "parent": "%P", "author": "%an", "author_email": "%ae", "date": "%at", "commiter": "%cn", "commiter_email": "%ce", "commiter_date": "%ct", "message": "%f"}\'';
+        $command = 'log ' . $pager . ' --pretty=format:"\"%h\": {\"hash\": \"%H\", \"short_hash\": \"%h\", \"tree\": \"%T\", \"parent\": \"%P\", \"author\": \"%an\", \"author_email\": \"%ae\", \"date\": \"%at\", \"commiter\": \"%cn\", \"commiter_email\": \"%ce\", \"commiter_date\": \"%ct\", \"message\": \"%f\"}"';
 
         if ($file) {
             $command .= " $file";
@@ -277,7 +275,7 @@ class Repository
 
     public function getRelatedCommits($hash)
     {
-        $logs = $this->getClient()->run($this, 'log --pretty=format:\'"%h": {"hash": "%H", "short_hash": "%h", "tree": "%T", "parent": "%P", "author": "%an", "author_email": "%ae", "date": "%at", "commiter": "%cn", "commiter_email": "%ce", "commiter_date": "%ct", "message": "%f"}\'');
+        $logs = $this->getClient()->run($this, 'log --pretty=format:"\"%h\": {\"hash\": \"%H\", \"short_hash\": \"%h\", \"tree\": \"%T\", \"parent\": \"%P\", \"author\": \"%an\", \"author_email\": \"%ae\", \"date\": \"%at\", \"commiter\": \"%cn\", \"commiter_email\": \"%ce\", \"commiter_date\": \"%ct\", \"message\": \"%f\"}"');
 
         if (empty($logs)) {
             throw new \RuntimeException('No commit log available');
@@ -322,7 +320,7 @@ class Repository
 
     public function getCommit($commitHash)
     {
-        $logs = $this->getClient()->run($this, 'show --pretty=format:\'{"hash": "%H", "short_hash": "%h", "tree": "%T", "parent": "%P", "author": "%an", "author_email": "%ae", "date": "%at", "commiter": "%cn", "commiter_email": "%ce", "commiter_date": "%ct", "message": "%f"}\' ' . $commitHash);
+        $logs = $this->getClient()->run($this, 'show --pretty=format:"{\"hash\": \"%H\", \"short_hash\": \"%h\", \"tree\": \"%T\", \"parent\": \"%P\", \"author\": \"%an\", \"author_email\": \"%ae\", \"date\": \"%at\", \"commiter\": \"%cn\", \"commiter_email\": \"%ce\", \"commiter_date\": \"%ct\", \"message\": \"%f\"}" ' . $commitHash);
 
         if (empty($logs)) {
             throw new \RuntimeException('No commit log available');
@@ -338,7 +336,7 @@ class Repository
         unset($logs[0]);
 
         if (empty($logs[1])) {
-            $logs = explode("\n", $this->getClient()->run($this, 'diff '.$commitHash.'~1..'.$commitHash));
+            $logs = explode("\n", $this->getClient()->run($this, 'diff ' . $commitHash . '~1..' . $commitHash));
         }
 
         // Read diff logs
@@ -417,7 +415,7 @@ class Repository
 
     public function getAuthorStatistics()
     {
-        $logs = $this->getClient()->run($this, 'log --pretty=format:\'%an||%ae\' ' . $this->getHead());
+        $logs = $this->getClient()->run($this, 'log --pretty=format:"%an||%ae" ' . $this->getHead());
 
         if (empty($logs)) {
             throw new \RuntimeException('No statistics available');
@@ -515,7 +513,7 @@ class Repository
      */
     public function getBranchTree($branch)
     {
-        $hash = $this->getClient()->run($this, "log --pretty='%T' --max-count=1 $branch");
+        $hash = $this->getClient()->run($this, "log --pretty=\"%T\" --max-count=1 $branch");
         $hash = trim($hash, "\r\n ");
 
         return $hash ? : false;

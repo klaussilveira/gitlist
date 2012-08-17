@@ -19,7 +19,7 @@ class TreeController implements ControllerProviderInterface
             if (!$branch) {
                 $branch = $repository->getHead();
             }
-            $files = $repository->getTree($tree ? "$branch:'$tree'/" : $branch);
+            $files = $repository->getTree($tree ? "$branch:\"$tree\"/" : $branch);
             $breadcrumbs = $app['util.view']->getBreadcrumbs($tree);
 
             $parent = null;

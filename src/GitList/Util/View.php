@@ -32,6 +32,7 @@ class View
     {
         $pageNumber = (empty($pageNumber)) ? 0 : $pageNumber;
         $lastPage = intval($totalCommits / 15);
+
         // If total commits are integral multiple of 15, the lastPage will be commits/15 - 1.
         $lastPage = ($lastPage * 15 == $totalCommits) ? $lastPage - 1 : $lastPage;
         $nextPage = $pageNumber + 1;

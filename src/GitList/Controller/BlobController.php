@@ -15,7 +15,7 @@ class BlobController implements ControllerProviderInterface
 
         $route->get('{repo}/blob/{branch}/{file}', function($repo, $branch, $file) use ($app) {
             $repository = $app['git']->getRepository($app['git.repos'] . $repo);
-            $blob = $repository->getBlob("$branch:'$file'");
+            $blob = $repository->getBlob("$branch:\"$file\"");
             $breadcrumbs = $app['util.view']->getBreadcrumbs($file);
             $fileType = $app['util.repository']->getFileType($file);
 
@@ -36,7 +36,7 @@ class BlobController implements ControllerProviderInterface
 
         $route->get('{repo}/raw/{branch}/{file}', function($repo, $branch, $file) use ($app) {
             $repository = $app['git']->getRepository($app['git.repos'] . $repo);
-            $blob = $repository->getBlob("$branch:'$file'")->output();
+            $blob = $repository->getBlob("$branch:\"$file\"")->output();
 
             return new Response($blob, 200, array('Content-Type' => 'text/plain'));
         })->assert('file', '.+')

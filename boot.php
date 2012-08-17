@@ -1,5 +1,9 @@
 <?php
 
+if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+    define('WINDOWS_BUILD', 1);
+}
+
 // Load configuration
 $config = new GitList\Config('config.ini');
 $config->set('git', 'repositories', rtrim($config->get('git', 'repositories'), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR);

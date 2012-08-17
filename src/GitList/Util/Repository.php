@@ -135,7 +135,7 @@ class Repository
             if (preg_match('/^readme*/i', $file['name'])) {
                 return array(
                     'filename' => $file['name'],
-                    'content'  => $repository->getBlob("$branch:'{$file['name']}'")->output()
+                    'content'  => $repository->getBlob("$branch:\"{$file['name']}\"")->output()
                 );
             }
         }
