@@ -750,7 +750,7 @@ a.label:hover,a.badge:hover{color:#ffffff;text-decoration:none;cursor:pointer;}
 .space-left{padding:0 0 0 8px;}
 .CodeMirror{line-height:16px;font-family:Consolas,"Liberation Mono",Courier,monospace;font-size:12px;position:relative;overflow:hidden;}
 .CodeMirror-scroll{overflow-x:auto;overflow-y:hidden;height:auto;position:relative;outline:none;}
-.CodeMirror-scrollbar{float:right;overflow-x:hidden;overflow-y:scroll;margin-left:-1px;}
+.CodeMirror-scrollbar{float:right;overflow-x:hidden;overflow-y:hidden;margin-left:-1px;}
 .CodeMirror-scrollbar-inner{width:1px;}
 .CodeMirror-scrollbar.cm-sb-overlap{position:absolute;z-index:1;float:none;right:0;min-width:12px;}
 .CodeMirror-scrollbar.cm-sb-nonoverlap{min-width:12px;}
