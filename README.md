@@ -45,11 +45,10 @@ In order to run GitList on your server, you'll need:
 * Download GitList from [gitlist.org](http://gitlist.org/) and decompress to your `/var/www/gitlist` folder, or anywhere else you want to place GitList. 
 * Rename the `config.ini-example` file to `config.ini`.
 * Open up the `config.ini` and configure your installation. You'll have to provide where your repositories are located and the base GitList URL (in our case, http://localhost/gitlist).
-* Create the cache folder and give read/write permissions to your web server user:
+* Give read/write permissions to your web server user for the cache directory:
 
 ```
 cd /var/www/gitlist
-mkdir cache
 chmod 777 cache
 ```
 
