@@ -46,7 +46,7 @@ class Repository
 
     public function setConfig($key, $value)
     {
-        $this->getClient()->run($this, "config $key \"$value\"");
+        $this->getClient()->run($this, "config {$key} \"{$value}\"");
 
         return $this;
     }
@@ -63,7 +63,7 @@ class Repository
             $files = implode(' ', $files);
         }
 
-        $this->getClient()->run($this, "add $files");
+        $this->getClient()->run($this, "add {$files}");
 
         return $this;
     }
@@ -88,7 +88,7 @@ class Repository
      */
     public function commit($message)
     {
-        $this->getClient()->run($this, "commit -m \"$message\"");
+        $this->getClient()->run($this, "commit -m \"{$message}\"");
 
         return $this;
     }
@@ -101,7 +101,7 @@ class Repository
      */
     public function checkout($branch)
     {
-        $this->getClient()->run($this, "checkout $branch");
+        $this->getClient()->run($this, "checkout {$branch}");
 
         return $this;
     }
@@ -130,11 +130,11 @@ class Repository
         $command = "push";
 
         if ($repository) {
-            $command .= " $repository";
+            $command .= " {$repository}";
         }
 
         if ($refspec) {
-            $command .= " $refspec";
+            $command .= " {$refspec}";
         }
 
         $this->getClient()->run($this, $command);
@@ -198,7 +198,7 @@ class Repository
      */
     public function createBranch($branch)
     {
-        $this->getClient()->run($this, "branch $branch");
+        $this->getClient()->run($this, "branch {$branch}");
     }
 
     /**
@@ -228,9 +228,9 @@ class Repository
     public function getTotalCommits($file = null)
     {
         if (WINDOWS_BUILD) {
-            $command = "rev-list --count --all $file";
+            $command = "rev-list --count --all {$file}";
         } else {
-            $command = "rev-list --all $file | wc -l";
+            $command = "rev-list --all {$file} | wc -l";
         }
 
         $commits = $this->getClient()->run($this, $command);
@@ -247,7 +247,7 @@ class Repository
     public function getCommits($file = null, $page = 0)
     {
         $page = 15 * $page;
-        $pager = "--skip=$page --max-count=15";
+        $pager = "--skip={$page} --max-count=15";
         $command = 'log ' . $pager . ' --pretty=format:"\"%h\": {\"hash\": \"%H\", \"short_hash\": \"%h\", \"tree\": \"%T\", \"parent\": \"%P\", \"author\": \"%an\", \"author_email\": \"%ae\", \"date\": \"%at\", \"commiter\": \"%cn\", \"commiter_email\": \"%ce\", \"commiter_date\": \"%ct\", \"message\": \"%f\"}"';
 
         if ($file) {
@@ -530,7 +530,7 @@ class Repository
     {
         $fs = new Filesystem;
         $fs->mkdir(dirname($output));
-        $this->getClient()->run($this, "archive --format=$format --output=$output $tree");
+        $this->getClient()->run($this, "archive --format=$format --output={$output} {$tree}");
     }
 
     /**
@@ -567,7 +567,7 @@ class Repository
     public function getBlame($file)
     {
         $blame = array();
-        $logs = $this->getClient()->run($this, "blame -s $file");
+        $logs = $this->getClient()->run($this, "blame -s {$file}");
         $logs = explode("\n", $logs);
 
         $i = 0;
