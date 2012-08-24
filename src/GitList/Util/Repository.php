@@ -107,11 +107,11 @@ class Repository
      */
     public function getFileType($file)
     {
-        if (($pos = strrpos($file, '.')) !== FALSE) {
-            $fileType = substr($file, $pos + 1);
-        } else {
+        if (($pos = strrpos($file, '.')) != TRUE) {
             return 'text';
         }
+
+        $fileType = substr($file, $pos + 1);
 
         if (isset($this->defaultFileTypes[$fileType])) {
             return $this->defaultFileTypes[$fileType];
