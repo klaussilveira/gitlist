@@ -18,11 +18,7 @@ class Config
 
     public function get($section, $option)
     {
-        if (!array_key_exists($section, $this->data)) {
-            return false;
-        }
-
-        if (!array_key_exists($option, $this->data[$section])) {
+        if (!array_key_exists($section, $this->data) || !array_key_exists($option, $this->data[$section])) {
             return false;
         }
 

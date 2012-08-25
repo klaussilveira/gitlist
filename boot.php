@@ -1,6 +1,10 @@
 <?php
 
-if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+if (version_compare(PHP_VERSION, '5', 'lt')) {
+    exit;
+}
+
+if (stristr(PHP_OS, 'WIN')) {
     define('WINDOWS_BUILD', 1);
 }
 
