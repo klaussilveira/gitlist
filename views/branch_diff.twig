@@ -1,0 +1,54 @@
+{% extends 'layout_page.twig' %}
+
+{% set page = 'commits' %}
+
+{% block title %}GitList{% endblock %}
+
+{% block content %}
+    {% include 'breadcrumb.twig' with {breadcrumbs: breadcrumbs} %}
+
+    {% for date, commit in branchdiff.getCommits %}
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th colspan="3">{{ date | date("F j, Y") }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in commit %}
+            <tr>
+                <td width="5%"><img src="http://gravatar.com/avatar/{{ item.getAuthor.getEmail | md5 }}?s=40" /></td>
+                <td width="95%">
+                    <span class="pull-right"><a class="btn btn-small" href="{{ baseurl }}/{{ repo }}/commit/{{ item.getShortHash }}"><i class="icon-list-alt"></i> View {{ item.getShortHash }}</a></span>
+                    <h4>{{ item.getMessage }}</h4>
+                    <span><a href="mailto:{{ item.getAuthor.getEmail }}">{{ item.getAuthor.getName }}</a> authored in {{ item.getDate | date('d/m/Y \\a\\t H:i:s') }}</span>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endfor %}
+
+    <ul class="commit-list">
+        {% for diff in branchdiff.getDiffs %}
+            <li><i class="icon-file"></i> <a href="#{{ loop.index }}">{{ diff.getFile }}</a> <span class="meta pull-right">{{ diff.getIndex }}</span></li>
+        {% endfor %}
+    </ul>
+
+    {% for diff in branchdiff.getDiffs %}
+    <div class="source-view">
+        <div class="source-header">
+            <div class="meta"><a name="{{ loop.index }}">{{ diff.getFile }}</a></div>
+        </div>
+        
+        <div class="source-diff">
+        {% for line in diff.getLines %}
+            <pre{% if line.getType %} class="{{ line.getType }}"{% endif %}>{{ line.getLine }}</pre>
+        {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+
+    <hr>
+{% endblock %}
+
