@@ -2,6 +2,8 @@
 
 if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
     define('WINDOWS_BUILD', 1);
+} else {
+    define('WINDOWS_BUILD', 0);
 }
 
 // Load configuration
