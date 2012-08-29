@@ -12,3 +12,10 @@ debug = false
 [filetypes]
 ; extension = type
 ; dist = xml
+
+; If you need to specify custom filetypes as binary or explicit as not binary for certain extensions,
+; do this here
+[binary_filetypes]
+; extension = true
+; svh = false
+; map = true

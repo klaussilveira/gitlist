@@ -19,6 +19,14 @@ class BlobController implements ControllerProviderInterface
             $breadcrumbs = $app['util.view']->getBreadcrumbs($file);
             $fileType = $app['util.repository']->getFileType($file);
 
+            if ('image' !== $fileType && $app['util.repository']->isBinary($fileType)) {
+                return $app->redirect($app['url_generator']->generate('blob_raw', array(
+                    'repo'   => $repo,
+                    'branch' => $branch,
+                    'file'   => $file,
+                )));
+            }
+
             return $app['twig']->render('file.twig', array(
                 'file'           => $file,
                 'fileType'       => $fileType,

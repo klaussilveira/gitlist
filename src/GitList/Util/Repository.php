@@ -91,6 +91,13 @@ class Repository
         'csproj'   => 'xml',
     );
 
+    protected static $binaryTypes = array(
+        'exe', 'com', 'so', 'la', 'o', 'dll', 'pyc',
+        'jpg', 'jpeg', 'bmp', 'gif', 'png', 'xmp', 'pcx', 'svgz', 'ttf', 'tiff', 'oet',
+        'gz', 'tar', 'rar', 'zip', '7z', 'jar', 'class',
+        'odt', 'ods', 'pdf', 'doc', 'docx', 'dot', 'xls', 'xlsx',
+    );
+
     public function __construct(Application $app)
     {
         $this->app = $app;
@@ -124,6 +131,41 @@ class Repository
         }
 
         return 'text';
+    }
+
+    /**
+     * Returns whether the file is binary.
+     *
+     * @param string  $file
+     * @param boolean $unknownAsBin if the file-type is unknown tread it as binary
+     *
+     * @return boolean
+     */
+    public function isBinary($file, $unknownAsBin = false)
+    {
+        if (false !== ($pos = strrpos($file, '.'))) {
+            $fileType = substr($file, $pos + 1);
+        } elseif ($unknownAsBin) {
+            return true;
+        } else {
+            return false;
+        }
+
+        if (in_array($fileType, self::$binaryTypes)) {
+            return true;
+        }
+
+        if (!empty($this->app['binary_filetypes'])) {
+            if (array_key_exists($fileType, $this->app['binary_filetypes'])) {
+                return ('true' == $this->app['binary_filetypes'][$fileType]);
+            }
+        }
+
+        if ($unknownAsBin) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public function getReadme($repo, $branch = 'master')
