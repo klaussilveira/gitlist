@@ -143,7 +143,7 @@ class Repository
      */
     public function isBinary($file, $unknownAsBin = false)
     {
-        if (false !== ($pos = strrpos($file, '.'))) {
+        if (($pos = strrpos($file, '.')) !== false) {
             $fileType = substr($file, $pos + 1);
         } elseif ($unknownAsBin) {
             return true;
@@ -157,7 +157,7 @@ class Repository
 
         if (!empty($this->app['binary_filetypes'])) {
             if (array_key_exists($fileType, $this->app['binary_filetypes'])) {
-                return ('true' == $this->app['binary_filetypes'][$fileType]);
+                return $this->app['binary_filetypes'][$fileType];
             }
         }
 
