@@ -14,9 +14,7 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
 
     public static function setUpBeforeClass()
     {
-        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-            self::$tmpdir = getenv('TMP').'/gitlist';
-        }
+        self::$tmpdir = getenv('TMP').'/gitlist_' . md5(time() . mt_rand()) . '/';
 
         $fs = new Filesystem();
         $fs->mkdir(self::$tmpdir);
@@ -332,6 +330,10 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
 
     public function testIsGettingSymlinksWithinTrees()
     {
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            $this->markTestSkipped('Unable to run on Windows');
+        }
+
         $repository = $this->client->getRepository(self::$tmpdir . '/testrepo');
         $fs = new Filesystem();
         $fs->touch(self::$tmpdir . '/testrepo/original_file.txt');
@@ -354,6 +356,10 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
 
     public function testIsGettingSymlinksWithinTreesOutput()
     {
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            $this->markTestSkipped('Unable to run on Windows');
+        }
+
         $repository = $this->client->getRepository(self::$tmpdir . '/testrepo');
         $fs = new Filesystem();
         $fs->touch(self::$tmpdir . '/testrepo/original_file.txt');
@@ -377,6 +383,11 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
     public static function tearDownAfterClass()
     {
         $fs = new Filesystem();
-        $fs->remove(self::$tmpdir);
+
+        try {
+            $fs->remove(self::$tmpdir);
+        } catch (\Exception $e) {
+            // Ignore, file is not closed yet
+        }
     }
 }

@@ -8,15 +8,13 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class ClientTest extends PHPUnit_Framework_TestCase
 {
-    protected static $tmpdir = '/tmp/gitlist';
+    protected static $tmpdir;
 
     protected $client;
 
     public static function setUpBeforeClass()
     {
-        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-            self::$tmpdir = getenv('TMP').'/gitlist';
-        }
+        self::$tmpdir = str_replace('\\', '/', getenv('TMP')  .'/gitlist_' . md5(time() . mt_rand()));
 
         $fs = new Filesystem();
         $fs->mkdir(self::$tmpdir);
@@ -58,7 +56,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
      */
     public function testIsNotAbleToGetUnexistingRepositories()
     {
-        $this->client->getRepositories('/tmp');
+        $this->client->getRepositories(self::$tmpdir);
     }
 
     public function testIsCreatingRepository()
@@ -117,6 +115,11 @@ class ClientTest extends PHPUnit_Framework_TestCase
     public static function tearDownAfterClass()
     {
         $fs = new Filesystem();
-        $fs->remove(self::$tmpdir);
+
+        try {
+            //$fs->remove(self::$tmpdir);
+        } catch (IOException $e) {
+            // Ignore, file is not closed yet
+        }
     }
 }

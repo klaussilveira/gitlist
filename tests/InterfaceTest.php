@@ -4,17 +4,16 @@ require 'vendor/autoload.php';
 
 use Silex\WebTestCase;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\Exception\IOException;
 use GitList\Component\Git\Client;
 
 class InterfaceTest extends WebTestCase
 {
-    protected static $tmpdir = '/tmp/gitlist';
+    protected static $tmpdir;
 
     public static function setUpBeforeClass()
     {
-        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-            self::$tmpdir = getenv('TMP').'/gitlist';
-        }
+        self::$tmpdir = getenv('TMP').'/gitlist_' . md5(time() . mt_rand()) . '/';
 
         $fs = new Filesystem();
         $fs->mkdir(self::$tmpdir);
@@ -197,6 +196,11 @@ class InterfaceTest extends WebTestCase
     public static function tearDownAfterClass()
     {
         $fs = new Filesystem();
-        $fs->remove(self::$tmpdir);
+
+        try {
+            $fs->remove(self::$tmpdir);
+        } catch (IOException $e) {
+            // Ignore, file is not closed yet
+        }
     }
 }
