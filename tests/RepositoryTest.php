@@ -8,13 +8,13 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class RepositoryTest extends PHPUnit_Framework_TestCase
 {
-    protected static $tmpdir = '/tmp/gitlist';
+    protected static $tmpdir;
 
     protected $client;
 
     public static function setUpBeforeClass()
     {
-        self::$tmpdir = getenv('TMP').'/gitlist_' . md5(time() . mt_rand()) . '/';
+        self::$tmpdir = getenv('TMP').'/gitlist_' . md5(time() . mt_rand());
 
         $fs = new Filesystem();
         $fs->mkdir(self::$tmpdir);
