@@ -14,7 +14,15 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
 
     public static function setUpBeforeClass()
     {
-        self::$tmpdir = getenv('TMP').'/gitlist_' . md5(time() . mt_rand());
+        if (getenv('TMP')) {
+            self::$tmpdir = getenv('TMP');
+        } elseif (getenv('TMPDIR')) {
+            self::$tmpdir = getenv('TMPDIR');
+        } else {
+           self::$tmpdir = '/tmp';
+        }
+
+        self::$tmpdir .= '/gitlist_' . md5(time() . mt_rand());
 
         $fs = new Filesystem();
         $fs->mkdir(self::$tmpdir);
