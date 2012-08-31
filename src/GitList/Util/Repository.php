@@ -136,7 +136,7 @@ class Repository
     /**
      * Returns whether the file is binary.
      *
-     * @param string  $file
+     * @param string $file
      *
      * @return boolean
      */
