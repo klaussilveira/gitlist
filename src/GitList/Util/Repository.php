@@ -137,16 +137,13 @@ class Repository
      * Returns whether the file is binary.
      *
      * @param string  $file
-     * @param boolean $unknownAsBin if the file-type is unknown tread it as binary
      *
      * @return boolean
      */
-    public function isBinary($file, $unknownAsBin = false)
+    public function isBinary($file)
     {
         if (($pos = strrpos($file, '.')) !== false) {
             $fileType = substr($file, $pos + 1);
-        } elseif ($unknownAsBin) {
-            return true;
         } else {
             return false;
         }
@@ -155,17 +152,11 @@ class Repository
             return true;
         }
 
-        if (!empty($this->app['binary_filetypes'])) {
-            if (array_key_exists($fileType, $this->app['binary_filetypes'])) {
-                return $this->app['binary_filetypes'][$fileType];
-            }
+        if (!empty($this->app['binary_filetypes']) && array_key_exists($fileType, $this->app['binary_filetypes'])) {
+            return $this->app['binary_filetypes'][$fileType];
         }
 
-        if ($unknownAsBin) {
-            return true;
-        } else {
-            return false;
-        }
+        return false;
     }
 
     public function getReadme($repo, $branch = 'master')
