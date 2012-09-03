@@ -19,7 +19,7 @@ class BlobController implements ControllerProviderInterface
             $breadcrumbs = $app['util.view']->getBreadcrumbs($file);
             $fileType = $app['util.repository']->getFileType($file);
 
-            if ($fileType !== 'image' && $app['util.repository']->isBinary($fileType)) {
+            if ($fileType !== 'image' && $app['util.repository']->isBinary($file)) {
                 return $app->redirect($app['url_generator']->generate('blob_raw', array(
                     'repo'   => $repo,
                     'branch' => $branch,
@@ -46,7 +46,17 @@ class BlobController implements ControllerProviderInterface
             $repository = $app['git']->getRepository($app['git.repos'] . $repo);
             $blob = $repository->getBlob("$branch:\"$file\"")->output();
 
-            return new Response($blob, 200, array('Content-Type' => 'text/plain'));
+            $headers = array();
+
+            if ($app['util.repository']->isBinary($file)) {
+                $headers['Content-Disposition'] = 'attachment; filename="' .  $file . '"';
+                $headers['Content-Transfer-Encoding'] = 'application/octet-stream';
+                $headers['Content-Transfer-Encoding'] = 'binary';
+            } else {
+                $headers['Content-Transfer-Encoding'] = 'text/plain';
+            }
+
+            return new Response($blob, 200, $headers);
         })->assert('file', '.+')
           ->assert('repo', '[\w-._]+')
           ->assert('branch', '[\w-._]+')
