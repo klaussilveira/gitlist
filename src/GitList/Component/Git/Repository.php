@@ -580,6 +580,7 @@ class Repository
             preg_match_all("/([a-zA-Z0-9^]{8})\s+.*?([0-9]+)\)(.+)/", $log, $match);
 
             $current_commit = $match[1][0];
+            $current_commit = str_replace('^', '', $current_commit);
             if ($current_commit != $previous_commit) {
                 ++$i;
                 $blame[$i] = array('line' => '', 'commit' => $current_commit);
