@@ -11,6 +11,7 @@ class Blob extends ScopeAware
     protected $mode;
     protected $hash;
     protected $name;
+    protected $age;
     protected $size;
 
     public function __construct($hash, Client $client, Repository $repository)
@@ -55,6 +56,16 @@ class Blob extends ScopeAware
     public function setName($name)
     {
         $this->name = $name;
+    }
+
+    public function getAge()
+    {
+        return $this->age;
+    }
+
+    public function setAge($age)
+    {
+        $this->age = $age;
     }
 
     public function getSize()

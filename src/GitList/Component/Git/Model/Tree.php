@@ -11,6 +11,8 @@ class Tree extends ScopeAware implements \RecursiveIterator
     protected $mode;
     protected $hash;
     protected $name;
+    protected $age;
+    protected $path;
     protected $data;
     protected $position = 0;
 
@@ -19,6 +21,7 @@ class Tree extends ScopeAware implements \RecursiveIterator
         $this->setClient($client);
         $this->setRepository($repository);
         $this->setHash($hash);
+        $this->setPath($hash == "master" ? "" : preg_replace("/master.*\"(.*)\"\//", "$1", $hash));
     }
 
     public function parse()
@@ -43,6 +46,10 @@ class Tree extends ScopeAware implements \RecursiveIterator
                 continue;
             }
 
+            $filePath = $this->getPath() != "" ? $this->getPath() . "/$file[4]" : $file[4];
+            $age = $this->getClient()->run($this->getRepository(), 'log -1 --date=relative --format="%ad" -- ' . "\"$filePath\"");
+            $age = preg_replace("/(\d year.*),.*/", "$1 ago", $age);
+
             if ($file[0] == '120000') {
                 $show = $this->getClient()->run($this->getRepository(), 'show ' . $file[2]);
                 $tree = new Symlink;
@@ -57,6 +64,7 @@ class Tree extends ScopeAware implements \RecursiveIterator
                 $blob = new Blob($file[2], $this->getClient(), $this->getRepository());
                 $blob->setMode($file[0]);
                 $blob->setName($file[4]);
+                $blob->setAge($age);
                 $blob->setSize($file[3]);
                 $root[] = $blob;
                 continue;
@@ -65,6 +73,7 @@ class Tree extends ScopeAware implements \RecursiveIterator
             $tree = new Tree($file[2], $this->getClient(), $this->getRepository());
             $tree->setMode($file[0]);
             $tree->setName($file[4]);
+            $tree->setAge($age);
             $root[] = $tree;
         }
 
@@ -79,6 +88,7 @@ class Tree extends ScopeAware implements \RecursiveIterator
             if ($node instanceof Blob) {
                 $file['type'] = 'blob';
                 $file['name'] = $node->getName();
+                $file['age'] = $node->getAge();
                 $file['size'] = $node->getSize();
                 $file['mode'] = $node->getMode();
                 $file['hash'] = $node->getHash();
@@ -89,6 +99,7 @@ class Tree extends ScopeAware implements \RecursiveIterator
             if ($node instanceof Tree) {
                 $folder['type'] = 'folder';
                 $folder['name'] = $node->getName();
+                $folder['age'] = $node->getAge();
                 $folder['size'] = '';
                 $folder['mode'] = $node->getMode();
                 $folder['hash'] = $node->getHash();
@@ -176,5 +187,25 @@ class Tree extends ScopeAware implements \RecursiveIterator
     public function setName($name)
     {
         $this->name = $name;
+    }
+
+    public function getPath()
+    {
+        return $this->path;
+    }
+
+    public function setPath($path)
+    {
+        $this->path = $path;
+    }
+
+    public function getAge()
+    {
+        return $this->age;
+    }
+
+    public function setAge($age)
+    {
+        $this->age = $age;
     }
 }
