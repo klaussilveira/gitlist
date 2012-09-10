@@ -4,30 +4,41 @@ require 'vendor/autoload.php';
 
 use Silex\WebTestCase;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\Exception\IOException;
 use GitList\Component\Git\Client;
 
 class InterfaceTest extends WebTestCase
 {
-    const PATH = '/tmp/gitlist/';
+    protected static $tmpdir;
 
     public static function setUpBeforeClass()
     {
-        $fs = new Filesystem();
-        $fs->mkdir(InterfaceTest::PATH);
+        if (getenv('TMP')) {
+            self::$tmpdir = getenv('TMP');
+        } elseif (getenv('TMPDIR')) {
+            self::$tmpdir = getenv('TMPDIR');
+        } else {
+           self::$tmpdir = '/tmp';
+        }
 
-        if (!is_writable(InterfaceTest::PATH)) {
+        self::$tmpdir .= '/gitlist_' . md5(time() . mt_rand()) . '/';
+
+        $fs = new Filesystem();
+        $fs->mkdir(self::$tmpdir);
+
+        if (!is_writable(self::$tmpdir)) {
             $this->markTestSkipped('There are no write permissions in order to create test repositories.');
         }
 
         $options['path'] = getenv('GIT_CLIENT') ?: '/usr/bin/git';
-        $options['hidden'] = array(InterfaceTest::PATH . '/hiddenrepo');
+        $options['hidden'] = array(self::$tmpdir . '/hiddenrepo');
         $git = new Client($options);
 
         // GitTest repository fixture
-        $git->createRepository(InterfaceTest::PATH . 'GitTest');
-        $repository = $git->getRepository(InterfaceTest::PATH . 'GitTest');
-        file_put_contents(InterfaceTest::PATH . 'GitTest/README.md', "## GitTest\nGitTest is a *test* repository!");
-        file_put_contents(InterfaceTest::PATH . 'GitTest/test.php', "<?php\necho 'Hello World'; // This is a test");
+        $git->createRepository(self::$tmpdir . 'GitTest');
+        $repository = $git->getRepository(self::$tmpdir . 'GitTest');
+        file_put_contents(self::$tmpdir . 'GitTest/README.md', "## GitTest\nGitTest is a *test* repository!");
+        file_put_contents(self::$tmpdir . 'GitTest/test.php', "<?php\necho 'Hello World'; // This is a test");
         $repository->setConfig('user.name', 'Luke Skywalker');
         $repository->setConfig('user.email', 'luke@rebel.org');
         $repository->addAll();
@@ -36,14 +47,14 @@ class InterfaceTest extends WebTestCase
         $repository->createBranch('issue42');
 
         // foobar repository fixture
-        $git->createRepository(InterfaceTest::PATH . 'foobar');
-        $repository = $git->getRepository(InterfaceTest::PATH . '/foobar');
-        file_put_contents(InterfaceTest::PATH . 'foobar/bar.json', "{\n\"name\": \"foobar\"\n}");
-        file_put_contents(InterfaceTest::PATH . 'foobar/.git/description', 'This is a test repo!');
-        $fs->mkdir(InterfaceTest::PATH . 'foobar/myfolder');
-        $fs->mkdir(InterfaceTest::PATH . 'foobar/testfolder');
-        file_put_contents(InterfaceTest::PATH . 'foobar/myfolder/mytest.php', "<?php\necho 'Hello World'; // This is my test");
-        file_put_contents(InterfaceTest::PATH . 'foobar/testfolder/test.php', "<?php\necho 'Hello World'; // This is a test");
+        $git->createRepository(self::$tmpdir . 'foobar');
+        $repository = $git->getRepository(self::$tmpdir . '/foobar');
+        file_put_contents(self::$tmpdir . 'foobar/bar.json', "{\n\"name\": \"foobar\"\n}");
+        file_put_contents(self::$tmpdir . 'foobar/.git/description', 'This is a test repo!');
+        $fs->mkdir(self::$tmpdir . 'foobar/myfolder');
+        $fs->mkdir(self::$tmpdir . 'foobar/testfolder');
+        file_put_contents(self::$tmpdir . 'foobar/myfolder/mytest.php', "<?php\necho 'Hello World'; // This is my test");
+        file_put_contents(self::$tmpdir . 'foobar/testfolder/test.php', "<?php\necho 'Hello World'; // This is a test");
         $repository->setConfig('user.name', 'Luke Skywalker');
         $repository->setConfig('user.email', 'luke@rebel.org');
         $repository->addAll();
@@ -54,7 +65,7 @@ class InterfaceTest extends WebTestCase
     {
         $app = require 'boot.php';
         $app['debug'] = true;
-        $app['git.repos'] = InterfaceTest::PATH;
+        $app['git.repos'] = self::$tmpdir;
         return $app;
     }
 
@@ -193,6 +204,11 @@ class InterfaceTest extends WebTestCase
     public static function tearDownAfterClass()
     {
         $fs = new Filesystem();
-        $fs->remove(InterfaceTest::PATH);
+
+        try {
+            $fs->remove(self::$tmpdir);
+        } catch (IOException $e) {
+            // Ignore, file is not closed yet
+        }
     }
 }

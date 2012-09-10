@@ -90,7 +90,9 @@ class Client
                 $isRepository = file_exists($file->getPathname() . '/.git/HEAD');
 
                 if ($isRepository || $isBare) {
-                    if (in_array($file->getPathname(), $this->getHidden())) {
+                    $pathName = str_replace('\\', '/', $file->getPathname());
+
+                    if (in_array($pathName, $this->getHidden())) {
                         continue;
                     }
 
@@ -106,7 +108,7 @@ class Client
                         $description = 'There is no repository description file. Please, create one to remove this message.';
                     }
 
-                    $repositories[] = array('name' => $file->getFilename(), 'path' => $file->getPathname(), 'description' => $description);
+                    $repositories[] = array('name' => $file->getFilename(), 'path' => $pathName, 'description' => $description);
                     continue;
                 }
             }
