@@ -1,6 +1,6 @@
 <?php
 
-if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN' && !defined('WINDOWS_BUILD')) {
     define('WINDOWS_BUILD', 1);
 }
 
