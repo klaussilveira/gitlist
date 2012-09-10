@@ -1,7 +1,7 @@
 {
     "require": {
         "silex/silex": "1.0.*",
-        "twig/twig": "1.8.*",
+        "twig/twig": "1.9.*",
         "symfony/twig-bridge": "2.1.*",
         "symfony/filesystem": "2.1.*"
     },
