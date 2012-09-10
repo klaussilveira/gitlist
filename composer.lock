@@ -1,5 +1,5 @@
 {
-    "hash": "c2194c61493cf0a4e1eb174105b65fe6",
+    "hash": "d1f7640fa1486cc57f441e319f8b080c",
     "packages": [
         {
             "package": "pimple/pimple",
@@ -135,7 +135,7 @@
     "aliases": [
 
     ],
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "stability-flags": [
 
     ]

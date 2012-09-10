@@ -9,7 +9,7 @@
         "symfony/browser-kit": "2.1.*",
         "symfony/css-selector": "2.1.*"
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "autoload": {
         "psr-0": {
             "GitList": "src/"
