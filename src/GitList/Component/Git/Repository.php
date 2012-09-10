@@ -227,7 +227,7 @@ class Repository
      */
     public function getTotalCommits($file = null)
     {
-        if (WINDOWS_BUILD) {
+        if (defined('PHP_WINDOWS_VERSION_BUILD')) {
             $command = "rev-list --count --all $file";
         } else {
             $command = "rev-list --all $file | wc -l";
