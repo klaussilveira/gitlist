@@ -1,7 +1,13 @@
 {
-    "hash": "1790d6792c8544b8d1c9efbf8f5fe2de",
+    "hash": "9820789efd58e6b6bb6b746efb8500fe",
     "packages": [
         {
+            "package": "klaussilveira/gitter",
+            "version": "dev-master",
+            "source-reference": "209908f247194b1adc836f2e50f957cb1f11f41c",
+            "commit-date": "1347372763"
+        },
+        {
             "package": "pimple/pimple",
             "version": "dev-master",
             "alias-pretty-version": "1.0.x-dev",
@@ -10,8 +16,8 @@
         {
             "package": "pimple/pimple",
             "version": "dev-master",
-            "source-reference": "db836b8cfadc0f39dacafa2bf311a1ab603600bb",
-            "commit-date": "1343051648"
+            "source-reference": "b9f27b8dc18c08f00627dec02359b46a24791dc3",
+            "commit-date": "1347278988"
         },
         {
             "package": "silex/silex",
@@ -22,14 +28,14 @@
         {
             "package": "silex/silex",
             "version": "dev-master",
-            "source-reference": "ad563dde113092aa603e2b399d10ea43aece8006",
-            "commit-date": "1347084669"
+            "source-reference": "a9e34f08ab00c4cc6c97e7ae8fdf7d0fc367e5f5",
+            "commit-date": "1347298149"
         },
         {
             "package": "symfony/event-dispatcher",
             "version": "2.1.x-dev",
-            "source-reference": "v2.1.0-RC2",
-            "commit-date": "1345643321"
+            "source-reference": "v2.1.1",
+            "commit-date": "1347274422"
         },
         {
             "package": "symfony/filesystem",
@@ -40,26 +46,32 @@
         {
             "package": "symfony/http-foundation",
             "version": "2.1.x-dev",
-            "source-reference": "v2.1.0",
+            "source-reference": "v2.1.1",
             "commit-date": "1346761482"
         },
         {
             "package": "symfony/http-kernel",
             "version": "2.1.x-dev",
-            "source-reference": "ec5cdb100c20537e9d806facd4d121c985658e8b",
-            "commit-date": "1346926323"
+            "source-reference": "584499e64026f41c4be938ed35d8f0a9a9eebd38",
+            "commit-date": "1347354770"
+        },
+        {
+            "package": "symfony/process",
+            "version": "2.1.x-dev",
+            "source-reference": "v2.1.1",
+            "commit-date": "1346330945"
         },
         {
             "package": "symfony/routing",
             "version": "2.1.x-dev",
-            "source-reference": "v2.1.0",
-            "commit-date": "1346859854"
+            "source-reference": "v2.1.1",
+            "commit-date": "1347274422"
         },
         {
             "package": "symfony/twig-bridge",
             "version": "2.1.x-dev",
-            "source-reference": "v2.1.0",
-            "commit-date": "1345643321"
+            "source-reference": "v2.1.1",
+            "commit-date": "1347274422"
         },
         {
             "package": "twig/twig",

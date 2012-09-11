@@ -1,11 +1,8 @@
 <?php
 
-require 'vendor/autoload.php';
-
 use Silex\WebTestCase;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Filesystem\Exception\IOException;
-use GitList\Component\Git\Client;
+use Gitter\Client;
 
 class InterfaceTest extends WebTestCase
 {
@@ -204,11 +201,6 @@ class InterfaceTest extends WebTestCase
     public static function tearDownAfterClass()
     {
         $fs = new Filesystem();
-
-        try {
-            $fs->remove(self::$tmpdir);
-        } catch (IOException $e) {
-            // Ignore, file is not closed yet
-        }
+        $fs->remove(self::$tmpdir);
     }
 }

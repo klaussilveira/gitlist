@@ -7,8 +7,9 @@
          convertNoticesToExceptions="true"
          convertWarningsToExceptions="true"
          processIsolation="false"
-         stopOnFailure="false"
+         stopOnFailure="true"
          syntaxCheck="true"
+         bootstrap="./vendor/autoload.php"
 >
     <testsuites>
         <testsuite name="GitList Test Suite">

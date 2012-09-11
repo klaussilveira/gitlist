@@ -17,7 +17,7 @@ class CommitController implements ControllerProviderInterface
             $repository = $app['git']->getRepository($app['git.repos'] . $repo);
             $type = $file ? "$branch -- $file" : $branch;
             $pager = $app['util.view']->getPager($app['request']->get('page'), $repository->getTotalCommits($type));
-            $commits = $repository->getCommits($type, $pager['current']);
+            $commits = $repository->getPaginatedCommits($type, $pager['current']);
 
             foreach ($commits as $commit) {
                 $date = $commit->getDate();

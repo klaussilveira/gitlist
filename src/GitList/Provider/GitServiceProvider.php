@@ -2,7 +2,7 @@
 
 namespace GitList\Provider;
 
-use GitList\Component\Git\Client;
+use GitList\Git\Client;
 use Silex\Application;
 use Silex\ServiceProviderInterface;
 

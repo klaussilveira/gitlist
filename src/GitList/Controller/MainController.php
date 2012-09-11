@@ -41,7 +41,7 @@ class MainController implements ControllerProviderInterface
 
         $route->get('{repo}/{branch}/rss/', function($repo, $branch) use ($app) {
             $repository = $app['git']->getRepository($app['git.repos'] . $repo);
-            $commits = $repository->getCommits($branch);
+            $commits = $repository->getPaginatedCommits($branch);
 
             $html = $app['twig']->render('rss.twig', array(
                 'repo'           => $repo,
