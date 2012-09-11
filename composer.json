@@ -1,0 +1,28 @@
+{
+    "name": "klaussilveira/gitter",
+    "description": "Gitter allows you to interact in an object oriented manner with Git repositories.",
+    "keywords": ["git", "vcs"],
+    "homepage": "https://github.com/klaussilveira/gitter",
+    "type": "library",
+    "license": "BSD-2-Clause",
+    "authors": [
+        {
+            "name": "Klaus Silveira",
+            "email": "klaussilveira@php.net",
+            "homepage": "http://www.klaussilveira.com/",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "symfony/process": "2.1.*"
+    },
+    "require-dev": {
+        "symfony/filesystem": "2.1.*"
+    },
+    "autoload": {
+        "psr-0": {
+            "Gitter": "lib/"
+        }
+    }
+}
