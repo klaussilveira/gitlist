@@ -12,6 +12,7 @@
 namespace Gitter;
 
 use Symfony\Component\Process\Process;
+use Symfony\Component\Process\ExecutableFinder;
 
 class Client
 {
@@ -20,7 +21,11 @@ class Client
 
     public function __construct($options = null)
     {
-        $this->setPath((isset($options['path'])) ? $options['path'] : '/usr/bin/git');
+        if (!isset($options['path'])) {
+            $finder = new ExecutableFinder();
+            $options['path'] = $finder->find('git', '/usr/bin/git');
+        }
+        $this->setPath($options['path']);
         $this->setHidden((isset($options['hidden'])) ? $options['hidden'] : array());
     }
 
