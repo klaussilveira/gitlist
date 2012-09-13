@@ -13,7 +13,7 @@
             <h4>{{ commit.message }}</h4>
         </div>
         <div class="commit-body">
-            <img src="http://gravatar.com/avatar/{{ commit.author.email | md5 }}?s=32" class="pull-left space-right" />
+            <img src="https://gravatar.com/avatar/{{ commit.author.email | md5 }}?s=32" class="pull-left space-right" />
             <span><a href="mailto:{{ commit.author.email }}">{{ commit.author.name }}</a> authored in {{ commit.date | date('d/m/Y \\a\\t H:i:s') }}<br />Showing {{ commit.changedFiles }} changed files</span>
         </div>
     </div>
