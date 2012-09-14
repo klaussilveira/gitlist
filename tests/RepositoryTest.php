@@ -195,7 +195,7 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
             $this->assertEquals($commit->getAuthor()->getEmail(), 'luke@rebel.org');
             $this->assertEquals($commit->getCommiter()->getName(), 'Luke Skywalker');
             $this->assertEquals($commit->getCommiter()->getEmail(), 'luke@rebel.org');
-            $this->assertEquals($commit->getParentHash(), '');
+            $this->assertEquals($commit->getParentsHash(), array());
             $this->assertInstanceOf('DateTime', $commit->getDate());
             $this->assertInstanceOf('DateTime', $commit->getCommiterDate());
             $this->assertRegExp('/[a-f0-9]+/', $commit->getHash());

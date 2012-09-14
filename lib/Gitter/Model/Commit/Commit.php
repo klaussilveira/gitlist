@@ -18,7 +18,7 @@ class Commit extends AbstractModel
     protected $hash;
     protected $shortHash;
     protected $treeHash;
-    protected $parentHash;
+    protected $parentsHash;
     protected $author;
     protected $date;
     protected $commiter;
@@ -31,7 +31,7 @@ class Commit extends AbstractModel
         $this->setHash($data['hash']);
         $this->setShortHash($data['short_hash']);
         $this->setTreeHash($data['tree']);
-        $this->setParentHash($data['parent']);
+        $this->setParentsHash(array_filter(explode(' ', $data['parents'])));
 
         $this->setAuthor(
             new Author($data['author'], $data['author_email'])
@@ -82,14 +82,14 @@ class Commit extends AbstractModel
         $this->treeHash = $treeHash;
     }
 
-    public function getParentHash()
+    public function getParentsHash()
     {
-        return $this->parentHash;
+        return $this->parentsHash;
     }
 
-    public function setParentHash($parentHash)
+    public function setParentsHash($parentsHash)
     {
-        $this->parentHash = $parentHash;
+        $this->parentsHash = $parentsHash;
     }
 
     public function getAuthor()
