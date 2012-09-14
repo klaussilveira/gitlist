@@ -36,7 +36,9 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
             $this->markTestSkipped('There are no write permissions in order to create test repositories.');
         }
 
-        $options['path'] = getenv('GIT_CLIENT') ?: '/usr/bin/git';
+        $options = array(
+            'path' => getenv('GIT_CLIENT') ?: null,
+        );
         $this->client = new Client($options);
     }
 

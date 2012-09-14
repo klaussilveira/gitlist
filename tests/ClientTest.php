@@ -35,8 +35,10 @@ class ClientTest extends PHPUnit_Framework_TestCase
             $this->markTestSkipped('There are no write permissions in order to create test repositories.');
         }
 
-        $options['path'] = getenv('GIT_CLIENT') ?: '/usr/bin/git';
-        $options['hidden'] = array(self::$tmpdir . '/hiddenrepo');
+        $options = array(
+            'path' => getenv('GIT_CLIENT') ?: null,
+            'hidden' => array(self::$tmpdir . '/hiddenrepo'),
+        );
         $this->client = new Client($options);
     }
 
