@@ -1,10 +1,13 @@
 <?php
 
+namespace Gitter\Tests;
+
 use Gitter\Client;
 use Gitter\Repository;
+use Gitter\Model\Symlink;
 use Symfony\Component\Filesystem\Filesystem;
 
-class RepositoryTest extends PHPUnit_Framework_TestCase
+class RepositoryTest extends \PHPUnit_Framework_TestCase
 {
     protected static $tmpdir;
 
@@ -340,7 +343,7 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
         $files = $repository->getTree('master');
 
         foreach ($files as $file) {
-            if ($file instanceof Gitter\Model\Symlink) {
+            if ($file instanceof Symlink) {
                 $this->assertEquals($file->getPath(), self::$tmpdir . '/testrepo/original_file.txt');
                 $this->assertEquals($file->getName(), 'link.txt');
                 $this->assertEquals($file->getMode(), '120000');
