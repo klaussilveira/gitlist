@@ -53,7 +53,7 @@ class Repository extends BaseRepository
     public function searchTree($query, $branch)
     {
         try {
-            $results = $this->getClient()->run($this, "grep --line-number '$query' $branch");
+            $results = $this->getClient()->run($this, "grep -I --line-number '$query' $branch");
         } catch (\RuntimeException $e) {
             return false;
         }
