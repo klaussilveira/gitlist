@@ -35,6 +35,47 @@ class Repository extends BaseRepository
         return $commits;
     }
 
+    public function searchCommitLog($query)
+    {
+        $command = "log --grep='$query' --pretty=format:'<item><hash>%H</hash><short_hash>%h</short_hash><tree>%T</tree><parent>%P</parent><author>%an</author><author_email>%ae</author_email><date>%at</date><commiter>%cn</commiter><commiter_email>%ce</commiter_email><commiter_date>%ct</commiter_date><message><![CDATA[%s]]></message></item>'";
+
+        $logs = $this->getPrettyFormat($command);
+        
+        foreach ($logs as $log) {
+            $commit = new Commit;
+            $commit->importData($log);
+            $commits[] = $commit;
+        }
+
+        return $commits;
+    }
+
+    public function searchTree($query, $branch)
+    {
+        try {
+            $results = $this->getClient()->run($this, "grep --line-number '$query' $branch");
+        } catch (\RuntimeException $e) {
+            return false;
+        }
+
+        $results = explode("\n", $results);
+
+        foreach ($results as $result) {
+            if ($result == '') {
+                continue;
+            }
+
+            preg_match_all('/([\w-._]+):(.+):([0-9]+):(.+)/', $result, $matches, PREG_SET_ORDER);
+            $data['branch'] = $matches[0][1];
+            $data['file'] = $matches[0][2];
+            $data['line'] = $matches[0][3];
+            $data['match'] = $matches[0][4];
+            $searchResults[] = $data;
+        }
+
+        return $searchResults;
+    }
+
     public function getAuthorStatistics()
     {
         $logs = $this->getClient()->run($this, 'log --pretty=format:"%an||%ae" ' . $this->getHead());

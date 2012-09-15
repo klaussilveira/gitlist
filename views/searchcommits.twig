@@ -1,0 +1,13 @@
+{% extends 'layout_page.twig' %}
+
+{% set page = 'searchcommits' %}
+
+{% block title %}GitList{% endblock %}
+
+{% block content %}
+    {% include 'breadcrumb.twig' with {breadcrumbs: [{dir: 'Commits search results', path:''}]} %}
+
+    {% include 'commits_list.twig' %}
+
+    <hr />
+{% endblock %}

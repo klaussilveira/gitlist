@@ -7,6 +7,7 @@ use Silex\ControllerProviderInterface;
 use Silex\ControllerCollection;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 class TreeController implements ControllerProviderInterface
 {
@@ -44,6 +45,29 @@ class TreeController implements ControllerProviderInterface
           ->assert('branch', '[\w-._]+')
           ->assert('tree', '.+')
           ->bind('tree');
+
+        $route->post('{repo}/tree/{branch}/search', function(Request $request, $repo, $branch = '', $tree = '') use ($app) {
+            $repository = $app['git']->getRepository($app['git.repos'] . $repo);
+
+            if (!$branch) {
+                $branch = $repository->getHead();
+            }
+
+            $breadcrumbs = $app['util.view']->getBreadcrumbs($tree);
+            $results = $repository->searchTree($request->get('query'), $branch);
+
+            return $app['twig']->render('search.twig', array(
+                'results'        => $results,
+                'repo'           => $repo,
+                'branch'         => $branch,
+                'path'           => $tree,
+                'breadcrumbs'    => $breadcrumbs,
+                'branches'       => $repository->getBranches(),
+                'tags'           => $repository->getTags(),
+            ));
+        })->assert('repo', '[\w-._]+')
+          ->assert('branch', '[\w-._]+')
+          ->bind('search');
 
         $route->get('{repo}/{branch}/', function($repo, $branch) use ($app, $treeController) {
             return $treeController($repo, $branch);

@@ -20,6 +20,7 @@
 </table>
 {% endfor %}
 
+{% if page != 'searchcommits' %}
 <ul class="pager">
     {% if pager.current != 0 %}
     <li class="previous">
@@ -32,3 +33,4 @@
     </li>
     {% endif %}
 </ul>
+{% endif %}

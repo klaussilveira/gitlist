@@ -466,13 +466,16 @@ select:focus:required:invalid {
 // SEARCH FORM
 // -----------
 
+.form-search {
+  margin: 3px 0 0 0;
+  padding: 0;
+}
+
 .search-query {
-  padding-right: 14px;
-  padding-right: 4px \9;
-  padding-left: 14px;
-  padding-left: 4px \9; /* IE7-8 doesn't have border-radius, so don't indent the padding */
+  padding: 3px;
   margin-bottom: 0; // remove the default margin on all inputs
-  .border-radius(14px);
+  .border-radius(4px);
+  font-size: 11px;
 }
 
 

@@ -6,6 +6,7 @@ use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Silex\ControllerCollection;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 
 class CommitController implements ControllerProviderInterface
 {
@@ -42,6 +43,27 @@ class CommitController implements ControllerProviderInterface
           ->value('branch', 'master')
           ->value('file', '')
           ->bind('commits');
+
+        $route->post('{repo}/commits/search', function(Request $request, $repo) use ($app) {
+            $repository = $app['git']->getRepository($app['git.repos'] . $repo);
+            $commits = $repository->searchCommitLog($request->get('query'));
+
+            foreach ($commits as $commit) {
+                $date = $commit->getDate();
+                $date = $date->format('m/d/Y');
+                $categorized[$date][] = $commit;
+            }
+
+            return $app['twig']->render('searchcommits.twig', array(
+                'repo'           => $repo,
+                'branch'         => 'master',
+                'file'           => '',
+                'commits'        => $categorized,
+                'branches'       => $repository->getBranches(),
+                'tags'           => $repository->getTags(),
+            ));
+        })->assert('repo', '[\w-._]+')
+          ->bind('searchcommits');
 
         $route->get('{repo}/commit/{commit}/', function($repo, $commit) use ($app) {
             $repository = $app['git']->getRepository($app['git.repos'] . $repo);
