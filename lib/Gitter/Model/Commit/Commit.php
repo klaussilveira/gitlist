@@ -12,6 +12,7 @@
 namespace Gitter\Model\Commit;
 
 use Gitter\Model\AbstractModel;
+use Gitter\Util\DateTime;
 
 class Commit extends AbstractModel
 {
@@ -38,7 +39,7 @@ class Commit extends AbstractModel
         );
 
         $this->setDate(
-            new \DateTime('@' . $data['date'])
+            new DateTime('@' . $data['date'])
         );
 
         $this->setCommiter(
@@ -46,7 +47,7 @@ class Commit extends AbstractModel
         );
 
         $this->setCommiterDate(
-            new \DateTime('@' . $data['commiter_date'])
+            new DateTime('@' . $data['commiter_date'])
         );
 
         $this->setMessage($data['message']);
