@@ -32,7 +32,7 @@ class Commit extends AbstractModel
         $this->setHash($data['hash']);
         $this->setShortHash($data['short_hash']);
         $this->setTreeHash($data['tree']);
-        $this->setParentsHash(array_filter(explode(' ', $data['parents'])));
+        $this->setParentsHash(isset($data['parents']) ? array_filter(explode(' ', $data['parents'])) : array());
 
         $this->setAuthor(
             new Author($data['author'], $data['author_email'])
