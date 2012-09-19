@@ -4,6 +4,7 @@ namespace Gitter\Tests\Model\Commit;
 
 use Gitter\Model\Commit\Commit;
 use Gitter\PrettyFormat;
+use Gitter\Util\DateTime;
 
 class CommitTest extends \PHPUnit_Framework_TestCase
 {
@@ -31,10 +32,10 @@ class CommitTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array('6e6951114ccf7b162e2a57b0462b39ca972f476f', '1e8fd833f71fd20f8b176c79c705b9f096434126'), $commit->getParentsHash());
         $this->assertEquals('The Author', $commit->getAuthor()->getName());
         $this->assertEquals('author@example.com', $commit->getAuthor()->getEmail());
-        $this->assertEquals(new \DateTime('@1347372763'), $commit->getDate());
+        $this->assertEquals(new DateTime('@1347372763'), $commit->getDate());
         $this->assertEquals('The Commiter', $commit->getCommiter()->getName());
         $this->assertEquals('commiter@example.com', $commit->getCommiter()->getEmail());
-        $this->assertEquals(new \DateTime('@1347372763'), $commit->getCommiterDate());
+        $this->assertEquals(new DateTime('@1347372763'), $commit->getCommiterDate());
         $this->assertEquals('Test commit', $commit->getMessage());
     }
 }
