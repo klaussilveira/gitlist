@@ -9,10 +9,10 @@ class Config
     public function __construct($file)
     {
         if (!file_exists($file)) {
-            die("Please, create the config.ini file.");
+            die(sprintf('Please, create the %1$s file.', $file));
         }
 
-        $this->data = parse_ini_file('config.ini', true);
+        $this->data = parse_ini_file($file, true);
         $this->validateOptions();
     }
 
@@ -46,7 +46,7 @@ class Config
     protected function validateOptions()
     {
         if (!$this->get('git', 'repositories') || !is_dir($this->get('git', 'repositories'))) {
-            die("Please, edit the config.ini file and provide your repositories directory");
+            die("Please, edit the config file and provide your repositories directory");
         }
     }
 }
