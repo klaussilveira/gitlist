@@ -438,9 +438,40 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         $this->assertRegExp("/new file:   test file10.txt/", $repository->getClient()->run($repository, 'status'));
     }
 
+    public function testCommitWithFileNameWithSpace()
+    {
+        $repo = $this->client->createRepository(self::$tmpdir . '/testrepospace');
+
+        $diffs = $repo->readDiffLogs($this->getLogsForCommitWithFileNameWithSpace());
+
+        $this->assertEquals('test file.txt', $diffs[0]->getFile(), 'New file name with a space in it');
+        $this->assertEquals('testfile.txt', $diffs[1]->getFile(), 'Old file name');
+	}
+
     public static function tearDownAfterClass()
     {
         $fs = new Filesystem();
         $fs->remove(self::$tmpdir);
+    }
+
+    private function getLogsForCommitWithFileNameWithSpace()
+    {
+        // 'testfile.txt' is renamed to 'test file.txt'
+        return array(
+            'diff --git a/test file.txt b/test file.txt',
+            'new file mode 100644',
+            'index 0000000..63edbe7',
+            '--- /dev/null',
+            '+++ b/test file.txt',
+            '@@ -0,0 +1 @@',
+            '+Modified line',
+            'diff --git a/testfile.txt b/testfile.txt',
+            'deleted file mode 100644',
+            'index 63edbe7..0000000',
+            '--- a/testfile.txt',
+            '+++ /dev/null',
+            '@@ -1 +0,0 @@',
+            '-Modified line',
+        );
     }
 }
