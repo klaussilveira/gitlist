@@ -427,6 +427,17 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($repository->getBlame('original_file.txt'), array());
     }
 
+    public function testIsAddingFileNameWithSpace()
+    {
+        $repository = $this->client->getRepository(self::$tmpdir . '/testrepo');
+
+        file_put_contents(self::$tmpdir . '/testrepo/test file10.txt', 'Your mother is so ugly, glCullFace always returns TRUE.');
+
+        $repository->add('test file10.txt');
+
+        $this->assertRegExp("/new file:   test file10.txt/", $repository->getClient()->run($repository, 'status'));
+    }
+
     public static function tearDownAfterClass()
     {
         $fs = new Filesystem();
