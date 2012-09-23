@@ -16,7 +16,7 @@ class CommitController implements ControllerProviderInterface
 
         $route->get('{repo}/commits/{branch}/{file}', function($repo, $branch, $file) use ($app) {
             $repository = $app['git']->getRepository($app['git.repos'] . $repo);
-            $type = $file ? "$branch -- $file" : $branch;
+            $type = $file ? "$branch -- \"$file\"" : $branch;
             $pager = $app['util.view']->getPager($app['request']->get('page'), $repository->getTotalCommits($type));
             $commits = $repository->getPaginatedCommits($type, $pager['current']);
 
@@ -80,7 +80,7 @@ class CommitController implements ControllerProviderInterface
 
         $route->get('{repo}/blame/{branch}/{file}', function($repo, $branch, $file) use ($app) {
             $repository = $app['git']->getRepository($app['git.repos'] . $repo);
-            $blames = $repository->getBlame("$branch -- $file");
+            $blames = $repository->getBlame("$branch -- \"$file\"");
 
             return $app['twig']->render('blame.twig', array(
                 'file'           => $file,
