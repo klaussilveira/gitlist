@@ -77,9 +77,10 @@ class Repository
     public function add($files = '.')
     {
         if (is_array($files)) {
-            $files = implode('" "', $files);
+            $files = implode(' ', array_map('escapeshellarg', $files));
+        } else {
+            $files = escapeshellarg($files);
         }
-        $files = "\"$files\"";
 
         $this->getClient()->run($this, "add $files");
 
