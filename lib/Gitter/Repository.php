@@ -77,7 +77,9 @@ class Repository
     public function add($files = '.')
     {
         if (is_array($files)) {
-            $files = implode(' ', $files);
+            $files = implode(' ', array_map('escapeshellarg', $files));
+        } else {
+            $files = escapeshellarg($files);
         }
 
         $this->getClient()->run($this, "add $files");
@@ -307,7 +309,20 @@ class Repository
             $logs = explode("\n", $this->getClient()->run($this, 'diff ' . $commitHash . '~1..' . $commitHash));
         }
 
-        // Read diff logs
+        $commit->setDiffs($this->readDiffLogs($logs));
+
+        return $commit;
+    }
+
+    /**
+     * Read diff logs and generate a collection of diffs
+     *
+     * @param array $logs  Array of log rows
+     * @return array       Array of diffs
+     */
+    public function readDiffLogs(array $logs)
+    {
+        $diffs = array();
         $lineNumOld = 0;
         $lineNumNew = 0;
         foreach ($logs as $log) {
@@ -317,8 +332,9 @@ class Repository
                 }
 
                 $diff = new Diff;
-                preg_match('/^diff --[\S]+ (a\/)?([\S]+)( b\/)?/', $log, $name);
-                $diff->setFile($name[2]);
+                if (preg_match('/^diff --[\S]+ a\/?(.+) b\/?/', $log, $name)) {
+                    $diff->setFile($name[1]);
+                }
                 continue;
             }
 
@@ -376,9 +392,7 @@ class Repository
             $diffs[] = $diff;
         }
 
-        $commit->setDiffs($diffs);
-
-        return $commit;
+        return $diffs;
     }
 
     /**
