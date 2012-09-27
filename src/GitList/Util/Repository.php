@@ -16,7 +16,7 @@ class Repository
         'm'        => 'clike',
         'mm'       => 'clike',
         'cs'       => 'text/x-csharp',
-        'java'     => 'java',
+        'java'     => 'text/x-java',
         'clj'      => 'clojure',
         'coffee'   => 'coffeescript',
         'css'      => 'css',
