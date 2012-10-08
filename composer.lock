@@ -1,5 +1,5 @@
 {
-    "hash": "b7ee6754cba1641ef8c2b01dfdd977fd",
+    "hash": "83c3c1beaeb0bafbb232624eefea3ba3",
     "packages": [
         {
             "name": "klaussilveira/gitter",
@@ -22,7 +22,7 @@
             "require-dev": {
                 "symfony/filesystem": "2.1.*"
             },
-            "time": "2012-09-19 12:31:50",
+            "time": "2012-09-19 08:31:50",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -65,7 +65,6 @@
             "require": {
                 "php": ">=5.3.0"
             },
-            "time": "1347278988",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -92,7 +91,8 @@
             "keywords": [
                 "dependency injection",
                 "container"
-            ]
+            ],
+            "time": "1347278988"
         },
         {
             "name": "silex/silex",
@@ -139,7 +139,6 @@
                 "symfony/css-selector": "2.1.*",
                 "symfony/dom-crawler": "2.1.*"
             },
-            "time": "1348027658",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -170,7 +169,8 @@
             "homepage": "http://silex.sensiolabs.org",
             "keywords": [
                 "microframework"
-            ]
+            ],
+            "time": "1348027658"
         },
         {
             "name": "symfony/event-dispatcher",
@@ -197,7 +197,6 @@
                 "symfony/dependency-injection": "2.1.*",
                 "symfony/http-kernel": "2.1.*"
             },
-            "time": "1347274422",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -224,7 +223,8 @@
                 }
             ],
             "description": "Symfony EventDispatcher Component",
-            "homepage": "http://symfony.com"
+            "homepage": "http://symfony.com",
+            "time": "1347274422"
         },
         {
             "name": "symfony/filesystem",
@@ -244,7 +244,6 @@
             "require": {
                 "php": ">=5.3.3"
             },
-            "time": "1345643321",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -271,7 +270,8 @@
                 }
             ],
             "description": "Symfony Filesystem Component",
-            "homepage": "http://symfony.com"
+            "homepage": "http://symfony.com",
+            "time": "1345643321"
         },
         {
             "name": "symfony/http-foundation",
@@ -291,7 +291,6 @@
             "require": {
                 "php": ">=5.3.3"
             },
-            "time": "1347984592",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -319,7 +318,8 @@
                 }
             ],
             "description": "Symfony HttpFoundation Component",
-            "homepage": "http://symfony.com"
+            "homepage": "http://symfony.com",
+            "time": "1347984592"
         },
         {
             "name": "symfony/http-kernel",
@@ -359,7 +359,6 @@
                 "symfony/dependency-injection": "2.1.*",
                 "symfony/finder": "2.1.*"
             },
-            "time": "1347914517",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -386,7 +385,8 @@
                 }
             ],
             "description": "Symfony HttpKernel Component",
-            "homepage": "http://symfony.com"
+            "homepage": "http://symfony.com",
+            "time": "1347914517"
         },
         {
             "name": "symfony/process",
@@ -406,7 +406,6 @@
             "require": {
                 "php": ">=5.3.3"
             },
-            "time": "1348007849",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -433,7 +432,8 @@
                 }
             ],
             "description": "Symfony Process Component",
-            "homepage": "http://symfony.com"
+            "homepage": "http://symfony.com",
+            "time": "1348007849"
         },
         {
             "name": "symfony/routing",
@@ -464,7 +464,6 @@
                 "symfony/config": "2.1.*",
                 "symfony/yaml": "2.1.*"
             },
-            "time": "1347274422",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -491,7 +490,8 @@
                 }
             ],
             "description": "Symfony Routing Component",
-            "homepage": "http://symfony.com"
+            "homepage": "http://symfony.com",
+            "time": "1347274422"
         },
         {
             "name": "symfony/twig-bridge",
@@ -528,7 +528,6 @@
                 "symfony/yaml": "2.1.*",
                 "symfony/security": "2.1.*"
             },
-            "time": "1347274422",
             "type": "symfony-bridge",
             "extra": {
                 "branch-alias": {
@@ -555,7 +554,8 @@
                 }
             ],
             "description": "Symfony Twig Bridge",
-            "homepage": "http://symfony.com"
+            "homepage": "http://symfony.com",
+            "time": "1347274422"
         },
         {
             "name": "twig/twig",
@@ -574,7 +574,7 @@
             "require": {
                 "php": ">=5.2.4"
             },
-            "time": "2012-08-25 17:32:57",
+            "time": "2012-08-25 13:32:57",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -609,6 +609,36 @@
     ],
     "packages-dev": [
         {
+            "name": "mikey179/vfsStream",
+            "version": "v1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mikey179/vfsStream",
+                "reference": "v1.1.0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://github.com/mikey179/vfsStream/zipball/v1.1.0",
+                "reference": "v1.1.0",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "time": "2012-08-25 12:49:29",
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "psr-0": {
+                    "org\\bovigo\\vfs": "src/main/php"
+                }
+            },
+            "license": [
+                "BSD"
+            ],
+            "homepage": "http://vfs.bovigo.org/"
+        },
+        {
             "name": "symfony/browser-kit",
             "version": "2.1.x-dev",
             "target-dir": "Symfony/Component/BrowserKit",
@@ -634,7 +664,6 @@
             "suggest": {
                 "symfony/process": "2.1.*"
             },
-            "time": "1347274422",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -661,7 +690,8 @@
                 }
             ],
             "description": "Symfony BrowserKit Component",
-            "homepage": "http://symfony.com"
+            "homepage": "http://symfony.com",
+            "time": "1347274422"
         },
         {
             "name": "symfony/css-selector",
@@ -681,7 +711,6 @@
             "require": {
                 "php": ">=5.3.3"
             },
-            "time": "1345643321",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -708,7 +737,8 @@
                 }
             ],
             "description": "Symfony CssSelector Component",
-            "homepage": "http://symfony.com"
+            "homepage": "http://symfony.com",
+            "time": "1345643321"
         },
         {
             "name": "symfony/dom-crawler",
@@ -734,7 +764,6 @@
             "suggest": {
                 "symfony/css-selector": "2.1.*"
             },
-            "time": "1347274422",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -761,7 +790,8 @@
                 }
             ],
             "description": "Symfony DomCrawler Component",
-            "homepage": "http://symfony.com"
+            "homepage": "http://symfony.com",
+            "time": "1347274422"
         }
     ],
     "aliases": [
