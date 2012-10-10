@@ -1,7 +1,8 @@
 <?php
 
-namespace GitList\Git;
+namespace GitList\Test\Git;
 
+use GitList\Git\Client;
 use org\bovigo\vfs\vfsStream;
 
 /**

@@ -1,7 +1,8 @@
 <?php
 
-namespace GitList;
+namespace GitList\Test;
 
+use GitList\Config;
 use org\bovigo\vfs\vfsStream;
 
 /**
@@ -22,7 +23,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase {
         $root = vfsStream::setup('tmp');
         $file = vfsStream::newFile('config.ini');
         $file->setContent(
-            file_get_contents('config.ini') . 
+            file_get_contents('config.ini-example') . 
             PHP_EOL . '[git]' . PHP_EOL .
             'repositories = \'vfs://tmp\''
         );

@@ -1,6 +1,6 @@
 <?php
 
-namespace GitList\Controller;
+namespace GitList\Test\Controller;
 
 use Silex\WebTestCase;
 use Symfony\Component\Filesystem\Filesystem;

@@ -1,7 +1,8 @@
 <?php
 
-namespace GitList\Util;
+namespace GitList\Test\Util;
 
+use GitList\Util\Repository;
 use Silex\Application;
 
 /**
