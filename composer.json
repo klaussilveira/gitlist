@@ -15,11 +15,12 @@
     ],
     "require": {
         "php": ">=5.3.0",
-        "symfony/process": "2.*.*"
+        "symfony/process": ">=2.1"
     },
     "require-dev": {
-        "symfony/filesystem": "2.*.*"
+        "symfony/filesystem": ">=2.1"
     },
+    "minimum-stability": "stable",
     "autoload": {
         "psr-0": {
             "Gitter": "lib/"
