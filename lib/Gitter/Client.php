@@ -122,6 +122,8 @@ class Client
 
                     $repositories[] = array('name' => $file->getFilename(), 'path' => $file->getPathname(), 'description' => $description);
                     continue;
+                } else {
+                    $repositories = array_merge($repositories, $this->recurseDirectory($file->getPathname()));
                 }
             }
         }
