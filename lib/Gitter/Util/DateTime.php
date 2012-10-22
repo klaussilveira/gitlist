@@ -36,7 +36,12 @@ class DateTime extends \DateTime
      */
     public function __construct($time = 'now', DateTimeZone $timezone = null)
     {
-        parent::__construct($time, $timezone);
+        if ($timezone) {
+            parent::__construct($time, $timezone);
+        }
+        else {
+            parent::__construct($time);
+        }
 
         if ($this->isUnixTimestamp($time)) {
             if (!$timezone)
