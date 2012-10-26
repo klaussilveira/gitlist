@@ -35,7 +35,7 @@ class MainController implements ControllerProviderInterface
                 'authors'         => $authors,
             ));
         })->assert('repo', '[\w-._]+')
-          ->assert('branch', '[\w-._]+')
+          ->assert('branch', '[\w-._\/]+')
           ->value('branch', 'master')
           ->bind('stats');
 
@@ -51,7 +51,7 @@ class MainController implements ControllerProviderInterface
 
             return new Response($html, 200, array('Content-Type' => 'application/rss+xml'));
         })->assert('repo', '[\w-._]+')
-          ->assert('branch', '[\w-._]+')
+          ->assert('branch', '[\w-._\/]+')
           ->bind('rss');
 
 

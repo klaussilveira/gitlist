@@ -114,7 +114,7 @@ class Repository
      */
     public function getFileType($file)
     {
-        if (($pos = strrpos($file, '.')) !== FALSE) {
+        if (($pos = strrpos($file, '.')) !== false) {
             $fileType = substr($file, $pos + 1);
         } else {
             return 'text';
@@ -175,4 +175,46 @@ class Repository
 
         return array();
     }
+
+    /**
+     * Returns an Array where the first value is the tree-ish and the second is the path
+     *
+     * @param \GitList\Git\Repository $repository
+     * @param string $branch
+     * @param string $tree
+     * @return array
+     */
+    public function extractRef($repository, $branch='', $tree='')
+    {
+        $branch = trim($branch, '/');
+        $tree = trim($tree, '/');
+        $input = $branch . '/' . $tree;
+
+        //If the ref appears to be a SHA, just split the string
+        if (preg_match("/^([[:alnum:]]{40})(.+)/", $input, $matches)) {
+            $branch = $matches[1];
+        } else {
+            //Otherwise, attempt to detect the ref using a list of the project's branches and tags
+            $valid_refs = array_merge((array)$repository->getBranches(), (array)$repository->getTags());
+            foreach ($valid_refs as $k => $v) {
+                if (!preg_match("#{$v}/#", $input)) {
+                    unset($valid_refs[$k]);
+                }
+            }
+
+            //No exact ref match, so just try our best
+            if (count($valid_refs) > 1) {
+                preg_match('/([^\/]+)(.*)/', $input, $matches);
+                $branch = preg_replace('/^\/|\/$/', '', $matches[0]);
+            }
+            else {
+                //extract branch name
+                $branch = array_shift($valid_refs);
+            }
+        }
+        $tree = trim(str_replace($branch, "", $input), "/");
+
+        return array($branch, $tree);
+    }
+
 }
