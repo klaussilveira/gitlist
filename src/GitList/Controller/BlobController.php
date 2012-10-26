@@ -15,6 +15,9 @@ class BlobController implements ControllerProviderInterface
 
         $route->get('{repo}/blob/{branch}/{file}', function($repo, $branch, $file) use ($app) {
             $repository = $app['git']->getRepository($app['git.repos'] . $repo);
+
+            list($branch, $file) = $app['util.repository']->extractRef($repository, $branch, $file);
+
             $blob = $repository->getBlob("$branch:\"$file\"");
             $breadcrumbs = $app['util.view']->getBreadcrumbs($file);
             $fileType = $app['util.repository']->getFileType($file);
@@ -39,11 +42,14 @@ class BlobController implements ControllerProviderInterface
             ));
         })->assert('file', '.+')
           ->assert('repo', '[\w-._]+')
-          ->assert('branch', '[\w-._]+')
+          ->assert('branch', '[\w-._\/]+')
           ->bind('blob');
 
         $route->get('{repo}/raw/{branch}/{file}', function($repo, $branch, $file) use ($app) {
             $repository = $app['git']->getRepository($app['git.repos'] . $repo);
+
+            list($branch, $file) = $app['util.repository']->extractRef($repository, $branch, $file);
+
             $blob = $repository->getBlob("$branch:\"$file\"")->output();
 
             $headers = array();
@@ -59,7 +65,7 @@ class BlobController implements ControllerProviderInterface
             return new Response($blob, 200, $headers);
         })->assert('file', '.+')
           ->assert('repo', '[\w-._]+')
-          ->assert('branch', '[\w-._]+')
+          ->assert('branch', '[\w-._\/]+')
           ->bind('blob_raw');
 
         return $route;

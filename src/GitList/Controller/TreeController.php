@@ -20,6 +20,9 @@ class TreeController implements ControllerProviderInterface
             if (!$branch) {
                 $branch = $repository->getHead();
             }
+
+            list($branch, $tree) = $app['util.repository']->extractRef($repository, $branch, $tree);
+
             $files = $repository->getTree($tree ? "$branch:\"$tree\"/" : $branch);
             $breadcrumbs = $app['util.view']->getBreadcrumbs($tree);
 
@@ -42,7 +45,7 @@ class TreeController implements ControllerProviderInterface
                 'readme'         => $app['util.repository']->getReadme($repo, $branch),
             ));
         })->assert('repo', '[\w-._]+')
-          ->assert('branch', '[\w-._]+')
+          ->assert('branch', '[\w-._\/]+')
           ->assert('tree', '.+')
           ->bind('tree');
 
@@ -66,13 +69,13 @@ class TreeController implements ControllerProviderInterface
                 'tags'           => $repository->getTags(),
             ));
         })->assert('repo', '[\w-._]+')
-          ->assert('branch', '[\w-._]+')
+          ->assert('branch', '[\w-._\/]+')
           ->bind('search');
 
         $route->get('{repo}/{branch}/', function($repo, $branch) use ($app, $treeController) {
             return $treeController($repo, $branch);
         })->assert('repo', '[\w-._]+')
-          ->assert('branch', '[\w-._]+')
+          ->assert('branch', '[\w-._\/]+')
           ->bind('branch');
 
         $route->get('{repo}/', function($repo) use ($app, $treeController) {
@@ -109,7 +112,7 @@ class TreeController implements ControllerProviderInterface
             ));
         })->assert('format', '(zip|tar)')
           ->assert('repo', '[\w-._]+')
-          ->assert('branch', '[\w-._]+')
+          ->assert('branch', '[\w-._\/]+')
           ->bind('archive');
 
         return $route;
