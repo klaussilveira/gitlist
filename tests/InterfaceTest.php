@@ -7,6 +7,7 @@ use Gitter\Client;
 class InterfaceTest extends WebTestCase
 {
     protected static $tmpdir;
+    protected static $git_path;
 
     public static function setUpBeforeClass()
     {
@@ -30,6 +31,8 @@ class InterfaceTest extends WebTestCase
         $options['path'] = getenv('GIT_CLIENT') ?: '/usr/bin/git';
         $options['hidden'] = array(self::$tmpdir . '/hiddenrepo');
         $git = new Client($options);
+
+        self::$git_path = $options['path'];
 
         // GitTest repository fixture
         $git->createRepository(self::$tmpdir . 'GitTest');
@@ -61,9 +64,16 @@ class InterfaceTest extends WebTestCase
 
     public function createApplication()
     {
+        $config = new \GitList\Config(array(
+            'git' => array(
+                'client' => self::$git_path,
+                'repositories' => self::$tmpdir,
+            ),
+            'app' => array(
+                'debug' => true,
+            ),
+        ));
         $app = require 'boot.php';
-        $app['debug'] = true;
-        $app['git.repos'] = self::$tmpdir;
         return $app;
     }
 
