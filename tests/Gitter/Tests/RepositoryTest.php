@@ -430,9 +430,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
     public function testIsAddingFileNameWithSpace()
     {
         $repository = $this->client->getRepository(self::$tmpdir . '/testrepo');
-
         file_put_contents(self::$tmpdir . '/testrepo/test file10.txt', 'Your mother is so ugly, glCullFace always returns TRUE.');
-
         $repository->add('test file10.txt');
 
         $this->assertRegExp("/new file:   test file10.txt/", $repository->getClient()->run($repository, 'status'));
@@ -441,7 +439,6 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
     public function testCommitWithFileNameWithSpace()
     {
         $repo = $this->client->createRepository(self::$tmpdir . '/testrepospace');
-
         $diffs = $repo->readDiffLogs($this->getLogsForCommitWithFileNameWithSpace());
 
         $this->assertEquals('test file.txt', $diffs[0]->getFile(), 'New file name with a space in it');
