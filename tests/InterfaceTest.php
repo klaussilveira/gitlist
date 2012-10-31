@@ -60,6 +60,18 @@ class InterfaceTest extends WebTestCase
         $repository->setConfig('user.email', 'luke@rebel.org');
         $repository->addAll();
         $repository->commit("First commit");
+
+        // Nested repository fixture
+        $nested_dir = self::$tmpdir . 'nested/';
+        $fs->mkdir($nested_dir);
+        $git->createRepository($nested_dir . 'NestedRepo');
+        $repository = $git->getRepository($nested_dir . '/NestedRepo');
+        file_put_contents($nested_dir . 'NestedRepo/.git/description', 'This is a NESTED test repo!');
+        file_put_contents($nested_dir . 'NestedRepo/README.txt', 'NESTED TEST REPO README');
+        $repository->setConfig('user.name', 'Luke Skywalker');
+        $repository->setConfig('user.email', 'luke@rebel.org');
+        $repository->addAll();
+        $repository->commit("First commit");
     }
 
     public function createApplication()
@@ -87,10 +99,12 @@ class InterfaceTest extends WebTestCase
         $this->assertCount(1, $crawler->filter('div.repository-header:contains("GitTest")'));
         $this->assertEquals('/GitTest/', $crawler->filter('.repository-header a')->eq(0)->attr('href'));
         $this->assertEquals('/GitTest/master/rss/', $crawler->filter('.repository-header a')->eq(1)->attr('href'));
+        $this->assertEquals('/nested/NestedRepo/', $crawler->filter('.repository-header a')->eq(2)->attr('href'));
+        $this->assertEquals('/nested/NestedRepo/master/rss/', $crawler->filter('.repository-header a')->eq(3)->attr('href'));
         $this->assertCount(1, $crawler->filter('div.repository-header:contains("foobar")'));
         $this->assertCount(1, $crawler->filter('div.repository-body:contains("This is a test repo!")'));
-        $this->assertEquals('/foobar/', $crawler->filter('.repository-header a')->eq(2)->attr('href'));
-        $this->assertEquals('/foobar/master/rss/', $crawler->filter('.repository-header a')->eq(3)->attr('href'));
+        $this->assertEquals('/foobar/', $crawler->filter('.repository-header a')->eq(4)->attr('href'));
+        $this->assertEquals('/foobar/master/rss/', $crawler->filter('.repository-header a')->eq(5)->attr('href'));
     }
 
     public function testRepositoryPage()
