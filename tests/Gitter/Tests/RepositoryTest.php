@@ -445,6 +445,17 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('testfile.txt', $diffs[1]->getFile(), 'Old file name');
 	}
 
+    public function testFindNestedRepos()
+    {
+        $nested_dir = self::$tmpdir . '/nested';
+        mkdir($nested_dir);
+        $this->client->createRepository($nested_dir . '/nestedrepo');
+        $all_repositories = $this->client->getRepositories(self::$tmpdir);
+        $nested_repositories = $this->client->getRepositories($nested_dir);
+        $this->assertCount(1, $nested_repositories, 'Only one nested repository');
+        $this->assertContains($nested_repositories[0], $all_repositories, 'Nested repository is found in all repositories');
+    }
+
     public static function tearDownAfterClass()
     {
         $fs = new Filesystem();
