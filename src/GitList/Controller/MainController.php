@@ -15,7 +15,7 @@ class MainController implements ControllerProviderInterface
         $route->get('/', function() use ($app) {
             $repositories = array_map(
                 function ($repo) use ($app) {
-                    $repo['relative_path'] = $app['util.routing']->getRelativePath($repo['path']);
+                    $repo['relativePath'] = $app['util.routing']->getRelativePath($repo['path']);
                     return $repo;
                 },
                 $app['git']->getRepositories($app['git.repos'])

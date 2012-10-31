@@ -19,14 +19,14 @@ class Routing
 
         if ($regex === null) {
             $app = $this->app;
-            $quoted_paths = array_map(
+            $quotedPaths = array_map(
                 function ($repo) use ($app) {
                     return preg_quote($app['util.routing']->getRelativePath($repo['path']), '#');
                 },
                 $this->app['git']->getRepositories($this->app['git.repos'])
             );
-            usort($quoted_paths, function ($a, $b) { return strlen($b) - strlen($a); });
-            $regex = implode('|', $quoted_paths);
+            usort($quotedPaths, function ($a, $b) { return strlen($b) - strlen($a); });
+            $regex = implode('|', $quotedPaths);
         }
 
         return $regex;
@@ -35,17 +35,17 @@ class Routing
     /**
      * Strips the base path from a full repository path
      *
-     * @param string $repo_path Full path to the repository
+     * @param string $repoPath Full path to the repository
      * @return string Relative path to the repository from git.repositories
      */
-    public function getRelativePath($repo_path)
+    public function getRelativePath($repoPath)
     {
-        if (strpos($repo_path, $this->app['git.repos']) === 0) {
-            $relative_path = substr($repo_path, strlen($this->app['git.repos']));
-            return ltrim($relative_path, '/');
+        if (strpos($repoPath, $this->app['git.repos']) === 0) {
+            $relativePath = substr($repoPath, strlen($this->app['git.repos']));
+            return ltrim($relativePath, '/');
         } else {
             throw new \InvalidArgumentException(
-                sprintf("Path '%s' does not match configured repository directory", $repo_path)
+                sprintf("Path '%s' does not match configured repository directory", $repoPath)
             );
         }
     }
