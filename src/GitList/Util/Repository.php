@@ -15,6 +15,7 @@ class Repository
         'cpp'      => 'clike',
         'm'        => 'clike',
         'mm'       => 'clike',
+        'ino'      => 'clike',
         'cs'       => 'text/x-csharp',
         'java'     => 'text/x-java',
         'clj'      => 'clojure',
