@@ -21,7 +21,7 @@ class Routing
             $app = $this->app;
             $quoted_paths = array_map(
                 function ($repo) use ($app) {
-                    return preg_quote($app['util.routing']->getRelativePath($repo['path']), '/');
+                    return preg_quote($app['util.routing']->getRelativePath($repo['path']), '#');
                 },
                 $this->app['git']->getRepositories($this->app['git.repos'])
             );
