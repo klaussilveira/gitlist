@@ -4,7 +4,6 @@ namespace GitList\Controller;
 
 use Silex\Application;
 use Silex\ControllerProviderInterface;
-use Silex\ControllerCollection;
 use Symfony\Component\HttpFoundation\Response;
 
 class BlobController implements ControllerProviderInterface
@@ -15,7 +14,6 @@ class BlobController implements ControllerProviderInterface
 
         $route->get('{repo}/blob/{branch}/{file}', function($repo, $branch, $file) use ($app) {
             $repository = $app['git']->getRepository($app['git.repos'] . $repo);
-
             list($branch, $file) = $app['util.repository']->extractRef($repository, $branch, $file);
 
             $blob = $repository->getBlob("$branch:\"$file\"");
@@ -47,13 +45,10 @@ class BlobController implements ControllerProviderInterface
 
         $route->get('{repo}/raw/{branch}/{file}', function($repo, $branch, $file) use ($app) {
             $repository = $app['git']->getRepository($app['git.repos'] . $repo);
-
             list($branch, $file) = $app['util.repository']->extractRef($repository, $branch, $file);
-
             $blob = $repository->getBlob("$branch:\"$file\"")->output();
 
             $headers = array();
-
             if ($app['util.repository']->isBinary($file)) {
                 $headers['Content-Disposition'] = 'attachment; filename="' .  $file . '"';
                 $headers['Content-Transfer-Encoding'] = 'application/octet-stream';

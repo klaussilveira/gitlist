@@ -56,6 +56,7 @@ class Application extends SilexApplication
             if ($app['debug']) {
                 return;
             }
+
             return $app['twig']->render('error.twig', array(
                 'message' => $e->getMessage(),
             ));

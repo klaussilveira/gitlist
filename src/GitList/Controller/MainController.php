@@ -4,7 +4,6 @@ namespace GitList\Controller;
 
 use Silex\Application;
 use Silex\ControllerProviderInterface;
-use Silex\ControllerCollection;
 use Symfony\Component\HttpFoundation\Response;
 
 class MainController implements ControllerProviderInterface
@@ -53,7 +52,6 @@ class MainController implements ControllerProviderInterface
         })->assert('repo', '[\w-._]+')
           ->assert('branch', '[\w-._\/]+')
           ->bind('rss');
-
 
         return $route;
     }

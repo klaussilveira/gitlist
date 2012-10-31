@@ -4,8 +4,6 @@ namespace GitList\Controller;
 
 use Silex\Application;
 use Silex\ControllerProviderInterface;
-use Silex\ControllerCollection;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -22,7 +20,6 @@ class TreeController implements ControllerProviderInterface
             }
 
             list($branch, $tree) = $app['util.repository']->extractRef($repository, $branch, $tree);
-
             $files = $repository->getTree($tree ? "$branch:\"$tree\"/" : $branch);
             $breadcrumbs = $app['util.view']->getBreadcrumbs($tree);
 
