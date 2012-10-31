@@ -1,7 +1,9 @@
 <?php
 
-// Load configuration
-$config = new GitList\Config('config.ini');
+if (!isset($config)) {
+    die("No configuration object provided.");
+}
+
 $config->set('git', 'repositories', rtrim($config->get('git', 'repositories'), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR);
 
 // Startup and configure Silex application
