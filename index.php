@@ -11,5 +11,9 @@ if (!ini_get('date.timezone')) {
 }
 
 require 'vendor/autoload.php';
+
+// Load configuration
+$config = GitList\Config::fromFile('config.ini');
+
 $app = require 'boot.php';
 $app->run();
