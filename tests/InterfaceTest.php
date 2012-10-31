@@ -72,6 +72,13 @@ class InterfaceTest extends WebTestCase
         $repository->setConfig('user.email', 'luke@rebel.org');
         $repository->addAll();
         $repository->commit("First commit");
+        $repository->createBranch("testing");
+        $repository->checkout("testing");
+        file_put_contents($nested_dir . 'NestedRepo/README.txt', 'NESTED TEST BRANCH README');
+        $repository->addAll();
+        $repository->commit("Changing branch");
+        $repository->checkout("master");
+
     }
 
     public function createApplication()
@@ -223,6 +230,24 @@ class InterfaceTest extends WebTestCase
         $this->assertTrue($client->getResponse()->isOk());
         $this->assertRegexp('/Latest commits in GitTest:master/', $client->getResponse()->getContent());
         $this->assertRegexp('/Initial commit/', $client->getResponse()->getContent());
+    }
+
+    public function testNestedRepoPage()
+    {
+        $client = $this->createClient();
+
+        $crawler = $client->request('GET', '/nested/NestedRepo/');
+        $this->assertTrue($client->getResponse()->isOk());
+        $this->assertRegexp('/NESTED TEST REPO README/', $client->getResponse()->getContent());
+    }
+
+    public function testNestedRepoBranch()
+    {
+        $client = $this->createClient();
+
+        $crawler = $client->request('GET', '/nested/NestedRepo/testing/');
+        $this->assertTrue($client->getResponse()->isOk());
+        $this->assertRegexp('/NESTED TEST BRANCH README/', $client->getResponse()->getContent());
     }
 
     public static function tearDownAfterClass()
