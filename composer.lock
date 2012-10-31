@@ -1,18 +1,18 @@
 {
-    "hash": "c5848b4657d12dc6db9a2f2ff1dd9069",
+    "hash": "b1fc3d7e61707618f68e5cf940e97081",
     "packages": [
         {
             "name": "klaussilveira/gitter",
-            "version": "0.1.2",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/klaussilveira/gitter",
-                "reference": "0.1.2"
+                "reference": "1c9b6e4dde81d21acffe99d9f4559ed3bc59f947"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/klaussilveira/gitter/zipball/0.1.2",
-                "reference": "0.1.2",
+                "url": "https://github.com/klaussilveira/gitter/zipball/1c9b6e4dde81d21acffe99d9f4559ed3bc59f947",
+                "reference": "1c9b6e4dde81d21acffe99d9f4559ed3bc59f947",
                 "shasum": ""
             },
             "require": {
@@ -22,9 +22,9 @@
             "require-dev": {
                 "symfony/filesystem": ">=2.1"
             },
-            "time": "2012-10-30 17:34:56",
+            "time": "1351643953",
             "type": "library",
-            "installation-source": "dist",
+            "installation-source": "source",
             "autoload": {
                 "psr-0": {
                     "Gitter": "lib/"
@@ -65,7 +65,6 @@
             "require": {
                 "php": ">=5.3.0"
             },
-            "time": "1347278988",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -92,7 +91,8 @@
             "keywords": [
                 "dependency injection",
                 "container"
-            ]
+            ],
+            "time": "1347278988"
         },
         {
             "name": "silex/silex",
@@ -245,7 +245,6 @@
             "require": {
                 "php": ">=5.3.3"
             },
-            "time": "1350717030",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -272,7 +271,8 @@
                 }
             ],
             "description": "Symfony Filesystem Component",
-            "homepage": "http://symfony.com"
+            "homepage": "http://symfony.com",
+            "time": "1350717030"
         },
         {
             "name": "symfony/http-foundation",
@@ -409,7 +409,6 @@
             "require": {
                 "php": ">=5.3.3"
             },
-            "time": "1351356874",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -436,7 +435,8 @@
                 }
             ],
             "description": "Symfony Process Component",
-            "homepage": "http://symfony.com"
+            "homepage": "http://symfony.com",
+            "time": "1351356874"
         },
         {
             "name": "symfony/routing",
@@ -531,7 +531,6 @@
                 "symfony/yaml": "2.1.*",
                 "symfony/security": "2.1.*"
             },
-            "time": "1349363877",
             "type": "symfony-bridge",
             "extra": {
                 "branch-alias": {
@@ -558,7 +557,8 @@
                 }
             ],
             "description": "Symfony Twig Bridge",
-            "homepage": "http://symfony.com"
+            "homepage": "http://symfony.com",
+            "time": "1349363877"
         },
         {
             "name": "twig/twig",
@@ -615,7 +615,7 @@
 
     ],
     "minimum-stability": "dev",
-    "stability-flags": [
-
-    ]
+    "stability-flags": {
+        "klaussilveira/gitter": 20
+    }
 }

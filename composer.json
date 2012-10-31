@@ -4,7 +4,7 @@
         "twig/twig": "1.9.*",
         "symfony/twig-bridge": "2.1.*",
         "symfony/filesystem": "2.1.*",
-        "klaussilveira/gitter": "0.1.2"
+        "klaussilveira/gitter": "dev-master"
     },
     "require-dev": {
         "symfony/browser-kit": "2.1.*",
