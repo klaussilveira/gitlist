@@ -25,6 +25,7 @@ class Routing
                 },
                 $this->app['git']->getRepositories($this->app['git.repos'])
             );
+            usort($quoted_paths, function ($a, $b) { return strlen($b) - strlen($a); });
             $regex = implode('|', $quoted_paths);
         }
 
