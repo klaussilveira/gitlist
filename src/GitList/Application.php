@@ -8,6 +8,7 @@ use Silex\Provider\UrlGeneratorServiceProvider;
 use GitList\Provider\GitServiceProvider;
 use GitList\Provider\RepositoryUtilServiceProvider;
 use GitList\Provider\ViewUtilServiceProvider;
+use GitList\Provider\RoutingUtilServiceProvider;
 
 /**
  * GitList application.
@@ -44,6 +45,7 @@ class Application extends SilexApplication
         $this->register(new ViewUtilServiceProvider());
         $this->register(new RepositoryUtilServiceProvider());
         $this->register(new UrlGeneratorServiceProvider());
+        $this->register(new RoutingUtilServiceProvider());
 
         $this['twig'] = $this->share($this->extend('twig', function($twig, $app) {
             $twig->addFilter('md5', new \Twig_Filter_Function('md5'));
