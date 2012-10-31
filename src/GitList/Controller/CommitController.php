@@ -16,6 +16,9 @@ class CommitController implements ControllerProviderInterface
 
         $route->get('{repo}/commits/{branch}/{file}', function($repo, $branch, $file) use ($app) {
             $repository = $app['git']->getRepository($app['git.repos'] . $repo);
+
+            list($branch, $file) = $app['util.repository']->extractRef($repository, $branch, $file);
+
             $type = $file ? "$branch -- \"$file\"" : $branch;
             $pager = $app['util.view']->getPager($app['request']->get('page'), $repository->getTotalCommits($type));
             $commits = $repository->getPaginatedCommits($type, $pager['current']);
@@ -38,7 +41,7 @@ class CommitController implements ControllerProviderInterface
                 'file'           => $file,
             ));
         })->assert('repo', '[\w-._]+')
-          ->assert('branch', '[\w-._]+')
+          ->assert('branch', '[\w-._\/]+')
           ->assert('file', '.+')
           ->value('branch', 'master')
           ->value('file', '')
@@ -80,6 +83,9 @@ class CommitController implements ControllerProviderInterface
 
         $route->get('{repo}/blame/{branch}/{file}', function($repo, $branch, $file) use ($app) {
             $repository = $app['git']->getRepository($app['git.repos'] . $repo);
+
+            list($branch, $file) = $app['util.repository']->extractRef($repository, $branch, $file);
+
             $blames = $repository->getBlame("$branch -- \"$file\"");
 
             return $app['twig']->render('blame.twig', array(
@@ -92,7 +98,7 @@ class CommitController implements ControllerProviderInterface
             ));
         })->assert('repo', '[\w-._]+')
           ->assert('file', '.+')
-          ->assert('branch', '[\w-._]+')
+          ->assert('branch', '[\w-._\/]+')
           ->bind('blame');
 
         return $route;

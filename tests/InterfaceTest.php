@@ -42,6 +42,7 @@ class InterfaceTest extends WebTestCase
         $repository->commit("Initial commit");
         $repository->createBranch('issue12');
         $repository->createBranch('issue42');
+        $repository->createBranch('branch/name/wiith/slashes');
 
         // foobar repository fixture
         $git->createRepository(self::$tmpdir . 'foobar');
@@ -94,9 +95,11 @@ class InterfaceTest extends WebTestCase
         $this->assertEquals("## GitTest\nGitTest is a *test* repository!", $crawler->filter('#readme-content')->eq(0)->text());
         $this->assertEquals('/GitTest/blob/master/README.md', $crawler->filter('.tree tr td')->eq(0)->filter('a')->eq(0)->attr('href'));
         $this->assertEquals('/GitTest/blob/master/test.php', $crawler->filter('.tree tr td')->eq(3)->filter('a')->eq(0)->attr('href'));
-        $this->assertEquals('issue12', $crawler->filter('.dropdown-menu li')->eq(1)->text());
-        $this->assertEquals('issue42', $crawler->filter('.dropdown-menu li')->eq(2)->text());
-        $this->assertEquals('master', $crawler->filter('.dropdown-menu li')->eq(3)->text());
+
+        $this->assertEquals('branch/name/wiith/slashes', $crawler->filter('.dropdown-menu li')->eq(1)->text());
+        $this->assertEquals('issue12', $crawler->filter('.dropdown-menu li')->eq(2)->text());
+        $this->assertEquals('issue42', $crawler->filter('.dropdown-menu li')->eq(3)->text());
+        $this->assertEquals('master', $crawler->filter('.dropdown-menu li')->eq(4)->text());
 
         $crawler = $client->request('GET', '/foobar/');
         $this->assertTrue($client->getResponse()->isOk());
