@@ -13,7 +13,13 @@ class MainController implements ControllerProviderInterface
         $route = $app['controllers_factory'];
 
         $route->get('/', function() use ($app) {
-            $repositories = $app['git']->getRepositories($app['git.repos']);
+            $repositories = array_map(
+                function ($repo) use ($app) {
+                    $repo['relativePath'] = $app['util.routing']->getRelativePath($repo['path']);
+                    return $repo;
+                },
+                $app['git']->getRepositories($app['git.repos'])
+            );
 
             return $app['twig']->render('index.twig', array(
                 'repositories'   => $repositories,
@@ -33,7 +39,7 @@ class MainController implements ControllerProviderInterface
                 'stats'          => $stats,
                 'authors'         => $authors,
             ));
-        })->assert('repo', '[\w-._]+')
+        })->assert('repo', $app['util.routing']->getRepositoryRegex())
           ->assert('branch', '[\w-._\/]+')
           ->value('branch', 'master')
           ->bind('stats');
@@ -49,7 +55,7 @@ class MainController implements ControllerProviderInterface
             ));
 
             return new Response($html, 200, array('Content-Type' => 'application/rss+xml'));
-        })->assert('repo', '[\w-._]+')
+        })->assert('repo', $app['util.routing']->getRepositoryRegex())
           ->assert('branch', '[\w-._\/]+')
           ->bind('rss');
 

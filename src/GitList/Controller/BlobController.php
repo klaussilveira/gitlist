@@ -39,7 +39,7 @@ class BlobController implements ControllerProviderInterface
                 'tags'           => $repository->getTags(),
             ));
         })->assert('file', '.+')
-          ->assert('repo', '[\w-._]+')
+          ->assert('repo', $app['util.routing']->getRepositoryRegex())
           ->assert('branch', '[\w-._\/]+')
           ->bind('blob');
 
@@ -59,7 +59,7 @@ class BlobController implements ControllerProviderInterface
 
             return new Response($blob, 200, $headers);
         })->assert('file', '.+')
-          ->assert('repo', '[\w-._]+')
+          ->assert('repo', $app['util.routing']->getRepositoryRegex())
           ->assert('branch', '[\w-._\/]+')
           ->bind('blob_raw');
 

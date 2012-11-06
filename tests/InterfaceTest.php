@@ -7,6 +7,7 @@ use Gitter\Client;
 class InterfaceTest extends WebTestCase
 {
     protected static $tmpdir;
+    protected static $gitPath;
 
     public static function setUpBeforeClass()
     {
@@ -30,6 +31,8 @@ class InterfaceTest extends WebTestCase
         $options['path'] = getenv('GIT_CLIENT') ?: '/usr/bin/git';
         $options['hidden'] = array(self::$tmpdir . '/hiddenrepo');
         $git = new Client($options);
+
+        self::$gitPath = $options['path'];
 
         // GitTest repository fixture
         $git->createRepository(self::$tmpdir . 'GitTest');
@@ -57,13 +60,39 @@ class InterfaceTest extends WebTestCase
         $repository->setConfig('user.email', 'luke@rebel.org');
         $repository->addAll();
         $repository->commit("First commit");
+
+        // Nested repository fixture
+        $nested_dir = self::$tmpdir . 'nested/';
+        $fs->mkdir($nested_dir);
+        $git->createRepository($nested_dir . 'NestedRepo');
+        $repository = $git->getRepository($nested_dir . '/NestedRepo');
+        file_put_contents($nested_dir . 'NestedRepo/.git/description', 'This is a NESTED test repo!');
+        file_put_contents($nested_dir . 'NestedRepo/README.txt', 'NESTED TEST REPO README');
+        $repository->setConfig('user.name', 'Luke Skywalker');
+        $repository->setConfig('user.email', 'luke@rebel.org');
+        $repository->addAll();
+        $repository->commit("First commit");
+        $repository->createBranch("testing");
+        $repository->checkout("testing");
+        file_put_contents($nested_dir . 'NestedRepo/README.txt', 'NESTED TEST BRANCH README');
+        $repository->addAll();
+        $repository->commit("Changing branch");
+        $repository->checkout("master");
+
     }
 
     public function createApplication()
     {
+        $config = new \GitList\Config(array(
+            'git' => array(
+                'client' => self::$gitPath,
+                'repositories' => self::$tmpdir,
+            ),
+            'app' => array(
+                'debug' => true,
+            ),
+        ));
         $app = require 'boot.php';
-        $app['debug'] = true;
-        $app['git.repos'] = self::$tmpdir;
         return $app;
     }
 
@@ -77,10 +106,12 @@ class InterfaceTest extends WebTestCase
         $this->assertCount(1, $crawler->filter('div.repository-header:contains("GitTest")'));
         $this->assertEquals('/GitTest/', $crawler->filter('.repository-header a')->eq(0)->attr('href'));
         $this->assertEquals('/GitTest/master/rss/', $crawler->filter('.repository-header a')->eq(1)->attr('href'));
+        $this->assertEquals('/nested/NestedRepo/', $crawler->filter('.repository-header a')->eq(2)->attr('href'));
+        $this->assertEquals('/nested/NestedRepo/master/rss/', $crawler->filter('.repository-header a')->eq(3)->attr('href'));
         $this->assertCount(1, $crawler->filter('div.repository-header:contains("foobar")'));
         $this->assertCount(1, $crawler->filter('div.repository-body:contains("This is a test repo!")'));
-        $this->assertEquals('/foobar/', $crawler->filter('.repository-header a')->eq(2)->attr('href'));
-        $this->assertEquals('/foobar/master/rss/', $crawler->filter('.repository-header a')->eq(3)->attr('href'));
+        $this->assertEquals('/foobar/', $crawler->filter('.repository-header a')->eq(4)->attr('href'));
+        $this->assertEquals('/foobar/master/rss/', $crawler->filter('.repository-header a')->eq(5)->attr('href'));
     }
 
     public function testRepositoryPage()
@@ -199,6 +230,24 @@ class InterfaceTest extends WebTestCase
         $this->assertTrue($client->getResponse()->isOk());
         $this->assertRegexp('/Latest commits in GitTest:master/', $client->getResponse()->getContent());
         $this->assertRegexp('/Initial commit/', $client->getResponse()->getContent());
+    }
+
+    public function testNestedRepoPage()
+    {
+        $client = $this->createClient();
+
+        $crawler = $client->request('GET', '/nested/NestedRepo/');
+        $this->assertTrue($client->getResponse()->isOk());
+        $this->assertRegexp('/NESTED TEST REPO README/', $client->getResponse()->getContent());
+    }
+
+    public function testNestedRepoBranch()
+    {
+        $client = $this->createClient();
+
+        $crawler = $client->request('GET', '/nested/NestedRepo/testing/');
+        $this->assertTrue($client->getResponse()->isOk());
+        $this->assertRegexp('/NESTED TEST BRANCH README/', $client->getResponse()->getContent());
     }
 
     public static function tearDownAfterClass()
