@@ -25,18 +25,57 @@ $(function () {
         $('#readme-content').html(converter.makeHtml($('#readme-content').text()));
     }
 
-    function paginate() {
+    var loadingMore = false;
+
+    (function paginate() {
         var $pager = $('.pager');
         $pager.find('.next a').one('click', function (e) {
             e.preventDefault();
+            loadingMore = true;
             $(this).css('pointer-events', 'none');
             $.get(this.href, function (html) {
                 $pager.after(html);
                 $pager.remove();
                 paginate();
+                loadingMore = false;
             });
         });
         $pager.find('.previous').remove();
-    }
-    paginate();
+    }());
+
+    (function moreCommits() {
+
+        var MAX_AUTOMORE = 99, // number of automatic mores
+            AUTOMORE_TRIGGER = 500, // automatic mores are triggered when this number of pixels from the bottom is reached
+            $doc = $(document),
+            $body = $('body'),
+            isScrolled = false,
+            autoMoreCount = 0;
+
+        function autoMore() {
+            var $autoMore = $('.pager .next a'),
+                screenHeight = window.innerHeight || document.documentElement.clientHeight || $('body')[0].clientHeight;
+            if ($autoMore.length && $body.outerHeight() - $doc.scrollTop() - screenHeight < AUTOMORE_TRIGGER) {
+                $autoMore.click();
+                ++autoMoreCount;
+            }
+        }
+
+        setInterval(function () {
+            if (isScrolled) {
+                isScrolled = false;
+                if (!loadingMore && autoMoreCount < MAX_AUTOMORE) {
+                    autoMore();
+                }
+            }
+        }, 250);
+
+        $doc.on(
+            'scroll resize',
+            function () {
+                isScrolled = true;
+            }
+        );
+    }());
+
 });
