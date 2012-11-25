@@ -46,7 +46,8 @@ $(function () {
     (function moreCommits() {
 
         var MAX_AUTOMORE = 99, // number of automatic mores
-            AUTOMORE_TRIGGER = 500, // automatic mores are triggered when this number of pixels from the bottom is reached
+            AUTOMORE_TRIGGER = 350, // automatic mores are triggered when this number of pixels from the bottom is reached
+            CHECK_INTERVAL = 100,
             $doc = $(document),
             $body = $('body'),
             isScrolled = false,
@@ -55,20 +56,28 @@ $(function () {
         function autoMore() {
             var $autoMore = $('.pager .next a'),
                 screenHeight = window.innerHeight || document.documentElement.clientHeight || $('body')[0].clientHeight;
-            if ($autoMore.length && $body.outerHeight() - $doc.scrollTop() - screenHeight < AUTOMORE_TRIGGER) {
-                $autoMore.click();
-                ++autoMoreCount;
+            if ($autoMore.length) {
+                if ($body.outerHeight() - $doc.scrollTop() - screenHeight < AUTOMORE_TRIGGER) {
+                    $autoMore.click();
+                    autoMoreCount += 1;
+                }
+            } else {
+                clearInterval(timer);
             }
         }
 
-        setInterval(function () {
+        var timer = setInterval(function () {
             if (isScrolled) {
                 isScrolled = false;
-                if (!loadingMore && autoMoreCount < MAX_AUTOMORE) {
-                    autoMore();
+                if (!loadingMore) {
+                    if (autoMoreCount < MAX_AUTOMORE) {
+                        autoMore();
+                    } else {
+                        clearInterval(timer);
+                    }
                 }
             }
-        }, 250);
+        }, CHECK_INTERVAL);
 
         $doc.on(
             'scroll resize',
