@@ -11,6 +11,9 @@
         <div class="commit-header">
             <span class="pull-right"><a class="btn btn-small" href="{{ path('branch', {repo: repo, branch: commit.hash}) }}" title="Browse code at this point in history"><i class="icon-list-alt"></i> Browse code</a></span>
             <h4>{{ commit.message }}</h4>
+            {% for bodyline in commit.body %}
+            <p>{{bodyline}}</p>
+            {% endfor %}
         </div>
         <div class="commit-body">
             <img src="https://gravatar.com/avatar/{{ commit.author.email | md5 }}?s=32" class="pull-left space-right" />
