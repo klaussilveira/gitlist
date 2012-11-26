@@ -51,7 +51,7 @@ $(function () {
             CHECK_INTERVAL = 100,
             $doc = $(document),
             $body = $('body'),
-            $gotoTop = $('<a class="gototop" href="#top"><b/><i/></a>').appendTo($body),
+            $gotoTop = $('<a class="gototop" href="#"><b/><i/></a>').appendTo($body),
             isScrolled = false,
             autoMoreCount = 0;
 
@@ -64,12 +64,20 @@ $(function () {
             }
         }
 
+        $gotoTop.on(
+            'click',
+            function () {
+                $('html, body').animate({ scrollTop : 0 }, 100);
+            }
+        );
+
         function gotoTop() {
             if ($doc.scrollTop() > GOTOTOP_TRIGGER) {
                 $gotoTop.addClass('visible');
             } else {
                 $gotoTop.removeClass('visible');
             }
+            return false;
         }
 
         setInterval(function () {
