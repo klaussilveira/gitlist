@@ -1,0 +1,39 @@
+.gototop {
+  background-color:#000;
+  .border-radius(8px);
+  bottom:-100px;
+  height:80px;
+  margin:0;
+  .opacity(20);
+  position:fixed;
+  right:30px;
+  .transition(bottom .2s ease-in-out 0s);
+  width:80px;
+
+  b {
+    border-bottom:20px solid #fff;
+    border-left:20px dashed transparent;
+    border-right:20px dashed transparent;
+    border-top:0 dashed transparent;
+    height:0;
+    left:20px;
+    margin:0;
+    position: absolute;
+    top:20px;
+    width:0;
+  }
+
+  i {
+    background-color:#fff;
+    height:20px;
+    left:30px;
+    margin:0;
+    position:absolute;
+    top:40px;
+    width:20px;
+  }
+}
+
+.gototop.visible {
+  bottom:20px;
+}
