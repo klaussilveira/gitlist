@@ -71,65 +71,125 @@ class Client
      * @param  string $path Path where repositories will be searched
      * @return array  Found repositories, containing their name, path and description
      */
-    public function getRepositories($path)
+    public function getRepositories($paths)
     {
-        $repositories = $this->recurseDirectory($path);
+        if ( !is_array( $paths ) ) {
+            $paths = array($paths);
+        }
+
+        $repositories = array();
+        foreach( $paths  as $path ) {
+            # TODO: check what happens if multiple similar paths are merged.
+            $this->recurseDirectory($repositories, $path);
+        }
 
         if (empty($repositories)) {
-            throw new \RuntimeException('There are no GIT repositories in ' . $path);
+            #throw new \RuntimeException('There are no GIT repositories in ' . $path);
         }
 
         sort($repositories);
 
+#echo "after search:";
+#print_r( $repositories );
+
         return $repositories;
     }
 
-    private function recurseDirectory($path)
-    {
+
+    private static function endsWith( $str, $test ) {
+        return ( substr_compare($str, $test, -strlen($test), strlen($test)) === 0 );
+    }
+
+
+    #
+    # Checks current directory first, then moves on to subdirectories
+    #
+    private function recurseDirectory(&$repositories, $path) {
+        if ( count( $repositories ) > 1000 ) {
+            echo "Too many repo's found, not recursing further.\n";
+            return;
+        }
+
+        # Paranoia check; don't recurse into git directories
+        if ( self::endsWith( $path, ".git") || self::endsWith( $path, "HEAD") ) {
+echo "Not doing git directories!\n";
+            return;
+        }
+
+        if ( (in_array($path, $this->getHidden())) ) { 
+echo "Skipping configured hidden.";
+        }
+
         $dir = new \DirectoryIterator($path);
+    
+        $isRepository = false;
+        $isBare = false;
+        $cur_path = "";
 
-        $repositories = array();
-
+        # Preprocess returned directories
+        $recurse = array();
         foreach ($dir as $file) {
-            if ($file->isDot()) {
+            $filename = $file->getFilename();
+
+            if (!$file->isDir()) continue; 
+            if ( !$file->isReadable() ) continue;
+            if ( $filename === "..") continue;   # Skip parent
+            if ( (in_array($file->getPathname(), $this->getHidden())) ) continue;  # Skip files configured as hidden
+
+            if ( $filename === ".") {
+                $isBare = file_exists($file->getPathname() . '/HEAD');
+                $isRepository = file_exists($file->getPathname() . '/.git/HEAD');
+                $cur_path = $file->getPathname();
+
+#if ( $isRepository || $isBare ) {
+#echo "found repo! {$path}\n";
+#echo "found repo! {$file->getPathname()}\n";
+#}
                 continue;
             }
 
+            # Skip hidden files & dir's 
             if (strrpos($file->getFilename(), '.') === 0) {
                 continue;
             }
 
-            if ($file->isDir()) {
-                $isBare = file_exists($file->getPathname() . '/HEAD');
-                $isRepository = file_exists($file->getPathname() . '/.git/HEAD');
-
-                if ($isRepository || $isBare) {
-                    if (in_array($file->getPathname(), $this->getHidden())) {
-                        continue;
-                    }
-
-                    if ($isBare) {
-                        $description = $file->getPathname() . '/description';
-                    } else {
-                        $description = $file->getPathname() . '/.git/description';
-                    }
-
-                    if (file_exists($description)) {
-                        $description = file_get_contents($description);
-                    } else {
-                        $description = 'There is no repository description file. Please, create one to remove this message.';
-                    }
-
-                    $repositories[] = array('name' => $file->getFilename(), 'path' => $file->getPathname(), 'description' => $description);
-                    continue;
-                } else {
-                    $repositories = array_merge($repositories, $this->recurseDirectory($file->getPathname()));
-                }
-            }
+            $recurse [] = $file->getPathname();
         }
 
-        return $repositories;
+         if ( $isRepository || $isBare ) {
+
+            $tmp = array_reverse( explode('/', rtrim($path, DIRECTORY_SEPARATOR) ));
+            $filename = $tmp[0];
+            # Pathological case: '/' was defined as root
+            if ( $filename == '' ) $filename = 'root';
+
+            if ($isBare) {
+                $description = $filename . '/description';
+            } else {
+                $description = $filename . '/.git/description';
+            }
+
+            if (file_exists($description)) {
+                $description = file_get_contents($description);
+            } else {
+                $description = 'There is no repository description file. Please, create one to remove this message.';
+            }
+
+
+            $repositories[$filename] = array(
+                'name' => $filename,
+                'relativePath' => $cur_path,        # TODO: Fix
+                'path' => $cur_path,
+                'description' => $description
+            );
+        } 
+
+        foreach ($recurse as $item) {
+#echo "recursing $item\n";
+            $this->recurseDirectory($repositories, $item );
+        }
     }
+
 
     public function run($repository, $command)
     {
