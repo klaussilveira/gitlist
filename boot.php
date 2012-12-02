@@ -4,7 +4,22 @@ if (!isset($config)) {
     die("No configuration object provided.");
 }
 
-$config->set('git', 'repositories', rtrim($config->get('git', 'repositories'), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR);
+$repositories = $config->get('git', 'repositories');
+
+if ( !is_array( $repositories ) ) {
+	# Convert the single item to an array - this is the internal handling
+	$repositories  = array( $repositories );
+}
+
+$tmp_arr = array();
+foreach( $repositories as $repo ) {
+	$tmp = rtrim($repo, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+	$tmp_arr []= $tmp;
+}
+$repositories = $tmp_arr;
+
+$config->set('git', 'repositories', $repositories);
+
 
 // Startup and configure Silex application
 $app = new GitList\Application($config, __DIR__);

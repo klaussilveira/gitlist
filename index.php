@@ -1,5 +1,7 @@
 <?php
 
+echo "<pre>";
+
 /**
  * GitList 0.3
  * https://github.com/klaussilveira/gitlist
@@ -16,4 +18,7 @@ require 'vendor/autoload.php';
 $config = GitList\Config::fromFile('config.ini');
 
 $app = require 'boot.php';
+
+echo "</pre>";
+
 $app->run();

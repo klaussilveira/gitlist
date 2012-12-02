@@ -49,8 +49,11 @@ class Config
 
     protected function validateOptions()
     {
-        if (!$this->get('git', 'repositories') || !is_dir($this->get('git', 'repositories'))) {
-            die("Please, edit the config file and provide your repositories directory");
+        foreach ( $this->get('git', 'repositories') as $dir ) {
+			echo $dir;
+	        if (!$dir || !is_dir($dir)) {
+	            die("Please, edit the config file and provide your repositories directory");
+			}
         }
     }
 }

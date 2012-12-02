@@ -13,6 +13,7 @@ class MainController implements ControllerProviderInterface
         $route = $app['controllers_factory'];
 
         $route->get('/', function() use ($app) {
+/*
             $repositories = array_map(
                 function ($repo) use ($app) {
                     $repo['relativePath'] = $app['util.routing']->getRelativePath($repo['path']);
@@ -20,6 +21,9 @@ class MainController implements ControllerProviderInterface
                 },
                 $app['git']->getRepositories($app['git.repos'])
             );
+*/
+
+            $repositories = $app['git']->getRepositories($app['git.repos']);
 
             return $app['twig']->render('index.twig', array(
                 'repositories'   => $repositories,
@@ -27,6 +31,7 @@ class MainController implements ControllerProviderInterface
         })->bind('homepage');
 
         $route->get('{repo}/stats/{branch}', function($repo, $branch) use ($app) {
+            #$repository = $app['git']->getRepository($app['git.repos'][$repo]);
             $repository = $app['git']->getRepository($app['git.repos'] . $repo);
             $stats = $repository->getStatistics($branch);
             $authors = $repository->getAuthorStatistics();
