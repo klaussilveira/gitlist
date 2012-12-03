@@ -13,7 +13,14 @@ class CommitController implements ControllerProviderInterface
         $route = $app['controllers_factory'];
 
         $route->get('{repo}/commits/{branch}/{file}', function($repo, $branch, $file) use ($app) {
-            $repository = $app['git']->getRepository($app['git.repos'] . $repo);
+            #$repository = $app['git']->getRepository($app['git.repos'] . $repo);
+
+            # NOTE: this call is to the ONE Client!
+            $repositories = $app['git']->getRepositories($app['git.repos']);
+            $path = $repositories[ $repo ]['path'];
+
+            # NOTE: this call is to the OTHER Client!
+            $repository = $app['git']->getRepository($path);
 
             list($branch, $file) = $app['util.repository']->extractRef($repository, $branch, $file);
 

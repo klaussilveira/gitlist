@@ -24,6 +24,9 @@ class MainController implements ControllerProviderInterface
 */
 
             $repositories = $app['git']->getRepositories($app['git.repos']);
+echo "Doing that\n";
+            #$repositories = $app['git.repos'];
+print_r( $repositories );
 
             return $app['twig']->render('index.twig', array(
                 'repositories'   => $repositories,
@@ -32,7 +35,14 @@ class MainController implements ControllerProviderInterface
 
         $route->get('{repo}/stats/{branch}', function($repo, $branch) use ($app) {
             #$repository = $app['git']->getRepository($app['git.repos'][$repo]);
-            $repository = $app['git']->getRepository($app['git.repos'] . $repo);
+
+            # NOTE: this call is to the ONE Client!
+            $repositories = $app['git']->getRepositories($app['git.repos']);
+            $path = $repositories[ $repo ]['path'];
+
+            # NOTE: this call is to the OTHER Client!
+            $repository = $app['git']->getRepository($path);
+
             $stats = $repository->getStatistics($branch);
             $authors = $repository->getAuthorStatistics();
 
@@ -50,7 +60,15 @@ class MainController implements ControllerProviderInterface
           ->bind('stats');
 
         $route->get('{repo}/{branch}/rss/', function($repo, $branch) use ($app) {
-            $repository = $app['git']->getRepository($app['git.repos'] . $repo);
+            #$repository = $app['git']->getRepository($app['git.repos'] );
+
+            # NOTE: this call is to the ONE Client!
+            $repositories = $app['git']->getRepositories($app['git.repos']);
+            $path = $repositories[ $repo ]['path'];
+
+            # NOTE: this call is to the OTHER Client!
+            $repository = $app['git']->getRepository($path);
+
             $commits = $repository->getPaginatedCommits($branch);
 
             $html = $app['twig']->render('rss.twig', array(

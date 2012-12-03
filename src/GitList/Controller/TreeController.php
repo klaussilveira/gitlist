@@ -14,7 +14,14 @@ class TreeController implements ControllerProviderInterface
         $route = $app['controllers_factory'];
 
         $route->get('{repo}/tree/{branch}/{tree}/', $treeController = function($repo, $branch = '', $tree = '') use ($app) {
-            $repository = $app['git']->getRepository($app['git.repos'] . $repo);
+
+            # NOTE: this call is to the ONE Client!
+            $repositories = $app['git']->getRepositories($app['git.repos']);
+            $path = $repositories[ $repo ]['path'];
+
+            # NOTE: this call is to the OTHER Client!
+            $repository = $app['git']->getRepository($path);
+
             if (!$branch) {
                 $branch = $repository->getHead();
             }
@@ -39,7 +46,7 @@ class TreeController implements ControllerProviderInterface
                 'breadcrumbs'    => $breadcrumbs,
                 'branches'       => $repository->getBranches(),
                 'tags'           => $repository->getTags(),
-                'readme'         => $app['util.repository']->getReadme($repo, $branch),
+                'readme'         => $app['util.repository']->getReadme($repository, $branch),
             ));
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
           ->assert('branch', '[\w-._\/]+')
@@ -47,7 +54,7 @@ class TreeController implements ControllerProviderInterface
           ->bind('tree');
 
         $route->post('{repo}/tree/{branch}/search', function(Request $request, $repo, $branch = '', $tree = '') use ($app) {
-            $repository = $app['git']->getRepository($app['git.repos'] . $repo);
+            $repository = $app['git']->getRepository($app['git.repos'][ $repo ]);
 
             if (!$branch) {
                 $branch = $repository->getHead();

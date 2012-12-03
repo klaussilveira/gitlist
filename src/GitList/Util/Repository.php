@@ -160,9 +160,9 @@ class Repository
         return false;
     }
 
-    public function getReadme($repo, $branch = 'master')
+    public function getReadme($repository, $branch = 'master')
     {
-        $repository = $this->app['git']->getRepository($this->app['git.repos'] . $repo);
+        #$repository = $this->app['git']->getRepository($this->app['git.repos'][$repo ]);
         $files = $repository->getTree($branch)->output();
 
         foreach ($files as $file) {
