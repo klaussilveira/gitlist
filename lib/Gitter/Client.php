@@ -52,8 +52,13 @@ class Client
      * @param  string     $path Path where the repository is located
      * @return Repository Instance of Repository
      */
-    public function getRepository($path)
+    public function getRepository($paths, $repo)
     {
+echo "this getRepository\n";
+
+        $repositories = getRepositories($paths);
+        $path = $repositories[ $repo ]['path'];
+
         if (!file_exists($path) || !file_exists($path . '/.git/HEAD') && !file_exists($path . '/HEAD')) {
             throw new \RuntimeException('There is no GIT repository at ' . $path);
         }
@@ -65,6 +70,9 @@ class Client
         return new Repository($path, $this);
     }
 
+
+    private $repositories = null;
+
     /**
      * Searches for valid repositories on the specified path
      *
@@ -73,6 +81,8 @@ class Client
      */
     public function getRepositories($paths)
     {
+        if ( $repositories != null ) return $this->repositories;
+
         if ( !is_array( $paths ) ) {
             $paths = array($paths);
         }
@@ -87,10 +97,11 @@ class Client
             #throw new \RuntimeException('There are no GIT repositories in ' . $path);
         }
 
-        sort($repositories);
+        ksort($repositories);
 
 #echo "after search:";
 #print_r( $repositories );
+        $hits->repositories = $repositories;
 
         return $repositories;
     }
@@ -164,9 +175,9 @@ echo "Skipping configured hidden.";
             if ( $filename == '' ) $filename = 'root';
 
             if ($isBare) {
-                $description = $filename . '/description';
+                $description = $cur_path . '/description';
             } else {
-                $description = $filename . '/.git/description';
+                $description = $cur_path . '/.git/description';
             }
 
             if (file_exists($description)) {
