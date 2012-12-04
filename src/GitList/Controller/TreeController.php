@@ -15,12 +15,7 @@ class TreeController implements ControllerProviderInterface
 
         $route->get('{repo}/tree/{branch}/{tree}/', $treeController = function($repo, $branch = '', $tree = '') use ($app) {
 
-            # NOTE: this call is to the ONE Client!
-            $repositories = $app['git']->getRepositories($app['git.repos']);
-            $path = $repositories[ $repo ]['path'];
-
-            # NOTE: this call is to the OTHER Client!
-            $repository = $app['git']->getRepository($path);
+            $repository = $app['git']->getRepositoryCached($app['git.repos'], $repo);
 
             if (!$branch) {
                 $branch = $repository->getHead();
@@ -54,8 +49,12 @@ class TreeController implements ControllerProviderInterface
           ->bind('tree');
 
         $route->post('{repo}/tree/{branch}/search', function(Request $request, $repo, $branch = '', $tree = '') use ($app) {
-            $repository = $app['git']->getRepository($app['git.repos'][ $repo ]);
+echo "searc\n";
 
+            $repository = $app['git']->getRepositoryCached($app['git.repos'], $repo);
+            $path = $repository->getPath();
+
+            $repository = $app['git']->getRepository($path );
             if (!$branch) {
                 $branch = $repository->getHead();
             }
@@ -88,7 +87,9 @@ class TreeController implements ControllerProviderInterface
           ->bind('repository');
 
         $route->get('{repo}/{format}ball/{branch}', function($repo, $format, $branch) use ($app) {
-            $repository = $app['git']->getRepository($app['git.repos'] . $repo);
+            $repository = $app['git']->getRepositoryCached($app['git.repos'], $repo);
+            $path = $repository->getPath();
+
             $tree = $repository->getBranchTree($branch);
 
             if (false === $tree) {

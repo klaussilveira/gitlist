@@ -1,5 +1,6 @@
 <?php
 
+#WRI DEBUG
 echo "<pre>";
 
 /**
@@ -19,6 +20,7 @@ $config = GitList\Config::fromFile('config.ini');
 
 $app = require 'boot.php';
 
+#WRI DEBUG
 echo "</pre>";
 
 $app->run();

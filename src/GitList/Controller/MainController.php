@@ -13,20 +13,7 @@ class MainController implements ControllerProviderInterface
         $route = $app['controllers_factory'];
 
         $route->get('/', function() use ($app) {
-/*
-            $repositories = array_map(
-                function ($repo) use ($app) {
-                    $repo['relativePath'] = $app['util.routing']->getRelativePath($repo['path']);
-                    return $repo;
-                },
-                $app['git']->getRepositories($app['git.repos'])
-            );
-*/
-
             $repositories = $app['git']->getRepositories($app['git.repos']);
-echo "Doing that\n";
-            #$repositories = $app['git.repos'];
-print_r( $repositories );
 
             return $app['twig']->render('index.twig', array(
                 'repositories'   => $repositories,
@@ -35,13 +22,8 @@ print_r( $repositories );
 
         $route->get('{repo}/stats/{branch}', function($repo, $branch) use ($app) {
             #$repository = $app['git']->getRepository($app['git.repos'][$repo]);
-
-            # NOTE: this call is to the ONE Client!
-            $repositories = $app['git']->getRepositories($app['git.repos']);
-            $path = $repositories[ $repo ]['path'];
-
-            # NOTE: this call is to the OTHER Client!
-            $repository = $app['git']->getRepository($path);
+echo "branches\n";
+            $repository = $app['git']->getRepositoryCached($app['git.repos'], $repo);
 
             $stats = $repository->getStatistics($branch);
             $authors = $repository->getAuthorStatistics();
@@ -60,14 +42,8 @@ print_r( $repositories );
           ->bind('stats');
 
         $route->get('{repo}/{branch}/rss/', function($repo, $branch) use ($app) {
-            #$repository = $app['git']->getRepository($app['git.repos'] );
-
-            # NOTE: this call is to the ONE Client!
-            $repositories = $app['git']->getRepositories($app['git.repos']);
-            $path = $repositories[ $repo ]['path'];
-
-            # NOTE: this call is to the OTHER Client!
-            $repository = $app['git']->getRepository($path);
+echo "rss\n";
+            $repository = $app['git']->getRepositoryCached($app['git.repos'], $repo);
 
             $commits = $repository->getPaginatedCommits($branch);
 
