@@ -16,8 +16,16 @@ use Symfony\Component\Process\ExecutableFinder;
 
 class Client
 {
+    # Maximum number of repositories to load in
+    const MAX_REPOS = 1000;
+
     protected $path;
     protected $hidden;
+
+    # Locally cached version of found repositories.
+    # Treated like a singleton
+    private $repositories = null;
+
 
     public function __construct($options = null)
     {
@@ -46,17 +54,21 @@ class Client
         return $repository->create($bare);
     }
 
+
     /**
      * Opens a repository at the specified path
+     *
+     * Deliberately renamed from getRepository, so that it doesn't conflict
+     * with the method of the same name in Client.php in project gitlist.
      *
      * @param  string     $path Path where the repository is located
      * @return Repository Instance of Repository
      */
-    public function getRepository($paths, $repo)
+    public function getRepositoryCached($paths, $repo)
     {
 echo "this getRepository\n";
 
-        $repositories = getRepositories($paths);
+        $repositories = $this->getRepositories($paths);
         $path = $repositories[ $repo ]['path'];
 
         if (!file_exists($path) || !file_exists($path . '/.git/HEAD') && !file_exists($path . '/HEAD')) {
@@ -71,7 +83,6 @@ echo "this getRepository\n";
     }
 
 
-    private $repositories = null;
 
     /**
      * Searches for valid repositories on the specified path
@@ -81,7 +92,7 @@ echo "this getRepository\n";
      */
     public function getRepositories($paths)
     {
-        if ( $repositories != null ) return $this->repositories;
+        if ( $this->repositories != null ) return $this->repositories;
 
         if ( !is_array( $paths ) ) {
             $paths = array($paths);
@@ -94,7 +105,7 @@ echo "this getRepository\n";
         }
 
         if (empty($repositories)) {
-            #throw new \RuntimeException('There are no GIT repositories in ' . $path);
+            throw new \RuntimeException('There are no GIT repositories in ' . $path);
         }
 
         ksort($repositories);
@@ -115,8 +126,12 @@ echo "this getRepository\n";
     #
     # Checks current directory first, then moves on to subdirectories
     #
+    # Variable repositories intentionally passed by reference, so that
+    # a test can be performed on too many repo's. This is a way of putting
+    # a limit on recursion.
+    #
     private function recurseDirectory(&$repositories, $path) {
-        if ( count( $repositories ) > 1000 ) {
+        if ( count( $repositories ) > self::MAX_REPOS ) {
             echo "Too many repo's found, not recursing further.\n";
             return;
         }
