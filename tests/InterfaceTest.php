@@ -79,6 +79,16 @@ class InterfaceTest extends WebTestCase
         $repository->commit("Changing branch");
         $repository->checkout("master");
 
+        // master-less repository fixture
+        $git->createRepository(self::$tmpdir . 'masterless');
+        $repository = $git->getRepository(self::$tmpdir . 'masterless');
+        $repository = $repository->checkout('develop');
+        file_put_contents(self::$tmpdir . 'masterless/README.md', "## masterless\nmasterless is a *test* repository!");
+        file_put_contents(self::$tmpdir . 'masterless/test.php', "<?php\necho 'Hello World'; // This is a test");
+        $repository->setConfig('user.name', 'Luke Skywalker');
+        $repository->setConfig('user.email', 'luke@rebel.org');
+        $repository->addAll();
+        $repository->commit("Initial commit");
     }
 
     public function createApplication()
@@ -239,6 +249,14 @@ class InterfaceTest extends WebTestCase
         $crawler = $client->request('GET', '/nested/NestedRepo/');
         $this->assertTrue($client->getResponse()->isOk());
         $this->assertRegexp('/NESTED TEST REPO README/', $client->getResponse()->getContent());
+    }
+
+    public function testMasterlessRepo()
+    {
+        $client = $this->createClient();
+
+        $crawler = $client->request('GET', '/masterless/');
+        $this->assertTrue($client->getResponse()->isOk());
     }
 
     public function testNestedRepoBranch()
