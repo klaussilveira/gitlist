@@ -15,6 +15,10 @@ class CommitController implements ControllerProviderInterface
         $route->get('{repo}/commits/{branch}/{file}', function($repo, $branch, $file) use ($app) {
             $repository = $app['git']->getRepository($app['git.repos'] . $repo);
 
+            if ($branch === null) {
+                $branch = $repository->getHead();
+            }
+
             list($branch, $file) = $app['util.repository']->extractRef($repository, $branch, $file);
 
             $type = $file ? "$branch -- \"$file\"" : $branch;
@@ -41,12 +45,13 @@ class CommitController implements ControllerProviderInterface
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
           ->assert('branch', '[\w-._\/]+')
           ->assert('file', '.+')
-          ->value('branch', 'master')
+          ->value('branch', null)
           ->value('file', '')
           ->bind('commits');
 
         $route->post('{repo}/commits/search', function(Request $request, $repo) use ($app) {
             $repository = $app['git']->getRepository($app['git.repos'] . $repo);
+            $branch = $repository->getHead();
             $commits = $repository->searchCommitLog($request->get('query'));
 
             foreach ($commits as $commit) {
@@ -57,7 +62,7 @@ class CommitController implements ControllerProviderInterface
 
             return $app['twig']->render('searchcommits.twig', array(
                 'repo'           => $repo,
-                'branch'         => 'master',
+                'branch'         => $branch,
                 'file'           => '',
                 'commits'        => $categorized,
                 'branches'       => $repository->getBranches(),
@@ -69,9 +74,10 @@ class CommitController implements ControllerProviderInterface
         $route->get('{repo}/commit/{commit}/', function($repo, $commit) use ($app) {
             $repository = $app['git']->getRepository($app['git.repos'] . $repo);
             $commit = $repository->getCommit($commit);
+            $branch = $repository->getHead();
 
             return $app['twig']->render('commit.twig', array(
-                'branch'         => 'master',
+                'branch'         => $branch,
                 'repo'           => $repo,
                 'commit'         => $commit,
             ));
