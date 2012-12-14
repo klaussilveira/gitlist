@@ -82,6 +82,7 @@ class InterfaceTest extends WebTestCase
         // master-less repository fixture
         $git->createRepository(self::$tmpdir . 'masterless');
         $repository = $git->getRepository(self::$tmpdir . 'masterless');
+        $repository->createBranch("develop");
         $repository = $repository->checkout('develop');
         file_put_contents(self::$tmpdir . 'masterless/README.md', "## masterless\nmasterless is a *test* repository!");
         file_put_contents(self::$tmpdir . 'masterless/test.php', "<?php\necho 'Hello World'; // This is a test");
