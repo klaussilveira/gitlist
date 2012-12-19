@@ -52,6 +52,7 @@ class Repository
         'r'        => 'r',
         'sh'       => 'shell',
         'ss'       => 'scheme',
+        'scala'    => 'text/x-scala',
         'scm'      => 'scheme',
         'sls'      => 'scheme',
         'sps'      => 'scheme',
