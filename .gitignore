@@ -30,4 +30,5 @@ nbproject
 node_modules
 config.ini
 cache.properties
-composer.*
+composer.phar
+composer.lock
