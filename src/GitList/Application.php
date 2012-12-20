@@ -49,6 +49,7 @@ class Application extends SilexApplication
 
         $this['twig'] = $this->share($this->extend('twig', function($twig, $app) {
             $twig->addFilter('md5', new \Twig_Filter_Function('md5'));
+            $twig->addExtension(new \Twig_Extensions_Extension_Text());
 
             return $twig;
         }));
