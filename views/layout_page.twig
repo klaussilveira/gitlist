@@ -6,8 +6,8 @@
     <div class="container">
         <div class="row">
             <div class="span12">
-                {% if page == 'commits' %}
-                <form class="form-search pull-right" action="{{ app.request.basepath }}/{{repo}}/commits/search" method="POST">
+                {% if page in ['commits', 'searchcommits'] %}
+                <form class="form-search pull-right" action="{{ app.request.basepath }}/{{repo}}/commits/{{branch}}/search" method="POST">
                     <input type="text" name="query" class="input-medium search-query" placeholder="Search commits...">
                 </form>
                 {% else %}
