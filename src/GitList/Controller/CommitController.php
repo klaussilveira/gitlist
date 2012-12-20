@@ -30,6 +30,7 @@ class CommitController implements ControllerProviderInterface
             $template = $app['request']->isXmlHttpRequest() ? 'commits_list.twig' : 'commits.twig';
 
             return $app['twig']->render($template, array(
+                'page'           => 'commits',
                 'pager'          => $pager,
                 'repo'           => $repo,
                 'branch'         => $branch,
