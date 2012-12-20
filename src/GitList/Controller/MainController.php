@@ -21,9 +21,9 @@ class MainController implements ControllerProviderInterface
         })->bind('homepage');
 
         $route->get('{repo}/stats/{branch}', function($repo, $branch) use ($app) {
-            #$repository = $app['git']->getRepository($app['git.repos'][$repo]);
-echo "branches\n";
-            $repository = $app['git']->getRepositoryCached($app['git.repos'], $repo);
+            $repotmp = $app['git']->getRepositoryCached($app['git.repos'], $repo);
+
+            $repository = $app['git']->getRepository($repotmp->getPath());
 
             $stats = $repository->getStatistics($branch);
             $authors = $repository->getAuthorStatistics();
@@ -42,8 +42,8 @@ echo "branches\n";
           ->bind('stats');
 
         $route->get('{repo}/{branch}/rss/', function($repo, $branch) use ($app) {
-echo "rss\n";
-            $repository = $app['git']->getRepositoryCached($app['git.repos'], $repo);
+            $repotmp = $app['git']->getRepositoryCached($app['git.repos'], $repo);
+            $repository = $app['git']->getRepository($repotmp->getPath());
 
             $commits = $repository->getPaginatedCommits($branch);
 

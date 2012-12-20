@@ -31,8 +31,6 @@ class Client extends BaseClient
      */
     public function getRepository($path)
     {
-echo "this getRepository2\n";
-
         if (!file_exists($path) || !file_exists($path . '/.git/HEAD') && !file_exists($path . '/HEAD')) {
             throw new \RuntimeException('There is no GIT repository at ' . $path);
         }

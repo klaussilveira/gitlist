@@ -49,7 +49,6 @@ class TreeController implements ControllerProviderInterface
           ->bind('tree');
 
         $route->post('{repo}/tree/{branch}/search', function(Request $request, $repo, $branch = '', $tree = '') use ($app) {
-echo "searc\n";
 
             $repository = $app['git']->getRepositoryCached($app['git.repos'], $repo);
             $path = $repository->getPath();
@@ -79,8 +78,6 @@ echo "searc\n";
         # WRI: Changed order of this and next statement, because order
         # appears to be important, and the other statement got precedence
         $route->get('{repo}/{format}ball/{branch}', function($repo, $format, $branch) use ($app) {
-echo "tarball\n";
-
             $repo_item = $app['git']->getRepositoryCached($app['git.repos'], $repo);
             $path = $repo_item->getPath();
 
