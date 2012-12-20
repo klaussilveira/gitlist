@@ -31,4 +31,3 @@ node_modules
 config.ini
 cache.properties
 composer.phar
-composer.lock
