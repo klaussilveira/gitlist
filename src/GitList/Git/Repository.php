@@ -4,10 +4,39 @@ namespace GitList\Git;
 
 use Gitter\Repository as BaseRepository;
 use Gitter\Model\Commit\Commit;
+use Gitter\PrettyFormat;
 use Symfony\Component\Filesystem\Filesystem;
 
 class Repository extends BaseRepository
 {
+
+    /**
+     * Show the data from a specific commit
+     *
+     * @param  string $commitHash Hash of the specific commit to read data
+     * @return array  Commit data
+     */
+    public function getCommit($commitHash)
+    {
+        $logs = $this->getClient()->run($this, "show --pretty=format:\"<item><hash>%H</hash><short_hash>%h</short_hash><tree>%T</tree><parents>%P</parents><author>%an</author><author_email>%ae</author_email><date>%at</date><commiter>%cn</commiter><commiter_email>%ce</commiter_email><commiter_date>%ct</commiter_date><message><![CDATA[%s]]></message></item>\" $commitHash");
+        $logs = explode("\n", $logs);
+
+        // Read commit metadata
+        $format = new PrettyFormat;
+        $data = $format->parse($logs[0]);
+        $commit = new Commit;
+        $commit->importData($data[0]);
+        unset($logs[0]);
+
+        if (empty($logs[1])) {
+            $logs = explode("\n", $this->getClient()->run($this, 'diff ' . $commitHash . '~1..' . $commitHash));
+        }
+
+        $commit->setDiffs($this->readDiffLogs($logs));
+
+        return $commit;
+    }
+
     /**
      * Show the repository commit log with pagination
      *
@@ -18,13 +47,17 @@ class Repository extends BaseRepository
     {
         $page = 15 * $page;
         $pager = "--skip=$page --max-count=15";
-        $command = "log $pager --pretty=format:'<item><hash>%H</hash><short_hash>%h</short_hash><tree>%T</tree><parent>%P</parent><author>%an</author><author_email>%ae</author_email><date>%at</date><commiter>%cn</commiter><commiter_email>%ce</commiter_email><commiter_date>%ct</commiter_date><message><![CDATA[%s]]></message></item>'";
+        $command = "log $pager --pretty=format:\"<item><hash>%H</hash><short_hash>%h</short_hash><tree>%T</tree><parent>%P</parent><author>%an</author><author_email>%ae</author_email><date>%at</date><commiter>%cn</commiter><commiter_email>%ce</commiter_email><commiter_date>%ct</commiter_date><message><![CDATA[%s]]></message></item>\"";
 
         if ($file) {
             $command .= " $file";
         }
 
-        $logs = $this->getPrettyFormat($command);
+        try {
+            $logs = $this->getPrettyFormat($command);
+        } catch (\RuntimeException $e) {
+            return array();
+        }
 
         foreach ($logs as $log) {
             $commit = new Commit;
@@ -37,9 +70,13 @@ class Repository extends BaseRepository
 
     public function searchCommitLog($query)
     {
-        $command = "log --grep='$query' --pretty=format:'<item><hash>%H</hash><short_hash>%h</short_hash><tree>%T</tree><parent>%P</parent><author>%an</author><author_email>%ae</author_email><date>%at</date><commiter>%cn</commiter><commiter_email>%ce</commiter_email><commiter_date>%ct</commiter_date><message><![CDATA[%s]]></message></item>'";
+        $command = "log --grep=".escapeshellarg($query)." --pretty=format:\"<item><hash>%H</hash><short_hash>%h</short_hash><tree>%T</tree><parent>%P</parent><author>%an</author><author_email>%ae</author_email><date>%at</date><commiter>%cn</commiter><commiter_email>%ce</commiter_email><commiter_date>%ct</commiter_date><message><![CDATA[%s]]></message></item>\"";
 
-        $logs = $this->getPrettyFormat($command);
+        try {
+            $logs = $this->getPrettyFormat($command);
+        } catch (\RuntimeException $e) {
+            return array();
+        }
 
         foreach ($logs as $log) {
             $commit = new Commit;
@@ -53,7 +90,7 @@ class Repository extends BaseRepository
     public function searchTree($query, $branch)
     {
         try {
-            $results = $this->getClient()->run($this, "grep -I --line-number '$query' $branch");
+            $results = $this->getClient()->run($this, "grep -I --line-number ".escapeshellarg($query)." $branch");
         } catch (\RuntimeException $e) {
             return false;
         }

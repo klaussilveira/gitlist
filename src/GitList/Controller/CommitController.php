@@ -20,6 +20,7 @@ class CommitController implements ControllerProviderInterface
             $type = $file ? "$branch -- \"$file\"" : $branch;
             $pager = $app['util.view']->getPager($app['request']->get('page'), $repository->getTotalCommits($type));
             $commits = $repository->getPaginatedCommits($type, $pager['current']);
+            $categorized = array();
 
             foreach ($commits as $commit) {
                 $date = $commit->getDate();
@@ -49,6 +50,7 @@ class CommitController implements ControllerProviderInterface
             $repository = $app['git']->getRepository($app['git.repos'] . $repo);
             $query = $request->get('query');
             $commits = $repository->searchCommitLog($query);
+            $categorized = array();
 
             foreach ($commits as $commit) {
                 $date = $commit->getDate();
