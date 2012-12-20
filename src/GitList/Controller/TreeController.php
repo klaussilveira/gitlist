@@ -53,8 +53,9 @@ class TreeController implements ControllerProviderInterface
                 $branch = $repository->getHead();
             }
 
-            $breadcrumbs = $app['util.view']->getBreadcrumbs($tree);
-            $results = $repository->searchTree($request->get('query'), $branch);
+            $query = $request->get('query');
+            $breadcrumbs = array(array('dir' => 'Search results for: ' . $query, 'path' => ''));
+            $results = $repository->searchTree($query, $branch);
 
             return $app['twig']->render('search.twig', array(
                 'results'        => $results,

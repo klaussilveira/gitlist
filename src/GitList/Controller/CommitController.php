@@ -47,7 +47,8 @@ class CommitController implements ControllerProviderInterface
 
         $route->post('{repo}/commits/search', function(Request $request, $repo) use ($app) {
             $repository = $app['git']->getRepository($app['git.repos'] . $repo);
-            $commits = $repository->searchCommitLog($request->get('query'));
+            $query = $request->get('query');
+            $commits = $repository->searchCommitLog($query);
 
             foreach ($commits as $commit) {
                 $date = $commit->getDate();
@@ -62,6 +63,7 @@ class CommitController implements ControllerProviderInterface
                 'commits'        => $categorized,
                 'branches'       => $repository->getBranches(),
                 'tags'           => $repository->getTags(),
+                'query'          => $query
             ));
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
           ->bind('searchcommits');
