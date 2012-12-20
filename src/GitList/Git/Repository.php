@@ -70,7 +70,8 @@ class Repository extends BaseRepository
 
     public function searchCommitLog($query)
     {
-        $command = "log --grep=".escapeshellarg($query)." --pretty=format:\"<item><hash>%H</hash><short_hash>%h</short_hash><tree>%T</tree><parent>%P</parent><author>%an</author><author_email>%ae</author_email><date>%at</date><commiter>%cn</commiter><commiter_email>%ce</commiter_email><commiter_date>%ct</commiter_date><message><![CDATA[%s]]></message></item>\"";
+        $query = escapeshellarg($query);
+        $command = "log --grep={$query} --pretty=format:\"<item><hash>%H</hash><short_hash>%h</short_hash><tree>%T</tree><parent>%P</parent><author>%an</author><author_email>%ae</author_email><date>%at</date><commiter>%cn</commiter><commiter_email>%ce</commiter_email><commiter_date>%ct</commiter_date><message><![CDATA[%s]]></message></item>\"";
 
         try {
             $logs = $this->getPrettyFormat($command);
@@ -89,8 +90,10 @@ class Repository extends BaseRepository
 
     public function searchTree($query, $branch)
     {
+        $query = escapeshellarg($query);
+
         try {
-            $results = $this->getClient()->run($this, "grep -I --line-number ".escapeshellarg($query)." $branch");
+            $results = $this->getClient()->run($this, "grep -I --line-number {$query} $branch");
         } catch (\RuntimeException $e) {
             return false;
         }
