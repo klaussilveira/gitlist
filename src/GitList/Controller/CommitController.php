@@ -47,7 +47,7 @@ class CommitController implements ControllerProviderInterface
           ->value('file', '')
           ->bind('commits');
 
-        $route->post('{repo}/commits/search', function(Request $request, $repo) use ($app) {
+        $route->post('{repo}/commits/{branch}/search', function(Request $request, $repo, $branch = '') use ($app) {
             $repository = $app['git']->getRepository($app['git.repos'] . $repo);
             $query = $request->get('query');
             $commits = $repository->searchCommitLog($query);
@@ -61,7 +61,7 @@ class CommitController implements ControllerProviderInterface
 
             return $app['twig']->render('searchcommits.twig', array(
                 'repo'           => $repo,
-                'branch'         => 'master',
+                'branch'         => $branch,
                 'file'           => '',
                 'commits'        => $categorized,
                 'branches'       => $repository->getBranches(),
@@ -69,6 +69,7 @@ class CommitController implements ControllerProviderInterface
                 'query'          => $query
             ));
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
+          ->assert('branch', '[\w-._\/]+')
           ->bind('searchcommits');
 
         $route->get('{repo}/commit/{commit}/', function($repo, $commit) use ($app) {
