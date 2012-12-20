@@ -66,8 +66,6 @@ class Client
      */
     public function getRepositoryCached($paths, $repo)
     {
-echo "this getRepository\n";
-
         $repositories = $this->getRepositories($paths);
         $path = $repositories[ $repo ]['path'];
 
@@ -110,8 +108,6 @@ echo "this getRepository\n";
 
         ksort($repositories);
 
-#echo "after search:";
-#print_r( $repositories );
         $hits->repositories = $repositories;
 
         return $repositories;
@@ -138,12 +134,13 @@ echo "this getRepository\n";
 
         # Paranoia check; don't recurse into git directories
         if ( self::endsWith( $path, ".git") || self::endsWith( $path, "HEAD") ) {
-echo "Not doing git directories!\n";
+            #echo "Not doing git directories!\n";
             return;
         }
 
         if ( (in_array($path, $this->getHidden())) ) { 
-echo "Skipping configured hidden.";
+            #echo "Skipping configured hidden.";
+            return;
         }
 
         $dir = new \DirectoryIterator($path);
@@ -167,10 +164,6 @@ echo "Skipping configured hidden.";
                 $isRepository = file_exists($file->getPathname() . '/.git/HEAD');
                 $cur_path = $file->getPathname();
 
-#if ( $isRepository || $isBare ) {
-#echo "found repo! {$path}\n";
-#echo "found repo! {$file->getPathname()}\n";
-#}
                 continue;
             }
 
@@ -211,7 +204,6 @@ echo "Skipping configured hidden.";
         } 
 
         foreach ($recurse as $item) {
-#echo "recursing $item\n";
             $this->recurseDirectory($repositories, $item );
         }
     }

@@ -455,7 +455,6 @@ echo "hash: $hash\n";
      */
     public function getTree($tree)
     {
-echo "Tree: $tree\n";
         $tree = new Tree($tree, $this);
         $tree->parse();
 
