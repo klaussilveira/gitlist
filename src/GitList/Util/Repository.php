@@ -207,7 +207,7 @@ class Repository
             // No exact ref match, so just try our best
             if (count($valid_refs) > 1) {
                 preg_match('/([^\/]+)(.*)/', $input, $matches);
-                $branch = preg_replace('/^\/|\/$/', '', $matches[0]);
+                $branch = preg_replace('/^\/|\/$/', '', $matches[1]);
             } else {
                 // Extract branch name
                 $branch = array_shift($valid_refs);
