@@ -199,7 +199,7 @@ class Repository
             // Otherwise, attempt to detect the ref using a list of the project's branches and tags
             $valid_refs = array_merge((array) $repository->getBranches(), (array) $repository->getTags());
             foreach ($valid_refs as $k => $v) {
-                if (!preg_match("#{$v}/#", $input)) {
+                if (!preg_match("#^{$v}/#", $input)) {
                     unset($valid_refs[$k]);
                 }
             }
