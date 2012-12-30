@@ -437,8 +437,12 @@ class Repository
      */
     public function getBranchTree($branch)
     {
+echo "branch: $branch\n";
+
         $hash = $this->getClient()->run($this, "log --pretty=\"%T\" --max-count=1 $branch");
         $hash = trim($hash, "\r\n ");
+
+echo "hash: $hash\n";
 
         return $hash ? : false;
     }

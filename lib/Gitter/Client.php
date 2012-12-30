@@ -16,8 +16,16 @@ use Symfony\Component\Process\ExecutableFinder;
 
 class Client
 {
+    # Maximum number of repositories to load in
+    const MAX_REPOS = 1000;
+
     protected $path;
     protected $hidden;
+
+    # Locally cached version of found repositories.
+    # Treated like a singleton
+    private $repositories = null;
+
 
     public function __construct($options = null)
     {
@@ -46,14 +54,21 @@ class Client
         return $repository->create($bare);
     }
 
+
     /**
      * Opens a repository at the specified path
+     *
+     * Deliberately renamed from getRepository, so that it doesn't conflict
+     * with the method of the same name in Client.php in project gitlist.
      *
      * @param  string     $path Path where the repository is located
      * @return Repository Instance of Repository
      */
-    public function getRepository($path)
+    public function getRepositoryCached($paths, $repo)
     {
+        $repositories = $this->getRepositories($paths);
+        $path = $repositories[ $repo ]['path'];
+
         if (!file_exists($path) || !file_exists($path . '/.git/HEAD') && !file_exists($path . '/HEAD')) {
             throw new \RuntimeException('There is no GIT repository at ' . $path);
         }
@@ -65,71 +80,134 @@ class Client
         return new Repository($path, $this);
     }
 
+
+
     /**
      * Searches for valid repositories on the specified path
      *
      * @param  string $path Path where repositories will be searched
      * @return array  Found repositories, containing their name, path and description
      */
-    public function getRepositories($path)
+    public function getRepositories($paths)
     {
-        $repositories = $this->recurseDirectory($path);
+        if ( $this->repositories != null ) return $this->repositories;
+
+        if ( !is_array( $paths ) ) {
+            $paths = array($paths);
+        }
+
+        $repositories = array();
+        foreach( $paths  as $path ) {
+            # TODO: check what happens if multiple similar paths are merged.
+            $this->recurseDirectory($repositories, $path);
+        }
 
         if (empty($repositories)) {
             throw new \RuntimeException('There are no GIT repositories in ' . $path);
         }
 
-        sort($repositories);
+        ksort($repositories);
+
+        $hits->repositories = $repositories;
 
         return $repositories;
     }
 
-    private function recurseDirectory($path)
-    {
+
+    private static function endsWith( $str, $test ) {
+        return ( substr_compare($str, $test, -strlen($test), strlen($test)) === 0 );
+    }
+
+
+    #
+    # Checks current directory first, then moves on to subdirectories
+    #
+    # Variable repositories intentionally passed by reference, so that
+    # a test can be performed on too many repo's. This is a way of putting
+    # a limit on recursion.
+    #
+    private function recurseDirectory(&$repositories, $path) {
+        if ( count( $repositories ) > self::MAX_REPOS ) {
+            echo "Too many repo's found, not recursing further.\n";
+            return;
+        }
+
+        # Paranoia check; don't recurse into git directories
+        if ( self::endsWith( $path, ".git") || self::endsWith( $path, "HEAD") ) {
+            #echo "Not doing git directories!\n";
+            return;
+        }
+
+        if ( (in_array($path, $this->getHidden())) ) { 
+            #echo "Skipping configured hidden.";
+            return;
+        }
+
         $dir = new \DirectoryIterator($path);
+    
+        $isRepository = false;
+        $isBare = false;
+        $cur_path = "";
 
-        $repositories = array();
-
+        # Preprocess returned directories
+        $recurse = array();
         foreach ($dir as $file) {
-            if ($file->isDot()) {
+            $filename = $file->getFilename();
+
+            if (!$file->isDir()) continue; 
+            if ( !$file->isReadable() ) continue;
+            if ( $filename === "..") continue;   # Skip parent
+            if ( (in_array($file->getPathname(), $this->getHidden())) ) continue;  # Skip files configured as hidden
+
+            if ( $filename === ".") {
+                $isBare = file_exists($file->getPathname() . '/HEAD');
+                $isRepository = file_exists($file->getPathname() . '/.git/HEAD');
+                $cur_path = $file->getPathname();
+
                 continue;
             }
 
+            # Skip hidden files & dir's 
             if (strrpos($file->getFilename(), '.') === 0) {
                 continue;
             }
 
-            if ($file->isDir()) {
-                $isBare = file_exists($file->getPathname() . '/HEAD');
-                $isRepository = file_exists($file->getPathname() . '/.git/HEAD');
-
-                if ($isRepository || $isBare) {
-                    if (in_array($file->getPathname(), $this->getHidden())) {
-                        continue;
-                    }
-
-                    if ($isBare) {
-                        $description = $file->getPathname() . '/description';
-                    } else {
-                        $description = $file->getPathname() . '/.git/description';
-                    }
-
-                    if (file_exists($description)) {
-                        $description = file_get_contents($description);
-                    } else {
-                        $description = 'There is no repository description file. Please, create one to remove this message.';
-                    }
-
-                    $repositories[] = array('name' => $file->getFilename(), 'path' => $file->getPathname(), 'description' => $description);
-                    continue;
-                } else {
-                    $repositories = array_merge($repositories, $this->recurseDirectory($file->getPathname()));
-                }
-            }
+            $recurse [] = $file->getPathname();
         }
 
-        return $repositories;
+         if ( $isRepository || $isBare ) {
+
+            $tmp = array_reverse( explode('/', rtrim($path, DIRECTORY_SEPARATOR) ));
+            $filename = $tmp[0];
+            # Pathological case: '/' was defined as root
+            if ( $filename == '' ) $filename = 'root';
+
+            if ($isBare) {
+                $description = $cur_path . '/description';
+            } else {
+                $description = $cur_path . '/.git/description';
+            }
+
+            if (file_exists($description)) {
+                $description = file_get_contents($description);
+            } else {
+                $description = 'There is no repository description file. Please, create one to remove this message.';
+            }
+
+
+            $repositories[$filename] = array(
+                'name' => $filename,
+                'relativePath' => $cur_path,        # TODO: Fix
+                'path' => $cur_path,
+                'description' => $description
+            );
+        } 
+
+        foreach ($recurse as $item) {
+            $this->recurseDirectory($repositories, $item );
+        }
     }
+
 
     public function run($repository, $command)
     {
