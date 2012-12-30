@@ -13,13 +13,7 @@ class MainController implements ControllerProviderInterface
         $route = $app['controllers_factory'];
 
         $route->get('/', function() use ($app) {
-            $repositories = array_map(
-                function ($repo) use ($app) {
-                    $repo['relativePath'] = $app['util.routing']->getRelativePath($repo['path']);
-                    return $repo;
-                },
-                $app['git']->getRepositories($app['git.repos'])
-            );
+            $repositories = $app['git']->getRepositories($app['git.repos']);
 
             return $app['twig']->render('index.twig', array(
                 'repositories'   => $repositories,
@@ -27,7 +21,10 @@ class MainController implements ControllerProviderInterface
         })->bind('homepage');
 
         $route->get('{repo}/stats/{branch}', function($repo, $branch) use ($app) {
-            $repository = $app['git']->getRepository($app['git.repos'] . $repo);
+            $repotmp = $app['git']->getRepositoryCached($app['git.repos'], $repo);
+
+            $repository = $app['git']->getRepository($repotmp->getPath());
+
             $stats = $repository->getStatistics($branch);
             $authors = $repository->getAuthorStatistics();
 
@@ -45,7 +42,9 @@ class MainController implements ControllerProviderInterface
           ->bind('stats');
 
         $route->get('{repo}/{branch}/rss/', function($repo, $branch) use ($app) {
-            $repository = $app['git']->getRepository($app['git.repos'] . $repo);
+            $repotmp = $app['git']->getRepositoryCached($app['git.repos'], $repo);
+            $repository = $app['git']->getRepository($repotmp->getPath());
+
             $commits = $repository->getPaginatedCommits($branch);
 
             $html = $app['twig']->render('rss.twig', array(

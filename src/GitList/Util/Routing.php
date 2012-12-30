@@ -20,8 +20,12 @@ class Routing
         if ($regex === null) {
             $app = $this->app;
             $quotedPaths = array_map(
+                #function ($repo) use ($app) {
+                #    return preg_quote($app['util.routing']->getRelativePath($repo['path']), '#');
+                #},
+				# TODO: return keys instead
                 function ($repo) use ($app) {
-                    return preg_quote($app['util.routing']->getRelativePath($repo['path']), '#');
+                    return $repo['name'];
                 },
                 $this->app['git']->getRepositories($this->app['git.repos'])
             );

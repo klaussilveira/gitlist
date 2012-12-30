@@ -2,9 +2,17 @@
 client = '/usr/bin/git' ; Your git executable path
 repositories = '/var/www/projects/' ; Path to your repositories
 
+
 ;Windows Users
 ;client = '"C:\Program Files (x86)\Git\bin\git.exe"' ; Your git executable path
 ;repositories = 'C:\Path\to\Repos\' ; Path to your repositories
+
+
+; If you want to specify multiple paths, use the array syntax instead:
+;
+;repositories[] = '/var/www/projects/'
+;repositories[] = '/var/www/subdir/more_projects/'
+;repositories[] = '/home/user/even_more_projects/'
 
 
 ; You can hide repositories from GitList, just copy this for each repository you want to hide

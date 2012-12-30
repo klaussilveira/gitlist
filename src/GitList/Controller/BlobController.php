@@ -13,7 +13,8 @@ class BlobController implements ControllerProviderInterface
         $route = $app['controllers_factory'];
 
         $route->get('{repo}/blob/{branch}/{file}', function($repo, $branch, $file) use ($app) {
-            $repository = $app['git']->getRepository($app['git.repos'] . $repo);
+            $repotmp = $app['git']->getRepositoryCached($app['git.repos'], $repo);
+            $repository = $app['git']->getRepository($repotmp->getPath());
             list($branch, $file) = $app['util.repository']->extractRef($repository, $branch, $file);
 
             $blob = $repository->getBlob("$branch:\"$file\"");
@@ -44,7 +45,9 @@ class BlobController implements ControllerProviderInterface
           ->bind('blob');
 
         $route->get('{repo}/raw/{branch}/{file}', function($repo, $branch, $file) use ($app) {
-            $repository = $app['git']->getRepository($app['git.repos'] . $repo);
+            $repotmp = $app['git']->getRepositoryCached($app['git.repos'], $repo);
+            $repository = $app['git']->getRepository($repotmp->getPath());
+
             list($branch, $file) = $app['util.repository']->extractRef($repository, $branch, $file);
             $blob = $repository->getBlob("$branch:\"$file\"")->output();
 
