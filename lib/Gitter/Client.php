@@ -233,7 +233,7 @@ class Client
 
          if ( $isRepository || $isBare ) {
 
-            $tmp = array_reverse( explode('/', rtrim($path, DIRECTORY_SEPARATOR) ));
+            $tmp = array_reverse( explode(DIRECTORY_SEPARATOR, rtrim($path, DIRECTORY_SEPARATOR) ));
             $filename = $tmp[0];
             # Pathological case: '/' was defined as root
             if ( $filename == '' ) $filename = 'root';
