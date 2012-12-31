@@ -26,6 +26,8 @@ class Client
     # Treated like a singleton
     private $repositories = null;
 
+    private $inifile = null;
+    private $cached_repos = null;
 
     public function __construct($options = null)
     {
@@ -35,7 +37,45 @@ class Client
         }
         $this->setPath($options['path']);
         $this->setHidden((isset($options['hidden'])) ? $options['hidden'] : array());
+
+        $this->inifile = $options['ini.file'];
+        $this->cached_repos = $options['cache.repos'];
     }
+
+
+    private function handleCached() {
+        if ( $this->checkCached( $this->inifile, $this->cached_repos ) ) {
+            #echo "Getting cached repos.";
+            // Retrieve cache  
+            $repos = json_decode(file_get_contents($this->cached_repos), TRUE);  
+
+#var_dump( $repos);
+
+            $this->setRepositories( $repos ); 
+            return $repos;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * @return true if dst present and older than src, false otherwise
+     *
+     */
+    public function checkCached( $src, $dst ) {
+        if ( !file_exists( $dst ) ) {
+            #echo "dst $dst does not exist.";
+            return false;
+        }
+
+        if (  filemtime ( $src ) > filemtime ( $dst ) ) {
+            #echo "src $src newer than dst $dst.";
+            return false;
+        }
+
+        return true;
+    }
+
 
     /**
      * Creates a new repository on the specified path
@@ -92,6 +132,11 @@ class Client
     {
         if ( $this->repositories != null ) return $this->repositories;
 
+        $repos = $this->handleCached();
+        if ( $repos != null ) return $repos;
+
+        #echo "entered getRepositories";
+
         if ( !is_array( $paths ) ) {
             $paths = array($paths);
         }
@@ -108,9 +153,20 @@ class Client
 
         ksort($repositories);
 
-        $hits->repositories = $repositories;
+        // Store to cache file 
+        file_put_contents($this->cached_repos, json_encode($repositories));  
+
+        $this->repositories = $repositories;
 
         return $repositories;
+    }
+
+    public function setRepositories( $repositories ) {
+        #echo "called setRepositories.";
+#var_dump( $this->repositories);
+        $this->repositories = $repositories;
+
+
     }
 
 
