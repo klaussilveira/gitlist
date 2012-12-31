@@ -39,17 +39,20 @@ class Application extends SilexApplication
         ));
 
         $repositories = $config->get('git', 'repositories');
-/*
-        echo "doing this\n";
-        $repositories = $app['git']->getRepositories($repositories);
-        $config->set('git', 'repositories', $repositories);
-*/
+
+        $cached_repos = $root . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'repos.json';
 
         $this->register(new GitServiceProvider(), array(
             'git.client'      => $config->get('git', 'client'),
             'git.repos'       => $repositories,
+            'cache.repos'     => $cached_repos,
+            'ini.file'        => "config.ini",
             'git.hidden'      => $config->get('git', 'hidden') ? $config->get('git', 'hidden') : array(),
         ));
+
+        $cached_repos = $root . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'repos.json';
+
+
         $this->register(new ViewUtilServiceProvider());
         $this->register(new RepositoryUtilServiceProvider());
         $this->register(new UrlGeneratorServiceProvider());
@@ -60,6 +63,7 @@ class Application extends SilexApplication
 
             return $twig;
         }));
+
 
         // Handle errors
         $this->error(function (\Exception $e, $code) use ($app) {
