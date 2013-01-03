@@ -38,6 +38,44 @@ class Repository extends BaseRepository
     }
 
     /**
+     * Blames the provided file and parses the output
+     *
+     * @param  string $file File that will be blamed
+     * @return array  Commits hashes containing the lines
+     */
+    public function getBlame($file)
+    {
+        $blame = array();
+        $logs = $this->getClient()->run($this, "blame --root -sl $file");
+        $logs = explode("\n", $logs);
+
+        $i = 0;
+        $previousCommit = '';
+        foreach ($logs as $log) {
+            if ($log == '') {
+                continue;
+            }
+
+            preg_match_all("/([a-zA-Z0-9]{40})\s+.*?([0-9]+)\)(.+)/", $log, $match);
+
+            $currentCommit = $match[1][0];
+            if ($currentCommit != $previousCommit) {
+                ++$i;
+                $blame[$i] = array(
+                    'line' => '',
+                    'commit' => $currentCommit,
+                    'commitShort' => substr($currentCommit, 0, 8)
+                );
+            }
+
+            $blame[$i]['line'] .= PHP_EOL . $match[3][0];
+            $previousCommit = $currentCommit;
+        }
+
+        return $blame;
+    }
+
+    /**
      * Show the repository commit log with pagination
      *
      * @access public

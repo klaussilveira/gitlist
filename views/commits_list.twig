@@ -11,7 +11,7 @@
         <tr>
             <td width="5%"><img src="http://gravatar.com/avatar/{{ item.author.email | md5 }}?s=40" /></td>
             <td width="95%">
-                <span class="pull-right"><a class="btn btn-small" href="{{ path('commit', {repo: repo, commit: item.shortHash}) }}"><i class="icon-list-alt"></i> View {{ item.shortHash }}</a></span>
+                <span class="pull-right"><a class="btn btn-small" href="{{ path('commit', {repo: repo, commit: item.hash}) }}"><i class="icon-list-alt"></i> View {{ item.shortHash }}</a></span>
                 <h4>{{ item.message }}</h4>
                 <span><a href="mailto:{{ item.author.email }}">{{ item.author.name }}</a> authored in {{ item.date | date('d/m/Y \\a\\t H:i:s') }}</span>
             </td>
