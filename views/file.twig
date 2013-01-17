@@ -24,7 +24,7 @@
         <div class="readme-view"><div id="readme-content">{{ blob }}</div></div>
 
         {% else %}
-        <pre id="sourcecode" language="{{ fileType }}">{{ blob }}</pre>
+        <pre id="sourcecode" language="{{ fileType }}">{{ blob|htmlentities|raw }}</pre>
         {% endif %}
     </div>
 
