@@ -72,7 +72,7 @@ class CommitController implements ControllerProviderInterface
           ->assert('branch', '[\w-._\/]+')
           ->bind('searchcommits');
 
-        $route->get('{repo}/commit/{commit}/', function($repo, $commit) use ($app) {
+        $route->get('{repo}/commit/{commit}', function($repo, $commit) use ($app) {
             $repository = $app['git']->getRepository($app['git.repos'] . $repo);
             $commit = $repository->getCommit($commit);
 
