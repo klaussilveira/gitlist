@@ -29,7 +29,11 @@
             {% for result in results %}
             <tr>
                 <td><i class="icon-file icon-spaced"></i> <a href="{{ path('blob', {repo: repo, branch: branch, file: result.file}) }}#L{{ result.line }}">{{ result.file }}</a></td>
-                <td>{{ result.match }}</td>
+                <td>
+                {% autoescape false %}
+                    {{ result.match|e|truncate(100, false, '&hellip;') }}
+                {% endautoescape %}
+                </td>
             </tr>
             {% endfor %}
         </tbody>

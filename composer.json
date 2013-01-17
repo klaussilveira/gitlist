@@ -2,6 +2,7 @@
     "require": {
         "silex/silex": "1.0.*",
         "twig/twig": "1.9.*",
+        "twig/extensions": "1.0.*",
         "symfony/twig-bridge": "2.1.*",
         "symfony/filesystem": "2.1.*",
         "klaussilveira/gitter": "dev-master"
