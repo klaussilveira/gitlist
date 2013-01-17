@@ -4,12 +4,12 @@ namespace GitList\Git;
 
 use Gitter\Repository as BaseRepository;
 use Gitter\Model\Commit\Commit;
+use Gitter\Model\Commit\Diff;
 use Gitter\PrettyFormat;
 use Symfony\Component\Filesystem\Filesystem;
 
 class Repository extends BaseRepository
 {
-
     /**
      * Show the data from a specific commit
      *
