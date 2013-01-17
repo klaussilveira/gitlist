@@ -188,12 +188,12 @@ class InterfaceTest extends WebTestCase
         $crawler = $client->request('GET', '/GitTest/blame/master/test.php');
         $this->assertTrue($client->getResponse()->isOk());
         $this->assertCount(1, $crawler->filter('.source-header .meta:contains("test.php")'));
-        $this->assertRegexp('/\/GitTest\/commit\/[a-zA-Z0-9%]+\//', $crawler->filter('.blame-view .commit')->eq(0)->filter('a')->attr('href'));
+        $this->assertRegexp('/\/GitTest\/commit\/[a-zA-Z0-9%]+/', $crawler->filter('.blame-view .commit')->eq(0)->filter('a')->attr('href'));
 
         $crawler = $client->request('GET', '/foobar/blame/master/bar.json');
         $this->assertTrue($client->getResponse()->isOk());
         $this->assertCount(1, $crawler->filter('.source-header .meta:contains("bar.json")'));
-        $this->assertRegexp('/\/foobar\/commit\/[a-zA-Z0-9%]+\//', $crawler->filter('.blame-view .commit')->eq(0)->filter('a')->attr('href'));
+        $this->assertRegexp('/\/foobar\/commit\/[a-zA-Z0-9%]+/', $crawler->filter('.blame-view .commit')->eq(0)->filter('a')->attr('href'));
     }
 
     public function testHistoryPage()
