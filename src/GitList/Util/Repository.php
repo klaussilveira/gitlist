@@ -200,24 +200,22 @@ class Repository
             $branch = $matches[1];
         } else {
             // Otherwise, attempt to detect the ref using a list of the project's branches and tags
-            $valid_refs = array_merge((array) $repository->getBranches(), (array) $repository->getTags());
-            foreach ($valid_refs as $k => $v) {
-                if (!preg_match(sprintf("#^%s/#", preg_quote($v, '#')), $input)) {
-                    unset($valid_refs[$k]);
+            $validRefs = array_merge((array) $repository->getBranches(), (array) $repository->getTags());
+            foreach ($validRefs as $key => $ref) {
+                if (!preg_match(sprintf("#^%s/#", preg_quote($ref, '#')), $input)) {
+                    unset($validRefs[$key]);
                 }
             }
 
             // No exact ref match, so just try our best
-            if (count($valid_refs) > 1) {
+            if (count($validRefs) > 1) {
                 preg_match('/([^\/]+)(.*)/', $input, $matches);
                 $branch = preg_replace('/^\/|\/$/', '', $matches[1]);
             } else {
                 // Extract branch name
-                $branch = array_shift($valid_refs);
+                $branch = array_shift($validRefs);
             }
         }
-
-        $tree = trim(str_replace($branch, "", $input), "/");
 
         return array($branch, $tree);
     }
