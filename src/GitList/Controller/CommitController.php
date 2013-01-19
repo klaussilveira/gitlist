@@ -52,19 +52,13 @@ class CommitController implements ControllerProviderInterface
           ->value('file', '')
           ->bind('commits');
 
-<<<<<<< HEAD
         $route->post('{repo}/commits/search', function(Request $request, $repo) use ($app) {
             $repotmp = $app['git']->getRepositoryCached($app['git.repos'], $repo);
             $repository = $app['git']->getRepository($repotmp->getPath());
+            $query = $request->get('query');
 
             $commits = $repository->searchCommitLog($request->get('query'));
-=======
-        $route->post('{repo}/commits/{branch}/search', function(Request $request, $repo, $branch = '') use ($app) {
-            $repository = $app['git']->getRepository($app['git.repos'] . $repo);
-            $query = $request->get('query');
-            $commits = $repository->searchCommitLog($query);
             $categorized = array();
->>>>>>> ab7ffc181b3d27a13e908a4e2b331a085b09f70b
 
             foreach ($commits as $commit) {
                 $date = $commit->getDate();
