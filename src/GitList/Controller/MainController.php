@@ -25,6 +25,10 @@ class MainController implements ControllerProviderInterface
 
             $repository = $app['git']->getRepository($repotmp->getPath());
 
+            if ($branch === null) {
+                $branch = $repository->getHead();
+            }
+
             $stats = $repository->getStatistics($branch);
             $authors = $repository->getAuthorStatistics();
 
@@ -38,7 +42,7 @@ class MainController implements ControllerProviderInterface
             ));
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
           ->assert('branch', '[\w-._\/]+')
-          ->value('branch', 'master')
+          ->value('branch', null)
           ->bind('stats');
 
         $route->get('{repo}/{branch}/rss/', function($repo, $branch) use ($app) {

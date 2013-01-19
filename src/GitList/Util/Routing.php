@@ -64,7 +64,7 @@ class Routing
     {
         if (strpos($repoPath, $this->app['git.repos']) === 0) {
             $relativePath = substr($repoPath, strlen($this->app['git.repos']));
-            return ltrim($relativePath, '/');
+            return ltrim(strtr($relativePath, '\\', '/'), '/');
         } else {
             throw new \InvalidArgumentException(
                 sprintf("Path '%s' does not match configured repository directory", $repoPath)

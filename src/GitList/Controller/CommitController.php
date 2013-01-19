@@ -16,11 +16,16 @@ class CommitController implements ControllerProviderInterface
             $repotmp = $app['git']->getRepositoryCached($app['git.repos'], $repo);
             $repository = $app['git']->getRepository($repotmp->getPath());
 
+            if ($branch === null) {
+                $branch = $repository->getHead();
+            }
+
             list($branch, $file) = $app['util.repository']->extractRef($repository, $branch, $file);
 
             $type = $file ? "$branch -- \"$file\"" : $branch;
             $pager = $app['util.view']->getPager($app['request']->get('page'), $repository->getTotalCommits($type));
             $commits = $repository->getPaginatedCommits($type, $pager['current']);
+            $categorized = array();
 
             foreach ($commits as $commit) {
                 $date = $commit->getDate();
@@ -31,6 +36,7 @@ class CommitController implements ControllerProviderInterface
             $template = $app['request']->isXmlHttpRequest() ? 'commits_list.twig' : 'commits.twig';
 
             return $app['twig']->render($template, array(
+                'page'           => 'commits',
                 'pager'          => $pager,
                 'repo'           => $repo,
                 'branch'         => $branch,
@@ -42,15 +48,23 @@ class CommitController implements ControllerProviderInterface
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
           ->assert('branch', '[\w-._\/]+')
           ->assert('file', '.+')
-          ->value('branch', 'master')
+          ->value('branch', null)
           ->value('file', '')
           ->bind('commits');
 
+<<<<<<< HEAD
         $route->post('{repo}/commits/search', function(Request $request, $repo) use ($app) {
             $repotmp = $app['git']->getRepositoryCached($app['git.repos'], $repo);
             $repository = $app['git']->getRepository($repotmp->getPath());
 
             $commits = $repository->searchCommitLog($request->get('query'));
+=======
+        $route->post('{repo}/commits/{branch}/search', function(Request $request, $repo, $branch = '') use ($app) {
+            $repository = $app['git']->getRepository($app['git.repos'] . $repo);
+            $query = $request->get('query');
+            $commits = $repository->searchCommitLog($query);
+            $categorized = array();
+>>>>>>> ab7ffc181b3d27a13e908a4e2b331a085b09f70b
 
             foreach ($commits as $commit) {
                 $date = $commit->getDate();
@@ -60,13 +74,15 @@ class CommitController implements ControllerProviderInterface
 
             return $app['twig']->render('searchcommits.twig', array(
                 'repo'           => $repo,
-                'branch'         => 'master',
+                'branch'         => $branch,
                 'file'           => '',
                 'commits'        => $categorized,
                 'branches'       => $repository->getBranches(),
                 'tags'           => $repository->getTags(),
+                'query'          => $query
             ));
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
+          ->assert('branch', '[\w-._\/]+')
           ->bind('searchcommits');
 
         $route->get('{repo}/commit/{commit}/', function($repo, $commit) use ($app) {
@@ -74,9 +90,10 @@ class CommitController implements ControllerProviderInterface
             $repository = $app['git']->getRepository($repotmp->getPath());
 
             $commit = $repository->getCommit($commit);
+            $branch = $repository->getHead();
 
             return $app['twig']->render('commit.twig', array(
-                'branch'         => 'master',
+                'branch'         => $branch,
                 'repo'           => $repo,
                 'commit'         => $commit,
             ));
