@@ -36,7 +36,8 @@ class InterfaceTest extends WebTestCase
 
         // GitTest repository fixture
         $git->createRepository(self::$tmpdir . 'GitTest');
-        $repository = $git->getRepository(self::$tmpdir . 'GitTest');
+        #$repository = $git->getRepository(self::$tmpdir . 'GitTest');
+        $repository = $git->getRepositoryCached(self::$tmpdir, 'GitTest');
         file_put_contents(self::$tmpdir . 'GitTest/README.md', "## GitTest\nGitTest is a *test* repository!");
         file_put_contents(self::$tmpdir . 'GitTest/test.php', "<?php\necho 'Hello World'; // This is a test");
         $repository->setConfig('user.name', 'Luke Skywalker');
@@ -49,7 +50,9 @@ class InterfaceTest extends WebTestCase
 
         // foobar repository fixture
         $git->createRepository(self::$tmpdir . 'foobar');
-        $repository = $git->getRepository(self::$tmpdir . '/foobar');
+        #$repository = $git->getRepository(self::$tmpdir . '/foobar');
+        $repository = $git->getRepositoryCached(self::$tmpdir, 'foobar');
+
         file_put_contents(self::$tmpdir . 'foobar/bar.json', "{\n\"name\": \"foobar\"\n}");
         file_put_contents(self::$tmpdir . 'foobar/.git/description', 'This is a test repo!');
         $fs->mkdir(self::$tmpdir . 'foobar/myfolder');
@@ -65,7 +68,8 @@ class InterfaceTest extends WebTestCase
         $nested_dir = self::$tmpdir . 'nested/';
         $fs->mkdir($nested_dir);
         $git->createRepository($nested_dir . 'NestedRepo');
-        $repository = $git->getRepository($nested_dir . '/NestedRepo');
+        #$repository = $git->getRepository($nested_dir . '/NestedRepo');
+        $repository = $git->getRepositoryCached($nested_dir, 'NestedRepo');
         file_put_contents($nested_dir . 'NestedRepo/.git/description', 'This is a NESTED test repo!');
         file_put_contents($nested_dir . 'NestedRepo/README.txt', 'NESTED TEST REPO README');
         $repository->setConfig('user.name', 'Luke Skywalker');
@@ -81,7 +85,8 @@ class InterfaceTest extends WebTestCase
 
         // master-less repository fixture
         $git->createRepository(self::$tmpdir . 'develop');
-        $repository = $git->getRepository(self::$tmpdir . '/develop');
+        #$repository = $git->getRepository(self::$tmpdir . '/develop');
+        $repository = $git->getRepositoryCached(self::$tmpdir, 'develop');
         $repository->setConfig('user.name', 'Luke Skywalker');
         $repository->setConfig('user.email', 'luke@rebel.org');
         file_put_contents(self::$tmpdir . 'develop/README.md', "## develop\ndevelop is a *test* repository!");
@@ -99,6 +104,8 @@ class InterfaceTest extends WebTestCase
 
     public function createApplication()
     {
+		$config = GitList\Config::fromFile('../config.ini');
+/*
         $config = new \GitList\Config(array(
             'git' => array(
                 'client' => self::$gitPath,
@@ -108,6 +115,7 @@ class InterfaceTest extends WebTestCase
                 'debug' => true,
             ),
         ));
+*/
         $app = require 'boot.php';
         return $app;
     }
