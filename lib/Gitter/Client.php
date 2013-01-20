@@ -45,7 +45,6 @@ class Client
 
     private function handleCached() {
         if ( $this->checkCached( $this->inifile, $this->cached_repos ) ) {
-            #echo "Getting cached repos.";
             // Retrieve cache  
             $repos = json_decode(file_get_contents($this->cached_repos), TRUE);  
 
@@ -91,7 +90,14 @@ class Client
 
         $repository = new Repository($path, $this);
 
-        return $repository->create($bare);
+        $retval = $repository->create($bare);
+
+        # createRepository() appears to be only called in unit test.
+        # For this reason, the (second) param savefile is always set to false.
+        # TODO: Check if assumption is valid.
+        $this->addRepository( $path, false );
+
+        return $retval;
     }
 
 
@@ -121,49 +127,111 @@ class Client
     }
 
 
+    /**
+     * Add any repositories in the given path to the cache list.
+     *
+     * If param savefile == false, then the repository list will not
+     * get saved to the cache file. This is useful for running the
+     * unit tests.
+     */
+    private function addRepository( $inPath, $savefile = true ) {
+        if ( !is_array( $inPath ) ) {
+            $paths = array($inPath);
+        }
+
+        # Check given path for repo's
+        $newRepos = array();
+
+        foreach( $paths  as $path ) {
+            # TODO: check what happens if multiple similar paths are merged.
+            $this->recurseDirectory($newRepos, $path);
+        }
+
+        if ( count( $newRepos ) > 0 ) {
+            $repos = $this->getRepositories( null );
+
+            # Detect new repo's
+            # NOTE: This will not detect new repo's with same
+            #       name as previous repo.
+            $changed = false;
+            foreach ( $newRepos as $repoName => $newRepo ) {
+                if ( !isset( $repos[ $repoName] ) ) {
+                    $changed = true;
+                    break;
+                }
+            }
+
+            $repos = array_merge( $repos, $newRepos );
+
+            # Save changes if specified and possible
+            if ( $changed && $savefile && ( $this->cached_repos != null ) ) {
+                file_put_contents($this->cached_repos, json_encode($repos));  
+            }
+
+            $this->repositories = $repos;
+        }
+    }
+
 
     /**
      * Searches for valid repositories on the specified path
      *
      * @param  string $path Path where repositories will be searched
+     * @param  boolean $savefile If true, save repo list to cache
+     *
      * @return array  Found repositories, containing their name, path and description
      */
-    public function getRepositories($paths)
-    {
-        if ( $this->repositories != null ) return $this->repositories;
+    public function getRepositories($paths ) {
 
-        $repos = $this->handleCached();
+        # If repo list already loaded, use that.
+        $repos = $this->repositories;
+
+        if ( $repos == null ) {
+            # Try loading from cache
+            $repos = $this->handleCached();
+        }
+
         if ( $repos != null ) return $repos;
 
-        #echo "entered getRepositories";
+        $repos = array();
+
+        # If no paths specified, don't bother searching them
+        if ( $paths == null ) return $repos;
+
+
+        #
+        # No cache file either, create repo list from scratch
+        #
 
         if ( !is_array( $paths ) ) {
             $paths = array($paths);
         }
 
-        $repositories = array();
         foreach( $paths  as $path ) {
             # TODO: check what happens if multiple similar paths are merged.
-            $this->recurseDirectory($repositories, $path);
+            $this->recurseDirectory($repos, $path);
         }
 
-        if (empty($repositories)) {
+        if (empty($repos)) {
             throw new \RuntimeException('There are no GIT repositories in ' . $path);
         }
 
-        ksort($repositories);
+        ksort($repos);
 
-        // Store to cache file 
-        file_put_contents($this->cached_repos, json_encode($repositories));  
+        // Store to cache file, if possible
+        if ( $this->cached_repos ) {
+            file_put_contents($this->cached_repos, json_encode($repos));
+        }
 
-        $this->repositories = $repositories;
+        $this->repositories = $repos;
 
-        return $repositories;
+        return $repos;
     }
+
 
     public function setRepositories( $repositories ) {
         #echo "called setRepositories.";
-#var_dump( $this->repositories);
+        #var_dump( $this->repositories);
         $this->repositories = $repositories;
 
 
