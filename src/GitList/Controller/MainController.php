@@ -20,6 +20,21 @@ class MainController implements ControllerProviderInterface
             ));
         })->bind('homepage');
 
+
+        $route->get('/refresh', function() use ($app ) {
+            $app['git']->deleteCached();
+
+            # These don't work:
+            #echo sfContext::getInstance()->getRequest()->getReferer();
+            #$app->redirect($request->attributes->get('referer'));
+            #$app->redirect( $app->getRequest()->getReferer() );
+
+            # TODO: Fix following to return to referring page
+            #       Or get rid of hardcoded path
+            return $app->redirect( "/gitlist/");
+        })->bind('refresh');
+
+
         $route->get('{repo}/stats/{branch}', function($repo, $branch) use ($app) {
             $repotmp = $app['git']->getRepositoryCached($app['git.repos'], $repo);
 
