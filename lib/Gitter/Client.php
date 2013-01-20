@@ -128,6 +128,18 @@ class Client
 
 
     /**
+     * Remove the cachefile for the repo list, if present.
+     *
+     * It will be regenerated on the next call to gitlist.
+     */
+    public function deleteCached() {
+
+        if ( $this->cached_repos != null ) {
+            unlink( $this->cached_repos );
+        }
+    }
+
+    /**
      * Add any repositories in the given path to the cache list.
      *
      * If param savefile == false, then the repository list will not
