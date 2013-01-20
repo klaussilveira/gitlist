@@ -3,4 +3,3 @@ vendor/
 .DS_Store
 .Spotlight-V100
 .Trashes
-composer.lock
