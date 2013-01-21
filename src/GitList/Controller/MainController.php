@@ -5,6 +5,7 @@ namespace GitList\Controller;
 use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 
 class MainController implements ControllerProviderInterface
 {
@@ -21,17 +22,11 @@ class MainController implements ControllerProviderInterface
         })->bind('homepage');
 
 
-        $route->get('/refresh', function() use ($app ) {
+        $route->get('/refresh', function(Request $request) use ($app ) {
             $app['git']->deleteCached();
 
-            # These don't work:
-            #echo sfContext::getInstance()->getRequest()->getReferer();
-            #$app->redirect($request->attributes->get('referer'));
-            #$app->redirect( $app->getRequest()->getReferer() );
-
-            # TODO: Fix following to return to referring page
-            #       Or get rid of hardcoded path
-            return $app->redirect( "/gitlist/");
+            # Go back to calling page
+            return $app->redirect($request->headers->get('Referer'));
         })->bind('refresh');
 
 
