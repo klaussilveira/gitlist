@@ -40,7 +40,10 @@ class Application extends SilexApplication
 
         $repositories = $config->get('git', 'repositories');
 
-        $cached_repos = $root . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'repos.json';
+        $cached_repos = $config->get('app', 'cached_repos');
+        if ( !isset( $cached_repos ) ) {
+            $cached_repos = $root . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'repos.json';
+        }
 
         $this->register(new GitServiceProvider(), array(
             'git.client'      => $config->get('git', 'client'),

@@ -8,6 +8,7 @@ class InterfaceTest extends WebTestCase
 {
     protected static $tmpdir;
     protected static $gitPath;
+    protected static $cached_repos;
 
     public static function setUpBeforeClass()
     {
@@ -16,10 +17,10 @@ class InterfaceTest extends WebTestCase
         } elseif (getenv('TMPDIR')) {
             self::$tmpdir = getenv('TMPDIR');
         } else {
-           self::$tmpdir = '/tmp';
+           self::$tmpdir = DIRECTORY_SEPARATOR . 'tmp';
         }
 
-        self::$tmpdir .= '/gitlist_' . md5(time() . mt_rand()) . '/';
+        self::$tmpdir .= DIRECTORY_SEPARATOR . 'gitlist_' . md5(time() . mt_rand()) . DIRECTORY_SEPARATOR;
 
         $fs = new Filesystem();
         $fs->mkdir(self::$tmpdir);
@@ -30,6 +31,14 @@ class InterfaceTest extends WebTestCase
 
         $options['path'] = getenv('GIT_CLIENT') ?: '/usr/bin/git';
         $options['hidden'] = array(self::$tmpdir . '/hiddenrepo');
+        $options['ini.file'] = "config.ini";
+
+        $cached_dir = self::$tmpdir . DIRECTORY_SEPARATOR . 'cache';
+        $fs->mkdir($cached_dir);
+        self::$cached_repos = $cached_dir . DIRECTORY_SEPARATOR . 'repos.json';
+
+        $options['cache.repos'] =  self::$cached_repos;
+
         $git = new Client($options);
 
         self::$gitPath = $options['path'];
@@ -104,18 +113,12 @@ class InterfaceTest extends WebTestCase
 
     public function createApplication()
     {
-		$config = GitList\Config::fromFile('../config.ini');
-/*
-        $config = new \GitList\Config(array(
-            'git' => array(
-                'client' => self::$gitPath,
-                'repositories' => self::$tmpdir,
-            ),
-            'app' => array(
-                'debug' => true,
-            ),
-        ));
-*/
+		$config = GitList\Config::fromFile('config.ini');
+        $config->set('app', 'cached_repos', self::$cached_repos);
+        $config->set('git', 'repositories', self::$tmpdir);
+        $config->set('app', 'debug', true );
+        $config->set('git', 'client', self::$gitPath );
+
         $app = require 'boot.php';
         return $app;
     }
@@ -127,11 +130,11 @@ class InterfaceTest extends WebTestCase
 
         $this->assertTrue($client->getResponse()->isOk());
         $this->assertCount(1, $crawler->filter('title:contains("GitList")'));
-        $this->assertCount(1, $crawler->filter('div.repository-header:contains("GitTest")'));
+        $this->assertCount(1, $crawler->filter('div.repository-header a:contains("GitTest")'));
         $this->assertEquals('/GitTest/', $crawler->filter('.repository-header a')->eq(0)->attr('href'));
         $this->assertEquals('/GitTest/master/rss/', $crawler->filter('.repository-header a')->eq(1)->attr('href'));
-        $this->assertEquals('/nested/NestedRepo/', $crawler->filter('.repository-header a')->eq(2)->attr('href'));
-        $this->assertEquals('/nested/NestedRepo/master/rss/', $crawler->filter('.repository-header a')->eq(3)->attr('href'));
+        $this->assertEquals('/NestedRepo/', $crawler->filter('.repository-header a')->eq(2)->attr('href'));
+        $this->assertEquals('/NestedRepo/master/rss/', $crawler->filter('.repository-header a')->eq(3)->attr('href'));
         $this->assertCount(1, $crawler->filter('div.repository-header:contains("foobar")'));
         $this->assertCount(1, $crawler->filter('div.repository-body:contains("This is a test repo!")'));
         $this->assertEquals('/foobar/', $crawler->filter('.repository-header a')->eq(6)->attr('href'));
@@ -173,6 +176,7 @@ class InterfaceTest extends WebTestCase
         $client = $this->createClient();
 
         $crawler = $client->request('GET', '/GitTest/blob/master/test.php');
+
         $this->assertTrue($client->getResponse()->isOk());
         $this->assertCount(1, $crawler->filter('.breadcrumb .active:contains("test.php")'));
         $this->assertEquals('/GitTest/raw/master/test.php', $crawler->filter('.source-header .btn-group a')->eq(0)->attr('href'));
@@ -250,8 +254,10 @@ class InterfaceTest extends WebTestCase
     {
         $client = $this->createClient();
 
-        $crawler = $client->request('GET', '/GitTest/master/rss/');
-        $this->assertTrue($client->getResponse()->isOk());
+        $client->request('GET', '/GitTest/master/rss/');
+        $response = $client->getResponse();
+
+        $this->assertTrue($response->isOk() );
         $this->assertRegexp('/Latest commits in GitTest:master/', $client->getResponse()->getContent());
         $this->assertRegexp('/Initial commit/', $client->getResponse()->getContent());
     }
@@ -260,8 +266,10 @@ class InterfaceTest extends WebTestCase
     {
         $client = $this->createClient();
 
-        $crawler = $client->request('GET', '/nested/NestedRepo/');
-        $this->assertTrue($client->getResponse()->isOk());
+        $client->request('GET', '/NestedRepo/');
+        $response = $client->getResponse();
+
+        $this->assertTrue($response->isOk() );
         $this->assertRegexp('/NESTED TEST REPO README/', $client->getResponse()->getContent());
     }
 
@@ -277,7 +285,7 @@ class InterfaceTest extends WebTestCase
     {
         $client = $this->createClient();
 
-        $crawler = $client->request('GET', '/nested/NestedRepo/testing/');
+        $crawler = $client->request('GET', '/NestedRepo/testing/');
         $this->assertTrue($client->getResponse()->isOk());
         $this->assertRegexp('/NESTED TEST BRANCH README/', $client->getResponse()->getContent());
     }

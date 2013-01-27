@@ -1,5 +1,4 @@
 <?php
-
 /**
  * GitList 0.3
  * https://github.com/klaussilveira/gitlist
