@@ -109,6 +109,8 @@ class InterfaceTest extends WebTestCase
         $repository->setConfig('user.email', 'luke@rebel.org');
         $repository->addAll();
         $repository->commit("Initial commit");
+
+		$git->deleteCached();
     }
 
     public function createApplication()

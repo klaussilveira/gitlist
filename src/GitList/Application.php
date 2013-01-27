@@ -41,7 +41,7 @@ class Application extends SilexApplication
         $repositories = $config->get('git', 'repositories');
 
         $cached_repos = $config->get('app', 'cached_repos');
-        if ( !isset( $cached_repos ) ) {
+        if ( false === $cached_repos || empty( $cached_repos) ) {
             $cached_repos = $root . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'repos.json';
         }
 
