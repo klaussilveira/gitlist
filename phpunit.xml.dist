@@ -8,7 +8,7 @@
          processIsolation="false"
          stopOnFailure="true"
          syntaxCheck="true"
-         bootstrap="./vendor/autoload.php"
+         bootstrap="../..//autoload.php"
 >
     <testsuites>
         <testsuite name="Gitter Test Suite">

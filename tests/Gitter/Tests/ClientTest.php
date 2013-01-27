@@ -5,11 +5,13 @@ namespace Gitter\Tests;
 use Gitter\Client;
 use Gitter\Repository;
 use Symfony\Component\Filesystem\Filesystem;
+use GitterTestCase;
 
 class ClientTest extends \PHPUnit_Framework_TestCase
 {
     public static $tmpdir;
     protected $client;
+    protected static $cached_repos;
 
     public static function setUpBeforeClass()
     {
@@ -29,6 +31,10 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         if (!is_writable(self::$tmpdir)) {
             $this->markTestSkipped('There are no write permissions in order to create test repositories.');
         }
+
+        $cached_dir = self::$tmpdir . DIRECTORY_SEPARATOR . 'cache';
+        $fs->mkdir($cached_dir);
+        self::$cached_repos = $cached_dir . DIRECTORY_SEPARATOR . 'repos.json';
     }
 
     public function setUp()
@@ -40,6 +46,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $options = array(
             'path' => getenv('GIT_CLIENT') ?: null,
             'hidden' => array(self::$tmpdir . '/hiddenrepo'),
+			'ini.file' => 'config.ini',
+        	'cache.repos' =>  self::$cached_repos
         );
         $this->client = new Client($options);
     }
@@ -49,7 +57,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
      */
     public function testIsNotFindingRepositories()
     {
-        $this->client->getRepositories(self::$tmpdir . '/testrepo');
+        $this->client->getRepositories(self::$tmpdir, 'testrepo');
     }
 
     /**
@@ -57,7 +65,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
      */
     public function testIsNotAbleToGetUnexistingRepository()
     {
-        $this->client->getRepository(self::$tmpdir . '/testrepo');
+        $this->client->getRepositoryCached(self::$tmpdir, 'testrepo');
     }
 
     /**
@@ -96,10 +104,10 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->client->createRepository(self::$tmpdir . '/bigbadrepo');
         $repositories = $this->client->getRepositories(self::$tmpdir);
 
-        $this->assertEquals($repositories[0]['name'], 'anothertestrepo');
-        $this->assertEquals($repositories[1]['name'], 'bigbadrepo');
-        $this->assertEquals($repositories[2]['name'], 'testbare');
-        $this->assertEquals($repositories[3]['name'], 'testrepo');
+        $this->assertEquals($repositories['anothertestrepo']['name'], 'anothertestrepo');
+        $this->assertEquals($repositories['bigbadrepo']['name'], 'bigbadrepo');
+        $this->assertEquals($repositories['testbare']['name'], 'testbare');
+        $this->assertEquals($repositories['testrepo']['name'], 'testrepo');
     }
 
     public function testIsNotListingHiddenRepositories()
@@ -107,11 +115,12 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->client->createRepository(self::$tmpdir . '/hiddenrepo');
         $repositories = $this->client->getRepositories(self::$tmpdir);
 
-        $this->assertEquals($repositories[0]['name'], 'anothertestrepo');
-        $this->assertEquals($repositories[1]['name'], 'bigbadrepo');
-        $this->assertEquals($repositories[2]['name'], 'testbare');
-        $this->assertEquals($repositories[3]['name'], 'testrepo');
-        $this->assertFalse(isset($repositories[4]));
+        $this->assertEquals($repositories['anothertestrepo']['name'], 'anothertestrepo');
+        $this->assertEquals($repositories['bigbadrepo']['name'], 'bigbadrepo');
+        $this->assertEquals($repositories['testbare']['name'], 'testbare');
+        $this->assertEquals($repositories['testrepo']['name'], 'testrepo');
+
+        $this->assertFalse(isset($repositories['hiddenrepo']));
     }
 
     /**
@@ -119,7 +128,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase
      */
     public function testIsNotOpeningHiddenRepositories()
     {
-        $this->client->getRepository(self::$tmpdir . '/hiddenrepo');
+
+        $this->client->getRepositoryCached(self::$tmpdir, 'hiddenrepo');
     }
 
     /**
@@ -127,7 +137,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
      */
     public function testIsCatchingGitCommandErrors()
     {
-        $repository = $this->client->getRepository(self::$tmpdir . '/testrepo');
+        $repository = $this->client->getRepositoryCached(self::$tmpdir, 'testrepo');
         $repository->getClient()->run($repository, 'wrong');
     }
 

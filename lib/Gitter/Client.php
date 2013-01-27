@@ -46,7 +46,12 @@ class Client
     private function handleCached() {
         if ( $this->checkCached( $this->inifile, $this->cached_repos ) ) {
             // Retrieve cache  
-            $repos = json_decode(file_get_contents($this->cached_repos), TRUE);  
+            $file = @file_get_contents($this->cached_repos);  
+
+            $repos = array();
+            if ( false !== $file ) {
+                $repos = json_decode($file, TRUE);
+             }
 
 #var_dump( $repos);
 
@@ -62,6 +67,12 @@ class Client
      *
      */
     public function checkCached( $src, $dst ) {
+        # Can happen during unit tests!
+        if ( !file_exists( $src ) ) {
+            #echo "src $src does not exist.";
+            return true;
+        }
+
         if ( !file_exists( $dst ) ) {
             #echo "dst $dst does not exist.";
             return false;
@@ -95,7 +106,7 @@ class Client
         # createRepository() appears to be only called in unit test.
         # For this reason, the (second) param savefile is always set to false.
         # TODO: Check if assumption is valid.
-        $this->addRepository( $path, false );
+        $this->addRepository( $path, true );
 
         return $retval;
     }
@@ -113,15 +124,21 @@ class Client
     public function getRepositoryCached($paths, $repo)
     {
         $repositories = $this->getRepositories($paths);
+
+        if ( !isset( $repositories[ $repo ] ) ) {
+            throw new \RuntimeException("Repository $repo not in the cache list");
+        }
+
         $path = $repositories[ $repo ]['path'];
+
+        if (in_array($path, $this->getHidden())) {
+            throw new \RuntimeException('You don\'t have access to this repository');
+        }
 
         if (!file_exists($path) || !file_exists($path . '/.git/HEAD') && !file_exists($path . '/HEAD')) {
             throw new \RuntimeException('There is no GIT repository at ' . $path);
         }
 
-        if (in_array($path, $this->getHidden())) {
-            throw new \RuntimeException('You don\'t have access to this repository');
-        }
 
         return new Repository($path, $this);
     }
@@ -189,7 +206,6 @@ class Client
      * Searches for valid repositories on the specified path
      *
      * @param  string $path Path where repositories will be searched
-     * @param  boolean $savefile If true, save repo list to cache
      *
      * @return array  Found repositories, containing their name, path and description
      */
@@ -203,7 +219,10 @@ class Client
             $repos = $this->handleCached();
         }
 
-        if ( $repos != null ) return $repos;
+        if ( $repos != null ) {
+            ksort($repos);
+            return $repos;
+        }
 
         $repos = array();
 
