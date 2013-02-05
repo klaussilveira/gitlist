@@ -30,19 +30,22 @@ class Application extends SilexApplication
 
         $this['debug'] = $config->get('app', 'debug');
         $this['filetypes'] = $config->getSection('filetypes');
-        $this['cache.archives'] = $root . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'archives';
+        $this['cache.archives'] = $root . DIRECTORY_SEPARATOR
+                . 'cache' . DIRECTORY_SEPARATOR . 'archives';
 
         // Register services
         $this->register(new TwigServiceProvider(), array(
             'twig.path'       => $root . DIRECTORY_SEPARATOR . 'views',
-            'twig.options'    => array('cache' => $root . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'views'),
+            'twig.options'    => array('cache' => $root . DIRECTORY_SEPARATOR
+                                 . 'cache' . DIRECTORY_SEPARATOR . 'views'),
         ));
 
         $repositories = $config->get('git', 'repositories');
 
         $cached_repos = $config->get('app', 'cached_repos');
-        if ( false === $cached_repos || empty( $cached_repos) ) {
-            $cached_repos = $root . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'repos.json';
+        if (false === $cached_repos || empty($cached_repos)) {
+            $cached_repos = $root . DIRECTORY_SEPARATOR . 'cache'
+                    . DIRECTORY_SEPARATOR . 'repos.json';
         }
 
         $this->register(new GitServiceProvider(), array(
@@ -50,10 +53,12 @@ class Application extends SilexApplication
             'git.repos'       => $repositories,
             'cache.repos'     => $cached_repos,
             'ini.file'        => "config.ini",
-            'git.hidden'      => $config->get('git', 'hidden') ? $config->get('git', 'hidden') : array(),
+            'git.hidden'      => $config->get('git', 'hidden') ?
+                                 $config->get('git', 'hidden') : array(),
         ));
 
-        $cached_repos = $root . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'repos.json';
+        $cached_repos = $root . DIRECTORY_SEPARATOR .
+                'cache' . DIRECTORY_SEPARATOR . 'repos.json';
 
 
         $this->register(new ViewUtilServiceProvider());
@@ -62,7 +67,8 @@ class Application extends SilexApplication
         $this->register(new RoutingUtilServiceProvider());
 
         $this['twig'] = $this->share($this->extend('twig', function($twig, $app) {
-            $twig->addFilter('htmlentities', new \Twig_Filter_Function('htmlentities'));
+            $twig->addFilter('htmlentities',
+                    new \Twig_Filter_Function('htmlentities'));
             $twig->addFilter('md5', new \Twig_Filter_Function('md5'));
 
             return $twig;
@@ -81,3 +87,4 @@ class Application extends SilexApplication
         });
     }
 }
+

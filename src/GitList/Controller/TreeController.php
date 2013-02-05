@@ -13,7 +13,7 @@ class TreeController implements ControllerProviderInterface
     {
         $route = $app['controllers_factory'];
 
-        $route->get('{repo}/tree/{branch}/{tree}/', $treeController = function($repo, $branch = '', $tree = '') use ($app) {
+        $treeController = function($repo, $branch = '', $tree = '') use ($app) {
 
             $repository = $app['git']->getRepositoryCached($app['git.repos'], $repo);
 
@@ -43,17 +43,21 @@ class TreeController implements ControllerProviderInterface
                 'tags'           => $repository->getTags(),
                 'readme'         => $app['util.repository']->getReadme($repository, $branch),
             ));
-        })->assert('repo', $app['util.routing']->getRepositoryRegex())
+        };
+
+        $route->get('{repo}/tree/{branch}/{tree}/', $treeController
+        )->assert('repo', $app['util.routing']->getRepositoryRegex())
           ->assert('branch', '[\w-._\/]+')
           ->assert('tree', '.+')
           ->bind('tree');
 
-        $route->post('{repo}/tree/{branch}/search', function(Request $request, $repo, $branch = '', $tree = '') use ($app) {
+        $route->post('{repo}/tree/{branch}/search',
+                function(Request $request, $repo, $branch = '', $tree = '') use ($app) {
 
             $repository = $app['git']->getRepositoryCached($app['git.repos'], $repo);
             $path = $repository->getPath();
 
-            $repository = $app['git']->getRepository($path );
+            $repository = $app['git']->getRepository($path);
             if (!$branch) {
                 $branch = $repository->getHead();
             }
@@ -76,13 +80,13 @@ class TreeController implements ControllerProviderInterface
           ->bind('search');
 
 
-        # WRI: Changed order of this and next statement, because order
-        # appears to be important, and the other statement got precedence
+        # Intentionally before next statement, because order appears
+        # to be important, and the other statement got precedence previously.
         $route->get('{repo}/{format}ball/{branch}', function($repo, $format, $branch) use ($app) {
             $repo_item = $app['git']->getRepositoryCached($app['git.repos'], $repo);
             $path = $repo_item->getPath();
 
-            $repository = $app['git']->getRepository($path );
+            $repository = $app['git']->getRepository($path);
 
             $tree = $repository->getBranchTree($branch);
 
@@ -126,7 +130,7 @@ class TreeController implements ControllerProviderInterface
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
           ->bind('repository');
 
-
         return $route;
     }
 }
+

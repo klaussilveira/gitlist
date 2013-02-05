@@ -6,15 +6,15 @@ if (!isset($config)) {
 
 $repositories = $config->get('git', 'repositories');
 
-if ( !is_array( $repositories ) ) {
-	# Convert the single item to an array - this is the internal handling
-	$repositories  = array( $repositories );
+if (!is_array($repositories)) {
+    # Convert the single item to an array - this is the internal handling
+    $repositories  = array($repositories);
 }
 
 $tmp_arr = array();
-foreach( $repositories as $repo ) {
-	$tmp = rtrim($repo, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
-	$tmp_arr []= $tmp;
+foreach ($repositories as $repo) {
+    $tmp = rtrim($repo, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+    $tmp_arr []= $tmp;
 }
 $repositories = $tmp_arr;
 
@@ -31,5 +31,5 @@ $app->mount('', new GitList\Controller\CommitController());
 $app->mount('', new GitList\Controller\TreeController());
 
 
-
 return $app;
+

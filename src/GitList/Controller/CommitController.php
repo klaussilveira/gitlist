@@ -13,6 +13,7 @@ class CommitController implements ControllerProviderInterface
         $route = $app['controllers_factory'];
 
         $route->get('{repo}/commits/{branch}/{file}', function($repo, $branch, $file) use ($app) {
+
             $repotmp = $app['git']->getRepositoryCached($app['git.repos'], $repo);
             $repository = $app['git']->getRepository($repotmp->getPath());
 
@@ -52,7 +53,7 @@ class CommitController implements ControllerProviderInterface
           ->value('file', '')
           ->bind('commits');
 
-        $route->post('{repo}/commits/search', function(Request $request, $repo) use ($app) {
+        $route->post('{repo}/commits/{branch}/search', function(Request $request, $repo, $branch) use ($app) {
             $repotmp = $app['git']->getRepositoryCached($app['git.repos'], $repo);
             $repository = $app['git']->getRepository($repotmp->getPath());
             $query = $request->get('query');
@@ -95,6 +96,7 @@ class CommitController implements ControllerProviderInterface
           ->assert('commit', '[a-f0-9^]+')
           ->bind('commit');
 
+
         $route->get('{repo}/blame/{branch}/{file}', function($repo, $branch, $file) use ($app) {
             $repotmp = $app['git']->getRepositoryCached($app['git.repos'], $repo);
             $repository = $app['git']->getRepository($repotmp->getPath());
@@ -119,3 +121,4 @@ class CommitController implements ControllerProviderInterface
         return $route;
     }
 }
+

@@ -18,7 +18,15 @@ class Repository extends BaseRepository
      */
     public function getCommit($commitHash)
     {
-        $logs = $this->getClient()->run($this, "show --pretty=format:\"<item><hash>%H</hash><short_hash>%h</short_hash><tree>%T</tree><parents>%P</parents><author>%an</author><author_email>%ae</author_email><date>%at</date><commiter>%cn</commiter><commiter_email>%ce</commiter_email><commiter_date>%ct</commiter_date><message><![CDATA[%s]]></message></item>\" $commitHash");
+        $logs = $this->getClient()->run($this,
+                  "show --pretty=format:\"<item><hash>%H</hash>"
+                . "<short_hash>%h</short_hash><tree>%T</tree><parents>%P</parents>"
+                . "<author>%an</author><author_email>%ae</author_email>"
+                . "<date>%at</date><commiter>%cn</commiter>"
+                . "<commiter_email>%ce</commiter_email>"
+                . "<commiter_date>%ct</commiter_date>"
+                . "<message><![CDATA[%s]]></message></item>\" $commitHash");
+
         $logs = explode("\n", $logs);
 
         // Read commit metadata
@@ -170,7 +178,14 @@ class Repository extends BaseRepository
     {
         $page = 15 * $page;
         $pager = "--skip=$page --max-count=15";
-        $command = "log $pager --pretty=format:\"<item><hash>%H</hash><short_hash>%h</short_hash><tree>%T</tree><parent>%P</parent><author>%an</author><author_email>%ae</author_email><date>%at</date><commiter>%cn</commiter><commiter_email>%ce</commiter_email><commiter_date>%ct</commiter_date><message><![CDATA[%s]]></message></item>\"";
+        $command =
+                  "log $pager --pretty=format:\"<item><hash>%H</hash>"
+                . "<short_hash>%h</short_hash><tree>%T</tree><parent>%P</parent>"
+                . "<author>%an</author><author_email>%ae</author_email>"
+                . "<date>%at</date><commiter>%cn</commiter>"
+                . "<commiter_email>%ce</commiter_email>"
+                . "<commiter_date>%ct</commiter_date>"
+                . "<message><![CDATA[%s]]></message></item>\"";
 
         if ($file) {
             $command .= " $file";
@@ -194,7 +209,14 @@ class Repository extends BaseRepository
     public function searchCommitLog($query)
     {
         $query = escapeshellarg($query);
-        $command = "log --grep={$query} --pretty=format:\"<item><hash>%H</hash><short_hash>%h</short_hash><tree>%T</tree><parent>%P</parent><author>%an</author><author_email>%ae</author_email><date>%at</date><commiter>%cn</commiter><commiter_email>%ce</commiter_email><commiter_date>%ct</commiter_date><message><![CDATA[%s]]></message></item>\"";
+        $command =
+              "log --grep={$query} --pretty=format:\"<item><hash>%H</hash>"
+            . "<short_hash>%h</short_hash><tree>%T</tree><parent>%P</parent>"
+            . "<author>%an</author><author_email>%ae</author_email>"
+            . "<date>%at</date><commiter>%cn</commiter>"
+            . "<commiter_email>%ce</commiter_email>"
+            . "<commiter_date>%ct</commiter_date>"
+            . "<message><![CDATA[%s]]></message></item>\"";
 
         try {
             $logs = $this->getPrettyFormat($command);
@@ -289,7 +311,7 @@ class Repository extends BaseRepository
                 $data['size'] += $file[3];
             }
 
-            if (($pos = strrpos($file[4], '.')) !== FALSE) {
+            if (($pos = strrpos($file[4], '.')) !== false) {
                 $data['extensions'][] = substr($file[4], $pos);
             }
         }
@@ -314,3 +336,4 @@ class Repository extends BaseRepository
         $this->getClient()->run($this, "archive --format=$format --output=$output $tree");
     }
 }
+

@@ -13,6 +13,7 @@ class BlobController implements ControllerProviderInterface
         $route = $app['controllers_factory'];
 
         $route->get('{repo}/blob/{branch}/{file}', function($repo, $branch, $file) use ($app) {
+
             $repotmp = $app['git']->getRepositoryCached($app['git.repos'], $repo);
             $repository = $app['git']->getRepository($repotmp->getPath());
             list($branch, $file) = $app['util.repository']->extractRef($repository, $branch, $file);
@@ -69,3 +70,4 @@ class BlobController implements ControllerProviderInterface
         return $route;
     }
 }
+

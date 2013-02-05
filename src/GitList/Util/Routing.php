@@ -21,11 +21,6 @@ class Routing
             $app = $this->app;
             $self = $this;
             $quotedPaths = array_map(
-                #function ($repo) use ($app) {
-                #    return preg_quote($app['util.routing']->getRelativePath($repo['path']), '#');
-                #},
-				# TODO: return keys instead
-				        
                function ($repo) use ($app, $self) {
                     $repoName =  $repo['name'] ;
                     //Windows
@@ -36,22 +31,24 @@ class Routing
                 },
                 $this->app['git']->getRepositories($this->app['git.repos'])
             );
-            usort($quotedPaths, function ($a, $b) { return strlen($b) - strlen($a); });
+            usort($quotedPaths, function ($a, $b) {
+				return strlen($b) - strlen($a);
+			});
             $regex = implode('|', $quotedPaths);
         }
 
         return $regex;
     }
-    
-    public function OSIsWindows() 
-    {      
+
+
+    public function OSIsWindows()
+    {
       switch(PHP_OS){
         case  'WIN32':
         case  'WINNT':
         case  'Windows': return true;
         default : return false;
       }
-
     }
 
     /**
@@ -72,3 +69,4 @@ class Routing
         }
     }
 }
+

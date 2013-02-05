@@ -218,5 +218,5 @@ class Repository
 
         return array($branch, $tree);
     }
-
 }
+
