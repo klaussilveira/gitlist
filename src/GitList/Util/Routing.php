@@ -24,7 +24,7 @@ class Routing
                function ($repo) use ($app, $self) {
                     $repoName =  $repo['name'] ;
                     //Windows
-                    if ($self->OSIsWindows()){
+                    if ($self->isWindows()){
                        $repoName = str_replace('\\', '\\\\',$repoName);
                     }
                     return $repoName;
@@ -41,7 +41,7 @@ class Routing
     }
 
 
-    public function OSIsWindows()
+    public function isWindows()
     {
       switch(PHP_OS){
         case  'WIN32':
