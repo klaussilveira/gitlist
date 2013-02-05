@@ -239,7 +239,7 @@ class Repository
         array_pop($tags);
 
         if (empty($tags[0])) {
-            return NULL;
+            return null;
         }
 
         return $tags;
@@ -270,7 +270,14 @@ class Repository
      */
     public function getCommits($file = null)
     {
-        $command = "log --pretty=format:\"<item><hash>%H</hash><short_hash>%h</short_hash><tree>%T</tree><parents>%P</parents><author>%an</author><author_email>%ae</author_email><date>%at</date><commiter>%cn</commiter><commiter_email>%ce</commiter_email><commiter_date>%ct</commiter_date><message><![CDATA[%s]]></message></item>\"";
+        $command =
+                  "log --pretty=format:\"<item><hash>%H</hash>"
+                . "<short_hash>%h</short_hash><tree>%T</tree><parents>%P</parents>"
+                . "<author>%an</author><author_email>%ae</author_email>"
+                . "<date>%at</date><commiter>%cn</commiter>"
+                . "<commiter_email>%ce</commiter_email>"
+                . "<commiter_date>%ct</commiter_date>"
+                . "<message><![CDATA[%s]]></message></item>\"";
 
         if ($file) {
             $command .= " $file";
@@ -295,7 +302,14 @@ class Repository
      */
     public function getCommit($commitHash)
     {
-        $logs = $this->getClient()->run($this, "show --pretty=format:\"<item><hash>%H</hash><short_hash>%h</short_hash><tree>%T</tree><parents>%P</parents><author>%an</author><author_email>%ae</author_email><date>%at</date><commiter>%cn</commiter><commiter_email>%ce</commiter_email><commiter_date>%ct</commiter_date><message><![CDATA[%s]]></message></item>\" $commitHash");
+        $logs = $this->getClient()->run($this,
+                  "show --pretty=format:\"<item><hash>%H</hash>"
+                . "<short_hash>%h</short_hash><tree>%T</tree><parents>%P</parents>"
+                . "<author>%an</author><author_email>%ae</author_email><date>%at</date>"
+                . "<commiter>%cn</commiter><commiter_email>%ce</commiter_email>"
+                . "<commiter_date>%ct</commiter_date><message><![CDATA[%s]]></message>"
+                . "</item>\" $commitHash");
+
         $logs = explode("\n", $logs);
 
         // Read commit metadata
@@ -437,12 +451,8 @@ class Repository
      */
     public function getBranchTree($branch)
     {
-echo "branch: $branch\n";
-
         $hash = $this->getClient()->run($this, "log --pretty=\"%T\" --max-count=1 $branch");
         $hash = trim($hash, "\r\n ");
-
-echo "hash: $hash\n";
 
         return $hash ? : false;
     }
@@ -562,3 +572,4 @@ echo "hash: $hash\n";
         return $format->parse($output);
     }
 }
+

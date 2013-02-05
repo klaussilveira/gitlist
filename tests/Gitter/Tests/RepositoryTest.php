@@ -9,9 +9,11 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class RepositoryTest extends \PHPUnit_Framework_TestCase
 {
+    const CONTENTS = 'Your mother is so ugly, glCullFace always returns TRUE.';
+
     protected static $tmpdir;
-    protected $client;
     protected static $cached_repos;
+    protected $client;
 
     public static function setUpBeforeClass()
     {
@@ -46,8 +48,8 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         $options = array(
             'path' => getenv('GIT_CLIENT') ?: null,
             'hidden' => array(self::$tmpdir . '/hiddenrepo'),
-			'ini.file' => 'config.ini',
-        	'cache.repos' =>  self::$cached_repos
+            'ini.file' => 'config.ini',
+            'cache.repos' =>  self::$cached_repos
         );
         $this->client = new Client($options);
     }
@@ -76,7 +78,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
     public function testIsAdding()
     {
         $repository = $this->client->getRepositoryCached(self::$tmpdir, 'testrepo');
-        file_put_contents(self::$tmpdir . '/testrepo/test_file.txt', 'Your mother is so ugly, glCullFace always returns TRUE.');
+        file_put_contents(self::$tmpdir . '/testrepo/test_file.txt', self::CONTENTS);
         $repository->add('test_file.txt');
         $this->assertRegExp("/new file:   test_file.txt/", $repository->getClient()->run($repository, 'status'));
     }
@@ -88,9 +90,9 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
     {
         $repository = $this->client->getRepositoryCached(self::$tmpdir, 'testrepo');
 
-        file_put_contents(self::$tmpdir . '/testrepo/test_file1.txt', 'Your mother is so ugly, glCullFace always returns TRUE.');
-        file_put_contents(self::$tmpdir . '/testrepo/test_file2.txt', 'Your mother is so ugly, glCullFace always returns TRUE.');
-        file_put_contents(self::$tmpdir . '/testrepo/test_file3.txt', 'Your mother is so ugly, glCullFace always returns TRUE.');
+        file_put_contents(self::$tmpdir . '/testrepo/test_file1.txt', self::CONTENTS);
+        file_put_contents(self::$tmpdir . '/testrepo/test_file2.txt', self::CONTENTS);
+        file_put_contents(self::$tmpdir . '/testrepo/test_file3.txt', self::CONTENTS);
 
         $repository->add();
 
@@ -106,9 +108,9 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
     {
         $repository = $this->client->getRepositoryCached(self::$tmpdir, 'testrepo');
 
-        file_put_contents(self::$tmpdir . '/testrepo/test_file4.txt', 'Your mother is so ugly, glCullFace always returns TRUE.');
-        file_put_contents(self::$tmpdir . '/testrepo/test_file5.txt', 'Your mother is so ugly, glCullFace always returns TRUE.');
-        file_put_contents(self::$tmpdir . '/testrepo/test_file6.txt', 'Your mother is so ugly, glCullFace always returns TRUE.');
+        file_put_contents(self::$tmpdir . '/testrepo/test_file4.txt', self::CONTENTS);
+        file_put_contents(self::$tmpdir . '/testrepo/test_file5.txt', self::CONTENTS);
+        file_put_contents(self::$tmpdir . '/testrepo/test_file6.txt', self::CONTENTS);
 
         $repository->addAll();
 
@@ -124,9 +126,9 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
     {
         $repository = $this->client->getRepositoryCached(self::$tmpdir, 'testrepo');
 
-        file_put_contents(self::$tmpdir . '/testrepo/test_file7.txt', 'Your mother is so ugly, glCullFace always returns TRUE.');
-        file_put_contents(self::$tmpdir . '/testrepo/test_file8.txt', 'Your mother is so ugly, glCullFace always returns TRUE.');
-        file_put_contents(self::$tmpdir . '/testrepo/test_file9.txt', 'Your mother is so ugly, glCullFace always returns TRUE.');
+        file_put_contents(self::$tmpdir . '/testrepo/test_file7.txt', self::CONTENTS);
+        file_put_contents(self::$tmpdir . '/testrepo/test_file8.txt', self::CONTENTS);
+        file_put_contents(self::$tmpdir . '/testrepo/test_file9.txt', self::CONTENTS);
 
         $repository->add(array('test_file7.txt', 'test_file8.txt', 'test_file9.txt'));
 
@@ -333,7 +335,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('Lorem ipsum dolor sit amet', $blob);
 
         $blob = $repository->getBlob('master:test_file4.txt')->output();
-        $this->assertEquals('Your mother is so ugly, glCullFace always returns TRUE.', $blob);
+        $this->assertEquals(self::CONTENTS, $blob);
     }
 
     public function testIsGettingSymlinksWithinTrees()
@@ -431,14 +433,14 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
     {
         $repository = $this->client->getRepositoryCached(self::$tmpdir, 'testrepo');
         $blame = $repository->getBlame('test_file4.txt');
-        $this->assertEquals($blame[1]['line'], PHP_EOL . ' Your mother is so ugly, glCullFace always returns TRUE.');
+        $this->assertEquals($blame[1]['line'], PHP_EOL . ' ' . self::CONTENTS);
         $this->assertEquals($repository->getBlame('original_file.txt'), array());
     }
 
     public function testIsAddingFileNameWithSpace()
     {
         $repository = $this->client->getRepositoryCached(self::$tmpdir, 'testrepo');
-        file_put_contents(self::$tmpdir . '/testrepo/test file10.txt', 'Your mother is so ugly, glCullFace always returns TRUE.');
+        file_put_contents(self::$tmpdir . '/testrepo/test file10.txt', self::CONTENTS);
         $repository->add('test file10.txt');
 
         $this->assertRegExp("/new file:   test file10.txt/", $repository->getClient()->run($repository, 'status'));
@@ -451,7 +453,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('test file.txt', $diffs[0]->getFile(), 'New file name with a space in it');
         $this->assertEquals('testfile.txt', $diffs[1]->getFile(), 'Old file name');
-	}
+    }
 
     public function testFindNestedRepos()
     {
@@ -460,11 +462,12 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         $this->client->createRepository($nested_dir . '/nestedrepo');
         $all_repositories = $this->client->getRepositories(self::$tmpdir);
 
-		# Following will not work with cache list
+        # Following will not work with cache list
         #$nested_repositories = $this->client->getRepositories($nested_dir);
         #$this->assertCount(1, $nested_repositories, 'Only one nested repository');
 
-        $this->assertContains('nestedrepo', array_keys($all_repositories), 'Nested repository is found in all repositories');
+        $this->assertContains('nestedrepo', array_keys($all_repositories),
+                'Nested repository is found in all repositories');
     }
 
     public static function tearDownAfterClass()
@@ -494,3 +497,4 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         );
     }
 }
+

@@ -35,6 +35,7 @@ class Client
             $finder = new ExecutableFinder();
             $options['path'] = $finder->find('git', '/usr/bin/git');
         }
+
         $this->setPath($options['path']);
         $this->setHidden((isset($options['hidden'])) ? $options['hidden'] : array());
 
@@ -43,19 +44,18 @@ class Client
     }
 
 
-    private function handleCached() {
-        if ( $this->checkCached( $this->inifile, $this->cached_repos ) ) {
-            // Retrieve cache  
-            $file = @file_get_contents($this->cached_repos);  
+    private function handleCached()
+    {
+        if ($this->checkCached($this->inifile, $this->cached_repos)) {
+            # Retrieve cache
+            $file = @file_get_contents($this->cached_repos);
 
             $repos = array();
-            if ( false !== $file ) {
-                $repos = json_decode($file, TRUE);
+            if (false !== $file) {
+                $repos = json_decode($file, true);
              }
 
-#var_dump( $repos);
-
-            $this->setRepositories( $repos ); 
+            $this->setRepositories($repos);
             return $repos;
         } else {
             return null;
@@ -66,20 +66,18 @@ class Client
      * @return true if dst present and older than src, false otherwise
      *
      */
-    public function checkCached( $src, $dst ) {
+    public function checkCached($src, $dst)
+    {
         # Can happen during unit tests!
-        if ( !file_exists( $src ) ) {
-            #echo "src $src does not exist.";
+        if (!file_exists($src)) {
             return true;
         }
 
-        if ( !file_exists( $dst ) ) {
-            #echo "dst $dst does not exist.";
+        if (!file_exists($dst)) {
             return false;
         }
 
-        if (  filemtime ( $src ) > filemtime ( $dst ) ) {
-            #echo "src $src newer than dst $dst.";
+        if (filemtime($src) > filemtime($dst)) {
             return false;
         }
 
@@ -103,10 +101,8 @@ class Client
 
         $retval = $repository->create($bare);
 
-        # createRepository() appears to be only called in unit test.
-        # For this reason, the (second) param savefile is always set to false.
-        # TODO: Check if assumption is valid.
-        $this->addRepository( $path, true );
+        # NOTE: createRepository() appears to be only called in unit test.
+        $this->addRepository($path, true);
 
         return $retval;
     }
@@ -125,11 +121,11 @@ class Client
     {
         $repositories = $this->getRepositories($paths);
 
-        if ( !isset( $repositories[ $repo ] ) ) {
+        if (!isset($repositories[$repo])) {
             throw new \RuntimeException("Repository $repo not in the cache list");
         }
 
-        $path = $repositories[ $repo ]['path'];
+        $path = $repositories[$repo]['path'];
 
         if (in_array($path, $this->getHidden())) {
             throw new \RuntimeException('You don\'t have access to this repository');
@@ -149,10 +145,10 @@ class Client
      *
      * It will be regenerated on the next call to gitlist.
      */
-    public function deleteCached() {
-
-        if ( $this->cached_repos != null ) {
-            unlink( $this->cached_repos );
+    public function deleteCached()
+    {
+        if ($this->cached_repos != null) {
+            unlink($this->cached_repos);
         }
     }
 
@@ -163,38 +159,39 @@ class Client
      * get saved to the cache file. This is useful for running the
      * unit tests.
      */
-    private function addRepository( $inPath, $savefile = true ) {
-        if ( !is_array( $inPath ) ) {
+    private function addRepository($inPath, $savefile = true)
+    {
+        if (!is_array($inPath)) {
             $paths = array($inPath);
         }
 
         # Check given path for repo's
         $newRepos = array();
 
-        foreach( $paths  as $path ) {
+        foreach($paths  as $path) {
             # TODO: check what happens if multiple similar paths are merged.
             $this->recurseDirectory($newRepos, $path);
         }
 
-        if ( count( $newRepos ) > 0 ) {
-            $repos = $this->getRepositories( null );
+        if (count($newRepos) > 0) {
+            $repos = $this->getRepositories(null);
 
             # Detect new repo's
             # NOTE: This will not detect new repo's with same
             #       name as previous repo.
             $changed = false;
-            foreach ( $newRepos as $repoName => $newRepo ) {
-                if ( !isset( $repos[ $repoName] ) ) {
+            foreach ($newRepos as $repoName => $newRepo) {
+                if (!isset($repos[ $repoName])) {
                     $changed = true;
                     break;
                 }
             }
 
-            $repos = array_merge( $repos, $newRepos );
+            $repos = array_merge( $repos, $newRepos);
 
             # Save changes if specified and possible
-            if ( $changed && $savefile && ( $this->cached_repos != null ) ) {
-                file_put_contents($this->cached_repos, json_encode($repos));  
+            if ($changed && $savefile && ( $this->cached_repos != null )) {
+                file_put_contents($this->cached_repos, json_encode($repos));
             }
 
             $this->repositories = $repos;
@@ -209,17 +206,17 @@ class Client
      *
      * @return array  Found repositories, containing their name, path and description
      */
-    public function getRepositories($paths ) {
-
+    public function getRepositories($paths)
+    {
         # If repo list already loaded, use that.
         $repos = $this->repositories;
 
-        if ( $repos == null ) {
+        if ($repos == null) {
             # Try loading from cache
             $repos = $this->handleCached();
         }
 
-        if ( $repos != null ) {
+        if ($repos != null) {
             ksort($repos);
             return $repos;
         }
@@ -227,18 +224,18 @@ class Client
         $repos = array();
 
         # If no paths specified, don't bother searching them
-        if ( $paths == null ) return $repos;
+        if ($paths == null) return $repos;
 
 
         #
         # No cache file either, create repo list from scratch
         #
 
-        if ( !is_array( $paths ) ) {
+        if (!is_array($paths)) {
             $paths = array($paths);
         }
 
-        foreach( $paths  as $path ) {
+        foreach($paths  as $path) {
             # TODO: check what happens if multiple similar paths are merged.
             $this->recurseDirectory($repos, $path);
         }
@@ -250,7 +247,7 @@ class Client
         ksort($repos);
 
         // Store to cache file, if possible
-        if ( $this->cached_repos ) {
+        if ($this->cached_repos) {
             file_put_contents($this->cached_repos, json_encode($repos));
         }
 
@@ -260,17 +257,15 @@ class Client
     }
 
 
-    public function setRepositories( $repositories ) {
-        #echo "called setRepositories.";
-        #var_dump( $this->repositories);
+    public function setRepositories($repositories)
+    {
         $this->repositories = $repositories;
-
-
     }
 
 
-    private static function endsWith( $str, $test ) {
-        return ( substr_compare($str, $test, -strlen($test), strlen($test)) === 0 );
+    private static function endsWith($str, $test)
+    {
+        return (substr_compare($str, $test, -strlen($test), strlen($test)) === 0);
     }
 
 
@@ -281,25 +276,26 @@ class Client
     # a test can be performed on too many repo's. This is a way of putting
     # a limit on recursion.
     #
-    private function recurseDirectory(&$repositories, $path) {
-        if ( count( $repositories ) > self::MAX_REPOS ) {
+    private function recurseDirectory(&$repositories, $path)
+    {
+        if (count($repositories) > self::MAX_REPOS) {
             echo "Too many repo's found, not recursing further.\n";
             return;
         }
 
         # Paranoia check; don't recurse into git directories
-        if ( self::endsWith( $path, ".git") || self::endsWith( $path, "HEAD") ) {
+        if (self::endsWith($path, ".git") || self::endsWith($path, "HEAD")) {
             #echo "Not doing git directories!\n";
             return;
         }
 
-        if ( (in_array($path, $this->getHidden())) ) { 
+        if (in_array($path, $this->getHidden())) {
             #echo "Skipping configured hidden.";
             return;
         }
 
         $dir = new \DirectoryIterator($path);
-    
+
         $isRepository = false;
         $isBare = false;
         $cur_path = "";
@@ -309,12 +305,12 @@ class Client
         foreach ($dir as $file) {
             $filename = $file->getFilename();
 
-            if (!$file->isDir()) continue; 
-            if ( !$file->isReadable() ) continue;
-            if ( $filename === "..") continue;   # Skip parent
-            if ( (in_array($file->getPathname(), $this->getHidden())) ) continue;  # Skip files configured as hidden
+            if (!$file->isDir()) continue;
+            if (!$file->isReadable()) continue;
+            if ($filename === "..") continue;   # Skip parent
+            if ((in_array($file->getPathname(), $this->getHidden()))) continue;  # Skip files configured as hidden
 
-            if ( $filename === ".") {
+            if ($filename === ".") {
                 $isBare = file_exists($file->getPathname() . '/HEAD');
                 $isRepository = file_exists($file->getPathname() . '/.git/HEAD');
                 $cur_path = $file->getPathname();
@@ -322,7 +318,7 @@ class Client
                 continue;
             }
 
-            # Skip hidden files & dir's 
+            # Skip hidden files & dir's
             if (strrpos($file->getFilename(), '.') === 0) {
                 continue;
             }
@@ -330,12 +326,12 @@ class Client
             $recurse [] = $file->getPathname();
         }
 
-         if ( $isRepository || $isBare ) {
+        if ($isRepository || $isBare) {
 
-            $tmp = array_reverse( explode(DIRECTORY_SEPARATOR, rtrim($path, DIRECTORY_SEPARATOR) ));
+            $tmp = array_reverse(explode(DIRECTORY_SEPARATOR, rtrim($path, DIRECTORY_SEPARATOR)));
             $filename = $tmp[0];
             # Pathological case: '/' was defined as root
-            if ( $filename == '' ) $filename = 'root';
+            if ( $filename == '') $filename = 'root';
 
             if ($isBare) {
                 $description = $cur_path . '/description';
@@ -356,17 +352,19 @@ class Client
                 'path' => $cur_path,
                 'description' => $description
             );
-        } 
+        }
 
         foreach ($recurse as $item) {
-            $this->recurseDirectory($repositories, $item );
+            $this->recurseDirectory($repositories, $item);
         }
     }
 
 
     public function run($repository, $command)
     {
-        $process = new Process($this->getPath() . ' -c "color.ui"=false ' . $command, $repository->getPath());
+        $full_cmd = $this->getPath() . ' -c "color.ui"=false ' . $command;
+
+        $process = new Process($full_cmd, $repository->getPath());
         $process->setTimeout(180);
         $process->run();
 
@@ -376,6 +374,7 @@ class Client
 
         return $process->getOutput();
     }
+
 
     /**
      * Get the current Git binary path
@@ -421,3 +420,4 @@ class Client
         return $this;
     }
 }
+

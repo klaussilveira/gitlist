@@ -10,8 +10,8 @@ use GitterTestCase;
 class ClientTest extends \PHPUnit_Framework_TestCase
 {
     public static $tmpdir;
-    protected $client;
     protected static $cached_repos;
+    protected $client;
 
     public static function setUpBeforeClass()
     {
@@ -46,8 +46,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $options = array(
             'path' => getenv('GIT_CLIENT') ?: null,
             'hidden' => array(self::$tmpdir . '/hiddenrepo'),
-			'ini.file' => 'config.ini',
-        	'cache.repos' =>  self::$cached_repos
+            'ini.file' => 'config.ini',
+            'cache.repos' =>  self::$cached_repos
         );
         $this->client = new Client($options);
     }
@@ -147,3 +147,4 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $fs->remove(self::$tmpdir);
     }
 }
+
