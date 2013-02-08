@@ -46,7 +46,7 @@ class MainController implements ControllerProviderInterface
                 'authors'         => $authors,
             ));
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
-          ->assert('branch', '[\w-._\/]+')
+          ->assert('branch', $app['util.routing']->getBranchRegex())
           ->value('branch', null)
           ->bind('stats');
 
@@ -62,7 +62,7 @@ class MainController implements ControllerProviderInterface
 
             return new Response($html, 200, array('Content-Type' => 'application/rss+xml'));
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
-          ->assert('branch', '[\w-._\/]+')
+          ->assert('branch', $app['util.routing']->getBranchRegex())
           ->bind('rss');
 
         return $route;
