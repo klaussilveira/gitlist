@@ -14,7 +14,7 @@
         </div>
         <div class="commit-body">
             <img src="https://gravatar.com/avatar/{{ commit.author.email | md5 }}?s=32" class="pull-left space-right" />
-            <span><a href="mailto:{{ commit.author.email }}">{{ commit.author.name }}</a> authored in {{ commit.date | date('d/m/Y \\a\\t H:i:s') }}<br />Showing {{ commit.changedFiles }} changed files</span>
+            <span><a href="mailto:{{ commit.author.email }}">{{ commit.author.name }}</a> authored on {{ commit.date | date('d/m/Y \\a\\t H:i:s') }}<br />Showing {{ commit.changedFiles }} changed files</span>
         </div>
     </div>
 
