@@ -13,11 +13,13 @@ class TreeController implements ControllerProviderInterface
     {
         $route = $app['controllers_factory'];
 
-        $route->get('{repo}/tree/{branch}/{tree}/', $treeController = function($repo, $branch = '', $tree = '') use ($app) {
+        $route->get('{repo}/tree/{commitish_path}/', $treeController = function($repo, $commitish_path = '') use ($app) {
             $repository = $app['git']->getRepository($app['git.repos'] . $repo);
-            if (!$branch) {
-                $branch = $repository->getHead();
+            if (!$commitish_path) {
+                $commitish_path = $repository->getHead();
             }
+
+            list($branch, $tree) = $app['util.routing']->parseCommitishPathParam($commitish_path, $repo);
 
             list($branch, $tree) = $app['util.repository']->extractRef($repository, $branch, $tree);
             $files = $repository->getTree($tree ? "$branch:\"$tree\"/" : $branch);
@@ -42,8 +44,7 @@ class TreeController implements ControllerProviderInterface
                 'readme'         => $app['util.repository']->getReadme($repo, $branch),
             ));
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
-          ->assert('branch', '[\w-._\/]+')
-          ->assert('tree', '.+')
+          ->assert('commitish_path', $app['util.routing']->getCommitishPathRegex())
           ->bind('tree');
 
         $route->post('{repo}/tree/{branch}/search', function(Request $request, $repo, $branch = '', $tree = '') use ($app) {

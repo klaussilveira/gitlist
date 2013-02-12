@@ -11,6 +11,20 @@ use Symfony\Component\Filesystem\Filesystem;
 class Repository extends BaseRepository
 {
     /**
+     * Return TRUE if the repo contains this commit.
+     *
+     * @param $commitHash Hash of commit whose existence we want to check
+     * @return boolean    Whether or not the commit exists in this repo
+     */
+    public function hasCommit($commitHash)
+    {
+        $logs = $this->getClient()->run($this, "show $commitHash");
+        $logs = explode("\n", $logs);
+
+        return strpos($logs[0], 'commit') === 0;
+    }
+
+    /**
      * Show the data from a specific commit
      *
      * @param  string $commitHash Hash of the specific commit to read data
@@ -312,5 +326,24 @@ class Repository extends BaseRepository
         $fs = new Filesystem;
         $fs->mkdir(dirname($output));
         $this->getClient()->run($this, "archive --format=$format --output=$output $tree");
+    }
+
+    /**
+     * Return TRUE if $path exists in $branch; return FALSE otherwise.
+     *
+     * @param string $commitish Commitish reference; branch, tag, SHA1, etc.
+     * @param string $path Path whose existence we want to verify.
+     *
+     * GRIPE Arguably belongs in Gitter, as it's generally useful functionality.
+     * Also, this really may not be the best way to do this.
+     */
+    public function pathExists($commitish, $path) {
+        $output = $this->getClient()->run($this, "ls-tree $commitish $path");
+
+        if (strlen($output) > 0) {
+            return TRUE;
+        }
+
+        return FALSE;
     }
 }

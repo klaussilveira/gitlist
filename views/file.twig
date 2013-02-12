@@ -12,9 +12,9 @@
             <div class="meta"></div>
 
             <div class="btn-group pull-right">
-                <a href="{{ path('blob_raw', {repo: repo, branch: branch, file: file}) }}" class="btn btn-small"><i class="icon-file"></i> Raw</a>
-                <a href="{{ path('blame', {repo: repo, branch: branch, file: file}) }}" class="btn btn-small"><i class="icon-bullhorn"></i> Blame</a>
-                <a href="{{ path('commits', {repo: repo, branch: branch, file: file}) }}" class="btn btn-small"><i class="icon-list-alt"></i> History</a>
+                <a href="{{ path('blob_raw', {repo: repo, commitish_path: branch ~ '/' ~ file}) }}" class="btn btn-small"><i class="icon-file"></i> Raw</a>
+                <a href="{{ path('blame', {repo: repo, branch_file: branch ~ '/' ~ file}) }}" class="btn btn-small"><i class="icon-bullhorn"></i> Blame</a>
+                <a href="{{ path('commits', {repo: repo, commitish_path: branch ~ '/' ~ file}) }}" class="btn btn-small"><i class="icon-list-alt"></i> History</a>
             </div>
         </div>
         {% if fileType == 'image' %}
