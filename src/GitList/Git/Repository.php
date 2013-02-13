@@ -244,7 +244,7 @@ class Repository extends BaseRepository
 
     public function getCommitStatistics()
     {
-        $logs = $this->getClient()->run($this, 'log --pretty=format:"%an||%ae||%ct" ' . $this->getHead());
+        $logs = $this->getClient()->run($this, 'log --pretty=format:"%an||%ae||%ct" '.$this->getHead());
 
         if (empty($logs)) {
             throw new \RuntimeException('No statistics available');
@@ -253,19 +253,23 @@ class Repository extends BaseRepository
         $data = array();
         $dt   = new DateTime();
 
-        foreach(explode("\n", $logs) as $line ) {
-            list( $author, $email, $epoch ) = explode('||', $line);
-            $dt->setTimestamp( $epoch );
+        foreach (explode("\n", $logs) as $line ) {
+            list($author, $email, $epoch) = explode('||', $line);
+            $dt->setTimestamp($epoch);
 
             /* define keys ... */
-            if(!isset($data['by_author'][$author][$email]['total']))
+            if (!isset($data['by_author'][$author][$email]['total'])) {
                 $data['by_author'][$author][$email]['total'] = 0;
-            if(!isset($data['by_author'][$author][$email][$dt->format('Y')][$dt->format('n')][$dt->format('j')]))
+            }
+            if (!isset($data['by_author'][$author][$email][$dt->format('Y')][$dt->format('n')][$dt->format('j')])) {
                 $data['by_author'][$author][$email][$dt->format('Y')][$dt->format('n')][$dt->format('j')] = 0;
-            if(!isset($data['by_date'][$dt->format('Y')][$dt->format('n')]['total']))
+            }
+            if (!isset($data['by_date'][$dt->format('Y')][$dt->format('n')]['total'])) {
                 $data['by_date'][$dt->format('Y')][$dt->format('n')]['total'] = 0;
-            if(!isset($data['by_date'][$dt->format('Y')][$dt->format('n')][$dt->format('j')]))
+            }
+            if (!isset($data['by_date'][$dt->format('Y')][$dt->format('n')][$dt->format('j')])) {
                 $data['by_date'][$dt->format('Y')][$dt->format('n')][$dt->format('j')] = 0;
+            }
 
             /* author specific stats */
             $data['by_author'][$author][$email]['total']++;

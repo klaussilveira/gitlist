@@ -38,7 +38,8 @@ class MainController implements ControllerProviderInterface
             $commits = $repository->getCommitStatistics();
 
             $authors = array();
-            /* split commit stats in something we can easily access in the templates */
+            /* split commit stats in something we can easily access in the
+               templates */
             foreach ( $commits['by_author'] as $author => $emails ) {
                 foreach ( $emails as $email => $user_commits ) {
                     $authors[] = array(
@@ -48,7 +49,12 @@ class MainController implements ControllerProviderInterface
                     );
                 }
             }
-            usort($authors, function($a, $b){ return $a['commits'] < $b['commits']; });
+            usort(
+                $authors,
+                function ($a, $b) {
+                    return $a['commits'] < $b['commits'];
+                }
+            );
             ksort($commits['by_date']);
 
             return $app['twig']->render('stats.twig', array(
@@ -60,7 +66,8 @@ class MainController implements ControllerProviderInterface
                 'authors'        => $authors,
                 'commits'        => $commits['by_date'],
                 'now'            => array( date('Y'), date('m') ),
-            ));
+                )
+            );
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
           ->assert('branch', '[\w-._\/]+')
           ->value('branch', null)
