@@ -39,10 +39,8 @@ class MainController implements ControllerProviderInterface
 
             $authors = array();
             /* split commit stats in something we can easily access in the templates */
-            foreach ( $commits['by_author'] as $author => $emails )
-            {
-                foreach ( $emails as $email => $user_commits )
-                {
+            foreach ( $commits['by_author'] as $author => $emails ) {
+                foreach ( $emails as $email => $user_commits ) {
                     $authors[] = array(
                         'name'    => $author,
                         'email'   => $email,
