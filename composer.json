@@ -4,16 +4,23 @@
         "twig/twig": "1.9.*",
         "symfony/twig-bridge": "2.1.*",
         "symfony/filesystem": "2.1.*",
-        "klaussilveira/gitter": "dev-master"
+        "klaussilveira/gitter": "dev-fix-get-branches"
     },
     "require-dev": {
         "symfony/browser-kit": "2.1.*",
-        "symfony/css-selector": "2.1.*"
+        "symfony/css-selector": "2.1.*",
+        "phpunit/phpunit": "3.7.*"
     },
     "minimum-stability": "dev",
     "autoload": {
         "psr-0": {
             "GitList": "src/"
         }
-    }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/NateEag/gitter.git"
+        }
+    ]
 }

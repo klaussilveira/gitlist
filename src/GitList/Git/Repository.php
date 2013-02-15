@@ -25,6 +25,16 @@ class Repository extends BaseRepository
     }
 
     /**
+     * Get the current branch, returning a default value when HEAD is detached.
+     */
+    public function getHead()
+    {
+        $client = $this->getClient();
+
+        return parent::getHead($client->getDefaultBranch());
+    }
+
+    /**
      * Show the data from a specific commit
      *
      * @param  string $commitHash Hash of the specific commit to read data

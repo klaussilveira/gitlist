@@ -52,6 +52,11 @@ class MainController implements ControllerProviderInterface
 
         $route->get('{repo}/{branch}/rss/', function($repo, $branch) use ($app) {
             $repository = $app['git']->getRepository($app['git.repos'] . $repo);
+
+            if ($branch === null) {
+                $branch = $repository->getHead();
+            }
+
             $commits = $repository->getPaginatedCommits($branch);
 
             $html = $app['twig']->render('rss.twig', array(
@@ -63,6 +68,7 @@ class MainController implements ControllerProviderInterface
             return new Response($html, 200, array('Content-Type' => 'application/rss+xml'));
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
           ->assert('branch', $app['util.routing']->getBranchRegex())
+          ->value('branch', null)
           ->bind('rss');
 
         return $route;
