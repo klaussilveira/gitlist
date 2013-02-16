@@ -8,7 +8,10 @@
     },
     "require-dev": {
         "symfony/browser-kit": "2.1.*",
-        "symfony/css-selector": "2.1.*"
+        "symfony/css-selector": "2.1.*",
+        "phpunit/phpunit": "3.7.*",
+        "phpmd/phpmd": "1.4.0",
+        "phploc/phploc": "1.7.4"
     },
     "minimum-stability": "dev",
     "autoload": {
