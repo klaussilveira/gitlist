@@ -1,5 +1,5 @@
 {
-    "hash": "5d551d4122f4c231acabf1d23b1c4458",
+    "hash": "23b42eb82a97fc586f9c703879c08ac9",
     "packages": [
         {
             "name": "klaussilveira/gitter",
@@ -711,23 +711,23 @@
         },
         {
             "name": "phpmd/phpmd",
-            "version": "1.4.0",
+            "version": "1.4.1",
             "source": {
                 "type": "git",
                 "url": "git://github.com/phpmd/phpmd.git",
-                "reference": "1.4.0"
+                "reference": "1.4.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/phpmd/phpmd/zipball/1.4.0",
-                "reference": "1.4.0",
+                "url": "https://github.com/phpmd/phpmd/archive/1.4.1.zip",
+                "reference": "1.4.1",
                 "shasum": ""
             },
             "require": {
                 "pdepend/pdepend": "*",
                 "php": ">=5.3.0"
             },
-            "time": "2012-09-07 14:52:24",
+            "time": "2012-12-14 12:25:09",
             "bin": [
                 "src/bin/phpmd"
             ],
