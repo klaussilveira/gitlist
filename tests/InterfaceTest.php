@@ -95,6 +95,16 @@ class InterfaceTest extends WebTestCase
         $repository->setConfig('user.email', 'luke@rebel.org');
         $repository->addAll();
         $repository->commit("Initial commit");
+
+        // Detached HEAD repository fixture
+        $git->createRepository(self::$tmpdir . 'detached-head');
+        $repository = $git->getRepository(self::$tmpdir . '/detached-head');
+        $repository->setConfig('user.name', 'Luke Skywalker');
+        $repository->setConfig('user.email', 'luke@rebel.org');
+        file_put_contents(self::$tmpdir . 'detached-head/README.md', "## detached head\ndetached-head is a *test* repository!");
+        $repository->addAll();
+        $repository->commit("First commit");
+        $repository->checkout('HEAD');
     }
 
     public function createApplication()
@@ -126,8 +136,8 @@ class InterfaceTest extends WebTestCase
         $this->assertEquals('/nested/NestedRepo/master/rss/', $crawler->filter('.repository-header a')->eq(3)->attr('href'));
         $this->assertCount(1, $crawler->filter('div.repository-header:contains("foobar")'));
         $this->assertCount(1, $crawler->filter('div.repository-body:contains("This is a test repo!")'));
-        $this->assertEquals('/foobar/', $crawler->filter('.repository-header a')->eq(6)->attr('href'));
-        $this->assertEquals('/foobar/master/rss/', $crawler->filter('.repository-header a')->eq(7)->attr('href'));
+        $this->assertEquals('/foobar/', $crawler->filter('.repository-header a')->eq(8)->attr('href'));
+        $this->assertEquals('/foobar/master/rss/', $crawler->filter('.repository-header a')->eq(9)->attr('href'));
     }
 
     public function testRepositoryPage()
