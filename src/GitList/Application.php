@@ -38,9 +38,10 @@ class Application extends SilexApplication
             'twig.options'    => array('cache' => $root . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'views'),
         ));
         $this->register(new GitServiceProvider(), array(
-            'git.client'      => $config->get('git', 'client'),
-            'git.repos'       => $config->get('git', 'repositories'),
-            'git.hidden'      => $config->get('git', 'hidden') ? $config->get('git', 'hidden') : array(),
+            'git.client'         => $config->get('git', 'client'),
+            'git.repos'          => $config->get('git', 'repositories'),
+            'git.hidden'         => $config->get('git', 'hidden') ? $config->get('git', 'hidden') : array(),
+            'git.default_branch' => $config->get('git', 'default_branch') ? $config->get('git', 'default_branch') : 'master',
         ));
         $this->register(new ViewUtilServiceProvider());
         $this->register(new RepositoryUtilServiceProvider());
