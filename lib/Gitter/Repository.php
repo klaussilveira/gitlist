@@ -165,13 +165,20 @@ class Repository
         $branches = explode("\n", $branches);
         $branches = array_filter(preg_replace('/[\*\s]/', '', $branches));
 
+        // Since we've stripped whitespace, the result "* (no branch)"
+        // that is displayed in detached HEAD state becomes "(nobranch)".
+        if ($branches[0] === "(nobranch)") {
+            $branches = array_slice($branches, 1);
+        }
+
         return $branches;
     }
 
     /**
-     * Show the current repository branch
+     * Return the current repository branch
      *
-     * @return string Current repository branch
+     * @return mixed Current repository branch as a string, or NULL if in
+     * detached HEAD state.
      */
     public function getCurrentBranch()
     {
@@ -179,7 +186,11 @@ class Repository
         $branches = explode("\n", $branches);
 
         foreach ($branches as $branch) {
-            if ($branch[0] == '*') {
+            if ($branch[0] === '*') {
+                if ($branch === '* (no branch)') {
+                    return NULL;
+                }
+
                 return substr($branch, 2);
             }
         }
@@ -398,16 +409,20 @@ class Repository
     /**
      * Get the current HEAD.
      *
-     * @return string the name of the HEAD branch.
+     * @return string the name of the HEAD branch, or a backup option if
+     * in detached HEAD state.
+     *
+     * @param $default
+     * Optional branch to default to if in detached HEAD state. If not passed,
+     * just grabs the first branch listed.
      */
-    public function getHead()
+    public function getHead($default=NULL)
     {
+        $file = '';
         if (file_exists($this->getPath() . '/.git/HEAD')) {
             $file = file_get_contents($this->getPath() . '/.git/HEAD');
         } elseif (file_exists($this->getPath() . '/HEAD')) {
             $file = file_get_contents($this->getPath() . '/HEAD');
-        } else {
-            return 'master';
         }
 
         // Find first existing branch
@@ -420,13 +435,19 @@ class Repository
             }
         }
 
-        // Default to something sane if in a detached HEAD state.
+        // If we were given a default branch and it exists, return that.
+        if ($default !== NULL && $this->hasBranch($default)) {
+            return $default;
+        }
+
+        // Otherwise, return the first existing branch.
         $branches = $this->getBranches();
         if (!empty($branches)) {
             return current($branches);
         }
 
-        return 'master';
+        // No branches exist - NULL is the best we can do in this case.
+        return NULL;
     }
 
     /**

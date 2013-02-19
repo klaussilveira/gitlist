@@ -163,6 +163,28 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         $repository = $this->client->getRepository(self::$tmpdir . '/testrepo');
         $branch = $repository->getCurrentBranch();
         $this->assertTrue($branch === 'master');
+
+        $commits = $repository->getCommits();
+        $hash = $commits[0]->getHash();
+        $repository->checkout($hash);
+        $new_branch = $repository->getCurrentBranch();
+        $this->assertTrue($new_branch === NULL);
+
+        $repository->checkout($branch);
+    }
+
+    public function testIsGettingBranchesWhenHeadIsDetached()
+    {
+        $repository = $this->client->getRepository(self::$tmpdir . '/testrepo');
+        $commits = $repository->getCommits();
+        $current_branch = $repository->getCurrentBranch();
+        $hash = $commits[0]->getHash();
+        $repository->checkout($hash);
+        $branches = $repository->getBranches();
+        $this->assertTrue(count($branches) === 3);
+
+        $branch = $repository->getHead('develop');
+        $repository->checkout($current_branch);
     }
 
     public function testIsCheckingIfBranchExists()
