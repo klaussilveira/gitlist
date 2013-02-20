@@ -16,7 +16,7 @@ $ make build_rpm
 
 ### Not Ready (Comming soon)
 
-* Packages to install configuration files:
+Packages to install configuration files:
 
 * make apache_deb
 * make apache_rpm
