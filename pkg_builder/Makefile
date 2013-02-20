@@ -2,12 +2,15 @@
 NAME = gitlist
 DESCRIPTION = "An elegant and modern git repository viewer"
 LICENSE = New BSD
+GROUP = gitlist
+VENDOR = gitlist.org
+URL = "http://www.gitlist.org"
 
 #BUILD Info
 PREFIX = /usr/share
 PROJROOT = "$(shell pwd)"
 SRCROOT = "$(shell pwd)/gitlist"
-UPSTREAM_VERSION = $(shell cat ${SRCROOT}/release.info | head -n1 | cut -d"=" -f2)
+UPSTREAM_VERSION = $(shell cat tools/release.info | head -n1 | cut -d"=" -f2)
 BUILD_STAMP = $(shell date +"%Y%m%d%H%M%S")
 
 #Packager Info
@@ -17,7 +20,7 @@ PACKAGER_MAIL = $(shell git config user.email)
 #Debian Package Info
 PACKAGE-VERSION= 1
 DEBIAN_BUILD_ROOT = ${PROJROOT}/debian/
-PROJECT_DEBIAN_LIKE_NAME=$(shell cat ${SRCROOT}/release.info | grep name | cut -d"=" -f2)
+PROJECT_DEBIAN_LIKE_NAME=$(shell cat tools/release.info | grep name | cut -d"=" -f2)
 DEBIAN_NAME=$(PROJECT_DEBIAN_LIKE_NAME)$(shell echo "_")$(UPSTREAM_VERSION)-${PACKAGE-VERSION}$(shell echo "_all.deb")
 DEBIAN_VERSION = 
 # Generating control file
@@ -65,132 +68,80 @@ md5sum_deb: copy_deb
 	@cd debian; find . -type f ! -regex '.*\.hg.*' ! -regex '.*?debian-binary.*' ! -regex '.*?DEBIAN.*' | xargs -d "\n" md5sum > DEBIAN/md5sums
 
 deb_uniq: md5sum_deb
-	@mkdir ${PROJROOT}/deb -p
+	@mkdir ${PROJROOT}/pkg -p
 	@dpkg -b debian $(DEBIAN_NAME);
-	@mv $(DEBIAN_NAME) ${PROJROOT}/deb/
+	@mv $(DEBIAN_NAME) ${PROJROOT}/pkg/
 	@rm debian -rf
-	@echo 'sucess?'
+	@echo '### Wrote $(DEBIAN_NAME) in ${PROJROOT}/pkg/ . . . . . Success'
 
 
 build_deb: deb_uniq
 
-#RPM_DIR = rpm
-#RPM_DIRS = SPECS RPMS SOURCES BUILD
-#
-#all: 	rpm
-#
-#init:	clean
-#	@echo Creating directories...
-#	@echo $(DIST_DIR)
-#	@mkdir -p $(DIST_DIR)
-#	@for dir in $(RPM_DIRS); do \
-#		echo $(RPM_DIR)/$$dir; \
-#		mkdir -p $(RPM_DIR)/$$dir; \
-#	done
-#
-#preptar:init
-#	@echo Copying files to generate tar...
-#	@echo creating directory: $(TAR_DIR)/
-#	@mkdir $(TAR_DIR)/ -p
-#	@rsync -avz --exclude ".git" --exclude ".gitignore" --exclude "builder" ../ $(TAR_DIR)/
-#
-#tar:	preptar
-#	@echo Generating tarball...
-#	@cd $(PROJROOT)/$(TAR_DIR); \
-#		tar cf $(PROJROOT)/$(RPM_DIR)/SOURCES/$(NAME).tar .
-#
-#rpm:	tar
-#	@echo Calling rpmbuild...
-#	@echo Vesion: $(VERSION)
-#	@cp $(NAME).spec $(RPM_DIR)/SPECS/
-#
-#	@cd $(PROJROOT)/$(RPM_DIR)/SPECS ; \
-#		rpmbuild -bb \
-#			--buildroot="$(PROJROOT)/$(RPM_DIR)/BUILD/$(NAME)" \
-#			--define "_topdir $(PROJROOT)/$(RPM_DIR)" \
-#			--define "name $(NAME)" \
-#			--define "prefixname $(PREFIX_NAME)" \
-#			--define "summary $(SUMMARY)" \
-#			--define "version $(VERSION)" \
-#			--define "release $(RELEASE)" \
-#			--define "url _$(URL)_" \
-#			--define "license $(LICENSE)" \
-#			--define "group $(GROUP)" \
-#			--define "vendor $(VENDOR)" \
-#			--define "packager $(PACKAGER)" \
-#			--define "prefix $(PREFIX)" \
-#			--define "source_dir $(PROJROOT)/$(RPM_DIR)/SOURCES" \
-#			$(NAME).spec
-#	@echo Copying generated RPM to dist dir...
-#	@cp $(PROJROOT)/$(RPM_DIR)/RPMS/noarch/*.rpm $(PROJROOT)/$(DIST_DIR)/
-#	@rm -rf $(TAR_DIR)
-#	@rm -rf $(RPM_DIR)
-#
-#clean:
-#	@echo Cleaning temporary dirs...
-#	@rm -rf $(TAR_DIR)
-#	@rm -rf $(RPM_DIR)
-#	@rm -rf $(DIST_DIR)
-#
-### Funções abaixo só serão utilizadas para gerar pacotes únicos de temas
-#
-#preptar_uniq: init
-#	@echo "############################### - INIT RPM"
-#	@echo Copying files to generate a unique theme tar...
-#	@echo creating directory: $(TAR_DIR)/
-#	@mkdir $(TAR_DIR)/ -p
-#	@rsync -avz --exclude ".git" --exclude ".gitignore" --exclude "builder" ../$(dirname) $(TAR_DIR)/
-#
-#tar_uniq:	preptar_uniq
-#	@echo Generating tarball...
-#	@cd $(PROJROOT)/$(TAR_DIR); \
-#		tar cf $(PROJROOT)/$(RPM_DIR)/SOURCES/$(fullname).tar $(dirname)
-#	
-#rpm_uniq:	tar_uniq
-#	@echo Calling rpmbuild...
-#	@echo Vesion: $(VERSION)
-#	@cp $(NAME).spec $(RPM_DIR)/SPECS/
-#
-#	@cd $(PROJROOT)/$(RPM_DIR)/SPECS ; \
-#		rpmbuild -bb \
-#			--buildroot="$(PROJROOT)/$(RPM_DIR)/BUILD/$(dirname)" \
-#			--define "_topdir $(PROJROOT)/$(RPM_DIR)" \
-#			--define "name $(fullname)" \
-#			--define "prefixname $(PREFIX_NAME)" \
-#			--define "summary $(SUMMARY)" \
-#			--define "version $(VERSION)" \
-#			--define "release $(RELEASE)" \
-#			--define "url _$(URL)_" \
-#			--define "license $(LICENSE)" \
-#			--define "group $(GROUP)" \
-#			--define "vendor $(VENDOR)" \
-#			--define "packager $(PACKAGER)" \
-#			--define "prefix $(PREFIX)" \
-#			--define "source_dir $(PROJROOT)/$(RPM_DIR)/SOURCES" \
-#			$(NAME).spec
-#	@echo Copying generated RPM to $(workspace)/rpm ....
-#	@mkdir $(workspace)/rpm -p
-#	@rm -rf $(workspace)/rpm/*
-#	@cp $(PROJROOT)/$(RPM_DIR)/RPMS/noarch/*.rpm $(workspace)/rpm/
-#	@rm -rf $(TAR_DIR)
-#	@rm -rf $(RPM_DIR)
-#
-#### DebianGen
-#
-#
+#### RPM STUFF
 
+RPM_NAME=$(PROJECT_DEBIAN_LIKE_NAME)$(shell echo "_")$(UPSTREAM_VERSION)-${PACKAGE-VERSION}$(shell echo "_all.rpm")
 
-#deb_uniq: md5sum_deb
-#	@mkdir $(workspace)/deb -p
-#	@rm -rf $(workspace)/deb/*
-#	@dpkg -b debian $(DEBIAN_NAME);
-#	@cp $(DEBIAN_NAME) $(workspace)/deb/
-#	@rm debian -rf
-#	@rm -rf $(PROJROOT)/*.deb
-#	@echo 'sucess?'
-#
-#deb_package: deb_uniq
-#
-#rpm_package: rpm_uniq
-#
-#build_pkgs: deb_uniq rpm_uniq
+DIST_DIR = dist
+TAR_DIR = tar
+
+RPM_DIR = rpm
+RPM_DIRS = SPECS RPMS SOURCES BUILD
+
+clean_rpm:
+	@echo Cleaning temporary dirs...
+	@rm -rf $(TAR_DIR)
+	@rm -rf $(RPM_DIR)
+	@rm -rf $(DIST_DIR)
+
+rpm_init:   clean_rpm
+	@echo Creating directories...
+	@echo $(DIST_DIR)
+	@mkdir -p $(DIST_DIR)
+	@for dir in $(RPM_DIRS); do \
+                echo $(RPM_DIR)/$$dir; \
+                mkdir -p $(RPM_DIR)/$$dir; \
+        done
+
+rpm_preptar:    rpm_init
+	@echo Copying files to generate tar...
+	@echo creating directory: $(TAR_DIR)/
+	@mkdir $(TAR_DIR)/ -p
+	@rsync -avz --exclude ".git" --exclude ".gitignore" --exclude "builder" gitlist $(TAR_DIR)/
+
+rpm_tar:    rpm_preptar
+	@echo Generating tarball...
+	@cd $(PROJROOT)/$(TAR_DIR); \
+                tar cf $(PROJROOT)/$(RPM_DIR)/SOURCES/$(NAME).tar .
+
+rpm:    rpm_tar
+	@echo Calling rpmbuild...
+	@echo Vesion: $(VERSION)
+	@cp tools/$(NAME).spec $(RPM_DIR)/SPECS/
+	
+	@cd $(PROJROOT)/$(RPM_DIR)/SPECS ; \
+                rpmbuild -bb \
+                        --buildroot="$(PROJROOT)/$(RPM_DIR)/BUILD/$(NAME)" \
+                        --define "_topdir $(PROJROOT)/$(RPM_DIR)" \
+                        --define "name $(NAME)" \
+                        --define "summary "$(DESCRIPTION)"" \
+                        --define "version $(UPSTREAM_VERSION)" \
+                        --define "release $(PACKAGE-VERSION)" \
+                        --define "url _$(URL)_" \
+                        --define "license $(LICENSE)" \
+                        --define "group $(GROUP)" \
+                        --define "vendor $(VENDOR)" \
+                        --define "packager $(PACKAGER)" \
+                        --define "prefix $(PREFIX)" \
+                        --define "source_dir $(PROJROOT)/$(RPM_DIR)/SOURCES" \
+                        $(NAME).spec
+	@echo Copying generated RPM to dist dir...
+	@mkdir ${PROJROOT}/pkg -p
+	@cp $(PROJROOT)/$(RPM_DIR)/RPMS/noarch/*.rpm $(PROJROOT)/pkg
+	@rm -rf $(TAR_DIR)
+	@rm -rf $(RPM_DIR)
+	@rm -rf $(DIST_DIR)
+
+		
+
+build_rpm: rpm
+
