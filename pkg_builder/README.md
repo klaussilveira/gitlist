@@ -17,12 +17,11 @@ $ make build_rpm
 ### Not Ready (Comming soon)
 
 * Packages to install configuration files:
-```
-$ make apache_deb
-$ make apache_rpm
-$ make nginx_deb
-$ make nginx_rpm
-```
+
+* make apache_deb
+* make apache_rpm
+* make nginx_deb
+* make nginx_rpm
 
 ## Dependencies
 
