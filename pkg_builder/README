@@ -1,0 +1,13 @@
+== Package Stuff documentation
+
+Core package is a simple source package while a configuration package requires all the dependencies.
+
+DONE ==
+Core RPM package
+Core DEB package
+
+TODO ===
+Apache Conf DEB package
+Nginx Conf DEB package
+Apache Conf RPM package
+Nginx Conf RPM package
