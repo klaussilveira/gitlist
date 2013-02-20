@@ -1,9 +1,37 @@
 # GitList Builder: Tools to build gitlist package
 
+## Status
+
+### Ready to build
+
+* Core Deb Packages:
+```
+$ make build_deb
+```
+
+* Core Rpm Packages:
+```
+$ make build_rpm
+```
+
+### Not Ready (Comming soon)
+
+* Packages to install configuration files:
+```
+$ make apache_deb
+$ make apache_rpm
+$ make nginx_deb
+$ make nginx_rpm
+```
+
 ## Dependencies
 
-To use this package builder you may need to install some development packages like: dpkg-dev or evem rpm.
+* To use this package builder you may need to install some development packages like: dpkg-dev or evem rpm;
+* A tarball of a stable release;
 
+## Instructions
+
+To use this builder just download the lastest stable release into this directory and build using the make functions avaible in make help
 
 ## How to build
 
@@ -17,15 +45,3 @@ $ make build_rpm
 ## Structure
 
 Core package is a simple source package while a configuration package requires all the dependencies.
-
-## ToDo
-
-DONE ==
-Core RPM package
-Core DEB package
-
-TODO ===
-Apache Conf DEB package
-Nginx Conf DEB package
-Apache Conf RPM package
-Nginx Conf RPM package
