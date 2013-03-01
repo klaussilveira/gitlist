@@ -3,13 +3,13 @@
     <channel>
         <title>Latest commits in {{ repo }}:{{ branch }}</title>
         <description>RSS provided by GitList</description>
-        <link>{{ path('homepage') }}</link>
+        <link>{{ url('homepage') }}</link>
 
         {% for commit in commits %}
         <item>
             <title>{{ commit.message }}</title>
             <description>{{ commit.author.name }} authored {{ commit.shortHash }} in {{ commit.date | date('d/m/Y \\a\\t H:i:s') }}</description>
-            <link>{{ path('commit', {repo: repo, commit: commit.hash}) }}</link>
+            <link>{{ url('commit', {repo: repo, commit: commit.hash}) }}</link>
             <pubDate>{{ commit.date | date('r') }}</pubDate>
         </item>
         {% endfor %}
