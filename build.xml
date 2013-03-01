@@ -75,9 +75,12 @@
     </target>
 
     <target name="package" description="Package the application for distribution">
+        <copy todir="${basedir}/build/gitlist/">
+            <fileset dir="${basedir}" excludes="build/**, tests/**, phpunit.xml.dist, cache.properties, .gitignore, .travis.yml, build.xml, composer.json, composer.lock, config.ini" />
+        </copy>
+
         <tar destfile="${basedir}/build/gitlist.tar.gz"
-            basedir="${basedir}/"
-            excludes="build/**, tests/**, phpunit.xml.dist, cache.properties, .gitignore, .travis.yml, build.xml, composer.json, composer.lock, config.ini"
+            basedir="${basedir}/build/"
             compression="gzip"
             longfile="gnu"
         />
