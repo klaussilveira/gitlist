@@ -7,10 +7,11 @@
 {% block content %}
     {% include 'breadcrumb.twig' with {breadcrumbs: [{dir: 'Statistics', path:''}]} %}
 
+    {% include 'stats_chart.twig' %}
     <table class="table table-striped table-bordered">
         <thead>
             <tr>
-                <th width="30%">File extensions ({{ stats.extensions|length }})</th>
+                <th width="30%">File extensions ({{ files.extensions|length }})</th>
                 <th width="40%">Authors ({{ authors|length }})</th>
                 <th width="30%">Other</th>
             </tr>
@@ -19,7 +20,7 @@
             <tr>
                 <td>
                     <ul>
-                    {% for ext, amount in stats.extensions %}
+                    {% for ext, amount in files.extensions %}
                         <li><strong>{{ ext }}</strong>: {{ amount }} files</li>
                     {% endfor %}
                     </ul>
@@ -27,17 +28,17 @@
                 <td>
                     <ul>
                     {% for author in authors %}
-                        <li><strong><a href="mailto:{{ author.email }}">{{ author.name }}</a></strong>: {{ author.commits }} commits</li>
+                        <li><strong><a href="mailto:{{ author.email }}">{{ author.name }}</a></strong>: {{ author.commits }} commit{% if author.commits > 1 %}s{% endif %}</li>
                     {% endfor %}
                     </ul>
                 </td>
                 <td>
                     <p>
-                        <strong>Total files:</strong> {{ stats.files }}
+                        <strong>Total files:</strong> {{ files.files }}
                     </p>
 
                     <p>
-                        <strong>Total bytes:</strong> {{ stats.size }} bytes ({{ ((stats.size / 1024) / 1024) | number_format }} MB)
+                        <strong>Total bytes:</strong> {{ files.size }} bytes ({{ ((files.size / 1024) / 1024) | number_format }} MB)
                     </p>
                 </td>
             </tr>

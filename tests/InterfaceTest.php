@@ -245,7 +245,7 @@ class InterfaceTest extends WebTestCase
         $this->assertRegexp('/.php: 1 files/', $crawler->filter('.table tbody')->eq(0)->text());
         $this->assertRegexp('/.md: 1 files/', $crawler->filter('.table tbody')->eq(0)->text());
         $this->assertRegexp('/Total files: 2/', $crawler->filter('.table tbody')->eq(0)->text());
-        $this->assertRegexp('/Luke Skywalker: 1 commits/', $crawler->filter('.table tbody')->eq(0)->text());
+        $this->assertRegexp('/Luke Skywalker: 1 commit/', $crawler->filter('.table tbody')->eq(0)->text());
     }
 
     public function testRssPage()

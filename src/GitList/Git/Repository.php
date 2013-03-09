@@ -7,6 +7,7 @@ use Gitter\Model\Commit\Commit;
 use Gitter\Model\Commit\Diff;
 use Gitter\PrettyFormat;
 use Symfony\Component\Filesystem\Filesystem;
+use DateTime;
 
 class Repository extends BaseRepository
 {
@@ -265,27 +266,49 @@ class Repository extends BaseRepository
         return $searchResults;
     }
 
-    public function getAuthorStatistics()
+    public function getCommitStatistics()
     {
-        $logs = $this->getClient()->run($this, 'log --pretty=format:"%an||%ae" ' . $this->getHead());
+        $logs = $this->getClient()->run($this, 'log --pretty=format:"%an||%ae||%ct" '.$this->getHead());
 
         if (empty($logs)) {
             throw new \RuntimeException('No statistics available');
         }
 
-        $logs = explode("\n", $logs);
-        $logs = array_count_values($logs);
-        arsort($logs);
+        $data = array();
+        $dt   = new DateTime();
 
-        foreach ($logs as $user => $count) {
-            $user = explode('||', $user);
-            $data[] = array('name' => $user[0], 'email' => $user[1], 'commits' => $count);
+        foreach (explode("\n", $logs) as $line ) {
+            list($author, $email, $epoch) = explode('||', $line);
+            $dt->setTimestamp($epoch);
+
+            /* define keys ... */
+            if (!isset($data['by_author'][$author][$email]['total'])) {
+                $data['by_author'][$author][$email]['total'] = 0;
+            }
+            if (!isset($data['by_author'][$author][$email][$dt->format('Y')][$dt->format('n')][$dt->format('j')])) {
+                $data['by_author'][$author][$email][$dt->format('Y')][$dt->format('n')][$dt->format('j')] = 0;
+            }
+            if (!isset($data['by_date'][$dt->format('Y')][$dt->format('n')]['total'])) {
+                $data['by_date'][$dt->format('Y')][$dt->format('n')]['total'] = 0;
+            }
+            if (!isset($data['by_date'][$dt->format('Y')][$dt->format('n')][$dt->format('j')])) {
+                $data['by_date'][$dt->format('Y')][$dt->format('n')][$dt->format('j')] = 0;
+            }
+
+            /* author specific stats */
+            $data['by_author'][$author][$email]['total']++;
+            $data['by_author'][$author][$email][$dt->format('Y')][$dt->format('n')][$dt->format('j')]++;
+
+            /* total stats */
+            $data['by_date'][$dt->format('Y')][$dt->format('n')]['total']++;
+            $data['by_date'][$dt->format('Y')][$dt->format('n')][$dt->format('j')]++;
+
         }
 
         return $data;
     }
 
-    public function getStatistics($branch)
+    public function getFileStatistics($branch)
     {
         // Calculate amount of files, extensions and file size
         $logs = $this->getClient()->run($this, 'ls-tree -r -l ' . $branch);
