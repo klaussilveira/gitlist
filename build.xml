@@ -39,9 +39,7 @@
         <exec executable="phploc">
             <arg value="--log-csv" />
             <arg value="${basedir}/build/logs/phploc.csv" />
-            <arg value="--exclude" />
-            <arg value="${basedir}/cache,${basedir}/vendor" />
-            <arg path="${basedir}/" />
+            <arg path="${basedir}/src" />
         </exec>
     </target>
 
@@ -51,19 +49,17 @@
             <arg value="--jdepend-chart=${basedir}/build/pdepend/dependencies.svg" />
             <arg value="--overview-pyramid=${basedir}/build/pdepend/overview-pyramid.svg" />
             <arg value="--ignore=${basedir}/cache,${basedir}/vendor" />
-            <arg path="${basedir}/" />
+            <arg path="${basedir}/src" />
         </exec>
     </target>
 
     <target name="phpmd" description="Perform project mess detection using PHPMD creating a log file for the continuous integration server">
         <exec executable="phpmd">
-            <arg path="${basedir}/" />
+            <arg path="${basedir}/src" />
             <arg value="xml" />
             <arg value="codesize,design,unusedcode,naming" />
             <arg value="--reportfile" />
             <arg value="${basedir}/build/logs/pmd.xml" />
-            <arg value="--exclude" />
-            <arg value="${basedir}/cache,${basedir}/vendor" />
         </exec>
     </target>
 
@@ -71,9 +67,7 @@
         <exec executable="phpcpd">
             <arg value="--log-pmd" />
             <arg value="${basedir}/build/logs/pmd-cpd.xml" />
-            <arg value="--exclude" />
-            <arg value="${basedir}/cache,${basedir}/vendor" />
-            <arg path="${basedir}/" />
+            <arg path="${basedir}/src" />
         </exec>
     </target>
 
