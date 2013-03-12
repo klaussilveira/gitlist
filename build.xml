@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="gitlist" default="build">
-    <target name="build" depends="prepare,lint,phploc,pdepend,phpmd,phpcpd,phpunit,package" />
+    <target name="build" depends="prepare,lint,phploc,pdepend,phpmd,phpcpd,phpunit" />
+    <target name="build-package" depends="prepare-package,lint,phploc,pdepend,phpmd,phpcpd,phpunit,package" />
 
     <target name="clean" description="Clean build artifacts">
         <delete dir="${basedir}/build"/>
@@ -12,6 +13,14 @@
         <exec executable="composer" failonerror="true">
             <arg value="install" />
             <arg value="--dev" />
+        </exec>
+    </target>
+
+    <target name="prepare-package" depends="clean" description="Prepare for build">
+        <mkdir dir="${basedir}/build/logs"/>
+        <mkdir dir="${basedir}/build/pdepend"/>
+        <exec executable="composer" failonerror="true">
+            <arg value="install" />
         </exec>
     </target>
 
