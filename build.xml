@@ -17,8 +17,6 @@
     </target>
 
     <target name="prepare-package" depends="clean" description="Prepare for build">
-        <mkdir dir="${basedir}/build/logs"/>
-        <mkdir dir="${basedir}/build/pdepend"/>
         <exec executable="composer" failonerror="true">
             <arg value="install" />
         </exec>
@@ -85,7 +83,7 @@
 
     <target name="package" description="Package the application for distribution">
         <copy todir="${basedir}/build/gitlist/">
-            <fileset dir="${basedir}" excludes="build/**, tests/**, phpunit.xml.dist, cache.properties, .gitignore, .travis.yml, build.xml, composer.json, composer.lock, config.ini" />
+            <fileset dir="${basedir}" excludes="build/**, tests/**, pkg_builder/**, phpunit.xml.dist, cache.properties, .gitignore, .travis.yml, build.xml, composer.json, composer.lock, config.ini" />
         </copy>
 
         <tar destfile="${basedir}/build/gitlist.tar.gz"
