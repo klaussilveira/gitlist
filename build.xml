@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="gitlist" default="build">
     <target name="build" depends="prepare,lint,phploc,pdepend,phpmd,phpcpd,phpunit" />
-    <target name="build-package" depends="prepare-package,lint,phploc,pdepend,phpmd,phpcpd,phpunit,package" />
+    <target name="build-package" depends="prepare-package,lint,phploc,package" />
 
     <target name="clean" description="Clean build artifacts">
         <delete dir="${basedir}/build"/>
