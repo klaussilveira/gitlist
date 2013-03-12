@@ -4,7 +4,7 @@
         "twig/twig": "1.9.*",
         "symfony/twig-bridge": "2.1.*",
         "symfony/filesystem": "2.1.*",
-        "klaussilveira/gitter": "dev-fix-get-branches"
+        "klaussilveira/gitter": "dev-master"
     },
     "require-dev": {
         "symfony/browser-kit": "2.1.*",
@@ -18,11 +18,5 @@
         "psr-0": {
             "GitList": "src/"
         }
-    },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/NateEag/gitter.git"
-        }
-    ]
+    }
 }
