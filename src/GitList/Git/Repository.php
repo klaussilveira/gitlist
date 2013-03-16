@@ -194,7 +194,7 @@ class Repository extends BaseRepository
     {
         $page = 15 * $page;
         $pager = "--skip=$page --max-count=15";
-        $command = "log $pager --pretty=format:\"<item><hash>%H</hash><short_hash>%h</short_hash><tree>%T</tree><parent>%P</parent><author>%an</author><author_email>%ae</author_email><date>%at</date><commiter>%cn</commiter><commiter_email>%ce</commiter_email><commiter_date>%ct</commiter_date><message><![CDATA[%s]]></message></item>\"";
+        $command = "log $pager --pretty=format:\"<item><hash>%H</hash><short_hash>%h</short_hash><tree>%T</tree><parents>%P</parents><author>%an</author><author_email>%ae</author_email><date>%at</date><commiter>%cn</commiter><commiter_email>%ce</commiter_email><commiter_date>%ct</commiter_date><message><![CDATA[%s]]></message></item>\"";
 
         if ($file) {
             $command .= " $file";
@@ -218,7 +218,7 @@ class Repository extends BaseRepository
     public function searchCommitLog($query)
     {
         $query = escapeshellarg($query);
-        $command = "log --grep={$query} --pretty=format:\"<item><hash>%H</hash><short_hash>%h</short_hash><tree>%T</tree><parent>%P</parent><author>%an</author><author_email>%ae</author_email><date>%at</date><commiter>%cn</commiter><commiter_email>%ce</commiter_email><commiter_date>%ct</commiter_date><message><![CDATA[%s]]></message></item>\"";
+        $command = "log --grep={$query} --pretty=format:\"<item><hash>%H</hash><short_hash>%h</short_hash><tree>%T</tree><parents>%P</parents><author>%an</author><author_email>%ae</author_email><date>%at</date><commiter>%cn</commiter><commiter_email>%ce</commiter_email><commiter_date>%ct</commiter_date><message><![CDATA[%s]]></message></item>\"";
 
         try {
             $logs = $this->getPrettyFormat($command);
