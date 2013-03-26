@@ -13,10 +13,18 @@ $( function() {
 	}
 
 	var
-	commitsTable = $('table.network-graph').first(),
-	commitsDirectory = {};
 
-	var url = commitsTable.data('source');
+	cfg = {
+		laneColors: ['#ff0000', '#0000FF', '#00FFFF', '#00FF00', '#FFFF00', '#ff00ff'],
+		laneWidth: 10,
+		dotRadius: 3,
+		rowHeight: 42 // thanks for making this divisable by two
+	},
+
+	// the table element into which we will render our graph
+	commitsTable = $('table.network-graph').first(),
+	commitsDirectory = {},
+	url = commitsTable.data('source');
 
 	$.ajax({
 		dataType: "json",
@@ -52,39 +60,9 @@ $( function() {
 		graphContainer.html('It seems as though there are no commits in this repository / branch...');
 	}
 
-	var xOffset = 10;
-/*	function renderGraphPart( commit, row ) {
-		if ( typeof commit === 'string' ) {
-			commit = commits[commit];
-			if( !commit) {
-				// this commit is not part of the plot data
-				console.log('found out-of bound commit', commit);
-				return;
-			}
-		}
-
-		row = row || 0;
-		if( row > 0 ) console.log('row', row);
-		if( !commit.hasOwnProperty('dot') ) {
-			commit.dot = r.circle( xOffset, (row * 10) + 10 , 3 );
-			commit.dot.attr({'fill': getColorForRow(row), 'stroke':'none'});
-			commit.dot.data('commit', commit);
-			commit.dot.click( dotClickHandler );
-
-			if( commit.parentsHash.length > 0 ) {
-				xOffset = xOffset + 20;
-			}
-			$.each(commit.parentsHash, function( index, value ) {
-				// increase the Y offset
-
-				renderGraphPart( value, row+index );
-			});
-		}
-	}
-	*/
-
-
-	var parentsBeingWaitedFor = {};
+	var parentsBeingWaitedFor = {},
+		occupiedLanes = [],
+		maxLanes = 0;
 
 	function prepareCommits( commits ) {
 		$.each( commits, function ( index, commit) {
@@ -92,7 +70,7 @@ $( function() {
 		});
 	}
 
-	var occupiedLanes = [];
+
 
 	function findFreeLane() {
 		var i = 0;
@@ -126,10 +104,21 @@ $( function() {
 
 			// remove this item from parentsBeingWaitedFor
 			delete parentsBeingWaitedFor[commit.hash];
+			console.log('taking commit out', commit.hash, parentsBeingWaitedFor);
 		}
 
 		commit.isFork  = ( commit.children.length > 1 );
 		commit.isMerge = ( commit.parentsHash.length > 1 );
+
+
+
+		// after a fork, the occupied lanes must be cleaned up. The children used some lanes we no longer occupy
+		if (commit.isFork === true ) {
+			$.each( commit.children, function( key, thisChild ) {
+				console.log('Freeing lane ', thisChild.lane.number);
+				occupiedLanes[thisChild.lane.number] = false;
+			});
+		}
 
 		// find out which lane we're on. Start with a free one
 		var laneNumber = findFreeLane();
@@ -150,23 +139,10 @@ $( function() {
 
 		commit.lane = getLaneInfo( laneNumber );
 
-
-
-		// after a fork, the occupied lanes must be cleaned up. The children used some lanes we no longer occupy
-		if (commit.isFork === true ) {
-			$.each( commit.children, function( key, thisChild ) {
-				console.log('Freeing lane ', thisChild.lane.number);
-				occupiedLanes[thisChild.lane.number] = false;
-			});
-		}
 		// now the lane we chose must be marked occupied again.
-		console.log('Occupying lane ', commit.lane.number)
+		console.log('Occupying lane ', commit.lane.number);
 		occupiedLanes[commit.lane.number] = true;
-
-		// at this point, we know which lane we are on, and which lanes are occupied. store this info for
-		// later when we are rendering the "thru"-lines, i.e. those lines connecting two commits which are not on this
-		// commit's row
-		commit.occupiedLanes = occupiedLanes.slice();
+		maxLanes = Math.max( occupiedLanes.length, maxLanes);
 
 		// This commit's parents are not on stage yet, as we are rendering following the time line.
 		// Therefore we are registering this commit as "waiting" for each of the parent hashes
@@ -204,23 +180,14 @@ $( function() {
 
 		var tableRow = $('<tr></tr>');
 
-		var dotRadius = 3;
-		var rowHeight = 42; //c'mon, make this diviseable by 2, thanks
 		// the required canvas width is at least the lane center plus the radius - but that will be added later
-		var requiredCanvasWidth = commit.lane.centerX;
-		// now the parent with the highest lane number determines whether we need more space to the right...
-		$.each( commit.parents, function(idx, thisParent) {
-			requiredCanvasWidth = Math.max( requiredCanvasWidth, thisParent.lane.centerX );
-		});
-		$.each( commit.children, function(idx, thisChild) {
-			requiredCanvasWidth = Math.max( requiredCanvasWidth, thisChild.lane.centerX );
-		});
 
-		requiredCanvasWidth = requiredCanvasWidth + dotRadius;
+		// now the parent with the highest lane number determines whether we need more space to the right...
+
 
 		// build the table row and insert it, so we can find out the required height
-		var drawingArea = $('<td class="network-tree-segment"></td>');
-		tableRow.append(drawingArea);
+		var drawingArea = $('<div class="network-tree-segment"></div>');
+		tableRow.append( $('<td/>').append(drawingArea));
 		tableRow.append('<td>' + commit.date.toLocaleString() +'</td>');
 		tableRow.append('<td>' + commit.author.name + '</td>');
 		tableRow.append('<td>' + commit.message + '</td>');
@@ -229,10 +196,10 @@ $( function() {
 		commitsTable.append(tableRow);
 
 		// awesome, now we have the height!
-		var paper = Raphael( drawingArea[0], requiredCanvasWidth, rowHeight);
+		var paper = Raphael( drawingArea[0], cfg.laneWidth * maxLanes, cfg.rowHeight);
 		tableRow.data('rjsPaper', paper);
 
-		commit.dot = paper.circle( commit.lane.centerX, rowHeight/2, dotRadius );
+		commit.dot = paper.circle( commit.lane.centerX, cfg.rowHeight/2, cfg.dotRadius );
 		commit.dot.attr({
 			fill: commit.lane.color,
 			stroke: 'none'
@@ -240,32 +207,54 @@ $( function() {
 
 		// render the line from this commit to it's children, but on their lane
 		$.each( commit.children, function ( idx, thisChild ) {
-			// first draw the joint for this commit's child
-			console.log('BEFORE ERR', thisChild.lane);
-			paper.path( getSvgLineString( commit.lane.centerX, rowHeight/2, thisChild.lane.centerX, 0)).attr({
-				stroke: thisChild.lane.color, "stroke-width": 2
-			}).toBack();
 
-			// iterate up the commit table
-			var nRow = tableRow.prev('tr');
+			// for each child,
+			// move upwards in <tr>s, beginning from the "commit" (not: child!)
+			// until the tr.data('theCommit') is thisChild.
+			//
+			// if there is one child only, stay on the commit's lane as long as possible,
+			// but if there is more than one child, switch to the child's lane ASAP.
+			// this is to display merges and forks where they happen (ie. at a commit node/ a dot), rather than
+			// "forking" from a line
+
+			var nRow = tableRow.prev('tr'),
+				// lineX holds the X position the line will be on while it's straight
+				lineLane = commit.lane;
+
+			if( commit.isFork ) {
+				lineLane = thisChild.lane;
+			}
+
+			// before iterating upwards as described above, the line part from the commit to the adequate lane
+			// must be drawn
+			tableRow.data('rjsPaper').path(
+					getSvgLineString( commit.lane.centerX, cfg.rowHeight/2,
+						lineLane.centerX, 0) )
+				.attr({
+					stroke: lineLane.color, "stroke-width": 2
+				}).toBack();
+
 			while( nRow.length > 0 ) {
+
 				if ( nRow.data('theCommit') === thisChild ) {
-					// we are done, render only the bottom half line
+					// we are done, render only the bottom half line towards the child
+					// Starting at lineX, but moving to thisChild's lane.
 					nRow.data('rjsPaper')
 						.path(
-							getSvgLineString( thisChild.lane.centerX, rowHeight,
-											  thisChild.lane.centerX, rowHeight/2) )
+							getSvgLineString( lineLane.centerX, cfg.rowHeight,
+											  thisChild.lane.centerX, cfg.rowHeight/2) )
 						.attr({
-							stroke: thisChild.lane.color, "stroke-width": 2
+							stroke: lineLane.color, "stroke-width": 2
 						}).toBack();
 					return;
 				} else {
+					// this is just a common "throughput" line part from bottom of the TR to top without any X movement
 					nRow.data('rjsPaper')
 						.path(
-							getSvgLineString( thisChild.lane.centerX, rowHeight,
-								thisChild.lane.centerX, 0) )
+							getSvgLineString( lineLane.centerX, 0,
+											  lineLane.centerX, cfg.rowHeight) )
 						.attr({
-							stroke: thisChild.lane.color, "stroke-width": 2
+							stroke: lineLane.color, "stroke-width": 2
 						}).toBack();
 					nRow = nRow.prev('tr');
 				}
@@ -281,16 +270,11 @@ $( function() {
 		console.log(this.data('commit'));
 	}
 
-
-
-
 	function getLaneInfo( laneNumber ) {
-		var laneColors = ['#ff0000', '#0000FF', '#00FFFF', '#00FF00', '#FFFF00', '#ff00ff'];
-
 		return {
 			'number': laneNumber,
-			'centerX': ( laneNumber * 10 ) + 5,
-			'color': laneColors[ laneNumber % laneColors.length ]
+			'centerX': ( laneNumber * cfg.laneWidth ) + (cfg.laneWidth/2),
+			'color': cfg.laneColors[ laneNumber % cfg.laneColors.length ]
 		}
 	}
 
