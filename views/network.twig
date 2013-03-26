@@ -11,7 +11,7 @@
 			<div class="meta">Network Graph of {{ repo }} / {{ branch }}</div>
 		</div>
 
-		<table class="table-striped network-graph" data-source="{{ path('networkData', {repo: repo, branch: branch, page: 0}) }}">
+		<table class="table-striped network-graph" data-source="{{ path('networkData', {repo: repo, branch: branch}) }}">
 		{#<div class="network-graph" data-source="/dummynetwork.json">#}
 
 		</table>

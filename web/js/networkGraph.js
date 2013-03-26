@@ -23,33 +23,40 @@ $( function() {
 
 	// the table element into which we will render our graph
 	commitsTable = $('table.network-graph').first(),
-	commitsDirectory = {},
 	url = commitsTable.data('source');
 
-	$.ajax({
-		dataType: "json",
-		url: url,
-		success: handleNetworkDataLoaded,
-		error: handleNetworkDataError
-	});
+	function fetchCommitData( url ) {
+
+		$.ajax({
+			dataType: "json",
+			url: url,
+			success: handleNetworkDataLoaded,
+			error: handleNetworkDataError
+		});
+	}
+
+	// load initial data
+	fetchCommitData( url );
+
+	//only for debug purposes!!
+	var nextPage;
+	window.fcd = function () {
+		fetchCommitData(nextPage);
+	};
 
 	function handleNetworkDataLoaded( data ) {
+		console.log('Retreived Commit Data', data);
+
+		nextPage = data.nextPage;
 
 		// no commits or empty commits array? Well, we can't draw a graph of that
 		if( !data.commits || data.commits.length < 1 ) {
 			handleNoAvailableData();
 			return;
-		};
+		}
 
-		registerCommitsInDictionary( data.commits );
 		prepareCommits( data.commits );
 		renderCommits( data.commits );
-	}
-
-	function registerCommitsInDictionary( commits ) {
-		$.each(commits, function( index, commit ) {
-			commitsDirectory[ commit.hash ] = commit;
-		});
 	}
 
 	function handleNetworkDataError( err ){
@@ -57,7 +64,7 @@ $( function() {
 	}
 
 	function handleNoAvailableData() {
-		graphContainer.html('It seems as though there are no commits in this repository / branch...');
+		console.log('No Data available');
 	}
 
 	var parentsBeingWaitedFor = {},
@@ -69,8 +76,6 @@ $( function() {
 			prepareCommit( commit );
 		});
 	}
-
-
 
 	function findFreeLane() {
 		var i = 0;

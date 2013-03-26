@@ -40,13 +40,21 @@ class NetworkController implements ControllerProviderInterface
 				);
 			}
 
+			$nextPageUrl = null;
+			if ( $pager['last'] !== $pager['current'] ) {
+				$nextPageUrl = $app['url_generator']->generate('networkData', array( 'repo' => $repo,
+																					 'branch' => $branch,
+																					 'page' => $pager['next']));
+			}
+
 			return $app->json(array(
 				'repo'           => $repo,
 				'branch'         => $branch,
-				'nextPage'		 => $pager['last'] !== $pager['current'] ? $pager['next'] : null,
+				'nextPage'		 => $nextPageUrl,
 				'start'			 => $commits[0]->getHash(),
 				'commits'		 => $jsonFormattedCommits
 			), 200);
+
 		})->assert('repo', $app['util.routing']->getRepositoryRegex())
 			->assert('branch', $app['util.routing']->getBranchRegex())
 			->value('branch', null)
