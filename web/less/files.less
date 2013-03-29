@@ -160,31 +160,34 @@
   }
 }
 
+.readme-view {
+  border: 1px solid @treeHeaderBorder;
+}
+
 .md-view {
   width: 100%;
   margin-bottom: @baseLineHeight;
-  border: 1px solid @treeHeaderBorder;
+}
 
-  .md-header {
-    padding: 8px;
-    line-height: @baseLineHeight;
-    text-align: left;
-    vertical-align: bottom;
-    #gradient > .vertical(@treeHeaderHighlight, @treeHeader);
-    border-bottom: 1px solid lighten(@treeHeaderBorder, 5%);
-    font-weight: bold;
-    color: @gray;
-    text-shadow: 1px 1px 1px rgba(255,255,255,1);
-    height:28px;
-    .meta {
-      float: left;
-      padding: 4px 0;
-      font-size: 14px;
-    }
+.md-header {
+  padding: 8px;
+  line-height: @baseLineHeight;
+  text-align: left;
+  vertical-align: bottom;
+  #gradient > .vertical(@treeHeaderHighlight, @treeHeader);
+  border-bottom: 1px solid lighten(@treeHeaderBorder, 5%);
+  font-weight: bold;
+  color: @gray;
+  text-shadow: 1px 1px 1px rgba(255,255,255,1);
+  height:28px;
+  .meta {
+    float: left;
+    padding: 4px 0;
+    font-size: 14px;
   }
+}
 
-  #md-content {
-    padding: 30px;
-    color: @black;
-  }
+#md-content {
+  padding: 30px;
+  color: @black;
 }
