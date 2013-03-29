@@ -6,11 +6,13 @@ class Config
 {
     protected $data;
 
-    public static function fromFile($file) {
+    public static function fromFile($file)
+    {
         if (!file_exists($file)) {
             die(sprintf('Please, create the %1$s file.', $file));
         }
         $data = parse_ini_file($file, true);
+
         return new static($data);
     }
 

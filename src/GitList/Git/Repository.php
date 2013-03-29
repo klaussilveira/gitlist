@@ -11,10 +11,10 @@ use Symfony\Component\Filesystem\Filesystem;
 class Repository extends BaseRepository
 {
     /**
-     * Return TRUE if the repo contains this commit.
+     * Return true if the repo contains this commit.
      *
      * @param $commitHash Hash of commit whose existence we want to check
-     * @return boolean    Whether or not the commit exists in this repo
+     * @return boolean Whether or not the commit exists in this repo
      */
     public function hasCommit($commitHash)
     {
@@ -104,8 +104,8 @@ class Repository extends BaseRepository
     /**
      * Read diff logs and generate a collection of diffs
      *
-     * @param array $logs  Array of log rows
-     * @return array       Array of diffs
+     * @param  array $logs Array of log rows
+     * @return array Array of diffs
      */
     public function readDiffLogs(array $logs)
     {
@@ -313,7 +313,7 @@ class Repository extends BaseRepository
                 $data['size'] += $file[3];
             }
 
-            if (($pos = strrpos($file[4], '.')) !== FALSE) {
+            if (($pos = strrpos($file[4], '.')) !== false) {
                 $data['extensions'][] = substr($file[4], $pos);
             }
         }
@@ -339,21 +339,22 @@ class Repository extends BaseRepository
     }
 
     /**
-     * Return TRUE if $path exists in $branch; return FALSE otherwise.
+     * Return true if $path exists in $branch; return false otherwise.
      *
      * @param string $commitish Commitish reference; branch, tag, SHA1, etc.
-     * @param string $path Path whose existence we want to verify.
+     * @param string $path      Path whose existence we want to verify.
      *
      * GRIPE Arguably belongs in Gitter, as it's generally useful functionality.
      * Also, this really may not be the best way to do this.
      */
-    public function pathExists($commitish, $path) {
+    public function pathExists($commitish, $path)
+    {
         $output = $this->getClient()->run($this, "ls-tree $commitish $path");
 
         if (strlen($output) > 0) {
-            return TRUE;
+            return true;
         }
 
-        return FALSE;
+        return false;
     }
 }

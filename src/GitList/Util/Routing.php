@@ -1,6 +1,6 @@
 <?php
 
-namespace Gitlist\Util;
+namespace GitList\Util;
 
 use Silex\Application;
 
@@ -13,26 +13,27 @@ class Routing
         $this->app = $app;
     }
 
-    /* @brief Return $commitish, $path parsed from $commitish_path, based on
+    /* @brief Return $commitish, $path parsed from $commitishPath, based on
      * what's in $repo. Raise a 404 if $branchpath does not represent a
      * valid branch and path.
      *
      * A helper for parsing routes that use commit-ish names and paths
      * separated by /, since route regexes are not enough to get that right.
      */
-    public function parseCommitishPathParam($commitish_path, $repo) {
+    public function parseCommitishPathParam($commitishPath, $repo)
+    {
         $app = $this->app;
         $repository = $app['git']->getRepository($app['git.repos'] . $repo);
 
         $commitish = null;
         $path = null;
 
-        $slash_pos = strpos($commitish_path, '/');
-        if (strlen($commitish_path) >= 40 &&
-            ($slash_pos === FALSE ||
-             $slash_pos === 40)) {
+        $slashPosition = strpos($commitishPath, '/');
+        if (strlen($commitishPath) >= 40 &&
+            ($slashPosition === false ||
+             $slashPosition === 40)) {
             // We may have a commit hash as our commitish.
-            $hash = substr($commitish_path, 0, 40);
+            $hash = substr($commitishPath, 0, 40);
             if ($repository->hasCommit($hash)) {
                 $commitish = $hash;
             }
@@ -48,56 +49,57 @@ class Routing
                 $branches = array_merge($branches, $tags);
             }
 
-            $matched_branch = null;
-            $matched_branch_name_len = 0;
+            $matchedBranch = null;
+            $matchedBranchLength = 0;
             foreach ($branches as $branch) {
-                if (strpos($commitish_path, $branch) === 0 &&
-                    strlen($branch) > $matched_branch_name_len) {
-                    $matched_branch = $branch;
-                    $matched_branch_name_len = strlen($matched_branch);
+                if (strpos($commitishPath, $branch) === 0 &&
+                    strlen($branch) > $matchedBranchLength) {
+                    $matchedBranch = $branch;
+                    $matchedBranchLength = strlen($matchedBranch);
                 }
             }
 
-            $commitish = $matched_branch;
+            $commitish = $matchedBranch;
         }
 
         if ($commitish === null) {
-            $app->abort(404, "'$branch_path' does not appear to contain a " .
-                             "commit-ish for '$repo.'");
+            $app->abort(404, "'$branch_path' does not appear to contain a commit-ish for '$repo'.");
         }
 
-        $commitish_len = strlen($commitish);
-        $path = substr($commitish_path, $commitish_len);
+        $commitishLength = strlen($commitish);
+        $path = substr($commitishPath, $commitishLength);
         if (strpos($path, '/') === 0) {
             $path = substr($path, 1);
         }
 
-        $commit_has_path = $repository->pathExists($commitish, $path);
-        if ($commit_has_path !== TRUE) {
+        $commitHasPath = $repository->pathExists($commitish, $path);
+        if ($commitHasPath !== true) {
             $app->abort(404, "\"$path\" does not exist in \"$commitish\".");
         }
 
         return array($commitish, $path);
     }
 
-    public function getBranchRegex() {
-        static $branch_regex = null;
+    public function getBranchRegex()
+    {
+        static $branchRegex = null;
 
-        if ($branch_regex === null) {
-            $branch_regex = '[\w-._\/]+';
+        if ($branchRegex === null) {
+            $branchRegex = '[\w-._\/]+';
         }
 
-        return $branch_regex;
+        return $branchRegex;
     }
 
-    public function getCommitishPathRegex() {
-        static $commitish_path_regex = null;
+    public function getCommitishPathRegex()
+    {
+        static $commitishPathRegex = null;
 
-        if ($commitish_path_regex === null) {
-            $commitish_path_regex = '.+';
+        if ($commitishPathRegex === null) {
+            $commitishPathRegex = '.+';
         }
 
-        return $commitish_path_regex;
+        return $commitishPathRegex;
     }
 
     public function getRepositoryRegex()
@@ -112,7 +114,14 @@ class Routing
                 },
                 $this->app['git']->getRepositories($this->app['git.repos'])
             );
-            usort($quotedPaths, function ($a, $b) { return strlen($b) - strlen($a); });
+
+            usort(
+                $quotedPaths,
+                function ($a, $b) {
+                    return strlen($b) - strlen($a);
+                }
+            );
+
             $regex = implode('|', $quotedPaths);
         }
 
@@ -122,13 +131,14 @@ class Routing
     /**
      * Strips the base path from a full repository path
      *
-     * @param string $repoPath Full path to the repository
+     * @param  string $repoPath Full path to the repository
      * @return string Relative path to the repository from git.repositories
      */
     public function getRelativePath($repoPath)
     {
         if (strpos($repoPath, $this->app['git.repos']) === 0) {
             $relativePath = substr($repoPath, strlen($this->app['git.repos']));
+
             return ltrim(strtr($relativePath, '\\', '/'), '/');
         } else {
             throw new \InvalidArgumentException(
