@@ -13,6 +13,9 @@
             <h4>{{ commit.message }}</h4>
         </div>
         <div class="commit-body">
+            {% if commit.body is not empty %}
+            <p>{{ commit.body | nl2br }}</p>
+            {% endif %}
             <img src="https://gravatar.com/avatar/{{ commit.author.email | lower | md5 }}?s=32" class="pull-left space-right" />
             <span><a href="mailto:{{ commit.author.email }}">{{ commit.author.name }}</a> authored on {{ commit.date | date('d/m/Y \\a\\t H:i:s') }}<br />Showing {{ commit.changedFiles }} changed files</span>
         </div>
