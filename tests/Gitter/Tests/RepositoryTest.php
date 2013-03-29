@@ -133,8 +133,9 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
     public function testIsCommiting()
     {
         $repository = $this->client->getRepository(self::$tmpdir . '/testrepo');
-        $repository->commit("The truth unveiled");
+        $repository->commit("The truth unveiled\n\nThis is a proper commit body");
         $this->assertRegExp("/The truth unveiled/", $repository->getClient()->run($repository, 'log'));
+        $this->assertRegExp("/This is a proper commit body/", $repository->getClient()->run($repository, 'log'));
     }
 
     public function testIsCreatingBranches()
@@ -214,7 +215,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
 
         foreach ($commits as $commit) {
             $this->assertInstanceOf('Gitter\Model\Commit\Commit', $commit);
-            $this->assertEquals($commit->getMessage(), "The truth unveiled");
+            $this->assertEquals($commit->getMessage(), 'The truth unveiled');
             $this->assertInstanceOf('Gitter\Model\Commit\Author', $commit->getAuthor());
             $this->assertEquals($commit->getAuthor()->getName(), 'Luke Skywalker');
             $this->assertEquals($commit->getAuthor()->getEmail(), 'luke@rebel.org');
@@ -426,6 +427,10 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
             $this->assertRegExp('/[a-f0-9]+/', $singleCommit->getHash());
             $this->assertRegExp('/[a-f0-9]+/', $singleCommit->getShortHash());
             $this->assertRegExp('/[a-f0-9]+/', $singleCommit->getTreeHash());
+
+            if ($singleCommit->getMessage() == 'The truth unveiled') {
+                $this->assertEquals($singleCommit->getBody(), 'This is a proper commit body');
+            }
         }
     }
 
