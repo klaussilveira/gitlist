@@ -20,9 +20,9 @@ $(function () {
         });
     }
 
-    if ($('#readme-content').length) {
+    if ($('#md-content').length) {
         var converter = new Showdown.converter();
-        $('#readme-content').html(converter.makeHtml($('#readme-content').text()));
+        $('#md-content').html(converter.makeHtml($('#md-content').text()));
     }
 
     function paginate() {

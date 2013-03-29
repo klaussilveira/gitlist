@@ -32,7 +32,7 @@
                     {% if not parent %}
                         <a href="{{ path('branch', {repo: repo, branch: branch}) }}">..</a>
                     {% else %}
-                        <a href="{{ path('tree', {repo: repo, commitish_path: branch ~ '/' ~ parent}) }}">..</a>
+                        <a href="{{ path('tree', {repo: repo, commitishPath: branch ~ '/' ~ parent}) }}">..</a>
                     {% endif %}
                 </td>
                 <td></td>
@@ -43,9 +43,9 @@
             <tr>
                 <td><i class="{{ file.type == "folder" or file.type == "symlink" ? "icon-folder-open" : "icon-file" }} icon-spaced"></i> <a href="
                     {%- if file.type == "folder" or file.type == "symlink" -%}
-                        {{ path('tree', {repo: repo, commitish_path: branch ~ '/' ~ path ~ (file.type == "symlink" ? file.path : file.name)}) }}
+                        {{ path('tree', {repo: repo, commitishPath: branch ~ '/' ~ path ~ (file.type == "symlink" ? file.path : file.name)}) }}
                     {%- else -%}
-                        {{ path('blob', {repo: repo, commitish_path: branch ~ '/' ~ path ~ (file.type == "symlink" ? file.path : file.name)}) }}
+                        {{ path('blob', {repo: repo, commitishPath: branch ~ '/' ~ path ~ (file.type == "symlink" ? file.path : file.name)}) }}
                     {%- endif -%}
                 ">{{ file.name }}</a></td>
                 <td>{{ file.mode }}</td>
@@ -55,11 +55,11 @@
         </tbody>
     </table>
     {% if readme is defined and readme is not empty %}
-        <div class="readme-view">
-            <div class="readme-header">
+        <div class="md-view">
+            <div class="md-header">
                 <div class="meta">{{ readme.filename }}</div>
             </div>
-            <div id="readme-content">{{ readme.content }}</div>
+            <div id="md-content">{{ readme.content }}</div>
         </div>
     {% endif %}
 
