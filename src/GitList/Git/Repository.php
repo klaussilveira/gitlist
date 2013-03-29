@@ -349,7 +349,7 @@ class Repository extends BaseRepository
      */
     public function pathExists($commitish, $path)
     {
-        $output = $this->getClient()->run($this, "ls-tree $commitish $path");
+        $output = $this->getClient()->run($this, "ls-tree $commitish '$path'");
 
         if (strlen($output) > 0) {
             return true;
