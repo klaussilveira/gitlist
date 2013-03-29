@@ -133,7 +133,11 @@ class Client
 
     public function run($repository, $command)
     {
-        $process = new Process($this->getPath() . ' -c "color.ui"=false ' . $command, $repository->getPath());
+        if (version_compare($this->getVersion(), '1.7.2', '>=')) {
+            $command = '-c "color.ui"=false ' . $command;
+        }
+
+        $process = new Process($this->getPath() . ' ' . $command, $repository->getPath());
         $process->setTimeout(180);
         $process->run();
 
@@ -142,6 +146,19 @@ class Client
         }
 
         return $process->getOutput();
+    }
+
+    public function getVersion()
+    {
+        $process = new Process($this->getPath() . ' --version');
+        $process->run();
+
+        if (!$process->isSuccessful()) {
+            throw new \RuntimeException($process->getErrorOutput());
+        }
+
+        $version = substr($process->getOutput(), 12);
+        return trim($version);
     }
 
     /**

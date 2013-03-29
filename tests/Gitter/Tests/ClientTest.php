@@ -68,6 +68,12 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->client->getRepositories(self::$tmpdir);
     }
 
+    public function testIsParsingGitVersion()
+    {
+        $version = $this->client->getVersion();
+        $this->assertNotEmpty($version);
+    }
+
     public function testIsCreatingRepository()
     {
         $repository = $this->client->createRepository(self::$tmpdir . '/testrepo');
