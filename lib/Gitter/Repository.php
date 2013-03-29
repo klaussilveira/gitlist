@@ -395,7 +395,8 @@ class Repository
                 $lineNumOld++;
                 $lineNumNew++;
             }
-
+            
+            if($diff)
             $diff->addLine($log, $lineNumOld, $lineNumNew);
         }
 
