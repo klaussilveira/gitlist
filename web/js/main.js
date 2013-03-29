@@ -27,15 +27,16 @@ $(function () {
 
     function paginate() {
         var $pager = $('.pager');
+
         $pager.find('.next a').one('click', function (e) {
             e.preventDefault();
-            $(this).css('pointer-events', 'none');
             $.get(this.href, function (html) {
                 $pager.after(html);
                 $pager.remove();
                 paginate();
             });
         });
+
         $pager.find('.previous').remove();
     }
     paginate();
