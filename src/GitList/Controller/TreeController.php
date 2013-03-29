@@ -68,13 +68,13 @@ class TreeController implements ControllerProviderInterface
                 'tags'           => $repository->getTags(),
             ));
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
-          ->assert('branch', '[\w-._\/]+')
+          ->assert('branch', $app['util.routing']->getBranchRegex())
           ->bind('search');
 
         $route->get('{repo}/{branch}/', function ($repo, $branch) use ($app, $treeController) {
             return $treeController($repo, $branch);
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
-          ->assert('branch', '[\w-._\/]+')
+          ->assert('branch', $app['util.routing']->getBranchRegex())
           ->bind('branch');
 
         $route->get('{repo}/', function ($repo) use ($app, $treeController) {
@@ -111,7 +111,7 @@ class TreeController implements ControllerProviderInterface
             ));
         })->assert('format', '(zip|tar)')
           ->assert('repo', $app['util.routing']->getRepositoryRegex())
-          ->assert('branch', '[\w-._\/]+')
+          ->assert('branch', $app['util.routing']->getBranchRegex())
           ->bind('archive');
 
         return $route;

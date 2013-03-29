@@ -85,7 +85,7 @@ class Routing
         static $branchRegex = null;
 
         if ($branchRegex === null) {
-            $branchRegex = '[\w-._\/]+';
+            $branchRegex = '(?!/|.*([/.]\.|//|@\{|\\\\))[^\040\177 ~^:?*\[]+(?<!\.lock|[/.])';
         }
 
         return $branchRegex;
