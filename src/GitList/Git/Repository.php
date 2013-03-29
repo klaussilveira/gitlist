@@ -314,7 +314,11 @@ class Repository extends BaseRepository
             }
 
             if (($pos = strrpos($file[4], '.')) !== false) {
-                $data['extensions'][] = substr($file[4], $pos);
+                $extension = substr($file[4], $pos);
+
+                if (($pos = strrpos($extension, '/')) === false) {
+                    $data['extensions'][] = $extension;
+                }
             }
         }
 
