@@ -165,6 +165,10 @@ class Repository
         $branches = explode("\n", $branches);
         $branches = array_filter(preg_replace('/[\*\s]/', '', $branches));
 
+        if (empty($branches)) {
+            return $branches;
+        }
+
         // Since we've stripped whitespace, the result "* (no branch)"
         // that is displayed in detached HEAD state becomes "(nobranch)".
         if ($branches[0] === "(nobranch)") {
@@ -413,15 +417,13 @@ class Repository
 
     /**
      * Get the current HEAD.
-     *
+     * 
+     * @param $default Optional branch to default to if in detached HEAD state.
+     * If not passed, just grabs the first branch listed.
      * @return string the name of the HEAD branch, or a backup option if
      * in detached HEAD state.
-     *
-     * @param $default
-     * Optional branch to default to if in detached HEAD state. If not passed,
-     * just grabs the first branch listed.
      */
-    public function getHead($default=NULL)
+    public function getHead($default = null)
     {
         $file = '';
         if (file_exists($this->getPath() . '/.git/HEAD')) {
@@ -441,7 +443,7 @@ class Repository
         }
 
         // If we were given a default branch and it exists, return that.
-        if ($default !== NULL && $this->hasBranch($default)) {
+        if ($default !== null && $this->hasBranch($default)) {
             return $default;
         }
 
@@ -451,8 +453,8 @@ class Repository
             return current($branches);
         }
 
-        // No branches exist - NULL is the best we can do in this case.
-        return NULL;
+        // No branches exist - null is the best we can do in this case.
+        return null;
     }
 
     /**
