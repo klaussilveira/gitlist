@@ -11,10 +11,10 @@ use Symfony\Component\Filesystem\Filesystem;
 class Repository extends BaseRepository
 {
     /**
-     * Return TRUE if the repo contains this commit.
+     * Return true if the repo contains this commit.
      *
      * @param $commitHash Hash of commit whose existence we want to check
-     * @return boolean    Whether or not the commit exists in this repo
+     * @return boolean Whether or not the commit exists in this repo
      */
     public function hasCommit($commitHash)
     {
@@ -27,7 +27,7 @@ class Repository extends BaseRepository
     /**
      * Get the current branch, returning a default value when HEAD is detached.
      */
-    public function getHead()
+    public function getHead($default = null)
     {
         $client = $this->getClient();
 
@@ -42,12 +42,16 @@ class Repository extends BaseRepository
      */
     public function getCommit($commitHash)
     {
-        $logs = $this->getClient()->run($this, "show --pretty=format:\"<item><hash>%H</hash><short_hash>%h</short_hash><tree>%T</tree><parents>%P</parents><author>%an</author><author_email>%ae</author_email><date>%at</date><commiter>%cn</commiter><commiter_email>%ce</commiter_email><commiter_date>%ct</commiter_date><message><![CDATA[%s]]></message></item>\" $commitHash");
-        $logs = explode("\n", $logs);
+        $logs = $this->getClient()->run($this, "show --pretty=format:\"<item><hash>%H</hash><short_hash>%h</short_hash><tree>%T</tree><parents>%P</parents><author>%an</author><author_email>%ae</author_email><date>%at</date><commiter>%cn</commiter><commiter_email>%ce</commiter_email><commiter_date>%ct</commiter_date><message><![CDATA[%s]]></message><body><![CDATA[%b]]></body></item>\" $commitHash");
+        $xmlEnd = strpos($logs, '</item>') + 7;
+        $commitInfo = substr($logs, 0, $xmlEnd);
+        $commitData = substr($logs, $xmlEnd);
+        $logs = explode("\n", $commitData);
+        array_shift($logs);
 
         // Read commit metadata
         $format = new PrettyFormat;
-        $data = $format->parse($logs[0]);
+        $data = $format->parse($commitInfo);
         $commit = new Commit;
         $commit->importData($data[0]);
 
@@ -104,8 +108,8 @@ class Repository extends BaseRepository
     /**
      * Read diff logs and generate a collection of diffs
      *
-     * @param array $logs  Array of log rows
-     * @return array       Array of diffs
+     * @param  array $logs Array of log rows
+     * @return array Array of diffs
      */
     public function readDiffLogs(array $logs)
     {
@@ -313,8 +317,12 @@ class Repository extends BaseRepository
                 $data['size'] += $file[3];
             }
 
-            if (($pos = strrpos($file[4], '.')) !== FALSE) {
-                $data['extensions'][] = substr($file[4], $pos);
+            if (($pos = strrpos($file[4], '.')) !== false) {
+                $extension = substr($file[4], $pos);
+
+                if (($pos = strrpos($extension, '/')) === false) {
+                    $data['extensions'][] = $extension;
+                }
             }
         }
 
@@ -339,21 +347,22 @@ class Repository extends BaseRepository
     }
 
     /**
-     * Return TRUE if $path exists in $branch; return FALSE otherwise.
+     * Return true if $path exists in $branch; return false otherwise.
      *
      * @param string $commitish Commitish reference; branch, tag, SHA1, etc.
-     * @param string $path Path whose existence we want to verify.
+     * @param string $path      Path whose existence we want to verify.
      *
      * GRIPE Arguably belongs in Gitter, as it's generally useful functionality.
      * Also, this really may not be the best way to do this.
      */
-    public function pathExists($commitish, $path) {
-        $output = $this->getClient()->run($this, "ls-tree $commitish $path");
+    public function pathExists($commitish, $path)
+    {
+        $output = $this->getClient()->run($this, "ls-tree $commitish '$path'");
 
         if (strlen($output) > 0) {
-            return TRUE;
+            return true;
         }
 
-        return FALSE;
+        return false;
     }
 }

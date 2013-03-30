@@ -12,7 +12,7 @@ class MainController implements ControllerProviderInterface
     {
         $route = $app['controllers_factory'];
 
-        $route->get('/', function() use ($app) {
+        $route->get('/', function () use ($app) {
             $repositories = array_map(
                 function ($repo) use ($app) {
                     $repo['relativePath'] = $app['util.routing']->getRelativePath($repo['path']);
@@ -29,7 +29,7 @@ class MainController implements ControllerProviderInterface
             ));
         })->bind('homepage');
 
-        $route->get('{repo}/stats/{branch}', function($repo, $branch) use ($app) {
+        $route->get('{repo}/stats/{branch}', function ($repo, $branch) use ($app) {
             $repository = $app['git']->getRepository($app['git.repos'] . $repo);
             if ($branch === null) {
                 $branch = $repository->getHead();
@@ -43,14 +43,14 @@ class MainController implements ControllerProviderInterface
                 'branches'       => $repository->getBranches(),
                 'tags'           => $repository->getTags(),
                 'stats'          => $stats,
-                'authors'         => $authors,
+                'authors'        => $authors,
             ));
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
           ->assert('branch', $app['util.routing']->getBranchRegex())
           ->value('branch', null)
           ->bind('stats');
 
-        $route->get('{repo}/{branch}/rss/', function($repo, $branch) use ($app) {
+        $route->get('{repo}/{branch}/rss/', function ($repo, $branch) use ($app) {
             $repository = $app['git']->getRepository($app['git.repos'] . $repo);
 
             if ($branch === null) {

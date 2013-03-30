@@ -12,15 +12,15 @@ class CommitController implements ControllerProviderInterface
     {
         $route = $app['controllers_factory'];
 
-        $route->get('{repo}/commits/{commitish_path}', function($repo, $commitish_path) use ($app) {
+        $route->get('{repo}/commits/{commitishPath}', function ($repo, $commitishPath) use ($app) {
             $repository = $app['git']->getRepository($app['git.repos'] . $repo);
 
-            if ($commitish_path === null) {
-                $commitish_path = $repository->getHead();
+            if ($commitishPath === null) {
+                $commitishPath = $repository->getHead();
             }
 
             list($branch, $file) = $app['util.routing']
-                ->parseCommitishPathParam($commitish_path, $repo);
+                ->parseCommitishPathParam($commitishPath, $repo);
 
             list($branch, $file) = $app['util.repository']->extractRef($repository, $branch, $file);
 
@@ -48,11 +48,11 @@ class CommitController implements ControllerProviderInterface
                 'file'           => $file,
             ));
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
-          ->assert('commitish_path', $app['util.routing']->getCommitishPathRegex())
-          ->value('commitish_path', null)
+          ->assert('commitishPath', $app['util.routing']->getCommitishPathRegex())
+          ->value('commitishPath', null)
           ->bind('commits');
 
-        $route->post('{repo}/commits/{branch}/search', function(Request $request, $repo, $branch = '') use ($app) {
+        $route->post('{repo}/commits/{branch}/search', function (Request $request, $repo, $branch = '') use ($app) {
             $repository = $app['git']->getRepository($app['git.repos'] . $repo);
             $query = $request->get('query');
             $commits = $repository->searchCommitLog($query);
@@ -77,7 +77,7 @@ class CommitController implements ControllerProviderInterface
           ->assert('branch', $app['util.routing']->getBranchRegex())
           ->bind('searchcommits');
 
-        $route->get('{repo}/commit/{commit}', function($repo, $commit) use ($app) {
+        $route->get('{repo}/commit/{commit}', function ($repo, $commit) use ($app) {
             $repository = $app['git']->getRepository($app['git.repos'] . $repo);
             $commit = $repository->getCommit($commit);
             $branch = $repository->getHead();
@@ -91,11 +91,11 @@ class CommitController implements ControllerProviderInterface
           ->assert('commit', '[a-f0-9^]+')
           ->bind('commit');
 
-        $route->get('{repo}/blame/{commitish_path}', function($repo, $commitish_path) use ($app) {
+        $route->get('{repo}/blame/{commitishPath}', function ($repo, $commitishPath) use ($app) {
             $repository = $app['git']->getRepository($app['git.repos'] . $repo);
 
             list($branch, $file) = $app['util.routing']
-                ->parseCommitishPathParam($commitish_path, $repo);
+                ->parseCommitishPathParam($commitishPath, $repo);
 
             list($branch, $file) = $app['util.repository']->extractRef($repository, $branch, $file);
 
@@ -110,7 +110,7 @@ class CommitController implements ControllerProviderInterface
                 'blames'         => $blames,
             ));
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
-          ->assert('commitish_path', $app['util.routing']->getCommitishPathRegex())
+          ->assert('commitishPath', $app['util.routing']->getCommitishPathRegex())
           ->bind('blame');
 
         return $route;

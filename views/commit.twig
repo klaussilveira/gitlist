@@ -13,6 +13,9 @@
             <h4>{{ commit.message }}</h4>
         </div>
         <div class="commit-body">
+            {% if commit.body is not empty %}
+            <p>{{ commit.body | nl2br }}</p>
+            {% endif %}
             <img src="https://gravatar.com/avatar/{{ commit.author.email | lower | md5 }}?s=32" class="pull-left space-right" />
             <span><a href="mailto:{{ commit.author.email }}">{{ commit.author.name }}</a> authored on {{ commit.date | date('d/m/Y \\a\\t H:i:s') }}<br />Showing {{ commit.changedFiles }} changed files</span>
         </div>
@@ -30,8 +33,8 @@
             <div class="meta"><a name="{{ loop.index }}">{{ diff.file }}</div>
 
             <div class="btn-group pull-right">
-                <a href="{{ path('commits', {repo: repo, commitish_path: commit.hash ~ '/' ~ diff.file}) }}" class="btn btn-small"><i class="icon-list-alt"></i> History</a>
-                <a href="{{ path('blob', {repo: repo, commitish_path: commit.hash ~'/' ~ diff.file}) }}" class="btn btn-small"><i class="icon-file"></i> View file @ {{ commit.shortHash }}</a>
+                <a href="{{ path('commits', {repo: repo, commitishPath: commit.hash ~ '/' ~ diff.file}) }}" class="btn btn-small"><i class="icon-list-alt"></i> History</a>
+                <a href="{{ path('blob', {repo: repo, commitishPath: commit.hash ~'/' ~ diff.file}) }}" class="btn btn-small"><i class="icon-file"></i> View file @ {{ commit.shortHash }}</a>
             </div>
         </div>
 

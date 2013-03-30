@@ -12,11 +12,11 @@ class BlobController implements ControllerProviderInterface
     {
         $route = $app['controllers_factory'];
 
-        $route->get('{repo}/blob/{commitish_path}', function($repo, $commitish_path) use ($app) {
+        $route->get('{repo}/blob/{commitishPath}', function ($repo, $commitishPath) use ($app) {
             $repository = $app['git']->getRepository($app['git.repos'] . $repo);
 
             list($branch, $file) = $app['util.routing']
-                ->parseCommitishPathParam($commitish_path, $repo);
+                ->parseCommitishPathParam($commitishPath, $repo);
 
             list($branch, $file) = $app['util.repository']->extractRef($repository, $branch, $file);
 
@@ -43,14 +43,14 @@ class BlobController implements ControllerProviderInterface
                 'tags'           => $repository->getTags(),
             ));
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
-          ->assert('commitish_path', '.+')
+          ->assert('commitishPath', '.+')
           ->bind('blob');
 
-        $route->get('{repo}/raw/{commitish_path}', function($repo, $commitish_path) use ($app) {
+        $route->get('{repo}/raw/{commitishPath}', function ($repo, $commitishPath) use ($app) {
             $repository = $app['git']->getRepository($app['git.repos'] . $repo);
 
             list($branch, $file) = $app['util.routing']
-                ->parseCommitishPathParam($commitish_path, $repo);
+                ->parseCommitishPathParam($commitishPath, $repo);
 
             list($branch, $file) = $app['util.repository']->extractRef($repository, $branch, $file);
 
@@ -67,7 +67,7 @@ class BlobController implements ControllerProviderInterface
 
             return new Response($blob, 200, $headers);
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
-          ->assert('commitish_path', $app['util.routing']->getCommitishPathRegex())
+          ->assert('commitishPath', $app['util.routing']->getCommitishPathRegex())
           ->bind('blob_raw');
 
         return $route;
