@@ -237,7 +237,9 @@ $( function() {
 						lineLane.centerX, 0) )
 				.attr({
 					stroke: lineLane.color, "stroke-width": 2
-				}).toBack();
+				})
+				.data('theCommit', commit).data('theChild', thisChild).click(lineClickHandler)
+				.toBack();
 
 			while( nRow.length > 0 ) {
 
@@ -250,17 +252,23 @@ $( function() {
 											  thisChild.lane.centerX, cfg.rowHeight/2) )
 						.attr({
 							stroke: lineLane.color, "stroke-width": 2
-						}).toBack();
+						})
+						.data('theCommit', commit).data('theChild', thisChild).click(lineClickHandler)
+						.toBack();
 					return;
 				} else {
 					// this is just a common "throughput" line part from bottom of the TR to top without any X movement
+					//
+					// maybe the paper isn't big enough yet, so expand it first...
 					nRow.data('rjsPaper')
 						.path(
 							getSvgLineString( lineLane.centerX, 0,
 											  lineLane.centerX, cfg.rowHeight) )
 						.attr({
 							stroke: lineLane.color, "stroke-width": 2
-						}).toBack();
+						})
+						.data('theCommit', commit).data('theChild', thisChild).click(lineClickHandler)
+						.toBack();
 					nRow = nRow.prev('tr');
 				}
 			}
@@ -269,6 +277,21 @@ $( function() {
 
 	function getSvgLineString( fromX, fromY, toX, toY ) {
 		return 'M' + fromX + ',' + fromY + 'L' + toX + ',' + toY;
+	}
+
+	function lineClickHandler(evt) {
+		console.log('Hi, I am connecting', this.data('theCommit'), 'with', this.data('theChild'));
+
+		flashDot( this.data('theCommit').dot );
+		flashDot( this.data('theChild').dot );
+	}
+
+	function flashDot( dot ) {
+		var origCol = dot.attr('fill');
+		dot.attr('fill', '#00FF00');
+		dot.animate( {
+			'fill': origCol
+		}, 1000);
 	}
 
 	function dotClickHandler(evt) {
