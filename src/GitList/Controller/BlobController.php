@@ -59,10 +59,9 @@ class BlobController implements ControllerProviderInterface
             $headers = array();
             if ($app['util.repository']->isBinary($file)) {
                 $headers['Content-Disposition'] = 'attachment; filename="' .  $file . '"';
-                $headers['Content-Transfer-Encoding'] = 'application/octet-stream';
-                $headers['Content-Transfer-Encoding'] = 'binary';
+                $headers['Content-Type'] = 'application/octet-stream';
             } else {
-                $headers['Content-Transfer-Encoding'] = 'text/plain';
+                $headers['Content-Type'] = 'text/plain';
             }
 
             return new Response($blob, 200, $headers);
