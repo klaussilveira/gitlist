@@ -23,7 +23,7 @@ class Routing
     public function parseCommitishPathParam($commitishPath, $repo)
     {
         $app = $this->app;
-        $repository = $app['git']->getRepository($app['git.repos'] . $repo);
+        $repository = $app['git']->getRepository($app['git.repos'], $repo);
 
         $commitish = null;
         $path = null;
@@ -108,9 +108,15 @@ class Routing
 
         if ($regex === null) {
             $app = $this->app;
+            $self = $this;
             $quotedPaths = array_map(
-                function ($repo) use ($app) {
-                    return preg_quote($app['util.routing']->getRelativePath($repo['path']), '#');
+               function ($repo) use ($app, $self) {
+                    $repoName =  $repo['name'] ;
+                    //Windows
+                    if ($self->isWindows()){
+                       $repoName = str_replace('\\', '\\\\',$repoName);
+                    }
+                    return $repoName;
                 },
                 $this->app['git']->getRepositories($this->app['git.repos'])
             );
@@ -126,6 +132,17 @@ class Routing
         }
 
         return $regex;
+    }
+
+
+    public function isWindows()
+    {
+      switch(PHP_OS){
+        case  'WIN32':
+        case  'WINNT':
+        case  'Windows': return true;
+        default : return false;
+      }
     }
 
     /**
@@ -147,3 +164,4 @@ class Routing
         }
     }
 }
+

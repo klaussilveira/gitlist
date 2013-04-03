@@ -8,6 +8,7 @@ use Silex\ServiceProviderInterface;
 
 class GitServiceProvider implements ServiceProviderInterface
 {
+
     /**
      * Register the Git\Client on the Application ServiceProvider
      *
@@ -19,6 +20,8 @@ class GitServiceProvider implements ServiceProviderInterface
         $app['git'] = function () use ($app) {
             $options['path'] = $app['git.client'];
             $options['hidden'] = $app['git.hidden'];
+            $options['ini.file'] = $app['ini.file'];
+            $options['cache.repos'] = $app['cache.repos'];
             $options['default_branch'] = $app['git.default_branch'];
 
             return new Client($options);
@@ -29,3 +32,4 @@ class GitServiceProvider implements ServiceProviderInterface
     {
     }
 }
+
