@@ -13,6 +13,12 @@ class Config
         }
 
         $data = parse_ini_file($file, true);
+        
+        # Ensure that repositories item is an array
+        if (!is_array($data['git']['repositories'])) {
+            $data['git']['repositories'] = array($data['git']['repositories']);
+        }
+
         return new static($data);
     }
 
