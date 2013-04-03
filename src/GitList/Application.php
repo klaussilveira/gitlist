@@ -55,6 +55,7 @@ class Application extends SilexApplication
             'ini.file'        => "config.ini",
             'git.hidden'      => $config->get('git', 'hidden') ?
                                  $config->get('git', 'hidden') : array(),
+            'git.default_branch' => $config->get('git', 'default_branch') ? $config->get('git', 'default_branch') : 'master',
         ));
 
         $cached_repos = $root . DIRECTORY_SEPARATOR .
@@ -66,9 +67,8 @@ class Application extends SilexApplication
         $this->register(new UrlGeneratorServiceProvider());
         $this->register(new RoutingUtilServiceProvider());
 
-        $this['twig'] = $this->share($this->extend('twig', function($twig, $app) {
-            $twig->addFilter('htmlentities',
-                    new \Twig_Filter_Function('htmlentities'));
+        $this['twig'] = $this->share($this->extend('twig', function ($twig, $app) {
+            $twig->addFilter('htmlentities', new \Twig_Filter_Function('htmlentities'));
             $twig->addFilter('md5', new \Twig_Filter_Function('md5'));
 
             return $twig;

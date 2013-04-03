@@ -188,7 +188,7 @@ class Repository
      * @param  string                  $tree
      * @return array
      */
-    public function extractRef($repository, $branch='', $tree='')
+    public function extractRef($repository, $branch = '', $tree = '')
     {
         $branch = trim($branch, '/');
         $tree = trim($tree, '/');

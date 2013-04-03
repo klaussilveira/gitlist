@@ -6,6 +6,39 @@ use Gitter\Client as BaseClient;
 
 class Client extends BaseClient
 {
+    protected $default_branch;
+
+    public function __construct($options = null)
+    {
+        parent::__construct($options);
+
+        if (!isset($options['default_branch'])) {
+            $options['default_branch'] = 'master';
+        }
+
+        $this->setDefaultBranch($options['default_branch']);
+    }
+
+    /**
+     * Set default branch as a string.
+     *
+     * @param string $branch Name of branch to use when repo's HEAD is detached.
+     */
+    protected function setDefaultBranch($branch)
+    {
+        $this->default_branch = $branch;
+
+        return $this;
+    }
+
+    /**
+     * Return name of default branch as a string.
+     */
+    public function getDefaultBranch()
+    {
+        return $this->default_branch;
+    }
+
     /**
      * Creates a new repository on the specified path
      *

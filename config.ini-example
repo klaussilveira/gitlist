@@ -1,6 +1,7 @@
 [git]
 client = '/usr/bin/git' ; Your git executable path
 repositories = '/var/www/projects/' ; Path to your repositories
+default_branch = 'master' ; Default branch when HEAD is detached
 
 
 ;Windows Users

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="gitlist" default="build">
-    <target name="build" depends="prepare,lint,phploc,pdepend,phpmd,phpcpd,phpunit,package" />
+    <target name="build" depends="prepare,lint,phploc,pdepend,phpmd,phpcpd,phpunit" />
+    <target name="build-package" depends="prepare-package,lint,phploc,package" />
 
     <target name="clean" description="Clean build artifacts">
         <delete dir="${basedir}/build"/>
@@ -12,6 +13,12 @@
         <exec executable="composer" failonerror="true">
             <arg value="install" />
             <arg value="--dev" />
+        </exec>
+    </target>
+
+    <target name="prepare-package" depends="clean" description="Prepare for build">
+        <exec executable="composer" failonerror="true">
+            <arg value="install" />
         </exec>
     </target>
 
@@ -32,9 +39,7 @@
         <exec executable="phploc">
             <arg value="--log-csv" />
             <arg value="${basedir}/build/logs/phploc.csv" />
-            <arg value="--exclude" />
-            <arg value="${basedir}/cache,${basedir}/vendor" />
-            <arg path="${basedir}/" />
+            <arg path="${basedir}/src" />
         </exec>
     </target>
 
@@ -44,19 +49,17 @@
             <arg value="--jdepend-chart=${basedir}/build/pdepend/dependencies.svg" />
             <arg value="--overview-pyramid=${basedir}/build/pdepend/overview-pyramid.svg" />
             <arg value="--ignore=${basedir}/cache,${basedir}/vendor" />
-            <arg path="${basedir}/" />
+            <arg path="${basedir}/src" />
         </exec>
     </target>
 
     <target name="phpmd" description="Perform project mess detection using PHPMD creating a log file for the continuous integration server">
         <exec executable="phpmd">
-            <arg path="${basedir}/" />
+            <arg path="${basedir}/src" />
             <arg value="xml" />
             <arg value="codesize,design,unusedcode,naming" />
             <arg value="--reportfile" />
             <arg value="${basedir}/build/logs/pmd.xml" />
-            <arg value="--exclude" />
-            <arg value="${basedir}/cache,${basedir}/vendor" />
         </exec>
     </target>
 
@@ -64,9 +67,7 @@
         <exec executable="phpcpd">
             <arg value="--log-pmd" />
             <arg value="${basedir}/build/logs/pmd-cpd.xml" />
-            <arg value="--exclude" />
-            <arg value="${basedir}/cache,${basedir}/vendor" />
-            <arg path="${basedir}/" />
+            <arg path="${basedir}/src" />
         </exec>
     </target>
 
@@ -75,9 +76,12 @@
     </target>
 
     <target name="package" description="Package the application for distribution">
+        <copy todir="${basedir}/build/gitlist/">
+            <fileset dir="${basedir}" excludes="build/**, tests/**, pkg_builder/**, phpunit.xml.dist, cache.properties, .gitignore, .travis.yml, build.xml, composer.json, composer.lock, config.ini" />
+        </copy>
+
         <tar destfile="${basedir}/build/gitlist.tar.gz"
-            basedir="${basedir}/"
-            excludes="build/**, tests/**, phpunit.xml.dist, cache.properties, .gitignore, .travis.yml, build.xml, composer.json, composer.lock, config.ini"
+            basedir="${basedir}/build/"
             compression="gzip"
             longfile="gnu"
         />

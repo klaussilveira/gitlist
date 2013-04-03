@@ -12,8 +12,11 @@ class BlobController implements ControllerProviderInterface
     {
         $route = $app['controllers_factory'];
 
-        $route->get('{repo}/blob/{branch}/{file}', function($repo, $branch, $file) use ($app) {
+        $route->get('{repo}/blob/{commitishPath}', function ($repo, $commitishPath) use ($app) {
             $repository = $app['git']->getRepository($app['git.repos'], $repo);
+
+            list($branch, $file) = $app['util.routing']
+                ->parseCommitishPathParam($commitishPath, $repo);
 
             list($branch, $file) = $app['util.repository']->extractRef($repository, $branch, $file);
 
@@ -39,15 +42,18 @@ class BlobController implements ControllerProviderInterface
                 'branches'       => $repository->getBranches(),
                 'tags'           => $repository->getTags(),
             ));
-        })->assert('file', '.+')
-          ->assert('repo', $app['util.routing']->getRepositoryRegex())
-          ->assert('branch', '[\w-._\/]+')
+        })->assert('repo', $app['util.routing']->getRepositoryRegex())
+          ->assert('commitishPath', '.+')
           ->bind('blob');
 
-        $route->get('{repo}/raw/{branch}/{file}', function($repo, $branch, $file) use ($app) {
+        $route->get('{repo}/raw/{commitishPath}', function ($repo, $commitishPath) use ($app) {
             $repository = $app['git']->getRepository($app['git.repos'], $repo);
 
+            list($branch, $file) = $app['util.routing']
+                ->parseCommitishPathParam($commitishPath, $repo);
+
             list($branch, $file) = $app['util.repository']->extractRef($repository, $branch, $file);
+
             $blob = $repository->getBlob("$branch:\"$file\"")->output();
 
             $headers = array();
@@ -60,9 +66,8 @@ class BlobController implements ControllerProviderInterface
             }
 
             return new Response($blob, 200, $headers);
-        })->assert('file', '.+')
-          ->assert('repo', $app['util.routing']->getRepositoryRegex())
-          ->assert('branch', '[\w-._\/]+')
+        })->assert('repo', $app['util.routing']->getRepositoryRegex())
+          ->assert('commitishPath', $app['util.routing']->getCommitishPathRegex())
           ->bind('blob_raw');
 
         return $route;

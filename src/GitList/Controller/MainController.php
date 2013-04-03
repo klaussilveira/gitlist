@@ -46,15 +46,19 @@ class MainController implements ControllerProviderInterface
                 'branches'       => $repository->getBranches(),
                 'tags'           => $repository->getTags(),
                 'stats'          => $stats,
-                'authors'         => $authors,
+                'authors'        => $authors,
             ));
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
-          ->assert('branch', '[\w-._\/]+')
+          ->assert('branch', $app['util.routing']->getBranchRegex())
           ->value('branch', null)
           ->bind('stats');
 
         $route->get('{repo}/{branch}/rss/', function($repo, $branch) use ($app) {
             $repository = $app['git']->getRepository($app['git.repos'], $repo);
+
+            if ($branch === null) {
+                $branch = $repository->getHead();
+            }
 
             $commits = $repository->getPaginatedCommits($branch);
 
@@ -66,7 +70,8 @@ class MainController implements ControllerProviderInterface
 
             return new Response($html, 200, array('Content-Type' => 'application/rss+xml'));
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
-          ->assert('branch', '[\w-._\/]+')
+          ->assert('branch', $app['util.routing']->getBranchRegex())
+          ->value('branch', null)
           ->bind('rss');
 
         return $route;

@@ -108,6 +108,17 @@ class InterfaceTest extends WebTestCase
         $repository->addAll();
         $repository->commit("Initial commit");
 
+        // Detached HEAD repository fixture
+        $git->createRepository(self::$tmpdir . 'detached-head');
+        $repository = $git->getRepositoryCached(self::$tmpdir, 'detached-head');
+#        $repository = $git->getRepository(self::$tmpdir . '/detached-head');
+        $repository->setConfig('user.name', 'Luke Skywalker');
+        $repository->setConfig('user.email', 'luke@rebel.org');
+        file_put_contents(self::$tmpdir . 'detached-head/README.md', "## detached head\ndetached-head is a *test* repository!");
+        $repository->addAll();
+        $repository->commit("First commit");
+        $repository->checkout('HEAD');
+
         $git->deleteCached();
     }
 
@@ -137,8 +148,8 @@ class InterfaceTest extends WebTestCase
         $this->assertEquals('/NestedRepo/master/rss/', $crawler->filter('.repository-header a')->eq(3)->attr('href'));
         $this->assertCount(1, $crawler->filter('div.repository-header:contains("foobar")'));
         $this->assertCount(1, $crawler->filter('div.repository-body:contains("This is a test repo!")'));
-        $this->assertEquals('/foobar/', $crawler->filter('.repository-header a')->eq(6)->attr('href'));
-        $this->assertEquals('/foobar/master/rss/', $crawler->filter('.repository-header a')->eq(7)->attr('href'));
+        $this->assertEquals('/foobar/', $crawler->filter('.repository-header a')->eq(8)->attr('href'));
+        $this->assertEquals('/foobar/master/rss/', $crawler->filter('.repository-header a')->eq(9)->attr('href'));
     }
 
     public function testRepositoryPage()
@@ -149,13 +160,10 @@ class InterfaceTest extends WebTestCase
         $this->assertTrue($client->getResponse()->isOk());
         $this->assertCount(1, $crawler->filter('.tree tr:contains("README.md")'));
         $this->assertCount(1, $crawler->filter('.tree tr:contains("test.php")'));
-        $this->assertCount(1, $crawler->filter('.readme-header:contains("README.md")'));
-        $this->assertEquals("## GitTest\nGitTest is a *test* repository!",
-                $crawler->filter('#readme-content')->eq(0)->text());
-        $this->assertEquals('/GitTest/blob/master/README.md',
-                $crawler->filter('.tree tr td')->eq(0)->filter('a')->eq(0)->attr('href'));
-        $this->assertEquals('/GitTest/blob/master/test.php',
-                $crawler->filter('.tree tr td')->eq(3)->filter('a')->eq(0)->attr('href'));
+        $this->assertCount(1, $crawler->filter('.md-header:contains("README.md")'));
+        $this->assertEquals("## GitTest\nGitTest is a *test* repository!", $crawler->filter('#md-content')->eq(0)->text());
+        $this->assertEquals('/GitTest/blob/master/README.md', $crawler->filter('.tree tr td')->eq(0)->filter('a')->eq(0)->attr('href'));
+        $this->assertEquals('/GitTest/blob/master/test.php', $crawler->filter('.tree tr td')->eq(3)->filter('a')->eq(0)->attr('href'));
 
         $this->assertEquals('branch/name/wiith/slashes', $crawler->filter('.dropdown-menu li')->eq(1)->text());
         $this->assertEquals('issue12', $crawler->filter('.dropdown-menu li')->eq(2)->text());
@@ -167,13 +175,10 @@ class InterfaceTest extends WebTestCase
         $this->assertCount(1, $crawler->filter('.tree tr:contains("myfolder")'));
         $this->assertCount(1, $crawler->filter('.tree tr:contains("testfolder")'));
         $this->assertCount(1, $crawler->filter('.tree tr:contains("bar.json")'));
-        $this->assertEquals('/foobar/tree/master/myfolder/',
-                $crawler->filter('.tree tr td')->eq(0)->filter('a')->eq(0)->attr('href'));
-        $this->assertEquals('/foobar/tree/master/testfolder/',
-                $crawler->filter('.tree tr td')->eq(3)->filter('a')->eq(0)->attr('href'));
-        $this->assertEquals('/foobar/blob/master/bar.json',
-                $crawler->filter('.tree tr td')->eq(6)->filter('a')->eq(0)->attr('href'));
-        $this->assertCount(0, $crawler->filter('.readme-header'));
+        $this->assertEquals('/foobar/tree/master/myfolder/', $crawler->filter('.tree tr td')->eq(0)->filter('a')->eq(0)->attr('href'));
+        $this->assertEquals('/foobar/tree/master/testfolder/', $crawler->filter('.tree tr td')->eq(3)->filter('a')->eq(0)->attr('href'));
+        $this->assertEquals('/foobar/blob/master/bar.json', $crawler->filter('.tree tr td')->eq(6)->filter('a')->eq(0)->attr('href'));
+        $this->assertCount(0, $crawler->filter('.md-header'));
         $this->assertEquals('master', $crawler->filter('.dropdown-menu li')->eq(1)->text());
     }
 
