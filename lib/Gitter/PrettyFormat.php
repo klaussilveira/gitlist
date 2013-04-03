@@ -32,7 +32,7 @@ class PrettyFormat
                 continue;
             }
 
-            $data[$key] = strval($item);
+            $data[$key] = trim(strval($item));
         }
 
         return $data;

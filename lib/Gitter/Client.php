@@ -362,9 +362,11 @@ class Client
 
     public function run($repository, $command)
     {
-        $full_cmd = $this->getPath() . ' -c "color.ui"=false ' . $command;
+        if (version_compare($this->getVersion(), '1.7.2', '>=')) {
+            $command = '-c "color.ui"=false ' . $command;
+        }
 
-        $process = new Process($full_cmd, $repository->getPath());
+        $process = new Process($this->getPath() . ' ' . $command, $repository->getPath());
         $process->setTimeout(180);
         $process->run();
 
@@ -375,6 +377,18 @@ class Client
         return $process->getOutput();
     }
 
+    public function getVersion()
+    {
+        $process = new Process($this->getPath() . ' --version');
+        $process->run();
+
+        if (!$process->isSuccessful()) {
+            throw new \RuntimeException($process->getErrorOutput());
+        }
+
+        $version = substr($process->getOutput(), 12);
+        return trim($version);
+    }
 
     /**
      * Get the current Git binary path

@@ -15,10 +15,11 @@
     ],
     "require": {
         "php": ">=5.3.0",
-        "symfony/process": ">=2.1"
+        "symfony/process": ">=2.2"
     },
     "require-dev": {
-        "symfony/filesystem": ">=2.1"
+        "symfony/filesystem": ">=2.2",
+        "phpunit/phpunit": ">=3.7.1"
     },
     "minimum-stability": "stable",
     "autoload": {

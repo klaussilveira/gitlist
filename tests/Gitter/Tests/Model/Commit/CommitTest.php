@@ -22,6 +22,7 @@ class CommitTest extends \PHPUnit_Framework_TestCase
             'commiter_email' => 'commiter@example.com',
             'commiter_date' => '1347372763',
             'message' => 'Test commit',
+            'body' => 'Test body'
         );
         $commit = new Commit();
         $commit->importData($data);
@@ -38,6 +39,7 @@ class CommitTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('commiter@example.com', $commit->getCommiter()->getEmail());
         $this->assertEquals(new DateTime('@1347372763'), $commit->getCommiterDate());
         $this->assertEquals('Test commit', $commit->getMessage());
+        $this->assertEquals('Test body', $commit->getBody());
     }
 }
 
