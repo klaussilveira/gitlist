@@ -30,19 +30,38 @@ class Application extends SilexApplication
 
         $this['debug'] = $config->get('app', 'debug');
         $this['filetypes'] = $config->getSection('filetypes');
-        $this['cache.archives'] = $root . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'archives';
+        $this['cache.archives'] = $root . DIRECTORY_SEPARATOR
+                . 'cache' . DIRECTORY_SEPARATOR . 'archives';
 
         // Register services
         $this->register(new TwigServiceProvider(), array(
             'twig.path'       => $root . DIRECTORY_SEPARATOR . 'views',
-            'twig.options'    => array('cache' => $root . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'views'),
+            'twig.options'    => array('cache' => $root . DIRECTORY_SEPARATOR
+                                 . 'cache' . DIRECTORY_SEPARATOR . 'views'),
         ));
+
+        $repositories = $config->get('git', 'repositories');
+
+        $cached_repos = $config->get('app', 'cached_repos');
+        if (false === $cached_repos || empty($cached_repos)) {
+            $cached_repos = $root . DIRECTORY_SEPARATOR . 'cache'
+                    . DIRECTORY_SEPARATOR . 'repos.json';
+        }
+
         $this->register(new GitServiceProvider(), array(
-            'git.client'         => $config->get('git', 'client'),
-            'git.repos'          => $config->get('git', 'repositories'),
-            'git.hidden'         => $config->get('git', 'hidden') ? $config->get('git', 'hidden') : array(),
+            'git.client'      => $config->get('git', 'client'),
+            'git.repos'       => $repositories,
+            'cache.repos'     => $cached_repos,
+            'ini.file'        => "config.ini",
+            'git.hidden'      => $config->get('git', 'hidden') ?
+                                 $config->get('git', 'hidden') : array(),
             'git.default_branch' => $config->get('git', 'default_branch') ? $config->get('git', 'default_branch') : 'master',
         ));
+
+        $cached_repos = $root . DIRECTORY_SEPARATOR .
+                'cache' . DIRECTORY_SEPARATOR . 'repos.json';
+
+
         $this->register(new ViewUtilServiceProvider());
         $this->register(new RepositoryUtilServiceProvider());
         $this->register(new UrlGeneratorServiceProvider());
@@ -54,6 +73,7 @@ class Application extends SilexApplication
 
             return $twig;
         }));
+
 
         // Handle errors
         $this->error(function (\Exception $e, $code) use ($app) {
@@ -67,3 +87,4 @@ class Application extends SilexApplication
         });
     }
 }
+
