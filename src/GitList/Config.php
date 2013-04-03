@@ -11,8 +11,8 @@ class Config
         if (!file_exists($file)) {
             die(sprintf('Please, create the %1$s file.', $file));
         }
-        $data = parse_ini_file($file, true);
 
+        $data = parse_ini_file($file, true);
         return new static($data);
     }
 
@@ -51,22 +51,28 @@ class Config
 
     protected function validateOptions()
     {
-        $at_least_one_ok = false;
-        $at_least_one_wrong = false;
+        $repositories = $this->get('git', 'repositories');
 
-        foreach ($this->get('git', 'repositories') as $dir) {
-            if (!$dir || !is_dir($dir)) {
-                $at_least_one_wrong = true;
+        if (!is_array($repositories)) {
+            return;
+        }
+
+        $atLeastOneOk = false;
+        $atLeastOneWrong = false;
+
+        foreach ($repositories as $directory) {
+            if (!$directory || !is_dir($directory)) {
+                $atLeastOneWrong = true;
             } else {
-                $at_least_one_ok = true;
+                $atLeastOneOk = true;
             }
         }
 
-        if (!$at_least_one_ok) {
+        if (!$atLeastOneOk) {
             die("Please, edit the config file and provide your repositories directory");
         }
 
-        if ($at_least_one_wrong) {
+        if ($atLeastOneWrong) {
             die("One or more of the supplied repository paths appears to be wrong. Please, check the config file");
         }
     }
