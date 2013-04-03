@@ -254,7 +254,7 @@ class Repository
         array_pop($tags);
 
         if (empty($tags[0])) {
-            return NULL;
+            return null;
         }
 
         return $tags;
@@ -285,7 +285,14 @@ class Repository
      */
     public function getCommits($file = null)
     {
-        $command = "log --pretty=format:\"<item><hash>%H</hash><short_hash>%h</short_hash><tree>%T</tree><parents>%P</parents><author>%an</author><author_email>%ae</author_email><date>%at</date><commiter>%cn</commiter><commiter_email>%ce</commiter_email><commiter_date>%ct</commiter_date><message><![CDATA[%s]]></message></item>\"";
+        $command =
+                  "log --pretty=format:\"<item><hash>%H</hash>"
+                . "<short_hash>%h</short_hash><tree>%T</tree><parents>%P</parents>"
+                . "<author>%an</author><author_email>%ae</author_email>"
+                . "<date>%at</date><commiter>%cn</commiter>"
+                . "<commiter_email>%ce</commiter_email>"
+                . "<commiter_date>%ct</commiter_date>"
+                . "<message><![CDATA[%s]]></message></item>\"";
 
         if ($file) {
             $command .= " $file";
@@ -310,7 +317,15 @@ class Repository
      */
     public function getCommit($commitHash)
     {
-        $logs = $this->getClient()->run($this, "show --pretty=format:\"<item><hash>%H</hash><short_hash>%h</short_hash><tree>%T</tree><parents>%P</parents><author>%an</author><author_email>%ae</author_email><date>%at</date><commiter>%cn</commiter><commiter_email>%ce</commiter_email><commiter_date>%ct</commiter_date><message><![CDATA[%s]]></message><body><![CDATA[%b]]></body></item>\" $commitHash");
+        $logs = $this->getClient()->run($this,
+                  "show --pretty=format:\"<item><hash>%H</hash>"
+                . "<short_hash>%h</short_hash><tree>%T</tree><parents>%P</parents>"
+                . "<author>%an</author><author_email>%ae</author_email><date>%at</date>"
+                . "<commiter>%cn</commiter><commiter_email>%ce</commiter_email>"
+                . "<commiter_date>%ct</commiter_date><message><![CDATA[%s]]></message>"
+                . "<body><![CDATA[%b]]></body>"
+                . "</item>\" $commitHash");
+
         $xmlEnd = strpos($logs, '</item>') + 7;
         $commitInfo = substr($logs, 0, $xmlEnd);
         $commitData = substr($logs, $xmlEnd);
@@ -586,3 +601,4 @@ class Repository
         return $format->parse($output);
     }
 }
+

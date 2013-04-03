@@ -184,3 +184,4 @@ class Commit extends AbstractModel
         return sizeof($this->diffs);
     }
 }
+

@@ -28,9 +28,8 @@ class Blob extends AbstractModel
 
     public function output()
     {
-        $data = $this->getRepository()->getClient()->run($this->getRepository(), 'show ' . $this->getHash());
-
-        return $data;
+        return $this->getRepository()->getClient()->run($this->getRepository(),
+				'show ' . $this->getHash());
     }
 
     public function getMode()
@@ -81,3 +80,4 @@ class Blob extends AbstractModel
         return $this;
     }
 }
+

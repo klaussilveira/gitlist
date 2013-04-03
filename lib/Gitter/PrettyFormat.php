@@ -38,3 +38,4 @@ class PrettyFormat
         return $data;
     }
 }
+
