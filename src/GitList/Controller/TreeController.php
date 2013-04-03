@@ -54,10 +54,7 @@ class TreeController implements ControllerProviderInterface
         $route->post('{repo}/tree/{branch}/search',
                 function(Request $request, $repo, $branch = '', $tree = '') use ($app) {
 
-            $repository = $app['git']->getRepositoryCached($app['git.repos'], $repo);
-            $path = $repository->getPath();
-
-            $repository = $app['git']->getRepository($path);
+            $repository = $app['git']->getRepository($app['git.repos'], $repo);
             if (!$branch) {
                 $branch = $repository->getHead();
             }
@@ -83,10 +80,7 @@ class TreeController implements ControllerProviderInterface
         # Intentionally before next statement, because order appears
         # to be important, and the other statement got precedence previously.
         $route->get('{repo}/{format}ball/{branch}', function($repo, $format, $branch) use ($app) {
-            $repo_item = $app['git']->getRepositoryCached($app['git.repos'], $repo);
-            $path = $repo_item->getPath();
-
-            $repository = $app['git']->getRepository($path);
+            $repository = $app['git']->getRepository($app['git.repos'], $repo);
 
             $tree = $repository->getBranchTree($branch);
 

@@ -13,9 +13,7 @@ class CommitController implements ControllerProviderInterface
         $route = $app['controllers_factory'];
 
         $route->get('{repo}/commits/{branch}/{file}', function($repo, $branch, $file) use ($app) {
-
-            $repotmp = $app['git']->getRepositoryCached($app['git.repos'], $repo);
-            $repository = $app['git']->getRepository($repotmp->getPath());
+            $repository = $app['git']->getRepository($app['git.repos'], $repo);
 
             if ($branch === null) {
                 $branch = $repository->getHead();
@@ -54,8 +52,7 @@ class CommitController implements ControllerProviderInterface
           ->bind('commits');
 
         $route->post('{repo}/commits/{branch}/search', function(Request $request, $repo, $branch) use ($app) {
-            $repotmp = $app['git']->getRepositoryCached($app['git.repos'], $repo);
-            $repository = $app['git']->getRepository($repotmp->getPath());
+            $repository = $app['git']->getRepository($app['git.repos'], $repo);
             $query = $request->get('query');
 
             $commits = $repository->searchCommitLog($request->get('query'));
@@ -81,8 +78,7 @@ class CommitController implements ControllerProviderInterface
           ->bind('searchcommits');
 
         $route->get('{repo}/commit/{commit}/', function($repo, $commit) use ($app) {
-            $repotmp = $app['git']->getRepositoryCached($app['git.repos'], $repo);
-            $repository = $app['git']->getRepository($repotmp->getPath());
+            $repository = $app['git']->getRepository($app['git.repos'], $repo);
 
             $commit = $repository->getCommit($commit);
             $branch = $repository->getHead();
@@ -98,8 +94,7 @@ class CommitController implements ControllerProviderInterface
 
 
         $route->get('{repo}/blame/{branch}/{file}', function($repo, $branch, $file) use ($app) {
-            $repotmp = $app['git']->getRepositoryCached($app['git.repos'], $repo);
-            $repository = $app['git']->getRepository($repotmp->getPath());
+            $repository = $app['git']->getRepository($app['git.repos'], $repo);
 
             list($branch, $file) = $app['util.repository']->extractRef($repository, $branch, $file);
 

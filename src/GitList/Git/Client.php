@@ -24,13 +24,17 @@ class Client extends BaseClient
     }
 
     /**
-     * Opens a repository at the specified path
+     * Opens a specified repository
      *
-     * @param  string     $path Path where the repository is located
+     * @param  array      $repos Array of items describing configured repositories
+     * @param  string     $repo  Name of repository we are currently handling
      * @return Repository Instance of Repository
      */
-    public function getRepository($path)
+    public function getRepository($repos, $repo)
     {
+        $repotmp = $this->getRepositoryCached($repos, $repo);
+        $path = $repotmp->getPath();
+
         if (!file_exists($path) || !file_exists($path . '/.git/HEAD') && !file_exists($path . '/HEAD')) {
             throw new \RuntimeException('There is no GIT repository at ' . $path);
         }
