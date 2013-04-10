@@ -284,7 +284,8 @@ class Client
         }
 
         # Paranoia check; don't recurse into git directories
-        if (self::endsWith($path, ".git") || self::endsWith($path, "HEAD")) {
+        $base = basename($path);
+        if ($base == ".git" || $base == "HEAD") {
             #echo "Not doing git directories!\n";
             return;
         }
