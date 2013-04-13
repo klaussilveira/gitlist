@@ -73,9 +73,9 @@ class Routing
         }
 
         $commitHasPath = $repository->pathExists($commitish, $path);
-        if ($commitHasPath !== true) {
+        /*if ($commitHasPath !== true) {
             $app->abort(404, "\"$path\" does not exist in \"$commitish\".");
-        }
+        }*/
 
         return array($commitish, $path);
     }
