@@ -10,6 +10,16 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class Repository extends BaseRepository
 {
+	/*is this repository is bare or not*/
+	protected $isBare;
+	
+	public function __construct($path, Client $client, $isBare = false)
+	{
+		parent::__construct($path, $client);
+		
+		$this->isBare = $isBare;
+	}
+	
     /**
      * Return true if the repo contains this commit.
      *
@@ -387,6 +397,23 @@ class Repository extends BaseRepository
         }
 
         return false;
+    }
+    
+    
+    /**
+     * Saves the description of the repository
+     * 
+     * @param string $desc The repository description
+	 */
+    public function saveDescription($desc)
+    {
+    	$desc = strip_tags($desc);
+    	$path = $this->path.(($this->isBare)? '':DIRECTORY_SEPARATOR.'.git').DIRECTORY_SEPARATOR.'description';
+    	
+    	//edit the 'description' file, if not exists, creates one
+		file_put_contents($path, $desc);
+		$this->client->deleteCached();
+
     }
 }
 

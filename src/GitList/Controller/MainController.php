@@ -28,6 +28,17 @@ class MainController implements ControllerProviderInterface
             # Go back to calling page
             return $app->redirect($request->headers->get('Referer'));
         })->bind('refresh');
+        
+        
+        $route->post('/ajax/edit-description/{repo}', function(Request $request, $repo) use ($app ) {
+            
+            $repository = $app['git']->getRepository($app['git.repos'], $repo);
+            $repository->saveDescription($request->get('value'));
+            
+            return '';
+        })
+        ->assert('repo', $app['util.routing']->getRepositoryRegex());
+
 
 
         $route->get('{repo}/stats/{branch}', function($repo, $branch) use ($app) {

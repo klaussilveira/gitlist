@@ -51,7 +51,7 @@ class Client extends BaseClient
             throw new \RuntimeException('A GIT repository already exists at ' . $path);
         }
 
-        $repository = new Repository($path, $this);
+        $repository = new Repository($path, $this, (($bare)? true:false));
 
         return $repository->create($bare);
     }
@@ -67,8 +67,10 @@ class Client extends BaseClient
     {
         $repotmp = $this->getRepositoryCached($repos, $repo);
         $path = $repotmp->getPath();
-
-        if (!file_exists($path) || !file_exists($path . '/.git/HEAD') && !file_exists($path . '/HEAD')) {
+		
+		$isBare = file_exists($path . '/HEAD');
+		
+        if (!file_exists($path) || !file_exists($path . '/.git/HEAD') && !$isBare) {
             throw new \RuntimeException('There is no GIT repository at ' . $path);
         }
 
@@ -76,7 +78,7 @@ class Client extends BaseClient
             throw new \RuntimeException('You don\'t have access to this repository');
         }
 
-        return new Repository($path, $this);
+        return new Repository($path, $this, $isBare);
     }
 }
 
