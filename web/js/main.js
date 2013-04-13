@@ -40,4 +40,14 @@ $(function () {
         $pager.find('.previous').remove();
     }
     paginate();
+    
+    $('.editText').editable({
+	    type: 'textarea',
+	    name: 'description',
+	    pk: 1,
+	    inputclass: 'span10',
+	    placement: 'bottom',
+	    template: '<textarea rows="3"></textarea>',
+	    title: 'Enter description'
+    });
 });

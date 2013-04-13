@@ -1,0 +1,27 @@
+    <div id="files_pie"></div>
+    <script type="text/javascript">
+        google.load("visualization", "1.0", {'packages':['corechart']});
+        google.setOnLoadCallback(drawPie);
+
+        function drawPie() {
+        	var data = google.visualization.arrayToDataTable([
+			["Ext", "Amount"],
+			
+            {% for ext, amount in files.extensions -%}
+            	[ '{{ ext }}', {{ amount }} ]{% if ( not loop.parent.loop.last ) or ( not loop.last ) %},{% endif %}
+            {%- endfor -%}
+
+            ]);
+
+            // Set chart options
+            var options = { height: 400,
+							is3D: true,
+							backgroundColor: "#F9F9F9"
+                          };
+
+            // Instantiate and draw our chart, passing in some options.
+            var chart = new google.visualization.PieChart(document.getElementById("files_pie"));
+            chart.draw(data, options);
+
+        }
+    </script>

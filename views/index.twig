@@ -13,7 +13,7 @@
             <a href="{{ path('rss', {repo: repository.name, branch: 'master'}) }}"><i class="rss pull-right"></i></a>
         </div>
         <div class="repository-body">
-            <p>{{ repository.description }}</p>
+            <p class="editText" data-url="{{ path('homepage') }}ajax/edit-description/{{ repository.name }}">{{ repository.description |nl2br }}</p>
         </div>
     </div>
     {% endfor %}
@@ -22,4 +22,5 @@
 
     {% include 'footer.twig' %}
 </div>
+
 {% endblock %}

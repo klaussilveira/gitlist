@@ -223,7 +223,6 @@ table{max-width:100%;background-color:transparent;border-collapse:collapse;borde
 .table-bordered thead:last-child tr:last-child th:first-child,.table-bordered tbody:last-child tr:last-child td:first-child{-webkit-border-radius:0 0 0 4px;-moz-border-radius:0 0 0 4px;border-radius:0 0 0 4px;-webkit-border-bottom-left-radius:4px;border-bottom-left-radius:4px;-moz-border-radius-bottomleft:4px;}
 .table-bordered thead:last-child tr:last-child th:last-child,.table-bordered tbody:last-child tr:last-child td:last-child{-webkit-border-bottom-right-radius:4px;border-bottom-right-radius:4px;-moz-border-radius-bottomright:4px;}
 .table-striped tbody tr:nth-child(odd) td,.table-striped tbody tr:nth-child(odd) th{background-color:#f9f9f9;}
-.table tbody tr:hover td,.table tbody tr:hover th{background-color:#f5f5f5;}
 table .span1{float:none;width:44px;margin-left:0;}
 table .span2{float:none;width:124px;margin-left:0;}
 table .span3{float:none;width:204px;margin-left:0;}
@@ -278,7 +277,7 @@ table .span24{float:none;width:1884px;margin-left:0;}
 .md-view{width:100%;margin-bottom:18px;}
 .md-header{padding:8px;line-height:18px;text-align:left;vertical-align:bottom;background-color:#f4f4f4;background-image:-moz-linear-gradient(top, #fafafa, #eaeaea);background-image:-ms-linear-gradient(top, #fafafa, #eaeaea);background-image:-webkit-gradient(linear, 0 0, 0 100%, from(#fafafa), to(#eaeaea));background-image:-webkit-linear-gradient(top, #fafafa, #eaeaea);background-image:-o-linear-gradient(top, #fafafa, #eaeaea);background-image:linear-gradient(top, #fafafa, #eaeaea);background-repeat:repeat-x;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#fafafa', endColorstr='#eaeaea', GradientType=0);border-bottom:1px solid #d7d7d7;font-weight:bold;color:#555555;text-shadow:1px 1px 1px #ffffff;height:28px;}.md-header .meta{float:left;padding:4px 0;font-size:14px;}
 #md-content{padding:30px;color:#000000;}
-.rss{display:inline-block;width:16px;height:16px;*margin-right:.3em;line-height:16px;vertical-align:text-top;background-image:url("../img/feed.png");background-position:0 0;background-repeat:no-repeat;}.rss:last-child{*margin-left:0;}
+.rss{display:inline-block;width:16px;height:16px;*margin-right:.3em;line-height:16px;vertical-align:text-top;background-image:url("../img/feed.png");background-position:0 0;background-repeat:no-repeat; margin-top: -5px;}.rss:last-child{*margin-left:0;}
 [class^="icon-"],[class*=" icon-"]{display:inline-block;width:14px;height:14px;*margin-right:.3em;line-height:14px;vertical-align:text-top;background-image:url("../img/glyphicons-halflings.png");background-position:14px 14px;background-repeat:no-repeat;}[class^="icon-"]:last-child,[class*=" icon-"]:last-child{*margin-left:0;}
 .icon-white{background-image:url("../img/glyphicons-halflings-white.png");}
 .icon-spaced{padding:0 3px 0 3px;}
@@ -802,3 +801,56 @@ span.cm-emstrong{font-style:italic;font-weight:bold;}
 span.cm-link{text-decoration:underline;}
 div.CodeMirror span.CodeMirror-matchingbracket{color:#0f0;}
 div.CodeMirror span.CodeMirror-nonmatchingbracket{color:#f22;}
+
+
+/*! Bootstrap Editable - v1.1.4 
+* In-place editing with Bootstrap Form and Popover
+* https://github.com/vitalets/bootstrap-editable
+* Copyright (c) 2012 Vitaliy Potapov; Licensed MIT, GPL */
+
+a.editable, a.editable:hover {
+  text-decoration: none;
+  border-bottom: dashed 1px #0088cc;
+}
+
+.editable
+{
+	cursor: pointer;
+} 
+
+a.editable-open, a.editable-open:hover {
+ 
+}
+
+a.editable-empty {
+  font-style: italic; 
+  color: #DD1144;  
+}
+
+a.editable-changed {
+  font-weight: bold; 
+}
+                 
+.editable-loading {
+  background: url('../img/loading.gif') center center no-repeat;  
+  height: 20px;  
+}
+
+.popover.editable-popover {
+    width: auto; /*for bootstrap 2.1.1*/
+}
+
+.popover.editable-popover .popover-inner {
+   width: auto;
+   
+}
+
+.popover.editable-popover div.control-group,
+.popover.editable-popover form,
+.popover.editable-popover span.help-block {
+   margin-bottom: 0;
+}
+
+.popover.editable-popover .form-inline textarea {
+   vertical-align: top;
+}

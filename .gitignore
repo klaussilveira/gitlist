@@ -28,6 +28,6 @@ nbproject
 .CVS
 .idea
 node_modules
-config.ini
 cache.properties
 composer.phar
+*.htpasswd
