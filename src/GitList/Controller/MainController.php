@@ -42,24 +42,45 @@ class MainController implements ControllerProviderInterface
 
 
         $route->get('{repo}/stats/{branch}', function($repo, $branch) use ($app) {
-            $repository = $app['git']->getRepository($app['git.repos'], $repo);
-
+            $repository = $app['git']->getRepository($app['git.repos'] , $repo);
             if ($branch === null) {
                 $branch = $repository->getHead();
             }
+            $files   = $repository->getFileStatistics($branch);
+            $commits = $repository->getCommitStatistics();
 
-            $stats = $repository->getStatistics($branch);
-            $authors = $repository->getAuthorStatistics();
+            $authors = array();
+            /* split commit stats in something we can easily access in the
+               templates */
+            foreach ( $commits['by_author'] as $author => $emails ) {
+                foreach ( $emails as $email => $user_commits ) {
+                    $authors[] = array(
+                        'name'    => $author,
+                        'email'   => $email,
+                        'commits' => $user_commits['total']
+                    );
+                }
+            }
+            usort(
+                $authors,
+                function ($a, $b) {
+                    return $a['commits'] < $b['commits'];
+                }
+            );
+            ksort($commits['by_date']);
 
             return $app['twig']->render('stats.twig', array(
                 'repo'           => $repo,
                 'branch'         => $branch,
                 'branches'       => $repository->getBranches(),
                 'tags'           => $repository->getTags(),
-                'stats'          => $stats,
+                'files'          => $files,
                 'authors'        => $authors,
-            ));
-        })->assert('repo', $app['util.routing']->getRepositoryRegex())
+                'commits'        => $commits['by_date'],
+                'now'            => array( date('Y'), date('m') ),
+                )
+            );
+        })->assert('repo', $app['util.routing']->getRepositoryRegex())        
           ->assert('branch', $app['util.routing']->getBranchRegex())
           ->value('branch', null)
           ->bind('stats');
