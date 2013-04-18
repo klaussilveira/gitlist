@@ -27,8 +27,7 @@ class BlobController implements ControllerProviderInterface
             if ($fileType !== 'image' && $app['util.repository']->isBinary($file)) {
                 return $app->redirect($app['url_generator']->generate('blob_raw', array(
                     'repo'   => $repo,
-                    'branch' => $branch,
-                    'file'   => $file,
+                    'commitishPath' => $commitishPath,
                 )));
             }
 
