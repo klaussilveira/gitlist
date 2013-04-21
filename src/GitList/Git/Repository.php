@@ -295,9 +295,9 @@ class Repository extends BaseRepository
         return $searchResults;
     }
 
-    public function getAuthorStatistics()
+    public function getAuthorStatistics($branch)
     {
-        $logs = $this->getClient()->run($this, 'log --pretty=format:"%an||%ae" ' . $this->getHead());
+        $logs = $this->getClient()->run($this, 'log --pretty=format:"%an||%ae" ' . $branch);
 
         if (empty($logs)) {
             throw new \RuntimeException('No statistics available');

@@ -38,7 +38,7 @@ class MainController implements ControllerProviderInterface
             }
 
             $stats = $repository->getStatistics($branch);
-            $authors = $repository->getAuthorStatistics();
+            $authors = $repository->getAuthorStatistics($branch);
 
             return $app['twig']->render('stats.twig', array(
                 'repo'           => $repo,
