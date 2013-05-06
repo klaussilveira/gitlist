@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="gitlist" default="build">
     <target name="build" depends="prepare,lint,phploc,pdepend,phpmd,phpcpd,phpunit,phpcs" />
-    <target name="build-package" depends="prepare-package,lint,phploc,package" />
+    <target name="build-package" depends="prepare-package,package" />
 
     <target name="clean" description="Clean build artifacts">
         <delete dir="${basedir}/build"/>
@@ -17,9 +17,11 @@
         </exec>
     </target>
 
-    <target name="prepare-package" depends="clean" description="Prepare for build">
+    <target name="prepare-package" description="Prepare for build">
+        <delete dir="${basedir}/vendor"/>
         <exec executable="composer" failonerror="true">
             <arg value="install" />
+            <arg value="--optimize-autoloader" />
         </exec>
     </target>
 
@@ -87,13 +89,14 @@
 
     <target name="package" description="Package the application for distribution">
         <copy todir="${basedir}/build/gitlist/">
-            <fileset dir="${basedir}" excludes="build/**, tests/**, pkg_builder/**, phpunit.xml.dist, cache.properties, .gitignore, .travis.yml, build.xml, composer.json, composer.lock, config.ini" />
+            <fileset dir="${basedir}" excludes="cache/**, build/**, tests/**, pkg_builder/**, phpunit.xml.dist, cache.properties, .gitignore, .travis.yml, build.xml, composer.json, composer.lock, config.ini" />
         </copy>
 
-        <tar destfile="${basedir}/build/gitlist.tar.gz"
+        <tar destfile="${basedir}/build/gitlist-master.tar.gz"
             basedir="${basedir}/build/"
             compression="gzip"
             longfile="gnu"
+            excludes="gitlist-master.tar.gz, **/logs/**, **/pdepend/**"
         />
     </target>
 </project>
