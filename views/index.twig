@@ -6,19 +6,30 @@
 
 <div class="container">
 
-    {% for repository in repositories %}
-    <div class="repository">
-        <div class="repository-header">
-            <i class="icon-folder-open icon-spaced"></i> <a href="{{ path('repository', {repo: repository.name}) }}">{{ repository.name }}</a>
-            <a href="{{ path('rss', {repo: repository.name, branch: 'master'}) }}"><i class="rss pull-right"></i></a>
-        </div>
-        <div class="repository-body">
-            <p>{{ repository.description }}</p>
-        </div>
-    </div>
-    {% endfor %}
-
-    <hr />
+    {% if repositories|length == 0 %}
+        No repositories found.
+    {% else %}
+        <table class="table table-bordered table-striped table-condensed">
+        <tbody>
+            {% for repository in repositories %}
+            <tr>
+                <td>
+                    <i class="icon-folder-open icon-spaced"></i>
+                    <a href="{{ path('repository', {repo: repository.name}) }}">
+                        {{ repository.name }}
+                    </a>
+                </td>
+                <td>
+                    {{ repository.description }}
+                </td>
+                <td style="width: 1%;">
+                    <a href="{{ path('rss', {repo: repository.name, branch: 'master'}) }}"><i class="rss pull-right"></i></a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+    {% endif %}
 
     {% include 'footer.twig' %}
 </div>
