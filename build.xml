@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="gitlist" default="build">
-    <target name="build" depends="prepare,lint,phploc,pdepend,phpmd,phpcpd,phpunit" />
+    <target name="build" depends="prepare,lint,phploc,pdepend,phpmd,phpcpd,phpunit,phpcs" />
     <target name="build-package" depends="prepare-package,lint,phploc,package" />
 
     <target name="clean" description="Clean build artifacts">
@@ -74,6 +74,15 @@
 
     <target name="phpunit" description="Run unit tests with PHPUnit">
         <exec executable="phpunit" failonerror="true"/>
+    </target>
+
+    <target name="phpcs" description="Find coding standard violations using PHP_CodeSniffer creating a log file for the continuous integration server">
+        <exec executable="phpcs" output="/dev/null">
+            <arg value="--report=checkstyle" />
+            <arg value="--report-file=${basedir}/build/logs/checkstyle.xml" />
+            <arg value="--standard=PSR2" />
+            <arg path="${basedir}/src" />
+        </exec>
     </target>
 
     <target name="package" description="Package the application for distribution">
