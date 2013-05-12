@@ -14,15 +14,21 @@ class NetworkController implements ControllerProviderInterface
     {
 		$route = $app['controllers_factory'];
 
-		$route->get('{repo}/network/{branch}/{page}.json', function($repo, $branch, $page) use ($app) {
+		$route->get('{repo}/network/{commitishPath}/{page}.json', function($repo, $commitishPath, $page) use ($app) {
 			/** @var $repository Repository */
-			$repository = $app['git']->getRepository($app['git.repos'] . $repo);
-			if ($branch === null) {
-				$branch = $repository->getHead();
+			$repository = $app['git']->getRepository($app['git.repos'], $repo);
+
+			if ($commitishPath === null) {
+				$commitishPath = $repository->getHead();
 			}
 
-			$pager = $app['util.view']->getPager($page, $repository->getTotalCommits($branch));
-			$commits = $repository->getPaginatedCommits($branch, $pager['current']);
+			list($branch, $file) = $app['util.routing']
+				->parseCommitishPathParam($commitishPath, $repo);
+
+			list($branch, $file) = $app['util.repository']->extractRef($repository, $branch, $file);
+
+			$pager = $app['util.view']->getPager($page, $repository->getTotalCommits($commitishPath));
+			$commits = $repository->getPaginatedCommits($commitishPath, $pager['current']);
 
 			// format the commits for the json reponse
 			$jsonFormattedCommits = array();
@@ -43,39 +49,46 @@ class NetworkController implements ControllerProviderInterface
 			$nextPageUrl = null;
 			if ( $pager['last'] !== $pager['current'] ) {
 				$nextPageUrl = $app['url_generator']->generate('networkData', array( 'repo' => $repo,
-																					 'branch' => $branch,
+																					 'commitishPath' => $commitishPath,
 																					 'page' => $pager['next']));
 			}
 
 			return $app->json(array(
 				'repo'           => $repo,
-				'branch'         => $branch,
+				'commitishPath'         => $commitishPath,
 				'nextPage'		 => $nextPageUrl,
 				'start'			 => $commits[0]->getHash(),
 				'commits'		 => $jsonFormattedCommits
 			), 200);
 
 		})->assert('repo', $app['util.routing']->getRepositoryRegex())
-			->assert('branch', $app['util.routing']->getBranchRegex())
-			->value('branch', null)
+			->assert('commitishPath', $app['util.routing']->getCommitishPathRegex())
+			->value('commitishPath', null)
 			->assert('page', '\d+')
 			->value('page', '0')
 			->bind('networkData');
 
 
-		$route->get('{repo}/network/{branch}', function($repo, $branch) use ($app) {
-			$repository = $app['git']->getRepository($app['git.repos'] . $repo);
-			if ($branch === null) {
-				$branch = $repository->getHead();
+		$route->get('{repo}/network/{commitishPath}', function($repo, $commitishPath) use ($app) {
+			$repository = $app['git']->getRepository($app['git.repos'], $repo);
+
+			if ($commitishPath === null) {
+				$commitishPath = $repository->getHead();
 			}
+
+			list($branch, $file) = $app['util.routing']
+				->parseCommitishPathParam($commitishPath, $repo);
+
+			list($branch, $file) = $app['util.repository']->extractRef($repository, $branch, $file);
 
 			return $app['twig']->render('network.twig', array(
 				'repo'           => $repo,
-				'branch'         => $branch,
+				'branch'		=> $branch,
+				'commitishPath'         => $commitishPath,
 			));
 		})->assert('repo', $app['util.routing']->getRepositoryRegex())
-			->assert('branch', $app['util.routing']->getBranchRegex())
-			->value('branch', null)
+			->assert('commitishPath', $app['util.routing']->getCommitishPathRegex())
+			->value('commitishPath', null)
 			->bind('network');
 
         return $route;
