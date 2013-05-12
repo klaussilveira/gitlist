@@ -42,12 +42,21 @@ class Repository extends BaseRepository
      */
     public function getCommit($commitHash)
     {
-        $logs = $this->getClient()->run($this, "show --pretty=format:\"<item><hash>%H</hash><short_hash>%h</short_hash><tree>%T</tree><parents>%P</parents><author>%an</author><author_email>%ae</author_email><date>%at</date><commiter>%cn</commiter><commiter_email>%ce</commiter_email><commiter_date>%ct</commiter_date><message><![CDATA[%s]]></message><body><![CDATA[%b]]></body></item>\" $commitHash");
+        $logs = $this->getClient()->run($this,
+                  "show --pretty=format:\"<item><hash>%H</hash>"
+                . "<short_hash>%h</short_hash><tree>%T</tree><parents>%P</parents>"
+                . "<author>%an</author><author_email>%ae</author_email>"
+                . "<date>%at</date><commiter>%cn</commiter><commiter_email>%ce</commiter_email>"
+                . "<commiter_date>%ct</commiter_date>"
+                . "<message><![CDATA[%s]]></message>"
+                . "<body><![CDATA[%b]]></body>"
+                . "</item>\" $commitHash"
+        );
+
         $xmlEnd = strpos($logs, '</item>') + 7;
         $commitInfo = substr($logs, 0, $xmlEnd);
         $commitData = substr($logs, $xmlEnd);
         $logs = explode("\n", $commitData);
-        array_shift($logs);
 
         // Read commit metadata
         $format = new PrettyFormat;
@@ -58,8 +67,6 @@ class Repository extends BaseRepository
         if ($commit->getParentsHash()) {
             $command = 'diff ' . $commitHash . '~1..' . $commitHash;
             $logs = explode("\n", $this->getClient()->run($this, $command));
-        } else {
-            $logs = array_slice($logs, 1);
         }
 
         $commit->setDiffs($this->readDiffLogs($logs));
@@ -117,6 +124,11 @@ class Repository extends BaseRepository
         $lineNumOld = 0;
         $lineNumNew = 0;
         foreach ($logs as $log) {
+            # Skip empty lines
+            if ($log == "") {
+                continue;
+            }
+
             if ('diff' === substr($log, 0, 4)) {
                 if (isset($diff)) {
                     $diffs[] = $diff;
@@ -198,7 +210,14 @@ class Repository extends BaseRepository
     {
         $page = 15 * $page;
         $pager = "--skip=$page --max-count=15";
-        $command = "log $pager --pretty=format:\"<item><hash>%H</hash><short_hash>%h</short_hash><tree>%T</tree><parents>%P</parents><author>%an</author><author_email>%ae</author_email><date>%at</date><commiter>%cn</commiter><commiter_email>%ce</commiter_email><commiter_date>%ct</commiter_date><message><![CDATA[%s]]></message></item>\"";
+        $command =
+                  "log $pager --pretty=format:\"<item><hash>%H</hash>"
+                . "<short_hash>%h</short_hash><tree>%T</tree><parent>%P</parent>"
+                . "<author>%an</author><author_email>%ae</author_email>"
+                . "<date>%at</date><commiter>%cn</commiter>"
+                . "<commiter_email>%ce</commiter_email>"
+                . "<commiter_date>%ct</commiter_date>"
+                . "<message><![CDATA[%s]]></message></item>\"";
 
         if ($file) {
             $command .= " $file";
@@ -222,7 +241,14 @@ class Repository extends BaseRepository
     public function searchCommitLog($query)
     {
         $query = escapeshellarg($query);
-        $command = "log --grep={$query} --pretty=format:\"<item><hash>%H</hash><short_hash>%h</short_hash><tree>%T</tree><parents>%P</parents><author>%an</author><author_email>%ae</author_email><date>%at</date><commiter>%cn</commiter><commiter_email>%ce</commiter_email><commiter_date>%ct</commiter_date><message><![CDATA[%s]]></message></item>\"";
+        $command =
+              "log --grep={$query} --pretty=format:\"<item><hash>%H</hash>"
+            . "<short_hash>%h</short_hash><tree>%T</tree><parent>%P</parent>"
+            . "<author>%an</author><author_email>%ae</author_email>"
+            . "<date>%at</date><commiter>%cn</commiter>"
+            . "<commiter_email>%ce</commiter_email>"
+            . "<commiter_date>%ct</commiter_date>"
+            . "<message><![CDATA[%s]]></message></item>\"";
 
         try {
             $logs = $this->getPrettyFormat($command);
@@ -269,9 +295,9 @@ class Repository extends BaseRepository
         return $searchResults;
     }
 
-    public function getAuthorStatistics()
+    public function getAuthorStatistics($branch)
     {
-        $logs = $this->getClient()->run($this, 'log --pretty=format:"%an||%ae" ' . $this->getHead());
+        $logs = $this->getClient()->run($this, 'log --pretty=format:"%an||%ae" ' . $branch);
 
         if (empty($logs)) {
             throw new \RuntimeException('No statistics available');
@@ -366,3 +392,4 @@ class Repository extends BaseRepository
         return false;
     }
 }
+

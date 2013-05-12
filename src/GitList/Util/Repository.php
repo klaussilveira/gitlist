@@ -161,13 +161,12 @@ class Repository
         return false;
     }
 
-    public function getReadme($repo, $branch = null)
+    public function getReadme($repository, $branch = null)
     {
-        $repository = $this->app['git']->getRepository($this->app['git.repos'] . $repo);
-        if ($branch === null) {
-            $branch = $repository->getHead();
-        }
         $files = $repository->getTree($branch)->output();
+        if ($branch === null) {
+           $branch = $repository->getHead();
+        }
 
         foreach ($files as $file) {
             if (preg_match('/^readme*/i', $file['name'])) {
@@ -220,3 +219,4 @@ class Repository
         return array($branch, $tree);
     }
 }
+

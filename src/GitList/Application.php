@@ -15,6 +15,8 @@ use GitList\Provider\RoutingUtilServiceProvider;
  */
 class Application extends SilexApplication
 {
+    protected $path;
+
     /**
      * Constructor initialize services.
      *
@@ -24,25 +26,35 @@ class Application extends SilexApplication
     public function __construct(Config $config, $root = null)
     {
         parent::__construct();
-
         $app = $this;
-        $root = realpath($root);
+        $this->path = realpath($root);
 
         $this['debug'] = $config->get('app', 'debug');
         $this['filetypes'] = $config->getSection('filetypes');
-        $this['cache.archives'] = $root . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'archives';
+        $this['cache.archives'] = $this->getCachePath() . 'archives';
 
         // Register services
         $this->register(new TwigServiceProvider(), array(
-            'twig.path'       => $root . DIRECTORY_SEPARATOR . 'views',
-            'twig.options'    => array('cache' => $root . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'views'),
+            'twig.path'       => $this->getViewPath(),
+            'twig.options'    => array('cache' => $this->getCachePath() . 'views'),
         ));
+
+        $repositories = $config->get('git', 'repositories');
+        $repositoryCache = $config->get('app', 'cached_repos');
+        if (false === $repositoryCache || empty($repositoryCache)) {
+            $repositoryCache = $this->getCachePath() . 'repos.json';
+        }
+
         $this->register(new GitServiceProvider(), array(
-            'git.client'         => $config->get('git', 'client'),
-            'git.repos'          => $config->get('git', 'repositories'),
-            'git.hidden'         => $config->get('git', 'hidden') ? $config->get('git', 'hidden') : array(),
+            'git.client'      => $config->get('git', 'client'),
+            'git.repos'       => $repositories,
+            'cache.repos'     => $repositoryCache,
+            'ini.file'        => "config.ini",
+            'git.hidden'      => $config->get('git', 'hidden') ?
+                                 $config->get('git', 'hidden') : array(),
             'git.default_branch' => $config->get('git', 'default_branch') ? $config->get('git', 'default_branch') : 'master',
         ));
+
         $this->register(new ViewUtilServiceProvider());
         $this->register(new RepositoryUtilServiceProvider());
         $this->register(new UrlGeneratorServiceProvider());
@@ -66,4 +78,26 @@ class Application extends SilexApplication
             ));
         });
     }
+
+    public function getPath()
+    {
+        return $this->path . DIRECTORY_SEPARATOR;
+    }
+    
+    public function setPath($path)
+    {
+        $this->path = $path;
+        return $this;
+    }
+
+    public function getCachePath()
+    {
+        return $this->path . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
+    }
+
+    public function getViewPath()
+    {
+        return $this->path . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR;
+    }
 }
+

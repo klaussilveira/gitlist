@@ -13,7 +13,7 @@ class BlobController implements ControllerProviderInterface
         $route = $app['controllers_factory'];
 
         $route->get('{repo}/blob/{commitishPath}', function ($repo, $commitishPath) use ($app) {
-            $repository = $app['git']->getRepository($app['git.repos'] . $repo);
+            $repository = $app['git']->getRepository($app['git.repos'], $repo);
 
             list($branch, $file) = $app['util.routing']
                 ->parseCommitishPathParam($commitishPath, $repo);
@@ -27,8 +27,7 @@ class BlobController implements ControllerProviderInterface
             if ($fileType !== 'image' && $app['util.repository']->isBinary($file)) {
                 return $app->redirect($app['url_generator']->generate('blob_raw', array(
                     'repo'   => $repo,
-                    'branch' => $branch,
-                    'file'   => $file,
+                    'commitishPath' => $commitishPath,
                 )));
             }
 
@@ -47,7 +46,7 @@ class BlobController implements ControllerProviderInterface
           ->bind('blob');
 
         $route->get('{repo}/raw/{commitishPath}', function ($repo, $commitishPath) use ($app) {
-            $repository = $app['git']->getRepository($app['git.repos'] . $repo);
+            $repository = $app['git']->getRepository($app['git.repos'], $repo);
 
             list($branch, $file) = $app['util.routing']
                 ->parseCommitishPathParam($commitishPath, $repo);
@@ -59,10 +58,9 @@ class BlobController implements ControllerProviderInterface
             $headers = array();
             if ($app['util.repository']->isBinary($file)) {
                 $headers['Content-Disposition'] = 'attachment; filename="' .  $file . '"';
-                $headers['Content-Transfer-Encoding'] = 'application/octet-stream';
-                $headers['Content-Transfer-Encoding'] = 'binary';
+                $headers['Content-Type'] = 'application/octet-stream';
             } else {
-                $headers['Content-Transfer-Encoding'] = 'text/plain';
+                $headers['Content-Type'] = 'text/plain';
             }
 
             return new Response($blob, 200, $headers);
@@ -73,3 +71,4 @@ class BlobController implements ControllerProviderInterface
         return $route;
     }
 }
+
