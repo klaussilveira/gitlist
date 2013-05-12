@@ -23,10 +23,14 @@ $( function() {
 
 	// the table element into which we will render our graph
 	commitsTable = $('table.network-graph').first(),
-	url = commitsTable.data('source');
+	nextPage = commitsTable.data('source'),
+
+	refreshButton = $('<button class="btn btn-small"></button>').insertAfter(commitsTable.parent('div'))
+	;
 
 	function fetchCommitData( url ) {
-
+		console.log('Starting to fetch commit data from ', url);
+		setRefreshButtonState(true);
 		$.ajax({
 			dataType: "json",
 			url: url,
@@ -35,18 +39,30 @@ $( function() {
 		});
 	}
 
-	// load initial data
-	fetchCommitData( url );
 
-	//only for debug purposes!!
-	var nextPage;
-	window.fcd = function () {
+	function setRefreshButtonState( isCurrentlyLoading ) {
+		var newInner = '<i class="icon-repeat"></i> Load more';
+		if( isCurrentlyLoading ) {
+			newInner = '<i class="icon-refresh"></i> Loading...';
+		}
+
+		refreshButton.html(newInner);
+	};
+
+	var refreshButtonClickHandler = function () {
 		fetchCommitData(nextPage);
 	};
 
+	refreshButton.click(refreshButtonClickHandler);
+
+	// load initial data
+	fetchCommitData( nextPage );
+
 	function handleNetworkDataLoaded( data ) {
+		setRefreshButtonState(false);
 		console.log('Retreived Commit Data', data);
 
+		// store the next page as gotten from pagination
 		nextPage = data.nextPage;
 
 		// no commits or empty commits array? Well, we can't draw a graph of that
@@ -60,6 +76,7 @@ $( function() {
 	}
 
 	function handleNetworkDataError( err ){
+		setRefreshButtonState(false);
 		console.log(err);
 	}
 
@@ -204,6 +221,8 @@ $( function() {
 		var paper = Raphael( drawingArea[0], cfg.laneWidth * maxLanes, cfg.rowHeight);
 		tableRow.data('rjsPaper', paper);
 
+		 commit.tr = tableRow;
+
 		commit.dot = paper.circle( commit.lane.centerX, cfg.rowHeight/2, cfg.dotRadius );
 		commit.dot.attr({
 			fill: commit.lane.color,
@@ -212,74 +231,78 @@ $( function() {
 
 		// render the line from this commit to it's children, but on their lane
 		$.each( commit.children, function ( idx, thisChild ) {
-
-			// for each child,
-			// move upwards in <tr>s, beginning from the "commit" (not: child!)
-			// until the tr.data('theCommit') is thisChild.
-			//
-			// if there is one child only, stay on the commit's lane as long as possible,
-			// but if there is more than one child, switch to the child's lane ASAP.
-			// this is to display merges and forks where they happen (ie. at a commit node/ a dot), rather than
-			// "forking" from a line
-
-			var nRow = tableRow.prev('tr'),
-				// lineX holds the X position the line will be on while it's straight
-				lineLane = commit.lane;
-
-			if( commit.isFork ) {
-				lineLane = thisChild.lane;
-			}
-
-			// before iterating upwards as described above, the line part from the commit to the adequate lane
-			// must be drawn
-			tableRow.data('rjsPaper').path(
-					getSvgLineString( commit.lane.centerX, cfg.rowHeight/2,
-						lineLane.centerX, 0) )
-				.attr({
-					stroke: lineLane.color, "stroke-width": 2
-				})
-				.data('theCommit', commit).data('theChild', thisChild).click(lineClickHandler)
-				.toBack();
-
-			while( nRow.length > 0 ) {
-
-				if ( nRow.data('theCommit') === thisChild ) {
-					// we are done, render only the bottom half line towards the child
-					// Starting at lineX, but moving to thisChild's lane.
-					nRow.data('rjsPaper')
-						.path(
-							getSvgLineString( lineLane.centerX, cfg.rowHeight,
-											  thisChild.lane.centerX, cfg.rowHeight/2) )
-						.attr({
-							stroke: lineLane.color, "stroke-width": 2
-						})
-						.data('theCommit', commit).data('theChild', thisChild).click(lineClickHandler)
-						.toBack();
-					return;
-				} else {
-					// this is just a common "throughput" line part from bottom of the TR to top without any X movement
-					//
-					// maybe the paper isn't big enough yet, so expand it first...
-					nRow.data('rjsPaper')
-						.path(
-							getSvgLineString( lineLane.centerX, 0,
-											  lineLane.centerX, cfg.rowHeight) )
-						.attr({
-							stroke: lineLane.color, "stroke-width": 2
-						})
-						.data('theCommit', commit).data('theChild', thisChild).click(lineClickHandler)
-						.toBack();
-					nRow = nRow.prev('tr');
-				}
-			}
+			connectDots( commit, thisChild );
 		});
+	}
+
+	function connectDots( firstCommit, secondCommit ) {
+		var tableRow = firstCommit.tr;
+		// for each child,
+		// move upwards in <tr>s, beginning from the "commit" (not: child!)
+		// until the tr.data('theCommit') is thisChild.
+		//
+		// if there is one child only, stay on the commit's lane as long as possible,
+		// but if there is more than one child, switch to the child's lane ASAP.
+		// this is to display merges and forks where they happen (ie. at a commit node/ a dot), rather than
+		// "forking" from a line
+
+		var nRow = tableRow.prev('tr'),
+		// lineX holds the X position the line will be on while it's straight
+			lineLane = firstCommit.lane;
+
+		if( firstCommit.isFork ) {
+			lineLane = secondCommit.lane;
+		}
+
+		// before iterating upwards as described above, the line part from the commit to the adequate lane
+		// must be drawn
+		tableRow.data('rjsPaper').path(
+				getSvgLineString( firstCommit.lane.centerX, cfg.rowHeight/2,
+					lineLane.centerX, 0) )
+			.attr({
+				stroke: lineLane.color, "stroke-width": 2
+			})
+			.data('theCommit', firstCommit).data('theChild', secondCommit).click(lineClickHandler)
+			.toBack();
+
+		while( nRow.length > 0 ) {
+
+			if ( nRow.data('theCommit') === secondCommit ) {
+				// we are done, render only the bottom half line towards the child
+				// Starting at lineX, but moving to thisChild's lane.
+				nRow.data('rjsPaper')
+					.path(
+						getSvgLineString( lineLane.centerX, cfg.rowHeight,
+							secondCommit.lane.centerX, cfg.rowHeight/2) )
+					.attr({
+						stroke: lineLane.color, "stroke-width": 2
+					})
+					.data('theCommit', firstCommit).data('theChild', secondCommit).click(lineClickHandler)
+					.toBack();
+				return;
+			} else {
+				// this is just a common "throughput" line part from bottom of the TR to top without any X movement
+				//
+				// maybe the paper isn't big enough yet, so expand it first...
+				nRow.data('rjsPaper')
+					.path(
+						getSvgLineString( lineLane.centerX, 0,
+							lineLane.centerX, cfg.rowHeight) )
+					.attr({
+						stroke: lineLane.color, "stroke-width": 2
+					})
+					.data('theCommit', firstCommit).data('theChild', secondCommit).click(lineClickHandler)
+					.toBack();
+				nRow = nRow.prev('tr');
+			}
+		}
 	}
 
 	function getSvgLineString( fromX, fromY, toX, toY ) {
 		return 'M' + fromX + ',' + fromY + 'L' + toX + ',' + toY;
 	}
 
-	function lineClickHandler(evt) {
+	function lineClickHandler() {
 		console.log('Hi, I am connecting', this.data('theCommit'), 'with', this.data('theChild'));
 
 		flashDot( this.data('theCommit').dot );
@@ -303,7 +326,7 @@ $( function() {
 			'number': laneNumber,
 			'centerX': ( laneNumber * cfg.laneWidth ) + (cfg.laneWidth/2),
 			'color': cfg.laneColors[ laneNumber % cfg.laneColors.length ]
-		}
+		};
 	}
 
 
