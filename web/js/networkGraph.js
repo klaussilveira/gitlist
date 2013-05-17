@@ -221,7 +221,6 @@
 		};
 
 		that.appendTo = function(where) {
-			console.log(where);
 			el.appendTo(where);
 
 			return that;
@@ -244,11 +243,8 @@
 
 		that.updateIndicators = function() {
 			if( isLoading ) {
-				console.log($(indicatorElements));
 				$(indicatorElements).addClass('loading-commits');
 			} else {
-				console.log('not loading');
-				console.log($(indicatorElements));
 				$(indicatorElements).removeClass('loading-commits');
 			}
 		};
