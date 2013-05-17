@@ -32,8 +32,9 @@ class NetworkController implements ControllerProviderInterface
 
 			// format the commits for the json reponse
 			$jsonFormattedCommits = array();
+
 			foreach( $commits as $commit ) {
-				/** @var $commit Commit */
+
 				$jsonFormattedCommits[$commit->getHash()] = array(
 					'hash' => $commit->getHash(),
 					'parentsHash' => $commit->getParentsHash(),
@@ -41,7 +42,9 @@ class NetworkController implements ControllerProviderInterface
 					'message' => htmlentities( $commit->getMessage() ),
 					'author' => array(
 						'name' => $commit->getAuthor()->getName(),
-						'email' => $commit->getAuthor()->getEmail()
+						'email' => $commit->getAuthor()->getEmail(),
+						// due to the lack of a inbuilt javascript md5 mechanism, build the full avatar url on the php side
+						'image' => 'http://gravatar.com/avatar/' . md5(strtolower( $commit->getAuthor()->getEmail()) ) . '?s=40'
 					)
 				);
 			}

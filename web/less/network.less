@@ -19,7 +19,12 @@
 			float: left;
 			padding: 4px 0;
 			font-size: 14px;
+
+			&.loading-commits:after {
+				content: ' - Loading...';
+			}
 		}
+
 	}
 	pre {
 		margin: 0;
@@ -31,11 +36,33 @@
 		height: 400px;
 		overflow: hidden;
 		cursor: move;
+		position: relative;
 
-		.network-tree-segment {
-			position: relative;
-			height: 40px;
-			padding: 0;
+		.network-commit-overlay {
+			position: absolute;
+			width: 400px;
+			top: 0;
+			left: 0;
+			padding: 8px;
+			margin: 0 0 @baseLineHeight;
+			list-style: none;
+			#gradient > .vertical(@white, #f5f5f5);
+			border: 1px solid #ddd;
+
+			.border-radius(3px);
+			.box-shadow(~"0 1px 0 rgba(255,255,255,0.4), 0 0 10px rgba(0,0,0,0.1)");
+
+			img {
+				float: left;
+				margin-right: 8px;
+			}
+
+			&>h4,
+			&>p {
+				padding-left: 48px;
+			}
+
+
 		}
 
 	}
