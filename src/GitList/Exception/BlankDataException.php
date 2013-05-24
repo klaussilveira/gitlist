@@ -2,4 +2,7 @@
 
 namespace GitList\Exception;
 
-class BlankDataException extends \RuntimeException {}
+class BlankDataException extends \RuntimeException
+{
+    
+}

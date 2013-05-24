@@ -17,6 +17,7 @@
         {% endblock %}
     {% endembed %}
 
+    {% if files is not empty %}
     <table class="tree">
         <thead>
             <tr>
@@ -54,6 +55,9 @@
             {% endfor %}
         </tbody>
     </table>
+    {% else %}
+        <p>This repository is empty.</p>
+    {% endif %}
     {% if readme is defined and readme is not empty %}
         <div class="readme-view">
             <div class="md-header">
