@@ -7,12 +7,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/klaussilveira/gitter.git",
-                "reference": "47c7aba9465c22595e7424ba989631aa80ccbea0"
+                "reference": "084dbe567d07a25ca04378782afffee7d6bb3b88"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/klaussilveira/gitter/zipball/47c7aba9465c22595e7424ba989631aa80ccbea0",
-                "reference": "47c7aba9465c22595e7424ba989631aa80ccbea0",
+                "url": "https://api.github.com/repos/klaussilveira/gitter/zipball/084dbe567d07a25ca04378782afffee7d6bb3b88",
+                "reference": "084dbe567d07a25ca04378782afffee7d6bb3b88",
                 "shasum": ""
             },
             "require": {
