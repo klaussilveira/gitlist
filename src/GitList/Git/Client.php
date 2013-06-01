@@ -6,17 +6,95 @@ use Gitter\Client as BaseClient;
 
 class Client extends BaseClient
 {
-    protected $default_branch;
+    protected $defaultBranch;
+    protected $hidden;
 
     public function __construct($options = null)
     {
-        parent::__construct($options);
+        parent::__construct($options['path']);
+        $this->setDefaultBranch($options['default_branch']);
+        $this->setHidden($options['hidden']);
+    }
 
-        if (!isset($options['default_branch'])) {
-            $options['default_branch'] = 'master';
+    public function getRepositoryFromName($paths, $repo)
+    {
+        $repositories = $this->getRepositories($paths);
+        $path = $repositories[$repo]['path'];
+
+        return $this->getRepository($path);
+    }
+
+    /**
+     * Searches for valid repositories on the specified path
+     *
+     * @param  array $paths Array of paths where repositories will be searched
+     * @return array Found repositories, containing their name, path and description
+     */
+    public function getRepositories($paths)
+    {
+        $allRepositories = array();
+
+        foreach ($paths as $path) {
+            $repositories = $this->recurseDirectory($path);
+
+            if (empty($repositories)) {
+                throw new \RuntimeException('There are no GIT repositories in ' . $path);
+            }
+
+            $allRepositories = array_merge($allRepositories, $repositories);
         }
 
-        $this->setDefaultBranch($options['default_branch']);
+        $allRepositories = array_unique($allRepositories, SORT_REGULAR);
+        asort($allRepositories);
+
+        return $allRepositories;
+    }
+
+    private function recurseDirectory($path)
+    {
+        $dir = new \DirectoryIterator($path);
+
+        $repositories = array();
+
+        foreach ($dir as $file) {
+            if ($file->isDot()) {
+                continue;
+            }
+
+            if (strrpos($file->getFilename(), '.') === 0) {
+                continue;
+            }
+
+            if ($file->isDir()) {
+                $isBare = file_exists($file->getPathname() . '/HEAD');
+                $isRepository = file_exists($file->getPathname() . '/.git/HEAD');
+
+                if ($isRepository || $isBare) {
+                    if (in_array($file->getPathname(), $this->getHidden())) {
+                        continue;
+                    }
+
+                    if ($isBare) {
+                        $description = $file->getPathname() . '/description';
+                    } else {
+                        $description = $file->getPathname() . '/.git/description';
+                    }
+
+                    if (file_exists($description)) {
+                        $description = file_get_contents($description);
+                    } else {
+                        $description = null;
+                    }
+
+                    $repositories[$file->getFilename()] = array('name' => $file->getFilename(), 'path' => $file->getPathname(), 'description' => $description);
+                    continue;
+                } else {
+                    $repositories = array_merge($repositories, $this->recurseDirectory($file->getPathname()));
+                }
+            }
+        }
+
+        return $repositories;
     }
 
     /**
@@ -26,7 +104,7 @@ class Client extends BaseClient
      */
     protected function setDefaultBranch($branch)
     {
-        $this->default_branch = $branch;
+        $this->defaultBranch = $branch;
 
         return $this;
     }
@@ -36,14 +114,35 @@ class Client extends BaseClient
      */
     public function getDefaultBranch()
     {
-        return $this->default_branch;
+        return $this->defaultBranch;
     }
 
     /**
-     * Creates a new repository on the specified path
+     * Get hidden repository list
      *
-     * @param  string     $path Path where the new repository will be created
-     * @return Repository Instance of Repository
+     * @return array List of repositories to hide
+     */
+    protected function getHidden()
+    {
+        return $this->hidden;
+    }
+
+    /**
+     * Set the hidden repository list
+     *
+     * @param array $hidden List of repositories to hide
+     */
+    protected function setHidden($hidden)
+    {
+        $this->hidden = $hidden;
+
+        return $this;
+    }
+
+    /**
+     * Overloads the parent::createRepository method for the correct Repository class instance
+     * 
+     * {@inheritdoc}
      */
     public function createRepository($path, $bare = null)
     {
@@ -57,23 +156,14 @@ class Client extends BaseClient
     }
 
     /**
-     * Opens a specified repository
-     *
-     * @param  array      $repos Array of items describing configured repositories
-     * @param  string     $repo  Name of repository we are currently handling
-     * @return Repository Instance of Repository
+     * Overloads the parent::getRepository method for the correct Repository class instance
+     * 
+     * {@inheritdoc}
      */
-    public function getRepository($repos, $repo)
+    public function getRepository($path)
     {
-        $repotmp = $this->getRepositoryCached($repos, $repo);
-        $path = $repotmp->getPath();
-
         if (!file_exists($path) || !file_exists($path . '/.git/HEAD') && !file_exists($path . '/HEAD')) {
             throw new \RuntimeException('There is no GIT repository at ' . $path);
-        }
-
-        if (in_array($path, $this->getHidden())) {
-            throw new \RuntimeException('You don\'t have access to this repository');
         }
 
         return new Repository($path, $this);

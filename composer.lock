@@ -1,18 +1,22 @@
 {
-    "hash": "e1fd62caf104a8cbb216cdb0aa2fe317",
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
+    ],
+    "hash": "3b87a5ccc4819475fffa9f49284e65a6",
     "packages": [
         {
             "name": "klaussilveira/gitter",
-            "version": "dev-master",
+            "version": "0.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/klaussilveira/gitter.git",
-                "reference": "47c7aba9465c22595e7424ba989631aa80ccbea0"
+                "reference": "0.2.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/klaussilveira/gitter/zipball/47c7aba9465c22595e7424ba989631aa80ccbea0",
-                "reference": "47c7aba9465c22595e7424ba989631aa80ccbea0",
+                "url": "https://api.github.com/repos/klaussilveira/gitter/zipball/0.2.0",
+                "reference": "0.2.0",
                 "shasum": ""
             },
             "require": {
@@ -47,7 +51,7 @@
                 "git",
                 "vcs"
             ],
-            "time": "2013-04-03 13:16:26"
+            "time": "2013-06-01 13:32:37"
         },
         {
             "name": "pimple/pimple",
@@ -1217,12 +1221,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/DomCrawler.git",
-                "reference": "4639cf28884df5595703153802d74d7384b70296"
+                "reference": "09f0cd5980511ee77c2e8142405ccd5c867506b9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/DomCrawler/zipball/4639cf28884df5595703153802d74d7384b70296",
-                "reference": "4639cf28884df5595703153802d74d7384b70296",
+                "url": "https://api.github.com/repos/symfony/DomCrawler/zipball/09f0cd5980511ee77c2e8142405ccd5c867506b9",
+                "reference": "09f0cd5980511ee77c2e8142405ccd5c867506b9",
                 "shasum": ""
             },
             "require": {
@@ -1232,12 +1236,12 @@
                 "symfony/css-selector": ">=2.0,<3.0"
             },
             "suggest": {
-                "symfony/css-selector": "2.2.*"
+                "symfony/css-selector": ""
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.3-dev"
+                    "dev-master": "2.4-dev"
                 }
             },
             "autoload": {
@@ -1261,7 +1265,7 @@
             ],
             "description": "Symfony DomCrawler Component",
             "homepage": "http://symfony.com",
-            "time": "2013-04-01 08:07:30"
+            "time": "2013-05-27 14:49:42"
         },
         {
             "name": "symfony/finder",
@@ -1487,8 +1491,7 @@
     ],
     "minimum-stability": "dev",
     "stability-flags": {
-        "silex/silex": 20,
-        "klaussilveira/gitter": 20
+        "silex/silex": 20
     },
     "platform": [
 

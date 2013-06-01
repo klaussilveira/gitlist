@@ -24,7 +24,7 @@ class Routing
     public function parseCommitishPathParam($commitishPath, $repo)
     {
         $app = $this->app;
-        $repository = $app['git']->getRepository($app['git.repos'], $repo);
+        $repository = $app['git']->getRepositoryFromName($app['git.repos'], $repo);
 
         $commitish = null;
         $path = null;
@@ -105,7 +105,7 @@ class Routing
             $self = $this;
             $quotedPaths = array_map(
                function ($repo) use ($app, $self) {
-                    $repoName =  $repo['name'] ;
+                    $repoName = $repo['name'];
                     //Windows
                     if ($self->isWindows()){
                        $repoName = str_replace('\\', '\\\\',$repoName);
@@ -131,12 +131,14 @@ class Routing
 
     public function isWindows()
     {
-      switch(PHP_OS){
-        case  'WIN32':
-        case  'WINNT':
-        case  'Windows': return true;
-        default : return false;
-      }
+        switch (PHP_OS) {
+            case 'WIN32':
+            case 'WINNT':
+            case 'Windows':
+                return true;
+            default:
+                return false;
+        }
     }
 
     /**

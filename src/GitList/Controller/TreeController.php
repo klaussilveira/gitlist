@@ -14,7 +14,7 @@ class TreeController implements ControllerProviderInterface
         $route = $app['controllers_factory'];
 
         $route->get('{repo}/tree/{commitishPath}/', $treeController = function ($repo, $commitishPath = '') use ($app) {
-            $repository = $app['git']->getRepository($app['git.repos'], $repo);
+            $repository = $app['git']->getRepositoryFromName($app['git.repos'], $repo);
             if (!$commitishPath) {
                 $commitishPath = $repository->getHead();
             }
@@ -48,7 +48,7 @@ class TreeController implements ControllerProviderInterface
           ->bind('tree');
 
         $route->post('{repo}/tree/{branch}/search', function (Request $request, $repo, $branch = '', $tree = '') use ($app) {
-            $repository = $app['git']->getRepository($app['git.repos'], $repo);
+            $repository = $app['git']->getRepositoryFromName($app['git.repos'], $repo);
             if (!$branch) {
                 $branch = $repository->getHead();
             }
@@ -74,7 +74,7 @@ class TreeController implements ControllerProviderInterface
         # Intentionally before next statement, because order appears
         # to be important, and the other statement got precedence previously.
         $route->get('{repo}/{format}ball/{branch}', function($repo, $format, $branch) use ($app) {
-            $repository = $app['git']->getRepository($app['git.repos'], $repo);
+            $repository = $app['git']->getRepositoryFromName($app['git.repos'], $repo);
 
             $tree = $repository->getBranchTree($branch);
 

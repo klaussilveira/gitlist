@@ -23,15 +23,12 @@ class MainController implements ControllerProviderInterface
 
 
         $route->get('/refresh', function(Request $request) use ($app ) {
-            $app['git']->deleteCached();
-
             # Go back to calling page
             return $app->redirect($request->headers->get('Referer'));
         })->bind('refresh');
 
-
         $route->get('{repo}/stats/{branch}', function($repo, $branch) use ($app) {
-            $repository = $app['git']->getRepository($app['git.repos'], $repo);
+            $repository = $app['git']->getRepositoryFromName($app['git.repos'], $repo);
 
             if ($branch === null) {
                 $branch = $repository->getHead();
@@ -54,7 +51,7 @@ class MainController implements ControllerProviderInterface
           ->bind('stats');
 
         $route->get('{repo}/{branch}/rss/', function($repo, $branch) use ($app) {
-            $repository = $app['git']->getRepository($app['git.repos'], $repo);
+            $repository = $app['git']->getRepositoryFromName($app['git.repos'], $repo);
 
             if ($branch === null) {
                 $branch = $repository->getHead();
@@ -77,4 +74,3 @@ class MainController implements ControllerProviderInterface
         return $route;
     }
 }
-
