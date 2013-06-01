@@ -65,6 +65,10 @@ class Client extends BaseClient
                 continue;
             }
 
+            if (!$file->isReadable()) {
+                continue;
+            }
+
             if ($file->isDir()) {
                 $isBare = file_exists($file->getPathname() . '/HEAD');
                 $isRepository = file_exists($file->getPathname() . '/.git/HEAD');
