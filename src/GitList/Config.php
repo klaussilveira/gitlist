@@ -13,19 +13,15 @@ class Config
         }
 
         $data = parse_ini_file($file, true);
-        
-        # Ensure that repositories item is an array
-        if (!is_array($data['git']['repositories'])) {
-            $data['git']['repositories'] = array($data['git']['repositories']);
-        }
+        $config = new static($data);
+        $config->validateOptions();
 
-        return new static($data);
+        return $config;
     }
 
-    public function __construct($data)
+    public function __construct($data = array())
     {
         $this->data = $data;
-        $this->validateOptions();
     }
 
     public function get($section, $option)
@@ -58,10 +54,6 @@ class Config
     protected function validateOptions()
     {
         $repositories = $this->get('git', 'repositories');
-
-        if (!is_array($repositories)) {
-            return;
-        }
 
         $atLeastOneOk = false;
         $atLeastOneWrong = false;

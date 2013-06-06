@@ -2,13 +2,12 @@
 
 use Silex\WebTestCase;
 use Symfony\Component\Filesystem\Filesystem;
-use Gitter\Client;
+use GitList\Git\Client;
 
 class InterfaceTest extends WebTestCase
 {
     protected static $tmpdir;
     protected static $gitPath;
-    protected static $cached_repos;
 
     public static function setUpBeforeClass()
     {
@@ -31,13 +30,11 @@ class InterfaceTest extends WebTestCase
 
         $options['path'] = getenv('GIT_CLIENT') ?: '/usr/bin/git';
         $options['hidden'] = array(self::$tmpdir . '/hiddenrepo');
+        $options['default_branch'] = 'master';
         $options['ini.file'] = "config.ini";
 
-        $cached_dir = self::$tmpdir . DIRECTORY_SEPARATOR . 'cache';
-        $fs->mkdir($cached_dir);
-        self::$cached_repos = $cached_dir . DIRECTORY_SEPARATOR . 'repos.json';
-
-        $options['cache.repos'] =  self::$cached_repos;
+        $cacheDir = self::$tmpdir . DIRECTORY_SEPARATOR . 'cache';
+        $fs->mkdir($cacheDir);
 
         $git = new Client($options);
 
@@ -45,7 +42,7 @@ class InterfaceTest extends WebTestCase
 
         // GitTest repository fixture
         $git->createRepository(self::$tmpdir . 'GitTest');
-        $repository = $git->getRepositoryCached(self::$tmpdir, 'GitTest');
+        $repository = $git->getRepository(self::$tmpdir . 'GitTest');
         file_put_contents(self::$tmpdir . 'GitTest/README.md', "## GitTest\nGitTest is a *test* repository!");
         file_put_contents(self::$tmpdir . 'GitTest/test.php', "<?php\necho 'Hello World'; // This is a test");
         $repository->setConfig('user.name', 'Luke Skywalker');
@@ -58,7 +55,7 @@ class InterfaceTest extends WebTestCase
 
         // foobar repository fixture
         $git->createRepository(self::$tmpdir . 'foobar');
-        $repository = $git->getRepositoryCached(self::$tmpdir, 'foobar');
+        $repository = $git->getRepository(self::$tmpdir . 'foobar');
 
         file_put_contents(self::$tmpdir . 'foobar/bar.json', "{\n\"name\": \"foobar\"\n}");
         file_put_contents(self::$tmpdir . 'foobar/.git/description', 'This is a test repo!');
@@ -77,7 +74,7 @@ class InterfaceTest extends WebTestCase
         $nested_dir = self::$tmpdir . 'nested/';
         $fs->mkdir($nested_dir);
         $git->createRepository($nested_dir . 'NestedRepo');
-        $repository = $git->getRepositoryCached($nested_dir, 'NestedRepo');
+        $repository = $git->getRepository($nested_dir . 'NestedRepo');
         file_put_contents($nested_dir . 'NestedRepo/.git/description', 'This is a NESTED test repo!');
         file_put_contents($nested_dir . 'NestedRepo/README.txt', 'NESTED TEST REPO README');
         $repository->setConfig('user.name', 'Luke Skywalker');
@@ -93,7 +90,7 @@ class InterfaceTest extends WebTestCase
 
         // master-less repository fixture
         $git->createRepository(self::$tmpdir . 'develop');
-        $repository = $git->getRepositoryCached(self::$tmpdir, 'develop');
+        $repository = $git->getRepository(self::$tmpdir . 'develop');
         $repository->setConfig('user.name', 'Luke Skywalker');
         $repository->setConfig('user.email', 'luke@rebel.org');
         file_put_contents(self::$tmpdir . 'develop/README.md', "## develop\ndevelop is a *test* repository!");
@@ -110,25 +107,23 @@ class InterfaceTest extends WebTestCase
 
         // Detached HEAD repository fixture
         $git->createRepository(self::$tmpdir . 'detached-head');
-        $repository = $git->getRepositoryCached(self::$tmpdir, 'detached-head');
-#        $repository = $git->getRepository(self::$tmpdir . '/detached-head');
+        $repository = $git->getRepository(self::$tmpdir . 'detached-head');
         $repository->setConfig('user.name', 'Luke Skywalker');
         $repository->setConfig('user.email', 'luke@rebel.org');
         file_put_contents(self::$tmpdir . 'detached-head/README.md', "## detached head\ndetached-head is a *test* repository!");
         $repository->addAll();
         $repository->commit("First commit");
         $repository->checkout('HEAD');
-
-        $git->deleteCached();
     }
 
     public function createApplication()
     {
-        $config = GitList\Config::fromFile('config.ini');
-        $config->set('app', 'cached_repos', self::$cached_repos);
-        $config->set('git', 'repositories', self::$tmpdir);
+        $config = new GitList\Config;
         $config->set('app', 'debug', true);
+        $config->set('app', 'debug', false);
         $config->set('git', 'client', self::$gitPath);
+        $config->set('git', 'default_branch', 'master');
+        $config->set('git', 'repositories', array(self::$tmpdir));
 
         $app = require 'boot.php';
         return $app;
@@ -141,15 +136,28 @@ class InterfaceTest extends WebTestCase
 
         $this->assertTrue($client->getResponse()->isOk());
         $this->assertCount(1, $crawler->filter('title:contains("GitList")'));
+
         $this->assertCount(1, $crawler->filter('div.repository-header a:contains("GitTest")'));
         $this->assertEquals('/GitTest/', $crawler->filter('.repository-header a')->eq(0)->attr('href'));
         $this->assertEquals('/GitTest/master/rss/', $crawler->filter('.repository-header a')->eq(1)->attr('href'));
-        $this->assertEquals('/NestedRepo/', $crawler->filter('.repository-header a')->eq(2)->attr('href'));
-        $this->assertEquals('/NestedRepo/master/rss/', $crawler->filter('.repository-header a')->eq(3)->attr('href'));
+
+        $this->assertCount(1, $crawler->filter('div.repository-header a:contains("detached-head")'));
+        $this->assertEquals('/detached-head/', $crawler->filter('.repository-header a')->eq(2)->attr('href'));
+        $this->assertEquals('/detached-head/master/rss/', $crawler->filter('.repository-header a')->eq(3)->attr('href'));
+
+        $this->assertCount(1, $crawler->filter('div.repository-header a:contains("develop")'));
+        $this->assertEquals('/develop/', $crawler->filter('.repository-header a')->eq(4)->attr('href'));
+        $this->assertEquals('/develop/master/rss/', $crawler->filter('.repository-header a')->eq(5)->attr('href'));
+
         $this->assertCount(1, $crawler->filter('div.repository-header:contains("foobar")'));
         $this->assertCount(1, $crawler->filter('div.repository-body:contains("This is a test repo!")'));
-        $this->assertEquals('/foobar/', $crawler->filter('.repository-header a')->eq(8)->attr('href'));
-        $this->assertEquals('/foobar/master/rss/', $crawler->filter('.repository-header a')->eq(9)->attr('href'));
+        $this->assertEquals('/foobar/', $crawler->filter('.repository-header a')->eq(6)->attr('href'));
+        $this->assertEquals('/foobar/master/rss/', $crawler->filter('.repository-header a')->eq(7)->attr('href'));
+
+        $this->assertCount(1, $crawler->filter('div.repository-header a:contains("nested/NestedRepo")'));
+        $this->assertEquals('/nested/NestedRepo/', $crawler->filter('.repository-header a')->eq(8)->attr('href'));
+        $this->assertEquals('/nested/NestedRepo/master/rss/', $crawler->filter('.repository-header a')->eq(9)->attr('href'));
+        $this->assertCount(1, $crawler->filter('div.repository-body:contains("This is a NESTED test repo!")'));
     }
 
     public function testRepositoryPage()
@@ -282,7 +290,7 @@ class InterfaceTest extends WebTestCase
     {
         $client = $this->createClient();
 
-        $client->request('GET', '/NestedRepo/');
+        $client->request('GET', '/nested/NestedRepo/');
         $response = $client->getResponse();
 
         $this->assertTrue($response->isOk());
@@ -301,7 +309,7 @@ class InterfaceTest extends WebTestCase
     {
         $client = $this->createClient();
 
-        $crawler = $client->request('GET', '/NestedRepo/testing/');
+        $crawler = $client->request('GET', '/nested/NestedRepo/testing/');
         $this->assertTrue($client->getResponse()->isOk());
         $this->assertRegexp('/NESTED TEST BRANCH README/', $client->getResponse()->getContent());
     }
