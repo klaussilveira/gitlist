@@ -61,8 +61,22 @@
 			&>p {
 				padding-left: 48px;
 			}
+		}
 
-
+		&.loading-commits:before {
+			content: "";
+			display: block;
+			height: 100%;
+			width: 80px;
+			box-sizing: border-box;
+			padding: 10px;
+			font-weight: bold;
+			position: absolute;
+			left: 0;
+			top: 0;
+			color: #555;
+			background: rgba(255,255,255,.8) url("@{ajaxLoaderPath}") no-repeat center;
+			z-index: 2000;
 		}
 
 	}

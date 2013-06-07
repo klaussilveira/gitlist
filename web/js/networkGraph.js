@@ -8,7 +8,6 @@
 
 ( function( $ ){
 	// global config
-
 	var cfg = {
 		laneColors: ['#ff0000', '#0000FF', '#00FFFF', '#00FF00', '#FFFF00', '#ff00ff'],
 		laneHeight: 20,
@@ -26,6 +25,7 @@
 	$.fn.dragScrollr = function() {
 		var lastX,
 			lastY,
+			hotZone = 200,
 			container = this.first(),
 			domElement = container[0]; // so basically container without the jQuery stuff
 
@@ -40,20 +40,25 @@
 		function handleMouseMove(evt) {
 			evt.preventDefault();
 
+			// save the last scroll position to figure out whether the scroll event has entered the hot zone
+			var lastScrollLeft = domElement.scrollLeft;
 			domElement.scrollLeft = domElement.scrollLeft + lastX - evt.pageX;
 			domElement.scrollTop = domElement.scrollTop + lastY - evt.pageY;
 
-			// unify scroll event
-			container.trigger('dragscroll');
+			if( lastScrollLeft > hotZone && domElement.scrollLeft <= hotZone ) {
+				container.trigger('enterHotZone');
+			}
+
+			// when we move into the hot zone
 
 			lastX = evt.pageX;
 			lastY = evt.pageY;
 		}
 
 		function handleMouseUp(evt) {
-			container.off('mousemove', handleMouseMove);
-			container.off('mouseup', handleMouseUp);
-			container.off('mouseleave', handleMouseUp);
+			container.off('mousemove', handleMouseMove)
+				.off('mouseup', handleMouseUp)
+				.off('mouseleave', handleMouseUp);
 		}
 
 		// now bind the initial event
@@ -229,7 +234,7 @@
 		that.positionTo = function( x, y ) {
 			el.css('left', x + 'px');
 			el.css('top', y + 'px');
-		}
+		};
 
 
 		return that;
@@ -242,6 +247,7 @@
 			indicatorElements;
 
 		that.updateIndicators = function() {
+			console.log(indicatorElements);
 			if( isLoading ) {
 				$(indicatorElements).addClass('loading-commits');
 			} else {
@@ -253,8 +259,10 @@
 			if( !indicatorElements ) {
 				indicatorElements = $(el);
 			} else {
-				indicatorElements.add(el);
+				indicatorElements = indicatorElements.add(el);
 			}
+
+			console.log(indicatorElements.length);
 		};
 
 		that.unbindIndicator = function( el ) {
@@ -294,11 +302,15 @@
 			});
 		};
 
+		that.hasMore = function () {
+			return ( !!nextPage );
+		};
+
 		return that;
 	}
 
 
-	// the ('document').ready...
+	// the $(document).ready starting point
 	$( function() {
 
 		// initialise network graph only when there is one network graph container on the page
@@ -307,7 +319,7 @@
 		}
 
 		var
-		// the table element into which we will render our graph
+		// the element into which we will render our graph
 			commitsGraph = $('div.network-graph').first(),
 			laneManager = graphLaneManager(),
 			dataRetriever = commitDataRetriever( commitsGraph.data('source'), handleCommitsRetrieved  ),
@@ -318,9 +330,11 @@
 			detailOverlay = commitDetailOverlay();
 
 		dataRetriever.bindIndicator( $('.network-header .meta') );
+		dataRetriever.bindIndicator( commitsGraph );
 		detailOverlay.appendTo( commitsGraph );
 
-		function refreshButtonClickHandler() {
+
+		function handleEnterHotZone() {
 			dataRetriever.retrieve();
 		}
 
@@ -421,6 +435,9 @@
 
 			if (  neededWidth > paper.width ) {
 				extendPaper( neededWidth, paper.height  );
+			} else if( dataRetriever.hasMore() ) {
+				// this is the case when we have not loaded enough commits to fill the paper yet. Get some more then...
+				dataRetriever.retrieve();
 			}
 
 			$.each( commits, function ( index, commit) {
@@ -506,8 +523,8 @@
 		function handleCommitMouseover(evt) {
 			detailOverlay.setCommit( this.data('commit'))
 				.show()
-				.positionTo( evt.pageX - commitsGraph.position().left - 200,
-							 evt.pageY - commitsGraph.position().top + 10);
+				.positionTo( evt.pageX - commitsGraph.position().left + commitsGraph.scrollLeft() - 200,
+							 evt.pageY - commitsGraph.position().top + commitsGraph.scrollLeft() + 10);
 		}
 
 		function handleCommitMouseout(evt) {
@@ -540,13 +557,9 @@
 			});
 		}
 
-		refreshButton.click(refreshButtonClickHandler);
-
 		commitsGraph.dragScrollr();
+		commitsGraph.on('enterHotZone', handleEnterHotZone);
 		// load initial data
 		dataRetriever.retrieve( );
-
 	});
-
-
 }( jQuery ));

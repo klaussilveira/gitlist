@@ -10,31 +10,39 @@ use Symfony\Component\HttpFoundation\Request;
 
 class NetworkController implements ControllerProviderInterface
 {
+	/***
+	 * Reformat and prepare the commits to include everything the networkgraph must know about them
+	 *
+	 * @param $commits array
+	 */
+	private static function commitsToJsonArray( $commits ) {
+		$jsonFormattedCommits = array();
+
+		foreach( $commits as $commit ) {
+
+		}
+
+		return $jsonFormattedCommits;
+	}
+
     public function connect(Application $app)
     {
 		$route = $app['controllers_factory'];
 
 		$route->get('{repo}/network/{commitishPath}/{page}.json', function($repo, $commitishPath, $page) use ($app) {
 			/** @var $repository Repository */
-			$repository = $app['git']->getRepository($app['git.repos'], $repo);
+			$repository = $app['git']->getRepositoryFromName($app['git.repos'], $repo);
 
 			if ($commitishPath === null) {
 				$commitishPath = $repository->getHead();
 			}
 
-			list($branch, $file) = $app['util.routing']
-				->parseCommitishPathParam($commitishPath, $repo);
-
-			list($branch, $file) = $app['util.repository']->extractRef($repository, $branch, $file);
-
 			$pager = $app['util.view']->getPager($page, $repository->getTotalCommits($commitishPath));
 			$commits = $repository->getPaginatedCommits($commitishPath, $pager['current']);
 
-			// format the commits for the json reponse
 			$jsonFormattedCommits = array();
 
 			foreach( $commits as $commit ) {
-
 				$jsonFormattedCommits[$commit->getHash()] = array(
 					'hash' => $commit->getHash(),
 					'parentsHash' => $commit->getParentsHash(),
@@ -58,7 +66,7 @@ class NetworkController implements ControllerProviderInterface
 
 			return $app->json(array(
 				'repo'           => $repo,
-				'commitishPath'         => $commitishPath,
+				'commitishPath'	 => $commitishPath,
 				'nextPage'		 => $nextPageUrl,
 				'start'			 => $commits[0]->getHash(),
 				'commits'		 => $jsonFormattedCommits
@@ -71,9 +79,8 @@ class NetworkController implements ControllerProviderInterface
 			->value('page', '0')
 			->bind('networkData');
 
-
-		$route->get('{repo}/network/{commitishPath}', function($repo, $commitishPath) use ($app) {
-			$repository = $app['git']->getRepository($app['git.repos'], $repo);
+		$route->get('{repo}/network/{commitishPath}', function ($repo, $commitishPath) use ($app) {
+			$repository = $app['git']->getRepositoryFromName($app['git.repos'], $repo);
 
 			if ($commitishPath === null) {
 				$commitishPath = $repository->getHead();
@@ -85,13 +92,13 @@ class NetworkController implements ControllerProviderInterface
 			list($branch, $file) = $app['util.repository']->extractRef($repository, $branch, $file);
 
 			return $app['twig']->render('network.twig', array(
-				'repo'           => $repo,
+				'repo'			=> $repo,
 				'branch'		=> $branch,
-				'commitishPath'         => $commitishPath,
+				'commitishPath'	=> $commitishPath,
 			));
 		})->assert('repo', $app['util.routing']->getRepositoryRegex())
-			->assert('commitishPath', $app['util.routing']->getCommitishPathRegex())
-			->value('commitishPath', null)
+			->assert('commitishPath',	$app['util.routing']->getCommitishPathRegex())
+			->value('commitishPath',	null)
 			->bind('network');
 
         return $route;
