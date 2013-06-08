@@ -465,7 +465,8 @@
 				})
 				.data('commit', commit)
 				.mouseover( handleCommitMouseover )
-				.mouseout( handleCommitMouseout);
+				.mouseout( handleCommitMouseout )
+				.click( handleCommitClick );
 
 			$.each( commit.children, function ( idx, thisChild ) {
 
@@ -537,6 +538,10 @@
 
 		function handleCommitMouseout(evt) {
 			detailOverlay.hide();
+		}
+
+		function handleCommitClick( evt ) {
+			window.open( this.data('commit').details );
 		}
 
 		function getXPositionForColumnNumber( columnNumber ) {

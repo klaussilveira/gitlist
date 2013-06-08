@@ -43,11 +43,15 @@ class NetworkController implements ControllerProviderInterface
 			$jsonFormattedCommits = array();
 
 			foreach( $commits as $commit ) {
+				$detailsUrl = $app['url_generator']->generate('commit', array( 'repo' => $repo,
+																			   'commit'=>$commit->getHash()));
+
 				$jsonFormattedCommits[$commit->getHash()] = array(
 					'hash' => $commit->getHash(),
 					'parentsHash' => $commit->getParentsHash(),
 					'date' => $commit->getDate()->format('U'),
 					'message' => htmlentities( $commit->getMessage() ),
+					'details' => $detailsUrl,
 					'author' => array(
 						'name' => $commit->getAuthor()->getName(),
 						'email' => $commit->getAuthor()->getEmail(),
