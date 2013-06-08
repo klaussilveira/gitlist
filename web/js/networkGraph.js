@@ -236,6 +236,10 @@
 			el.css('top', y + 'px');
 		};
 
+		that.outerWidth = function( ) {
+			return el.outerWidth.apply(el, arguments);
+		};
+
 
 		return that;
 	}
@@ -247,7 +251,6 @@
 			indicatorElements;
 
 		that.updateIndicators = function() {
-			console.log(indicatorElements);
 			if( isLoading ) {
 				$(indicatorElements).addClass('loading-commits');
 			} else {
@@ -262,7 +265,6 @@
 				indicatorElements = indicatorElements.add(el);
 			}
 
-			console.log(indicatorElements.length);
 		};
 
 		that.unbindIndicator = function( el ) {
@@ -522,8 +524,14 @@
 
 		function handleCommitMouseover(evt) {
 			detailOverlay.setCommit( this.data('commit'))
-				.show()
-				.positionTo( evt.pageX - commitsGraph.position().left + commitsGraph.scrollLeft() - 200,
+				.show();
+
+			var xPos = evt.pageX - commitsGraph.position().left + commitsGraph.scrollLeft() - (detailOverlay.outerWidth()/2);
+			// check that x doesn't run out the viewport
+			xPos = Math.max( xPos, commitsGraph.scrollLeft() + 10);
+			xPos = Math.min( xPos, commitsGraph.scrollLeft() + commitsGraph.width() - detailOverlay.outerWidth() - 10);
+
+			detailOverlay.positionTo( xPos,
 							 evt.pageY - commitsGraph.position().top + commitsGraph.scrollTop() + 10);
 		}
 
