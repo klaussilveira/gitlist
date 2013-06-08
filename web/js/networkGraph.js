@@ -530,13 +530,13 @@
 			detailOverlay.setCommit( this.data('commit'))
 				.show();
 
-			var xPos = evt.pageX - commitsGraph.position().left + commitsGraph.scrollLeft() - (detailOverlay.outerWidth()/2);
+			var xPos = evt.pageX - commitsGraph.offset().left + commitsGraph.scrollLeft() - (detailOverlay.outerWidth()/2);
 			// check that x doesn't run out the viewport
 			xPos = Math.max( xPos, commitsGraph.scrollLeft() + 10);
 			xPos = Math.min( xPos, commitsGraph.scrollLeft() + commitsGraph.width() - detailOverlay.outerWidth() - 10);
 
 			detailOverlay.positionTo( xPos,
-							 evt.pageY - commitsGraph.position().top + commitsGraph.scrollTop() + 10);
+							 evt.pageY - commitsGraph.offset().top + commitsGraph.scrollTop() + 10);
 		}
 
 		function handleCommitMouseout(evt) {
