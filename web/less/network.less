@@ -2,6 +2,37 @@
 	width: 100%;
 	margin-bottom: @baseLineHeight;
 	border: 1px solid @treeHeaderBorder;
+	position: relative;
+
+	&.loading-commits {
+
+		&:before {
+			content: "";
+			display: block;
+			height: 100px;
+			width: 200px;
+			box-sizing: border-box;
+			padding: 10px;
+			font-weight: bold;
+			position: absolute;
+
+			left: 50%;
+			top: 50%;
+			margin-left: -100px;
+			margin-top: -50px;
+
+			color: #555;
+			background: rgba(255,255,255,.8) url("@{ajaxLoaderPath}") no-repeat center;
+			z-index: 2000;
+			border: 1px solid #eee;
+			border-radius: 8px;
+			box-shadow: 2px 2px 2px #eee;
+		}
+
+		.network-header .meta:after {
+			content: " - Loading";
+		}
+	}
 
 	.network-header {
 		padding: 8px;
@@ -19,10 +50,6 @@
 			float: left;
 			padding: 4px 0;
 			font-size: 14px;
-
-			&.loading-commits:after {
-				content: ' - Loading...';
-			}
 		}
 
 	}
@@ -61,22 +88,6 @@
 			&>p {
 				padding-left: 48px;
 			}
-		}
-
-		&.loading-commits:before {
-			content: "";
-			display: block;
-			height: 100%;
-			width: 80px;
-			box-sizing: border-box;
-			padding: 10px;
-			font-weight: bold;
-			position: absolute;
-			left: 0;
-			top: 0;
-			color: #555;
-			background: rgba(255,255,255,.8) url("@{ajaxLoaderPath}") no-repeat center;
-			z-index: 2000;
 		}
 
 	}

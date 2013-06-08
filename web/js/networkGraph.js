@@ -74,8 +74,9 @@
 
 		// "private" methods
 		function findLaneNumberFor( commit ) {
-			// oh? we've already got a lane?
+
 			if( commit.lane ) {
+				// oh? we've already got a lane?
 				return commit.lane.number;
 			}
 
@@ -325,14 +326,11 @@
 			commitsGraph = $('div.network-graph').first(),
 			laneManager = graphLaneManager(),
 			dataRetriever = commitDataRetriever( commitsGraph.data('source'), handleCommitsRetrieved  ),
-
-			refreshButton = $('<button class="btn btn-small">Load More</button>').insertAfter(commitsGraph.parent('div')),
 			paper = Raphael( commitsGraph[0], commitsGraph.width(), commitsGraph.height()),
 			usedColumns = 0,
 			detailOverlay = commitDetailOverlay();
 
-		dataRetriever.bindIndicator( $('.network-header .meta') );
-		dataRetriever.bindIndicator( commitsGraph );
+		dataRetriever.bindIndicator( commitsGraph.parent('.network-view') );
 		detailOverlay.appendTo( commitsGraph );
 
 
@@ -467,6 +465,11 @@
 				.mouseover( handleCommitMouseover )
 				.mouseout( handleCommitMouseout )
 				.click( handleCommitClick );
+
+			// maybe we have not enough space for the lane yet
+			if( commit.lane.centerY + cfg.laneHeight > paper.height ) {
+				extendPaper( paper.width, commit.lane.centerY + cfg.laneHeight )
+			}
 
 			$.each( commit.children, function ( idx, thisChild ) {
 
