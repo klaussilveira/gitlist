@@ -524,7 +524,7 @@
 			detailOverlay.setCommit( this.data('commit'))
 				.show()
 				.positionTo( evt.pageX - commitsGraph.position().left + commitsGraph.scrollLeft() - 200,
-							 evt.pageY - commitsGraph.position().top + commitsGraph.scrollLeft() + 10);
+							 evt.pageY - commitsGraph.position().top + commitsGraph.scrollTop() + 10);
 		}
 
 		function handleCommitMouseout(evt) {
