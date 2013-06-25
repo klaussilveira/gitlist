@@ -2,7 +2,7 @@
 
 {% set page = 'commits' %}
 
-{% block title %}GitList{% endblock %}
+{% block title %}{{ app_title }}{% endblock %}
 
 {% block content %}
     {% include 'breadcrumb.twig' with {breadcrumbs: [{dir: "Commit #{commit.hash}", path:''}]} %}
