@@ -57,7 +57,8 @@ class Application extends SilexApplication
         $this->register(new UrlGeneratorServiceProvider());
         $this->register(new RoutingUtilServiceProvider());
 
-        $this['twig'] = $this->share($this->extend('twig', function ($twig, $app) {
+        $this['twig'] = $this->share($this->extend('twig', function ($twig, $app) use ($config) {
+            $twig->addGlobal('app_title', $config->get('app', 'title'));
             $twig->addFilter('htmlentities', new \Twig_Filter_Function('htmlentities'));
             $twig->addFilter('md5', new \Twig_Filter_Function('md5'));
 

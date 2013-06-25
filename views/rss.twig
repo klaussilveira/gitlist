@@ -2,7 +2,7 @@
 <rss version="2.0">
     <channel>
         <title>Latest commits in {{ repo }}:{{ branch }}</title>
-        <description>RSS provided by GitList</description>
+        <description>RSS provided by {{ app_title }}</description>
         <link>{{ url('homepage') }}</link>
 
         {% for commit in commits %}
