@@ -212,7 +212,7 @@ class Repository extends BaseRepository
         $pager = "--skip=$page --max-count=15";
         $command =
                   "log $pager --pretty=format:\"<item><hash>%H</hash>"
-                . "<short_hash>%h</short_hash><tree>%T</tree><parent>%P</parent>"
+                . "<short_hash>%h</short_hash><tree>%T</tree><parents>%P</parents>"
                 . "<author>%an</author><author_email>%ae</author_email>"
                 . "<date>%at</date><commiter>%cn</commiter>"
                 . "<commiter_email>%ce</commiter_email>"
@@ -243,7 +243,7 @@ class Repository extends BaseRepository
         $query = escapeshellarg($query);
         $command =
               "log --grep={$query} --pretty=format:\"<item><hash>%H</hash>"
-            . "<short_hash>%h</short_hash><tree>%T</tree><parent>%P</parent>"
+            . "<short_hash>%h</short_hash><tree>%T</tree><parents>%P</parents>"
             . "<author>%an</author><author_email>%ae</author_email>"
             . "<date>%at</date><commiter>%cn</commiter>"
             . "<commiter_email>%ce</commiter_email>"
