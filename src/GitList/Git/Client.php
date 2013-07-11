@@ -72,16 +72,28 @@ class Client extends BaseClient
             if ($file->isDir()) {
                 $isBare = file_exists($file->getPathname() . '/HEAD');
                 $isRepository = file_exists($file->getPathname() . '/.git/HEAD');
+                $isSubRepo = is_file($file->getPathname() . '/.git');
 
-                if ($isRepository || $isBare) {
+                if ($isRepository || $isBare || $isSubRepo) {
                     if (in_array($file->getPathname(), $this->getHidden())) {
                         continue;
                     }
 
+                    if ($isSubRepo) {
+                        $gitdir = file_get_contents($file->getPathname() . '/.git');
+                        if ($gitdir === false || preg_match('/^gitdir: *(.+)$/', $gitdir, $matches) != 1) {
+                            continue;
+                        }
+                        $repoPath = $file->getPathname() . '/' . $matches[1];
+                    }
+                    else {
+                        $repoPath = $file->getPathname();
+                    }
+
                     if ($isBare) {
-                        $description = $file->getPathname() . '/description';
+                        $description = $repoPath . '/description';
                     } else {
-                        $description = $file->getPathname() . '/.git/description';
+                        $description = $repoPath . '/.git/description';
                     }
 
                     if (file_exists($description)) {
@@ -98,7 +110,7 @@ class Client extends BaseClient
 
                     $repositories[$repoName] = array(
                         'name' => $repoName,
-                        'path' => $file->getPathname(),
+                        'path' => $repoPath,
                         'description' => $description
                     );
 
