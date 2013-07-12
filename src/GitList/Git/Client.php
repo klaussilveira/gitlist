@@ -114,10 +114,13 @@ class Client extends BaseClient
                         'description' => $description
                     );
 
-                    continue;
-                } else {
-                    $repositories = array_merge($repositories, $this->recurseDirectory($file->getPathname(), false));
+                    $hasSubMods = is_file($file->getPathname() . '/.gitmodules');
+                    if ($isBare || !$hasSubMods) {
+                        continue;
+                    }
                 }
+
+                $repositories = array_merge($repositories, $this->recurseDirectory($file->getPathname(), false));
             }
         }
 
