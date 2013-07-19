@@ -1,7 +1,7 @@
 <?php
 
 /**
- * GitList 0.3
+ * GitList 0.4
  * https://github.com/klaussilveira/gitlist
  */
 
