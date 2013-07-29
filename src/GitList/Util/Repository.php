@@ -167,7 +167,7 @@ class Repository
            $branch = $repository->getHead();
         }
 
-	if ($path != "") $path = "$path/";
+        if ($path != "") $path = "$path/";
 
         $files = $repository->getTree($path != "" ? "$branch:$path" : $branch)->output();
 
@@ -179,7 +179,8 @@ class Repository
                 );
             }
         }
-
+		// No contextual readme, try to catch the main one if we are in deeper context
+		if ($path != "") return $this->getReadme($repository, $branch, "");
         return array();
     }
 
