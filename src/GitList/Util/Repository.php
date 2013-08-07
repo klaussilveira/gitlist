@@ -52,6 +52,7 @@ class Repository
         'r'        => 'r',
         'sh'       => 'shell',
         'ss'       => 'scheme',
+        'scala'    => 'text/x-scala',
         'scm'      => 'scheme',
         'sls'      => 'scheme',
         'sps'      => 'scheme',
@@ -160,10 +161,12 @@ class Repository
         return false;
     }
 
-    public function getReadme($repo, $branch = 'master')
+    public function getReadme($repository, $branch = null)
     {
-        $repository = $this->app['git']->getRepository($this->app['git.repos'] . $repo);
         $files = $repository->getTree($branch)->output();
+        if ($branch === null) {
+           $branch = $repository->getHead();
+        }
 
         foreach ($files as $file) {
             if (preg_match('/^readme*/i', $file['name'])) {
@@ -185,7 +188,7 @@ class Repository
      * @param  string                  $tree
      * @return array
      */
-    public function extractRef($repository, $branch='', $tree='')
+    public function extractRef($repository, $branch = '', $tree = '')
     {
         $branch = trim($branch, '/');
         $tree = trim($tree, '/');
@@ -196,26 +199,24 @@ class Repository
             $branch = $matches[1];
         } else {
             // Otherwise, attempt to detect the ref using a list of the project's branches and tags
-            $valid_refs = array_merge((array) $repository->getBranches(), (array) $repository->getTags());
-            foreach ($valid_refs as $k => $v) {
-                if (!preg_match("#{$v}/#", $input)) {
-                    unset($valid_refs[$k]);
+            $validRefs = array_merge((array) $repository->getBranches(), (array) $repository->getTags());
+            foreach ($validRefs as $key => $ref) {
+                if (!preg_match(sprintf("#^%s/#", preg_quote($ref, '#')), $input)) {
+                    unset($validRefs[$key]);
                 }
             }
 
             // No exact ref match, so just try our best
-            if (count($valid_refs) > 1) {
+            if (count($validRefs) > 1) {
                 preg_match('/([^\/]+)(.*)/', $input, $matches);
-                $branch = preg_replace('/^\/|\/$/', '', $matches[0]);
+                $branch = preg_replace('/^\/|\/$/', '', $matches[1]);
             } else {
                 // Extract branch name
-                $branch = array_shift($valid_refs);
+                $branch = array_shift($validRefs);
             }
         }
 
-        $tree = trim(str_replace($branch, "", $input), "/");
-
         return array($branch, $tree);
     }
-
 }
+

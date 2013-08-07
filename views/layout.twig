@@ -4,6 +4,7 @@
         <meta charset="UTF-8" />
         <title>{% block title %}Welcome!{% endblock %}</title>
         <link rel="stylesheet" type="text/css" href="{{ app.request.basepath }}/web/css/style.css">
+        <link rel="shortcut icon" type="image/png" href="{{ app.request.basepath }}/web/img/favicon.png" />
         <!--[if lt IE 9]>
         <script src="{{ app.request.basepath }}/web/js/html5.js"></script>
         <![endif]-->
@@ -12,9 +13,11 @@
     <body>
         {% block body %}{% endblock %}
         <script src="{{ app.request.basepath }}/web/js/jquery.js"></script>
+        <script src="{{ app.request.basepath }}/web/js/raphael.js"></script>
         <script src="{{ app.request.basepath }}/web/js/bootstrap.js"></script>
         <script src="{{ app.request.basepath }}/web/js/codemirror.js"></script>
         <script src="{{ app.request.basepath }}/web/js/showdown.js"></script>
         <script src="{{ app.request.basepath }}/web/js/main.js"></script>
+        <script src="{{ app.request.basepath }}/web/js/networkGraph.js"></script>
     </body>
 </html>

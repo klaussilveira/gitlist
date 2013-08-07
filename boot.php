@@ -1,11 +1,5 @@
 <?php
 
-if (!isset($config)) {
-    die("No configuration object provided.");
-}
-
-$config->set('git', 'repositories', rtrim($config->get('git', 'repositories'), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR);
-
 // Startup and configure Silex application
 $app = new GitList\Application($config, __DIR__);
 
@@ -14,5 +8,6 @@ $app->mount('', new GitList\Controller\MainController());
 $app->mount('', new GitList\Controller\BlobController());
 $app->mount('', new GitList\Controller\CommitController());
 $app->mount('', new GitList\Controller\TreeController());
+$app->mount('', new GitList\Controller\NetworkController());
 
 return $app;

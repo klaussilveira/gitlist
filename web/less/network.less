@@ -1,0 +1,94 @@
+.network-view {
+	width: 100%;
+	margin-bottom: @baseLineHeight;
+	border: 1px solid @treeHeaderBorder;
+	position: relative;
+
+	&.loading-commits {
+
+		&:before {
+			content: "";
+			display: block;
+			height: 100px;
+			width: 200px;
+			box-sizing: border-box;
+			padding: 10px;
+			font-weight: bold;
+			position: absolute;
+
+			left: 50%;
+			top: 50%;
+			margin-left: -100px;
+			margin-top: -50px;
+
+			color: #555;
+			background: rgba(255,255,255,.8) url("@{ajaxLoaderPath}") no-repeat center;
+			z-index: 2000;
+			border: 1px solid #eee;
+			border-radius: 8px;
+			box-shadow: 2px 2px 2px #eee;
+		}
+
+		.network-header .meta:after {
+			content: " - Loading";
+		}
+	}
+
+	.network-header {
+		padding: 8px;
+		line-height: @baseLineHeight;
+		text-align: left;
+		vertical-align: bottom;
+		#gradient > .vertical(@treeHeaderHighlight, @treeHeader);
+		border-bottom: 1px solid lighten(@treeHeaderBorder, 5%);
+		font-weight: bold;
+		color: @gray;
+		text-shadow: 1px 1px 1px rgba(255, 255, 255, 1);
+		height: 28px;
+
+		.meta {
+			float: left;
+			padding: 4px 0;
+			font-size: 14px;
+		}
+
+	}
+	pre {
+		margin: 0;
+		padding: 12px;
+		border: none;
+	}
+	.network-graph {
+		background-color: #f5f5f5;
+		height: 400px;
+		overflow: hidden;
+		cursor: move;
+		position: relative;
+
+		.network-commit-overlay {
+			position: absolute;
+			width: 400px;
+			top: 0;
+			left: 0;
+			padding: 8px;
+			margin: 0 0 @baseLineHeight;
+			list-style: none;
+			#gradient > .vertical(@white, #f5f5f5);
+			border: 1px solid #ddd;
+
+			.border-radius(3px);
+			.box-shadow(~"0 1px 0 rgba(255,255,255,0.4), 0 0 10px rgba(0,0,0,0.1)");
+
+			img {
+				float: left;
+				margin-right: 8px;
+			}
+
+			&>h4,
+			&>p {
+				padding-left: 48px;
+			}
+		}
+
+	}
+}

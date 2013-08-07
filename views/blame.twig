@@ -14,7 +14,7 @@
         <table class="blame-view">
         {% for blame in blames %}
             <tr>
-                <td class="commit"><a href="{{ path('commit', {repo: repo, commit: blame.commit}) }}">{{ blame.commit }}</a></td>
+                <td class="commit"><a href="{{ path('commit', {repo: repo, commit: blame.commit}) }}">{{ blame.commitShort }}</a></td>
                 <td><pre>{{ blame.line }}</pre></td>
             </tr>
         {% endfor %}
