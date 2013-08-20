@@ -1,0 +1,104 @@
+{% extends 'layout.twig' %}
+{% block title %}GitList{% endblock %}
+
+{% block body %}
+{% include 'navigation.twig' %}
+
+<div class="container">
+	
+	<div class="messages">
+		{% if notification is defined %}
+			{% if notification == 'saved' %}
+			<div class="alert alert-success">
+				<a class="close" data-dismiss="alert">×</a>
+				<strong>Success!</strong> config.ini saved!
+			</div>
+			{% endif %}
+			{% if notification == 'error_wrong_path' %}
+			<div class="alert alert-error">
+				<a class="close" data-dismiss="alert">×</a>
+				<strong>Error!</strong> Wrong repositories path! There are no GIT repositories in {{newpath}}. 
+			</div>
+			{% endif %}	
+		{% endif %}		
+	</div>
+		
+	
+	<a href="{{ path('logout') }}" class="btn btn-primary btn-large" style="float: right;">Logout</a>
+	<h1>Adminpanel</h1>
+	<p>
+		In the Adminpanel you can change the <strong>config.ini</strong> via a user interface.
+	</p>
+	<form method="POST" action="{{ path('savetoconfig') }}">
+		<h2>Your <strong>git executable path</strong></h2>
+		<p>
+			Your path to the git client. No need to use apostrophe (") before and after the path on a windows systems.
+		</p>
+		<p>
+			<input type="text" id="gitpath" name="gitpath" class="input-xlarge" value="{{client}}"/>
+		</p>
+
+		<h2>Paths to your repositories</h2>
+		<p>
+			Listing of all repository paths:
+		</p>
+		<table class="tree">
+			<thead>
+				<tr>
+					<th width="100%">path</th>
+					<th style="text-align: center;">action</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for repo in repositorypaths %}
+				<tr>
+					<td><i class="icon-folder-open icon-spaced"></i><a href="{{ repo.path }}">{{ repo.path }}</td>
+					<td><a class="btn remove-repo" href="#" data-repofolder="{{ repo.base64 }}">remove</a></td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		
+		<h3>Add another repository path</h3>
+		<p>
+			Add another repositiries path to your list:
+		</p>
+		<p>
+			<input type="text" id="newpath" name="newpath" class="input-xlarge" />
+		</p>
+
+		<h2>Default branch</h2>
+		<p>
+			Default branch when HEAD is detached:
+		</p>
+		<p>
+			<input type="text" id="defaultbranch" name="defaultbranch" class="input-xlarge"  value="{{default_branch}}"/>
+		</p>
+
+		<h2>Debug</h2>
+		<p>
+			Activate debug mode in GitList:
+		</p>
+		<p>
+			<input type="radio" name="debug" value="yes" {% if debug == true %}checked{% endif %}/>
+			Yes
+			<input type="radio" name="debug" value="no" {% if debug != true %}checked{% endif %}/>
+			No
+		</p>
+
+		<h2>Cache</h2>
+		<p>
+			Activate cache in GitList:
+		</p>
+		<p>
+			<input type="radio" name="cache" value="yes" {% if cache == true %}checked{% endif %}/>
+			Yes
+			<input type="radio" name="cache" value="no" {% if cache != true %}checked{% endif %}/>
+			No
+		</p>
+		<input type="submit" class="btn btn-success btn-large" value="Save to config.ini"/>
+	</form>
+	<hr />
+	{% include 'footer.twig' %}
+</div>
+{% endblock %}

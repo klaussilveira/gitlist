@@ -23,4 +23,3 @@ require 'vendor/autoload.php';
 $config = GitList\Config::fromFile('config.ini');
 $app = require 'boot.php';
 $app->run();
-

@@ -1,0 +1,29 @@
+{% extends 'layout.twig' %}
+{% block title %}GitList{% endblock %}
+
+{% block body %}
+{% include 'navigation.twig' %}
+
+<div class="container">
+	
+	
+	
+	<form class="form-signin" method="post" action="{{ path('login') }}">
+		{% if error is defined %}
+			<div class="alert alert-error">
+				<a class="close" data-dismiss="alert">×</a>
+				<strong>Error!</strong> {{error}}. 
+			</div>
+		{% endif %}		
+		
+		<h2 class="form-signin-heading">GitList-Adminpanel</h2>
+		<input type="text" class="input-block-level" placeholder="Name" name="gitlist_name">
+		<input type="password" class="input-block-level" placeholder="Password" name="gitlist_password">
+		<button class="btn btn-large btn-primary" type="submit">
+			Sign in
+		</button>
+	</form>
+</div>
+
+<!-- /container -->
+{% endblock %}
