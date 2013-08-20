@@ -32,6 +32,8 @@ class Application extends SilexApplication
         $this['debug'] = $config->get('app', 'debug');
         $this['filetypes'] = $config->getSection('filetypes');
         $this['cache.archives'] = $this->getCachePath() . 'archives';
+		$this['admin.name'] = $config->get('admin', 'name');
+		$this['admin.password'] = $config->get('admin', 'password');
 
         // Register services
         $this->register(new TwigServiceProvider(), array(

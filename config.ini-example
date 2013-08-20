@@ -25,3 +25,8 @@ cache = true
 ; extension = true
 ; svh = false
 ; map = true
+
+; LOGIN DATA FOR ADMINPANEL
+[admin]
+name = 'admin'
+password = 'admin'
