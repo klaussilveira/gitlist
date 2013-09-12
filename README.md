@@ -30,7 +30,6 @@ You can also see a live demo [here](http://gitlist-khornberg.rhcloud.com/).
 ## Todo
 * improve the current test code coverage
 * test the interface
-* error handling can be greatly improved during parsing
 * submodule support
 * multilanguage support
 
@@ -41,7 +40,7 @@ In order to run GitList on your server, you'll need:
 * Apache with mod_rewrite enabled or nginx
 * PHP 5.3.3
 
-## Installing
+## Installation
 * Download GitList from [gitlist.org](http://gitlist.org/) and decompress to your `/var/www/gitlist` folder, or anywhere else you want to place GitList. 
 * Rename the `config.ini-example` file to `config.ini`.
 * Open up the `config.ini` and configure your installation. You'll have to provide where your repositories are located.
@@ -54,9 +53,9 @@ mkdir cache
 chmod 777 cache
 ```
 
-That's it, installation complete! If you're having problems, check this [tutorial](http://gofedora.com/insanely-awesome-web-interface-git-repos/) by Kulbir Saini or the [Troubleshooting](https://github.com/klaussilveira/gitlist/wiki/Troubleshooting) page.
+That's it, installation complete! If you're having problems, check the [Troubleshooting](https://github.com/klaussilveira/gitlist/wiki/Troubleshooting) page.
 
-## Building
+## Development
 GitList uses [Composer](http://getcomposer.org/) to manage dependencies and [Ant](http://ant.apache.org/) to build the project. In order to run all the targets in the build script, you will need [PHPUnit](http://www.phpunit.de/), [phpcpd](https://github.com/sebastianbergmann/phpcpd), [phploc](https://github.com/sebastianbergmann/phploc), [PHPMD](http://phpmd.org/) and [PHP_Depend](http://pdepend.org).
 
 Once you have all the dependencies set, you can clone the repository and run Ant:
