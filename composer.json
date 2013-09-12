@@ -1,4 +1,5 @@
 {
+    "name": "klaussilveira/gitlist",
     "require": {
         "silex/silex": "1.0.*@dev",
         "twig/twig": "1.12.*",
