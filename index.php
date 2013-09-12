@@ -21,6 +21,11 @@ if (!is_writable(__DIR__ . DIRECTORY_SEPARATOR . 'cache')) {
 require 'vendor/autoload.php';
 
 $config = GitList\Config::fromFile('config.ini');
+
+if ($config->get('Date', 'timezone')) {
+    date_default_timezone_set($config->get('Date', 'timezone'));
+}
+
 $app = require 'boot.php';
 $app->run();
 

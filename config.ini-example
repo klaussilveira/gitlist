@@ -25,3 +25,7 @@ cache = true
 ; extension = true
 ; svh = false
 ; map = true
+
+; set the timezone
+[Date]
+; timezone = UTC
