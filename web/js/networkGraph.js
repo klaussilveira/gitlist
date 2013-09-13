@@ -351,7 +351,7 @@
 		}
 
 		function handleNoAvailableData() {
-			console.log('No Data available');
+			window.console && console.log('No (more) Data available');
 		}
 
 		var awaitedParents = {};
