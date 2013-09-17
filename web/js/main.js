@@ -21,7 +21,7 @@ $(function () {
     }
 
     if ($('#md-content').length) {
-        var converter = new Showdown.converter();
+        var converter = new Showdown.converter({extensions: ['table']});
         $('#md-content').html(converter.makeHtml($('#md-content').text()));
     }
 
