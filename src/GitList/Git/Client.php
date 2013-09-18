@@ -78,6 +78,15 @@ class Client extends BaseClient
                         continue;
                     }
 
+                    foreach($this->getHidden() as $hidden) {
+                        if(preg_match('!^regex:(.*)!', $hidden, $m)) {
+                            list(,$regex) = $m;
+                            if(preg_match($regex, $file->getPathname())) {
+                                continue 2;
+                            }
+                        }
+                    }
+
                     if ($isBare) {
                         $description = $file->getPathname() . '/description';
                     } else {
