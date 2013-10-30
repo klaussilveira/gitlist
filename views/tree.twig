@@ -21,7 +21,8 @@
     <table class="tree">
         <thead>
             <tr>
-                <th width="80%">name</th>
+                <th width="">name</th>
+                <th width="1"></th>
                 <th width="10%">mode</th>
                 <th width="10%">size</th>
             </tr>
@@ -38,6 +39,7 @@
                 </td>
                 <td></td>
                 <td></td>
+                <td></td>
             </tr>
             {% endif %}
             {% for file in files %}
@@ -49,6 +51,14 @@
                         {{ path('blob', {repo: repo, commitishPath: branch ~ '/' ~ path ~ (file.type == "symlink" ? file.path : file.name)}) }}
                     {%- endif -%}
                 ">{{ file.name }}</a></td>
+                <td>
+                    {%- if file.type == "blob" -%}
+                        <a href="{{ path('blob_raw', {repo: repo, commitishPath: branch ~ '/' ~ path ~ file.name}) }}"
+                           title="Download {{ file.name }}">
+                            <i class="icon-download"></i>
+                        </a>
+                    {%- endif -%}
+                </td>
                 <td>{{ file.mode }}</td>
                 <td>{% if file.size %}{{ (file.size / 1024) | number_format }} kb{% endif %}</td>
             </tr>
