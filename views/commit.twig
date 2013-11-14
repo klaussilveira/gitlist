@@ -23,7 +23,7 @@
 
     <ul class="commit-list">
         {% for diff in commit.diffs %}
-            <li><i class="icon-file"></i> <a href="#{{ loop.index }}">{{ diff.file }}</a> <span class="meta pull-right">{{ diff.index }}</span></li>
+            <li><i class="icon-file"></i> <span class="filename"><a href="#{{ loop.index }}">{{ diff.file }}</a></span> <span class="meta pull-right">{{ diff.index }}</span></li>
         {% endfor %}
     </ul>
 
@@ -35,7 +35,7 @@
                 <a href="{{ path('blob', {repo: repo, commitishPath: commit.hash ~'/' ~ diff.file}) }}" class="btn btn-small"><i class="icon-file"></i> View file @ {{ commit.shortHash }}</a>
             </div>
 
-            <div class="meta"><a name="{{ loop.index }}">{{ diff.file }}</div></a>
+            <div class="meta filename"><a name="{{ loop.index }}">{{ diff.file }}</div></a>
         </div>
 
         <div class="source-diff">
