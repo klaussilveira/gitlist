@@ -5,7 +5,7 @@
 {% block title %}GitList{% endblock %}
 
 {% block content %}
-    {% include 'breadcrumb.twig' with {breadcrumbs: [{dir: 'Commits search results', path:''}]} %}
+    {% include 'breadcrumb.twig' with {breadcrumbs: [{dir: 'Commits search results for: ' ~ query, path:''}]} %}
 
     {% include 'commits_list.twig' %}
 

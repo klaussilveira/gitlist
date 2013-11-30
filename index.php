@@ -1,7 +1,7 @@
 <?php
 
 /**
- * GitList 0.3
+ * GitList 0.4
  * https://github.com/klaussilveira/gitlist
  */
 
@@ -10,10 +10,22 @@ if (!ini_get('date.timezone')) {
     date_default_timezone_set('UTC');
 }
 
+if (php_sapi_name() == 'cli-server' && file_exists(substr($_SERVER['REQUEST_URI'], 1))) {
+    return false;
+}
+
+if (!is_writable(__DIR__ . DIRECTORY_SEPARATOR . 'cache')) {
+    die(sprintf('The "%s" folder must be writable for GitList to run.', __DIR__ . DIRECTORY_SEPARATOR . 'cache'));
+}
+
 require 'vendor/autoload.php';
 
-// Load configuration
 $config = GitList\Config::fromFile('config.ini');
+
+if ($config->get('Date', 'timezone')) {
+    date_default_timezone_set($config->get('Date', 'timezone'));
+}
 
 $app = require 'boot.php';
 $app->run();
+
