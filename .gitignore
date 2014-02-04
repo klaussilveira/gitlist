@@ -1,5 +1,5 @@
 cache/
-vendor/
+/vendor/
 build/
 *.diff
 *.err
