@@ -1,0 +1,38 @@
+// Init Bootstrap
+@import "vendor/bootstrap/bootstrap.less";
+
+// override some Variables
+@import "variables.less";
+
+// GitList Less Modules
+@import "gitlist.less";
+@import "codemirror.less";
+@import "network.less";
+
+
+.header {
+  margin-bottom: @line-height-computed;
+}
+.breadcrumb {
+  padding: @padding-large-vertical @padding-large-horizontal;
+  border: 1px solid @navbar-default-border;
+  border-radius: @border-radius-base;
+}
+.download-buttons .rss-icon {
+  padding-left: @padding-large-horizontal;
+  font-size: @font-size-h3;
+}
+
+.space-right {
+  padding: 0 8px 0 0;
+}
+
+span.rss-icon {
+  color: @brand-danger;
+  font-size: @font-size-large;
+
+  &:hover {
+    color: darken(@brand-danger, 15%);
+  }
+}
+
