@@ -41,3 +41,8 @@ $(function () {
     }
     paginate();
 });
+
+var listOptions = {
+    valueNames: ['name']
+};
+var repoList = new List('repositories', listOptions);
