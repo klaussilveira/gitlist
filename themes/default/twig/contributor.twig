@@ -1,0 +1,18 @@
+{% extends 'layout_page.twig' %}
+
+{% set page = 'contributors' %}
+
+{% block title %}GitList{% endblock %}
+
+{% block content %}
+    {% include 'breadcrumb.twig' with {breadcrumbs: [{dir: 'Contributors', path:''}]} %}
+
+    <h1>Contributors' Commits</h1>
+    {% for contributor in contributors %}
+        <div id="contributorChart-{{ loop.index0 }}"></div>
+    {% endfor %}
+    <script>
+        var contributors = {{ contributors|json_encode(constant('JSON_PRETTY_PRINT'))|raw }}
+    </script>
+
+{% endblock %}

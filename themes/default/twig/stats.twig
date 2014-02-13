@@ -39,10 +39,36 @@
                     <p>
                         <strong>Total bytes:</strong> {{ stats.size }} bytes ({{ ((stats.size / 1024) / 1024) | number_format }} MB)
                     </p>
+                    {% for statistic in prettyStats.statistics %}
+                    <p>
+                        <strong>{{ statistic.title }}:</strong> {{ statistic.value }}
+                    </p>
+                    {% endfor %}
                 </td>
             </tr>
         </tbody>
     </table>
+
+    <hr>
+    <h2>Commits by date</h2>
+    <div id="commitsByDate"></div>
+    <script>
+        var commitsByDate = {{ prettyStats.charts.date|json_encode(constant('JSON_PRETTY_PRINT'))|raw }}
+    </script>
+
+    <hr>
+    <h2>Commits by hour</h2>
+    <div id="commitsByHour"></div>
+    <script>
+        var commitsByHour = {{ prettyStats.charts.hour|json_encode(constant('JSON_PRETTY_PRINT'))|raw }}
+    </script>
+
+    <hr>
+    <h2>Commits by day</h2>
+    <div id="commitsByDay"></div>
+    <script>
+        var commitsByDay = {{ prettyStats.charts.day|json_encode(constant('JSON_PRETTY_PRINT'))|raw }}
+    </script>
 
     <hr />
 {% endblock %}
