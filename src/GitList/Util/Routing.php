@@ -128,6 +128,18 @@ class Routing
         return $regex;
     }
 
+    public function getEmailRegex()
+    {
+        static $emailRegex = null;
+
+        if ($emailRegex === null) {
+            $emailRegex = '^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$';
+            //see lxr.php.net/xref/PHP_5_4/ext/filter/logical_filters.c#525
+        }
+
+        return $emailRegex;
+    }
+
 
     public function isWindows()
     {

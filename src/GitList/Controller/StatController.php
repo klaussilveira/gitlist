@@ -61,6 +61,36 @@ class StatController implements ControllerProviderInterface
             ->value('branch', null)
             ->bind('contributors');
 
+          $route->get('{repo}/contributor/{email}', function($repo, $email) use ($app) {
+              $repository = $app['git']->getRepositoryFromName($app['git.repos'], $repo);
+
+              $statisticsRepository = new Repository($repository->getPath());
+              $statisticsRepository->loadCommits();
+              $contributors = $statisticsRepository->getCommitsByContributor();
+
+              foreach ($contributors as $contributor) {
+                  if ($email === $contributor['email']) {
+                    $contributorStatistics[] = $contributor;
+                  }
+              }
+
+              $branch = $repository->getCurrentBranch();
+              $authors = $repository->getAuthorStatistics($branch);
+
+              return $app['twig']->render('contributor.twig', array(
+                  'repo'         => $repo,
+                  'branch'       => $repository->getCurrentBranch(),
+                  'branches'     => $repository->getBranches(),
+                  'tags'         => $repository->getTags(),
+                  'contributors' => $contributorStatistics,
+                  'authors'      => $authors,
+                  'email'        => $email,
+              ));
+          })->assert('repo', $app['util.routing']->getRepositoryRegex())
+            ->assert('email', $app['util.routing']->getEmailRegex())
+            ->value('email', null)
+            ->bind('contributor');
+
         return $route;
     }
 }

@@ -7,12 +7,42 @@
 {% block content %}
     {% include 'breadcrumb.twig' with {breadcrumbs: [{dir: 'Contributors', path:''}]} %}
 
-    <h1>Contributors' Commits</h1>
+    {% if contributors == null %}
+        <div class="alert">No one contributed to this project with the email address of {{ email }}.</div>
+        <h3>Contributors</h3>
+        <ul>
+        {% for author in authors %}
+            <li><strong><a href="{{ app.request.basepath }}/{{repo}}/contributor/{{ author.email }}">{{ author.name }}</a></strong>: {{ author.commits }} commits</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+
     {% for contributor in contributors %}
         <div id="contributorChart-{{ loop.index0 }}"></div>
     {% endfor %}
     <script>
         var contributors = {{ contributors|json_encode(constant('JSON_PRETTY_PRINT'))|raw }}
     </script>
+
+{% if contributors|length == 1 %}
+{% for date, commits in contributors.0.hashes %}
+    <table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th colspan="3">{{ date | date("F j, Y") }}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for hash in commits %}
+        <tr>
+            <td width="100%">
+                <span class="pull-left"><a class="btn btn-small" href="{{ path('commit', {repo: repo, commit: hash}) }}"><i class="icon-list-alt"></i> View {{ hash }}</a></span>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endfor %}
+{% endif %}
 
 {% endblock %}
