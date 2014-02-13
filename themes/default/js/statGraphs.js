@@ -148,5 +148,5 @@ if (typeof contributors !== 'undefined') {
                 data: contributors[i].data.y
             }]
         });
-    };
+    }
 }

@@ -27,7 +27,7 @@
                 <td>
                     <ul>
                     {% for author in authors %}
-                        <li><strong><a href="mailto:{{ author.email }}">{{ author.name }}</a></strong>: {{ author.commits }} commits</li>
+                        <li><strong><a href="{{ app.request.basepath }}/{{repo}}/contributor/{{ author.email }}">{{ author.name }}</a></strong>: {{ author.commits }} commits</li>
                     {% endfor %}
                     </ul>
                 </td>
