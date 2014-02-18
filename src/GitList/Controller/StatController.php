@@ -7,6 +7,7 @@ use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use GitPrettyStats\Repository;
+use Gitter\Client;
 
 class StatController implements ControllerProviderInterface
 {
@@ -55,6 +56,7 @@ class StatController implements ControllerProviderInterface
                   'branches'       => $repository->getBranches(),
                   'tags'           => $repository->getTags(),
                   'contributors'   => $contributors,
+                  'commits' => null,
               ));
           })->assert('repo', $app['util.routing']->getRepositoryRegex())
             ->assert('branch', $app['util.routing']->getBranchRegex())
@@ -66,12 +68,14 @@ class StatController implements ControllerProviderInterface
 
               $statisticsRepository = new Repository($repository->getPath());
               $statisticsRepository->loadCommits();
-              $contributors = $statisticsRepository->getCommitsByContributor();
+              $contributorStatistics = $statisticsRepository->getCommitsByContributor($email);
 
-              foreach ($contributors as $contributor) {
-                  if ($email === $contributor['email']) {
-                    $contributorStatistics[] = $contributor;
-                  }
+              $categorized = array();
+
+              foreach ($contributorStatistics[0]['hashes'] as $commit) {
+                  $date = $commit[0]->getDate();
+                  $date = $date->format('m/d/Y');
+                  $categorized[$date][] = $commit[0];
               }
 
               $branch = $repository->getCurrentBranch();
@@ -85,6 +89,7 @@ class StatController implements ControllerProviderInterface
                   'contributors' => $contributorStatistics,
                   'authors'      => $authors,
                   'email'        => $email,
+                  'commits'      => $categorized,
               ));
           })->assert('repo', $app['util.routing']->getRepositoryRegex())
             ->assert('email', $app['util.routing']->getEmailRegex())

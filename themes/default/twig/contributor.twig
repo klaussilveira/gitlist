@@ -24,19 +24,22 @@
         var contributors = {{ contributors|json_encode(constant('JSON_PRETTY_PRINT'))|raw }}
     </script>
 
-{% if contributors|length == 1 %}
-{% for date, commits in contributors.0.hashes %}
-    <table class="table table-striped table-bordered">
+{% if commits %}
+{% for date, commit in commits %}
+<table class="table table-striped table-bordered">
     <thead>
         <tr>
             <th colspan="3">{{ date | date("F j, Y") }}</th>
         </tr>
     </thead>
     <tbody>
-        {% for hash in commits %}
+        {% for item in commit %}
         <tr>
-            <td width="100%">
-                <span class="pull-left"><a class="btn btn-small" href="{{ path('commit', {repo: repo, commit: hash}) }}"><i class="icon-list-alt"></i> View {{ hash }}</a></span>
+            <td width="5%"><img src="https://gravatar.com/avatar/{{ item.author.email | lower | md5 }}?s=40" /></td>
+            <td width="95%">
+                <span class="pull-right"><a class="btn btn-small" href="{{ path('commit', {repo: repo, commit: item.hash}) }}"><i class="icon-list-alt"></i> View {{ item.shortHash }}</a></span>
+                <h4>{{ item.message }}</h4>
+                <span><a href="mailto:{{ item.author.email }}">{{ item.author.name }}</a> authored on {{ item.date | date('d/m/Y \\a\\t H:i:s') }}</span>
             </td>
         </tr>
         {% endfor %}
