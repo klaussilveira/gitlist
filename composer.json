@@ -5,7 +5,8 @@
         "twig/twig": "1.*",
         "symfony/twig-bridge": "2.3.*",
         "symfony/filesystem": "2.3.*",
-        "klaussilveira/gitter": "0.2.*"
+        "klaussilveira/gitter": "0.2.*",
+        "modess/git-pretty-stats": "0.1.*"
     },
     "require-dev": {
         "symfony/browser-kit": "2.3.*",
@@ -19,5 +20,11 @@
         "psr-0": {
             "GitList": "src/"
         }
-    }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/khornberg/git-pretty-stats"
+        }
+    ]
 }
