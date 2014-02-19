@@ -134,7 +134,7 @@ class Routing
 
         if ($emailRegex === null) {
             $emailRegex = '^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$';
-            //see lxr.php.net/xref/PHP_5_4/ext/filter/logical_filters.c#525
+            //see lxr.php.net/xref/PHP_5_4/ext/filter/logical_filters.c#525 for php's native filter
         }
 
         return $emailRegex;

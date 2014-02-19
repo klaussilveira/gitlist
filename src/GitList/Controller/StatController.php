@@ -7,7 +7,6 @@ use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use GitPrettyStats\Repository;
-use Gitter\Client;
 
 class StatController implements ControllerProviderInterface
 {
