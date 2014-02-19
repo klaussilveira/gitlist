@@ -270,28 +270,33 @@ class Repository extends BaseRepository
         $query = escapeshellarg($query);
 
         try {
-            $results = $this->getClient()->run($this, "grep -I --line-number {$query} $branch");
+            $results = $this->getClient()->run($this, "grep -I -2 --line-number {$query} $branch");
         } catch (\RuntimeException $e) {
             return false;
         }
 
-        $results = explode("\n", $results);
+        $results = explode("--\n", $results);
 
         foreach ($results as $result) {
-            if ($result == '') {
-                continue;
+            $lines = explode("\n", $result);
+            $data = array();
+            foreach ($lines as $key => $line) {
+                if ($line == '') {
+                    continue;
+                }
+
+                preg_match_all('/([\w-._]+):([^:]+)(:|-)([0-9]+)(:|-)(.*|^)/', $line, $matches, PREG_SET_ORDER);
+
+                $data['branch']  = (isset($data['branch'])) ? $data['branch'] : $matches[0][1];
+                $data['file']    = (isset($data['file'])) ? $data['file'] : $matches[0][2];
+                $data['line']    = (isset($data['line'])) ? $data['line'] : $matches[0][4];
+                $data['context'] = $data['context'] . "\n" . $matches[0][6];
+                if (strlen($matches[0][6]) > 1000) {
+                    $data['large'] = true;
+                }
             }
-
-            preg_match_all('/([\w-._]+):([^:]+):([0-9]+):(.+)/', $result, $matches, PREG_SET_ORDER);
-
-            $data['branch'] = $matches[0][1];
-            $data['file']   = $matches[0][2];
-            $data['line']   = $matches[0][3];
-            $data['match']  = $matches[0][4];
-
             $searchResults[] = $data;
         }
-
         return $searchResults;
     }
 

@@ -18,25 +18,23 @@
     {% endembed %}
 
     {% if results %}
-    <table class="tree">
-        <thead>
-            <tr>
-                <th width="20%">name</th>
-                <th width="80%">match</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for result in results %}
-            <tr>
-                <td><i class="icon-file icon-spaced"></i> <a href="{{ path('blob', {repo: repo, branch: branch, file: result.file, commitishPath: branch ~ '/' ~ result.file}) }}#L{{ result.line }}">{{ result.file }}</a></td>
-                <td>{{ result.match }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    {% for result in results %}
+    <div class="source-view">
+        <div class="source-header">
+            <div class="meta"><i class="icon-file icon-spaced"></i> <a href="{{ path('blob', {repo: repo, branch: branch, file: result.file, commitishPath: branch ~ '/' ~ result.file}) }}#L{{ result.line }}">{{ result.file }}</a></div>
+        </div>
+        {% if result.large is defined %}
+        <p><a href="{{ path('blob', {repo: repo, branch: branch, file: result.file, commitishPath: branch ~ '/' ~ result.file}) }}#L{{ result.line }}">View file</a></p>
+        {% else %}
+        <pre class="sourcecode" language="{{ result.fileType }}" firstLineNumber="{{ result.line }}">{{ result.context|htmlentities|raw }}</pre>
+        {% endif %}
+    </div>
+    <hr />
+    {% endfor %}
     {% else %}
     <p>No results found.</p>
     {% endif %}
 
     <hr />
+    <script> var keyword = '{{ query|raw }}'; </script>
 {% endblock %}
