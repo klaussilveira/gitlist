@@ -26,10 +26,9 @@
         {% if result.large is defined %}
         <p><a href="{{ path('blob', {repo: repo, branch: branch, file: result.file, commitishPath: branch ~ '/' ~ result.file}) }}#L{{ result.line }}">View file</a></p>
         {% else %}
-        <pre class="sourcecode" language="{{ result.fileType }}" firstLineNumber="{{ result.line }}">{{ result.context|htmlentities|raw }}</pre>
+        <pre class="sourcecode" language="{{ result.fileType }}" firstLineNumber="{{ result.firstLine }}">{{ result.context|htmlentities|raw }}</pre>
         {% endif %}
     </div>
-    <hr />
     {% endfor %}
     {% else %}
     <p>No results found.</p>

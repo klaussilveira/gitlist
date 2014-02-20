@@ -24,7 +24,7 @@
         <div class="md-view"><div id="md-content">{{ blob }}</div></div>
 
         {% else %}
-        <pre id="sourcecode" language="{{ fileType }}">{{ blob|htmlentities|raw }}</pre>
+        <pre class="sourcecode" language="{{ fileType }}">{{ blob|htmlentities|raw }}</pre>
         {% endif %}
     </div>
 

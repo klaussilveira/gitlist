@@ -289,11 +289,13 @@ class Repository extends BaseRepository
 
                 $data['branch']  = (isset($data['branch'])) ? $data['branch'] : $matches[0][1];
                 $data['file']    = (isset($data['file'])) ? $data['file'] : $matches[0][2];
-                $data['line']    = (isset($data['line'])) ? $data['line'] : $matches[0][4];
+                $data['firstLine']    = (isset($data['firstLine'])) ? $data['firstLine'] : $matches[0][4];
                 $data['context'] = $data['context'] . "\n" . $matches[0][6];
                 if (strlen($matches[0][6]) > 1000) {
                     $data['large'] = true;
                 }
+                // Line of first match
+                $data['line'] = ( !isset($data['line']) && $matches[0][5] === ':') ? $matches[0][4] : $data['line'];
             }
             $searchResults[] = $data;
         }
