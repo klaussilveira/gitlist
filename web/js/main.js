@@ -55,3 +55,7 @@ if ($('#branchList').length) {
     };
     var repoList = new List('branchList', listBranchOptions);
 }
+
+$('.search').click(function (e) {
+    e.stopPropagation();
+});
