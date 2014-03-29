@@ -369,7 +369,7 @@ class Repository extends BaseRepository
     {
         $fs = new Filesystem;
         $fs->mkdir(dirname($output));
-        $this->getClient()->run($this, "archive --format=$format --output=$output $tree");
+        $this->getClient()->run($this, "archive --format=$format --output='$output' $tree");
     }
 
     /**
