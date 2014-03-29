@@ -20,14 +20,14 @@ Apache is the "default" webserver for GitList. You will find the configuration i
 ```
 server {
     server_name MYSERVER;
-    access_log /var/log/nginx/MYSERVER.access_log main;
-    error_log /var/log/nginx/MYSERVER.error_log debug_http;
+    access_log /var/log/nginx/MYSERVER.access.log combined;
+    error_log /var/log/nginx/MYSERVER.error.log error;
 
     root /var/www/DIR;
     index index.php;
 
 #   auth_basic "Restricted";
-#   auth_basic_user_file rhtpasswd;
+#   auth_basic_user_file .htpasswd;
 
     location = /robots.txt {
         allow all;
@@ -36,8 +36,16 @@ server {
     }
 
     location ~* ^/index.php.*$ {
-       fastcgi_pass 127.0.0.1:9000;
-       include fastcgi.conf;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+
+        # if you're using php5-fpm via tcp
+        fastcgi_pass 127.0.0.1:9000;
+
+        # if you're using php5-fpm via socket
+        #fastcgi_pass unix:/var/run/php5-fpm.sock;
+
+        include /etc/nginx/fastcgi_params;
     }
 
     location / {
