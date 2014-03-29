@@ -23,7 +23,13 @@
 
     <ul class="commit-list">
         {% for diff in commit.diffs %}
-            <li><a href="#{{ loop.index }}"><i class="icon-file"></i> {{ diff.file }}</a> <span class="meta pull-right">{{ diff.index }}</span></li>
+            <li>
+                <a href="#{{ loop.index }}"><i class="icon-file"></i></a>
+                <div class="file-path">
+                    <a href="#{{ loop.index }}" title="{{ diff.file }}">{{ diff.file }}</a>
+                </div>
+                <span class="meta pull-right">{{ diff.index }}</span>
+            </li>
         {% endfor %}
     </ul>
 
