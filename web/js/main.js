@@ -41,3 +41,21 @@ $(function () {
     }
     paginate();
 });
+
+if ($('#repositories').length) {
+    var listOptions = {
+        valueNames: ['name']
+    };
+    var repoList = new List('repositories', listOptions);
+}
+
+if ($('#branchList').length) {
+    var listBranchOptions = {
+        valueNames: ['item']
+    };
+    var repoList = new List('branchList', listBranchOptions);
+}
+
+$('.search').click(function (e) {
+    e.stopPropagation();
+});
