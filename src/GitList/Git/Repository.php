@@ -241,6 +241,7 @@ class Repository extends BaseRepository
     public function searchCommitLog($query)
     {
         $query = escapeshellarg($query);
+        $query = strtr($query, array('[' => '\\[', ']' => '\\]'));
         $command =
               "log --grep={$query} --pretty=format:\"<item><hash>%H</hash>"
             . "<short_hash>%h</short_hash><tree>%T</tree><parents>%P</parents>"

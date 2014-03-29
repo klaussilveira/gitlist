@@ -12,6 +12,15 @@ class CommitController implements ControllerProviderInterface
     {
         $route = $app['controllers_factory'];
 
+        $route->get('{repo}/commits/search', function (Request $request, $repo) use ($app) {
+            $subRequest = Request::create(
+                '/' . $repo . '/commits/master/search',
+                'POST',
+                array('query' => $request->get('query'))
+            );
+            return $app->handle($subRequest, \Symfony\Component\HttpKernel\HttpKernelInterface::SUB_REQUEST);
+        })->assert('repo', $app['util.routing']->getRepositoryRegex());
+
         $route->get('{repo}/commits/{commitishPath}', function ($repo, $commitishPath) use ($app) {
             $repository = $app['git']->getRepositoryFromName($app['git.repos'], $repo);
 
