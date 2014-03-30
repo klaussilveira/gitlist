@@ -2,6 +2,7 @@
 
 namespace GitList\Controller;
 
+use Gitter\Model\Tree;
 use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -24,6 +25,8 @@ class TreeController implements ControllerProviderInterface
             list($branch, $tree) = $app['util.repository']->extractRef($repository, $branch, $tree);
             $files = $repository->getTree($tree ? "$branch:\"$tree\"/" : $branch);
             $breadcrumbs = $app['util.view']->getBreadcrumbs($tree);
+
+            $this->flattenFolders($files);
 
             $parent = null;
             if (($slash = strrpos($tree, '/')) !== false) {
@@ -120,5 +123,51 @@ class TreeController implements ControllerProviderInterface
 
         return $route;
     }
+    
+    /**
+     * Flattens subdirectories of given folder.
+     * 
+     * @param \Gitter\Model\Tree $folder
+     */
+    private function flattenFolders(Tree $folder) {
+        foreach ($folder as $node) {
+            if ($node->isTree()) {
+                // node is a subdirectory of given folder -> try to flatten
+                $flattenedNode = $this->flattenFolder($node);
+                $node->setName($flattenedNode->getName());
+            }
+        }
+    }
+    
+    /**
+     * Helper method for recursive flattening of subfolders.
+     * 
+     * @param \Gitter\Model\Tree $folder to flatten
+     * @return \Gitter\Model\Tree flattened folder
+     */
+    private function flattenFolder(Tree $folder) {
+        $folder->parse();
+        if ($folder->valid()) {
+            
+            // check whether first child is a folder
+            $firstChild = $folder->current();
+            if (!$firstChild->isTree()) {
+                return $folder;
+            }
+            
+            // if there are any other folders/files/symlinks we cannot flatten
+            $folder->next();
+            if ($folder->valid()) {
+                return $folder;
+            }
+            
+            // given folder has only one subfolder -> call recursively
+            $firstChild->setName($folder->getName() . DIRECTORY_SEPARATOR . $firstChild->getName());
+            return $this->flattenFolder($firstChild);
+        }
+        
+        return $folder;
+    }
+    
 }
 
