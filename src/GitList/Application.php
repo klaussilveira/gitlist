@@ -5,6 +5,7 @@ namespace GitList;
 use Silex\Application as SilexApplication;
 use Silex\Provider\TwigServiceProvider;
 use Silex\Provider\UrlGeneratorServiceProvider;
+use Silex\Provider\SessionServiceProvider;
 use GitList\Provider\GitServiceProvider;
 use GitList\Provider\RepositoryUtilServiceProvider;
 use GitList\Provider\ViewUtilServiceProvider;
@@ -43,23 +44,28 @@ class Application extends SilexApplication
         $repositories = $config->get('git', 'repositories');
 
         $this->register(new GitServiceProvider(), array(
-            'git.client'         => $config->get('git', 'client'),
-            'git.repos'          => $repositories,
-            'ini.file'           => "config.ini",
-            'git.hidden'         => $config->get('git', 'hidden') ?
-                                    $config->get('git', 'hidden') : array(),
-            'git.default_branch' => $config->get('git', 'default_branch') ?
-                                    $config->get('git', 'default_branch') : 'master',
+            'git.client'           => $config->get('git', 'client'),
+            'git.repos'            => $repositories,
+            'git.create_allow'     => $config->get('git', 'create_allow'),
+            'git.create_repobase'  => $config->get('git', 'create_repobase'),
+            'ini.file'             => "config.ini",
+            'git.hidden'           => $config->get('git', 'hidden') ?
+                                      $config->get('git', 'hidden') : array(),
+            'git.default_branch'   => $config->get('git', 'default_branch') ?
+                                      $config->get('git', 'default_branch') : 'master',
         ));
 
         $this->register(new ViewUtilServiceProvider());
         $this->register(new RepositoryUtilServiceProvider());
         $this->register(new UrlGeneratorServiceProvider());
         $this->register(new RoutingUtilServiceProvider());
+        $this->register(new SessionServiceProvider());
 
         $this['twig'] = $this->share($this->extend('twig', function ($twig, $app) {
             $twig->addFilter('htmlentities', new \Twig_Filter_Function('htmlentities'));
             $twig->addFilter('md5', new \Twig_Filter_Function('md5'));
+            $twig->addGlobal('create_allow', $app['git.create_allow']);
+            $twig->addGlobal('create_repobase', $app['git.create_repobase']);
 
             return $twig;
         }));

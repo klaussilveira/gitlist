@@ -3,6 +3,8 @@ client = '/usr/bin/git' ; Your git executable path
 default_branch = 'master' ; Default branch when HEAD is detached
 repositories[] = '/home/git/repositories/' ; Path to your repositories
                                            ; If you wish to add more repositories, just add a new line
+create_allow = true
+create_repobase = false
 
 ; WINDOWS USERS
 ;client = '"C:\Program Files (x86)\Git\bin\git.exe"' ; Your git executable path

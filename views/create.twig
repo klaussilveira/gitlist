@@ -1,0 +1,66 @@
+{% extends 'layout.twig' %}
+{% block title %}GitList{% endblock %}
+
+{% block body %}
+{% include 'navigation.twig' %}
+
+<div class="container" id="repositories">
+{% set alertTypeAvaillable = ['success', 'error'] %}
+{% for alert in alertTypeAvaillable %}
+	{% for message in app.session.getFlashBag.get(alert) %}
+		<div class="alert alert-{{ alert }}" >
+			<button class="close" data-dismiss="alert">×</button>
+			{{ message }}
+		</div>
+	{% endfor %}
+{% endfor %}
+
+<form class="form-horizontal" method="post">
+<fieldset>
+
+<!-- Form Name -->
+<legend>Create New Repository</legend>
+
+<!-- Text input-->
+<div class="control-group">
+  <label class="control-label" for="reponame">Repository Name</label>
+  <div class="controls">
+    <input id="reponame" name="reponame" type="text" placeholder="" class="input-xlarge" required="">
+    <p class="help-block">Alphanumeric only. No special characters.</p>
+  </div>
+</div>
+
+{% if create_repobase == true %}
+<div class="control-group">
+  <label class="control-label" for="reponame">Base Path</label>
+  <div class="controls">
+    <select name="repobase">
+		{% for value in repos %}<option>{{ value }}</option>{% endfor %}
+    </select>
+  </div>
+</div>
+{% endif %}
+
+<!-- Text input-->
+<div class="control-group">
+  <label class="control-label" for="projectname">Project Name</label>
+  <div class="controls">
+    <input id="projectname" name="projectname" type="text" placeholder="" class="input-xlarge">
+    
+  </div>
+</div>
+
+<!-- Button -->
+<div class="control-group">
+  <label class="control-label" for="submit"></label>
+  <div class="controls">
+    <button id="submit" name="submit" class="btn btn-primary">Create!</button>
+  </div>
+</div>
+
+</fieldset>
+</form>
+<hr />
+    {% include 'footer.twig' %}
+</div>
+{% endblock %}
