@@ -14,7 +14,8 @@ class TreeController implements ControllerProviderInterface
     {
         $route = $app['controllers_factory'];
 
-        $route->get('{repo}/tree/{commitishPath}/', $treeController = function ($repo, $commitishPath = '') use ($app) {
+        $controller = $this;
+        $route->get('{repo}/tree/{commitishPath}/', $treeController = function ($repo, $commitishPath = '') use ($app, $controller) {
             $repository = $app['git']->getRepositoryFromName($app['git.repos'], $repo);
             if (!$commitishPath) {
                 $commitishPath = $repository->getHead();
@@ -26,7 +27,7 @@ class TreeController implements ControllerProviderInterface
             $files = $repository->getTree($tree ? "$branch:\"$tree\"/" : $branch);
             $breadcrumbs = $app['util.view']->getBreadcrumbs($tree);
 
-            $this->flattenFolders($files);
+            $controller->flattenFolders($files);
 
             $parent = null;
             if (($slash = strrpos($tree, '/')) !== false) {
