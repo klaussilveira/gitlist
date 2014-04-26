@@ -42,7 +42,6 @@ class TreeController implements ControllerProviderInterface
                 'branches'       => $repository->getBranches(),
                 'tags'           => $repository->getTags(),
                 'readme'         => $app['util.repository']->getReadme($repository, $branch),
-                'query'          => ''
             ));
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
           ->assert('commitishPath', $app['util.routing']->getCommitishPathRegex())
