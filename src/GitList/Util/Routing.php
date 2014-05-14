@@ -58,11 +58,22 @@ class Routing
                 }
             }
 
-            if ($matchedBranch === null) {
-                throw new EmptyRepositoryException('This repository is currently empty. There are no commits.');
+            if ($matchedBranch !== null) {
+                $commitish = $matchedBranch;
             }
+        }
 
-            $commitish = $matchedBranch;
+        if ($commitish === null) {
+            // We may have partial commit hash as our commitish.
+            $hash = $slashPosition === false ? $commitishPath : substr($commitishPath, 0, $slashPosition);
+            if ($repository->hasCommit($hash)) {
+                $commit = $repository->getCommit($hash);
+                $commitish = $commit->getHash();
+            }
+        }
+
+        if ($commitish === null) {
+            throw new EmptyRepositoryException('This repository is currently empty. There are no commits.');
         }
 
         $commitishLength = strlen($commitish);
