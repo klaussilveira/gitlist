@@ -40,7 +40,7 @@ class CommitController implements ControllerProviderInterface
 
             foreach ($commits as $commit) {
                 $date = $commit->getDate();
-                $date = $date->format('m/d/Y');
+                $date = $date->format('Y-m-d');
                 $categorized[$date][] = $commit;
             }
 
@@ -72,7 +72,7 @@ class CommitController implements ControllerProviderInterface
 
             foreach ($commits as $commit) {
                 $date = $commit->getDate();
-                $date = $date->format('m/d/Y');
+                $date = $date->format('Y-m-d');
                 $categorized[$date][] = $commit;
             }
 
