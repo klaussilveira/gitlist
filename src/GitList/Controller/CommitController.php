@@ -44,6 +44,8 @@ class CommitController implements ControllerProviderInterface
                 $categorized[$date][] = $commit;
             }
 
+            krsort($categorized);
+
             $template = $app['request']->isXmlHttpRequest() ? 'commits_list.twig' : 'commits.twig';
 
             return $app['twig']->render($template, array(
@@ -73,6 +75,8 @@ class CommitController implements ControllerProviderInterface
                 $date = $date->format('m/d/Y');
                 $categorized[$date][] = $commit;
             }
+
+            krsort($categorized);
 
             return $app['twig']->render('searchcommits.twig', array(
                 'repo'           => $repo,
