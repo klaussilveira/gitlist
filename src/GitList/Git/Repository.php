@@ -42,16 +42,28 @@ class Repository extends BaseRepository
      */
     public function getCommit($commitHash)
     {
+        // prevent from XSS and crash with invalid char
+        $id = uniqid("gitlist_");
+
         $logs = $this->getClient()->run($this,
-                  "show --pretty=format:\"<item><hash>%H</hash>"
-                . "<short_hash>%h</short_hash><tree>%T</tree><parents>%P</parents>"
-                . "<author>%an</author><author_email>%ae</author_email>"
-                . "<date>%at</date><commiter>%cn</commiter><commiter_email>%ce</commiter_email>"
-                . "<commiter_date>%ct</commiter_date>"
-                . "<message><![CDATA[%s]]></message>"
-                . "<body><![CDATA[%b]]></body>"
-                . "</item>\" $commitHash"
-        );
+                  "show --pretty=format:\"$id%H$id"
+                . "%h$id%T$id%P$id"
+                . "%an$id%ae$id"
+                . "%at$id%cn$id%ce$id"
+                . "%ct$id"
+                . "%s$id"
+                . "%b$id\" $commitHash"
+            );
+        $replace = '<item><hash>$1</hash>'
+                . '<short_hash>$2</short_hash><tree>$3</tree><parents>$3</parents>'
+                . '<author>$5</author><author_email>$6</author_email>'
+                . '<date>$7</date><commiter>$8</commiter><commiter_email>$9</commiter_email>'
+                . '<commiter_date>$10</commiter_date>'
+                . '<message><![CDATA[$11]]></message>'
+                . '<body><![CDATA[$12]]></body>'
+                . '</item>';
+        $logs = htmlspecialchars($logs);
+        $logs = preg_replace("#$id(.*)$id(.*)$id(.*)$id(.*)$id(.*)$id(.*)$id(.*)$id(.*)$id(.*)$id(.*)$id(.*)$id(.*)$id#",$replace,$logs);
 
         $xmlEnd = strpos($logs, '</item>') + 7;
         $commitInfo = substr($logs, 0, $xmlEnd);
@@ -208,26 +220,41 @@ class Repository extends BaseRepository
      */
     public function getPaginatedCommits($file = null, $page = 0)
     {
+        // prevent from XSS and crash with invalid char
+        $id = uniqid("gitlist_");
+
         $page = 15 * $page;
         $pager = "--skip=$page --max-count=15";
         $command =
-                  "log $pager --pretty=format:\"<item><hash>%H</hash>"
-                . "<short_hash>%h</short_hash><tree>%T</tree><parents>%P</parents>"
-                . "<author>%an</author><author_email>%ae</author_email>"
-                . "<date>%at</date><commiter>%cn</commiter>"
-                . "<commiter_email>%ce</commiter_email>"
-                . "<commiter_date>%ct</commiter_date>"
-                . "<message><![CDATA[%s]]></message></item>\"";
+                  "log $pager --pretty=format:\"$id%H$id"
+                . "%h$id%T$id%P$id"
+                . "%an$id%ae$id"
+                . "%at$id%cn$id"
+                . "%ce$id"
+                . "%ct$id"
+                . "%s$id\"";
+        $replace =
+                  '<item><hash>$1</hash>'
+                . '<short_hash>$2</short_hash><tree>$3</tree><parents>$4</parents>'
+                . '<author>$5</author><author_email>$6</author_email>'
+                . '<date>$7</date><commiter>$8</commiter>'
+                . '<commiter_email>$9</commiter_email>'
+                . '<commiter_date>$10</commiter_date>'
+                . '<message><![CDATA[$11]]></message></item>';
 
         if ($file) {
             $command .= " $file";
         }
 
-        try {
-            $logs = $this->getPrettyFormat($command);
-        } catch (\RuntimeException $e) {
+        $logs = $this->getClient()->run($this, $command);
+        if (empty($logs))
             return array();
-        }
+
+        $logs = htmlspecialchars($logs);
+        $logs = preg_replace("#$id(.*)$id(.*)$id(.*)$id(.*)$id(.*)$id(.*)$id(.*)$id(.*)$id(.*)$id(.*)$id(.*)$id#",$replace,$logs);
+
+        $format = new PrettyFormat;
+        $logs = $format->parse($logs);
 
         foreach ($logs as $log) {
             $commit = new Commit;
@@ -240,22 +267,37 @@ class Repository extends BaseRepository
 
     public function searchCommitLog($query)
     {
+        // prevent from XSS and crash with invalid char
+        $id = uniqid("gitlist_");
+
         $query = escapeshellarg($query);
         $query = strtr($query, array('[' => '\\[', ']' => '\\]'));
         $command =
-              "log --grep={$query} --pretty=format:\"<item><hash>%H</hash>"
-            . "<short_hash>%h</short_hash><tree>%T</tree><parents>%P</parents>"
-            . "<author>%an</author><author_email>%ae</author_email>"
-            . "<date>%at</date><commiter>%cn</commiter>"
-            . "<commiter_email>%ce</commiter_email>"
-            . "<commiter_date>%ct</commiter_date>"
-            . "<message><![CDATA[%s]]></message></item>\"";
+              "log --grep={$query} --pretty=format:\"$id%H$id"
+                . "%h$id%T$id%P$id"
+                . "%an$id%ae$id"
+                . "%at$id%cn$id"
+                . "%ce$id"
+                . "%ct$id"
+                . "%s$id\"";
+        $replace =
+                  '<item><hash>$1</hash>'
+                . '<short_hash>$2</short_hash><tree>$3</tree><parents>$4</parents>'
+                . '<author>$5</author><author_email>$6</author_email>'
+                . '<date>$7</date><commiter>$8</commiter>'
+                . '<commiter_email>$9</commiter_email>'
+                . '<commiter_date>$10</commiter_date>'
+                . '<message><![CDATA[$11]]></message></item>';
 
-        try {
-            $logs = $this->getPrettyFormat($command);
-        } catch (\RuntimeException $e) {
+        $logs = $this->getClient()->run($this, $command);
+        if (empty($logs))
             return array();
-        }
+
+        $logs = htmlspecialchars($logs);
+        $logs = preg_replace("#$id(.*)$id(.*)$id(.*)$id(.*)$id(.*)$id(.*)$id(.*)$id(.*)$id(.*)$id(.*)$id(.*)$id#",$replace,$logs);
+
+        $format = new PrettyFormat;
+        $logs = $format->parse($logs);
 
         foreach ($logs as $log) {
             $commit = new Commit;
