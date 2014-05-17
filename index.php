@@ -1,11 +1,10 @@
 <?php
 
 /**
- * GitList 0.4
- * https://github.com/klaussilveira/gitlist
+ * GitList: an elegant and modern git repository viewer
+ * http://gitlist.org
  */
 
-// Set the default timezone for systems without date.timezone set in php.ini
 if (!ini_get('date.timezone')) {
     date_default_timezone_set('UTC');
 }
@@ -22,8 +21,8 @@ require 'vendor/autoload.php';
 
 $config = GitList\Config::fromFile('config.ini');
 
-if ($config->get('Date', 'timezone')) {
-    date_default_timezone_set($config->get('Date', 'timezone'));
+if ($config->get('date', 'timezone')) {
+    date_default_timezone_set($config->get('date', 'timezone'));
 }
 
 $app = require 'boot.php';
