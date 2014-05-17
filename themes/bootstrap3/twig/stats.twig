@@ -1,0 +1,48 @@
+{% extends 'layout_page.twig' %}
+
+{% set page = 'stats' %}
+
+{% block title %}GitList{% endblock %}
+
+{% block content %}
+    {% include 'breadcrumb.twig' with {breadcrumbs: [{dir: 'Statistics', path:''}]} %}
+
+    <table class="table stats">
+        <thead>
+            <tr>
+                <th width="30%"><span class="fa fa-file-text"></span> File extensions ({{ stats.extensions|length }})</th>
+                <th width="40%"><span class="fa fa-users"></span> Authors ({{ authors|length }})</th>
+                <th width="30%"><span class="fa fa-star"></span> Other</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <ul>
+                    {% for ext, amount in stats.extensions %}
+                        <li><strong>{{ ext }}</strong>: {{ amount }} files</li>
+                    {% endfor %}
+                    </ul>
+                </td>
+                <td>
+                    <ul>
+                    {% for author in authors %}
+                        <li><strong><a href="mailto:{{ author.email }}">{{ author.name }}</a></strong>: {{ author.commits }} commits</li>
+                    {% endfor %}
+                    </ul>
+                </td>
+                <td>
+                    <p>
+                        <strong>Total files:</strong> {{ stats.files }}
+                    </p>
+
+                    <p>
+                        <strong>Total bytes:</strong> {{ stats.size }} bytes ({{ ((stats.size / 1024) / 1024) | number_format }} MB)
+                    </p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <hr />
+{% endblock %}

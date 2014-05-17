@@ -1,0 +1,42 @@
+{% extends 'layout_page.twig' %}
+
+{% set page = 'files' %}
+
+{% block title %}GitList{% endblock %}
+
+{% block content %}
+    {% embed 'breadcrumb.twig' with {breadcrumbs: breadcrumbs} %}
+        {% block extra %}
+            <div class="pull-right">
+                <div class="btn-group download-buttons">
+                    <button type="button" href="{{ path('archive', {repo: repo, branch: branch, format: 'zip'}) }}" class="btn btn-default btn-xs" title="Download '{{ branch }}' as a ZIP archive">ZIP</button>
+                    <button type="button" href="{{ path('archive', {repo: repo, branch: branch, format: 'tar'}) }}" class="btn btn-default btn-xs" title="Download '{{ branch }}' as a TAR archive">TAR</button>
+                    <a href="{{ path('rss', {repo: repo, branch: branch}) }}"><span class="fa fa-rss rss-icon"></span></a>
+                </div>
+            </div>
+        {% endblock %}
+    {% endembed %}
+
+    {% if results %}
+    <table class="table tree">
+        <thead>
+            <tr>
+                <th width="20%">Name</th>
+                <th width="80%">Match</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for result in results %}
+            <tr>
+                <td><span class="fa fa-file"></span> <a href="{{ path('blob', {repo: repo, branch: branch, file: result.file, commitishPath: branch ~ '/' ~ result.file}) }}#L{{ result.line }}">{{ result.file }}</a></td>
+                <td>{{ result.match }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No results found.</p>
+    {% endif %}
+
+    <hr />
+{% endblock %}

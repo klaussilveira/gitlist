@@ -1,0 +1,23 @@
+{% extends 'layout_page.twig' %}
+
+{% set page = 'network' %}
+
+{% block title %}GitList{% endblock %}
+
+{% block content %}
+    {% include 'breadcrumb.twig' with {breadcrumbs: [{dir: 'Network', path:''}]} %}
+	<div class="network-view">
+		<div class="network-header">
+			<h4 class="meta">Network Graph of {{ repo }} / {{ commitishPath }}</h4>
+		</div>
+
+		<div class="network-graph" data-source="{{ path('networkData', {repo: repo, commitishPath: commitishPath}) }}">
+		{#<div class="network-graph" data-source="/dummynetwork.json">#}
+
+		</div>
+	</div>
+
+	
+
+    <hr />
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends 'layout_page.twig' %}
+
+{% set page = 'files' %}
+
+{% block title %}GitList{% endblock %}
+
+{% block content %}
+    {% include 'breadcrumb.twig' with {breadcrumbs: breadcrumbs} %}
+
+    <div class="source-view">
+        <div class="source-header">
+            <div class="meta"></div>
+
+            <div class="btn-group pull-right">
+                <a href="{{ path('blob_raw', {repo: repo, commitishPath: branch ~ '/' ~ file}) }}" class="btn btn-default btn-sm"><span class="fa fa-file"></span> Raw</a>
+                <a href="{{ path('blame', {repo: repo, commitishPath: branch ~ '/' ~ file}) }}" class="btn btn-default btn-sm"><span class="fa fa-bullhorn"></span> Blame</a>
+                <a href="{{ path('commits', {repo: repo, commitishPath: branch ~ '/' ~ file}) }}" class="btn btn-default btn-sm"><span class="fa fa-list"></span> History</a>
+            </div>
+        </div>
+        {% if fileType == 'image' %}
+        <div class="text-center"><img src="{{ path('blob_raw', {repo: repo, commitishPath: branch ~ '/' ~ file}) }}" alt="{{ file }}" class="image-blob" /></div>
+
+        {% elseif fileType == 'markdown' %}
+        <div class="md-view"><div id="md-content">{{ blob }}</div></div>
+
+        {% else %}
+        <pre id="sourcecode" language="{{ fileType }}">{{ blob|htmlentities|raw }}</pre>
+        {% endif %}
+    </div>
+
+    <hr />
+{% endblock %}

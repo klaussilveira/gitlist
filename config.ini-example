@@ -14,6 +14,7 @@ repositories[] = '/home/git/repositories/' ; Path to your repositories
 [app]
 debug = false
 cache = true
+theme = "default"
 
 ; If you need to specify custom filetypes for certain extensions, do this here
 [filetypes]

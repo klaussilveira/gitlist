@@ -30,12 +30,13 @@ class Application extends SilexApplication
         $this->path = realpath($root);
 
         $this['debug'] = $config->get('app', 'debug');
+        $this['theme'] = $config->get('app', 'theme') ? $config->get('app', 'theme') : 'default';
         $this['filetypes'] = $config->getSection('filetypes');
         $this['cache.archives'] = $this->getCachePath() . 'archives';
 
         // Register services
         $this->register(new TwigServiceProvider(), array(
-            'twig.path'       => $this->getViewPath(),
+            'twig.path'       => [$this->getThemePath($this['theme']), $this->getThemePath('default')],
             'twig.options'    => $config->get('app', 'cache') ?
                                  array('cache' => $this->getCachePath() . 'views') : array(),
         ));
@@ -80,20 +81,31 @@ class Application extends SilexApplication
     {
         return $this->path . DIRECTORY_SEPARATOR;
     }
-    
+
     public function setPath($path)
     {
         $this->path = $path;
+
         return $this;
     }
 
     public function getCachePath()
     {
-        return $this->path . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
+        return $this->path
+            . DIRECTORY_SEPARATOR
+            . 'cache'
+            . DIRECTORY_SEPARATOR;
     }
 
-    public function getViewPath()
+    public function getThemePath($theme)
     {
-        return $this->path . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR;
+        return $this->path
+            . DIRECTORY_SEPARATOR
+            . 'themes'
+            . DIRECTORY_SEPARATOR
+            . $theme
+            . DIRECTORY_SEPARATOR
+            . 'twig'
+            . DIRECTORY_SEPARATOR;
     }
 }
