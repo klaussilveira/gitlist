@@ -171,7 +171,7 @@ class InterfaceTest extends WebTestCase
         $this->assertCount(1, $crawler->filter('.md-header:contains("README.md")'));
         $this->assertEquals("## GitTest\nGitTest is a *test* repository!", $crawler->filter('#md-content')->eq(0)->text());
         $this->assertEquals('/GitTest/blob/master/README.md', $crawler->filter('.tree tr td')->eq(0)->filter('a')->eq(0)->attr('href'));
-        $this->assertEquals('/GitTest/blob/master/test.php', $crawler->filter('.tree tr td')->eq(3)->filter('a')->eq(0)->attr('href'));
+        $this->assertEquals('/GitTest/blob/master/test.php', $crawler->filter('.tree tr td')->eq(4)->filter('a')->eq(0)->attr('href'));
 
         $this->assertEquals('branch/name/wiith/slashes', $crawler->filter('.dropdown-menu li')->eq(1)->text());
         $this->assertEquals('issue12', $crawler->filter('.dropdown-menu li')->eq(2)->text());
@@ -184,8 +184,8 @@ class InterfaceTest extends WebTestCase
         $this->assertCount(1, $crawler->filter('.tree tr:contains("testfolder")'));
         $this->assertCount(1, $crawler->filter('.tree tr:contains("bar.json")'));
         $this->assertEquals('/foobar/tree/master/myfolder/', $crawler->filter('.tree tr td')->eq(0)->filter('a')->eq(0)->attr('href'));
-        $this->assertEquals('/foobar/tree/master/testfolder/', $crawler->filter('.tree tr td')->eq(3)->filter('a')->eq(0)->attr('href'));
-        $this->assertEquals('/foobar/blob/master/bar.json', $crawler->filter('.tree tr td')->eq(6)->filter('a')->eq(0)->attr('href'));
+        $this->assertEquals('/foobar/tree/master/testfolder/', $crawler->filter('.tree tr td')->eq(4)->filter('a')->eq(0)->attr('href'));
+        $this->assertEquals('/foobar/blob/master/bar.json', $crawler->filter('.tree tr td')->eq(8)->filter('a')->eq(0)->attr('href'));
         $this->assertCount(0, $crawler->filter('.md-header'));
         $this->assertEquals('master', $crawler->filter('.dropdown-menu li')->eq(1)->text());
     }
