@@ -37,7 +37,7 @@ class Application extends SilexApplication
 
         // Register services
         $this->register(new TwigServiceProvider(), array(
-            'twig.path'       => [$this->getThemePath($this['theme']), $this->getThemePath('default')],
+            'twig.path'       => array($this->getThemePath($this['theme']), $this->getThemePath('default')),
             'twig.options'    => $config->get('app', 'cache') ?
                                  array('cache' => $this->getCachePath() . 'views') : array(),
         ));
