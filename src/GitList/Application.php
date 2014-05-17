@@ -62,7 +62,7 @@ class Application extends SilexApplication
         $this['twig'] = $this->share($this->extend('twig', function ($twig, $app) {
             $twig->addFilter(new \Twig_SimpleFilter('htmlentities', 'htmlentities'));
             $twig->addFilter(new \Twig_SimpleFilter('md5', 'md5'));
-            $twig->addFilter(new \Twig_SimpleFilter('format_date', array($this, 'formatDate')));
+            $twig->addFilter(new \Twig_SimpleFilter('format_date', array($app, 'formatDate')));
 
             return $twig;
         }));
