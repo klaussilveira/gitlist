@@ -1,0 +1,51 @@
+{% extends 'layout_page.twig' %}
+
+{% set page = 'contributors' %}
+
+{% block title %}GitList{% endblock %}
+
+{% block content %}
+    {% include 'breadcrumb.twig' with {breadcrumbs: [{dir: 'Contributors', path:''}]} %}
+
+    {% if contributors == null %}
+        <div class="alert">No one contributed to this project with the email address of {{ email }}.</div>
+        <h3>Contributors</h3>
+        <ul>
+        {% for author in authors %}
+            <li><strong><a href="{{ app.request.basepath }}/{{repo}}/contributor/{{ author.email }}">{{ author.name }}</a></strong>: {{ author.commits }} commits</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% for contributor in contributors %}
+        <div id="contributorChart-{{ loop.index0 }}"></div>
+    {% endfor %}
+    <script>
+        var contributors = {{ contributors|json_encode(constant('JSON_PRETTY_PRINT'))|raw }}
+    </script>
+
+{% if commits %}
+{% for date, commit in commits %}
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th colspan="3">{{ date | date("F j, Y") }}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in commit %}
+        <tr>
+            <td width="5%"><img src="https://gravatar.com/avatar/{{ item.author.email | lower | md5 }}?s=40" /></td>
+            <td width="95%">
+                <span class="pull-right"><a class="btn btn-small" href="{{ path('commit', {repo: repo, commit: item.hash}) }}"><i class="icon-list-alt"></i> View {{ item.shortHash }}</a></span>
+                <h4>{{ item.message }}</h4>
+                <span><a href="mailto:{{ item.author.email }}">{{ item.author.name }}</a> authored on {{ item.date | date('d/m/Y \\a\\t H:i:s') }}</span>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endfor %}
+{% endif %}
+
+{% endblock %}

@@ -27,29 +27,6 @@ class MainController implements ControllerProviderInterface
             return $app->redirect($request->headers->get('Referer'));
         })->bind('refresh');
 
-        $route->get('{repo}/stats/{branch}', function($repo, $branch) use ($app) {
-            $repository = $app['git']->getRepositoryFromName($app['git.repos'], $repo);
-
-            if ($branch === null) {
-                $branch = $repository->getHead();
-            }
-
-            $stats = $repository->getStatistics($branch);
-            $authors = $repository->getAuthorStatistics($branch);
-
-            return $app['twig']->render('stats.twig', array(
-                'repo'           => $repo,
-                'branch'         => $branch,
-                'branches'       => $repository->getBranches(),
-                'tags'           => $repository->getTags(),
-                'stats'          => $stats,
-                'authors'        => $authors,
-            ));
-        })->assert('repo', $app['util.routing']->getRepositoryRegex())
-          ->assert('branch', $app['util.routing']->getBranchRegex())
-          ->value('branch', null)
-          ->bind('stats');
-
         $route->get('{repo}/{branch}/rss/', function($repo, $branch) use ($app) {
             $repository = $app['git']->getRepositoryFromName($app['git.repos'], $repo);
 
