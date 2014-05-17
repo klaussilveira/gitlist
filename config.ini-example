@@ -30,3 +30,4 @@ theme = "default"
 ; set the timezone
 [date]
 ; timezone = UTC
+; format = 'd/m/Y H:i:s'

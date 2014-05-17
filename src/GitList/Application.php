@@ -30,6 +30,7 @@ class Application extends SilexApplication
         $this->path = realpath($root);
 
         $this['debug'] = $config->get('app', 'debug');
+        $this['date.format'] = $config->get('date', 'format') ? $config->get('date', 'format') : 'd/m/Y H:i:s';
         $this['theme'] = $config->get('app', 'theme') ? $config->get('app', 'theme') : 'default';
         $this['filetypes'] = $config->getSection('filetypes');
         $this['cache.archives'] = $this->getCachePath() . 'archives';
@@ -59,8 +60,9 @@ class Application extends SilexApplication
         $this->register(new RoutingUtilServiceProvider());
 
         $this['twig'] = $this->share($this->extend('twig', function ($twig, $app) {
-            $twig->addFilter('htmlentities', new \Twig_Filter_Function('htmlentities'));
-            $twig->addFilter('md5', new \Twig_Filter_Function('md5'));
+            $twig->addFilter(new \Twig_SimpleFilter('htmlentities', 'htmlentities'));
+            $twig->addFilter(new \Twig_SimpleFilter('md5', 'md5'));
+            $twig->addFilter(new \Twig_SimpleFilter('format_date', array($this, 'formatDate')));
 
             return $twig;
         }));
@@ -75,6 +77,11 @@ class Application extends SilexApplication
                 'message' => $e->getMessage(),
             ));
         });
+    }
+
+    public function formatDate($date)
+    {
+        return $date->format($this['date.format']);
     }
 
     public function getPath()
