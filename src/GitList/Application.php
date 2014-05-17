@@ -9,6 +9,7 @@ use GitList\Provider\GitServiceProvider;
 use GitList\Provider\RepositoryUtilServiceProvider;
 use GitList\Provider\ViewUtilServiceProvider;
 use GitList\Provider\RoutingUtilServiceProvider;
+use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * GitList application.
@@ -76,6 +77,13 @@ class Application extends SilexApplication
             return $app['twig']->render('error.twig', array(
                 'message' => $e->getMessage(),
             ));
+        });
+
+        $this->finish(function () use ($app, $config) {
+            if (!$config->get('app', 'cache')) {
+                $fs = new Filesystem();
+                $fs->remove($app['cache.archives']);
+            }
         });
     }
 
