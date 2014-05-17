@@ -8,11 +8,18 @@
         <delete dir="${basedir}/build"/>
     </target>
 
-    <target name="prepare" depends="clean" description="Prepare for build">
+    <target name="get-composer" description="Get Composer">
+        <exec executable="/bin/bash">
+            <arg value="-c" />
+            <arg value="curl -s https://getcomposer.org/installer | php" />
+        </exec>
+    </target>
+
+    <target name="prepare" depends="clean,get-composer" description="Prepare for build">
         <mkdir dir="${basedir}/build/logs"/>
         <mkdir dir="${basedir}/build/pdepend"/>
         <copy file="config.ini-example" tofile="config.ini"/>
-        <exec executable="composer" failonerror="true">
+        <exec executable="${basedir}/composer.phar" failonerror="true">
             <arg value="install" />
             <arg value="--dev" />
         </exec>
@@ -20,7 +27,7 @@
 
     <target name="prepare-package" description="Prepare for build">
         <delete dir="${basedir}/vendor"/>
-        <exec executable="composer" failonerror="true">
+        <exec executable="${basedir}/composer.phar" failonerror="true">
             <arg value="install" />
             <arg value="--optimize-autoloader" />
         </exec>
