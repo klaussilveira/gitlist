@@ -1,0 +1,8 @@
+<ol class="breadcrumb">
+    <li><a href="{{ path('tree', {repo: repo, commitishPath: branch}) }}">{{ repo }}</a></li>
+    {% for breadcrumb in breadcrumbs %}
+        <li{% if loop.last %} class="active"{% endif %}>{% if not loop.last %}<a href="{{ path('tree', {repo: repo, commitishPath: branch ~ '/' ~ breadcrumb.path}) }}">{{ breadcrumb.dir }}</a>{% endif %}{% if loop.last %}{{ breadcrumb.dir }}{% endif %}</li>
+    {% endfor %}
+
+    {% block extra %}{% endblock %}
+</ol>

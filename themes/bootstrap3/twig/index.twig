@@ -1,0 +1,29 @@
+{% extends 'layout.twig' %}
+{% block title %}GitList{% endblock %}
+
+{% block body %}
+{% include 'navigation.twig' %}
+
+<div class="container">
+
+    {% for repository in repositories %}
+    <div class="repository">
+        <div class="repository-header">
+            <span class="fa fa-folder-open"></span>  <a href="{{ path('repository', {repo: repository.name}) }}">{{ repository.name }}</a>
+            <a href="{{ path('rss', {repo: repository.name, branch: 'master'}) }}"><span class="fa fa-rss rss-icon pull-right"></span></a>
+        </div>
+        <div class="repository-body">
+            {% if repository.description %}
+            <p>{{ repository.description }}</p>
+            {% else %}
+            <p>There is no repository description file. Please, create one to remove this message.</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+
+    <hr />
+
+    {% include 'footer.twig' %}
+</div>
+{% endblock %}

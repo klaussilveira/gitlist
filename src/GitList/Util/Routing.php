@@ -58,11 +58,18 @@ class Routing
                 }
             }
 
-            if ($matchedBranch === null) {
-                throw new EmptyRepositoryException('This repository is currently empty. There are no commits.');
+            if ($matchedBranch !== null) {
+                $commitish = $matchedBranch;
+            } else {
+                // We may have partial commit hash as our commitish.
+                $hash = $slashPosition === false ? $commitishPath : substr($commitishPath, 0, $slashPosition);
+                if ($repository->hasCommit($hash)) {
+                    $commit = $repository->getCommit($hash);
+                    $commitish = $commit->getHash();
+                } else {
+                    throw new EmptyRepositoryException('This repository is currently empty. There are no commits.');
+                }
             }
-
-            $commitish = $matchedBranch;
         }
 
         $commitishLength = strlen($commitish);
@@ -101,15 +108,15 @@ class Routing
         static $regex = null;
 
         if ($regex === null) {
-            $app = $this->app;
-            $self = $this;
+            $isWindows = $this->isWindows();
             $quotedPaths = array_map(
-               function ($repo) use ($app, $self) {
-                    $repoName = $repo['name'];
-                    //Windows
-                    if ($self->isWindows()){
-                       $repoName = str_replace('\\', '\\\\',$repoName);
+                function ($repo) use ($isWindows) {
+                    $repoName = preg_quote($repo['name']);
+
+                    if ($isWindows) {
+                        $repoName = str_replace('\\', '\\\\', $repoName);
                     }
+
                     return $repoName;
                 },
                 $this->app['git']->getRepositories($this->app['git.repos'])

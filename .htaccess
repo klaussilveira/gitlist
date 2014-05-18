@@ -1,5 +1,5 @@
 <IfModule mod_rewrite.c>
-    Options -MultiViews SymLinksIfOwnerMatch
+    Options -MultiViews +SymLinksIfOwnerMatch
 
     RewriteEngine On
     #RewriteBase /path/to/gitlist/

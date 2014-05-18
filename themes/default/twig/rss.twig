@@ -8,7 +8,7 @@
         {% for commit in commits %}
         <item>
             <title>{{ commit.message }}</title>
-            <description>{{ commit.author.name }} authored {{ commit.shortHash }} in {{ commit.date | date('d/m/Y \\a\\t H:i:s') }}</description>
+            <description>{{ commit.author.name }} authored {{ commit.shortHash }} in {{ commit.date | format_date }}</description>
             <link>{{ url('commit', {repo: repo, commit: commit.hash}) }}</link>
             <pubDate>{{ commit.date | date('r') }}</pubDate>
         </item>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        <link rel="stylesheet" type="text/css" href="{{ app.request.basepath }}/themes/{{ app.theme }}/css/style.css">
+        <link rel="stylesheet" type="text/css" href="{{ app.request.basepath }}/themes/{{ app.theme }}/css/fontawesome.css">
+        <link rel="shortcut icon" type="image/png" href="{{ app.request.basepath }}/themes/{{ app.theme }}/img/favicon.png" />
+        <!--[if lt IE 9]>
+        <script src="{{ app.request.basepath }}/themes/{{ app.theme }}/js/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body>
+        {% block body %}{% endblock %}
+        <script src="{{ app.request.basepath }}/themes/{{ app.theme }}/js/jquery.js"></script>
+        <script src="{{ app.request.basepath }}/themes/{{ app.theme }}/js/raphael.js"></script>
+        <script src="{{ app.request.basepath }}/themes/{{ app.theme }}/js/bootstrap.js"></script>
+        <script src="{{ app.request.basepath }}/themes/{{ app.theme }}/js/codemirror.js"></script>
+        <script src="{{ app.request.basepath }}/themes/{{ app.theme }}/js/showdown.js"></script>
+        <script src="{{ app.request.basepath }}/themes/{{ app.theme }}/js/table.js"></script>
+        <script src="{{ app.request.basepath }}/themes/{{ app.theme }}/js/main.js"></script>
+        <script src="{{ app.request.basepath }}/themes/{{ app.theme }}/js/networkGraph.js"></script>
+    </body>
+</html>

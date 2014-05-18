@@ -60,6 +60,7 @@ class Repository
         'st'       => 'smalltalk',
         'tex'      => 'stex',
         'vbs'      => 'vbscript',
+        'vb'       => 'vbscript',
         'v'        => 'verilog',
         'xml'      => 'xml',
         'xsd'      => 'xml',

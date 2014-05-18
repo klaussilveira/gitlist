@@ -40,9 +40,11 @@ class CommitController implements ControllerProviderInterface
 
             foreach ($commits as $commit) {
                 $date = $commit->getDate();
-                $date = $date->format('m/d/Y');
+                $date = $date->format('Y-m-d');
                 $categorized[$date][] = $commit;
             }
+
+            krsort($categorized);
 
             $template = $app['request']->isXmlHttpRequest() ? 'commits_list.twig' : 'commits.twig';
 
@@ -70,9 +72,11 @@ class CommitController implements ControllerProviderInterface
 
             foreach ($commits as $commit) {
                 $date = $commit->getDate();
-                $date = $date->format('m/d/Y');
+                $date = $date->format('Y-m-d');
                 $categorized[$date][] = $commit;
             }
+
+            krsort($categorized);
 
             return $app['twig']->render('searchcommits.twig', array(
                 'repo'           => $repo,

@@ -4,8 +4,8 @@ namespace GitList\Controller;
 
 use Silex\Application;
 use Silex\ControllerProviderInterface;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class TreeController implements ControllerProviderInterface
 {
@@ -65,14 +65,12 @@ class TreeController implements ControllerProviderInterface
                 'breadcrumbs'    => $breadcrumbs,
                 'branches'       => $repository->getBranches(),
                 'tags'           => $repository->getTags(),
+                'query'          => $query
             ));
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
           ->assert('branch', $app['util.routing']->getBranchRegex())
           ->bind('search');
 
-
-        # Intentionally before next statement, because order appears
-        # to be important, and the other statement got precedence previously.
         $route->get('{repo}/{format}ball/{branch}', function($repo, $format, $branch) use ($app) {
             $repository = $app['git']->getRepositoryFromName($app['git.repos'], $repo);
 
@@ -93,14 +91,7 @@ class TreeController implements ControllerProviderInterface
                 $repository->createArchive($tree, $file, $format);
             }
 
-            return new StreamedResponse(function () use ($file) {
-                readfile($file);
-            }, 200, array(
-                'Content-type' => ('zip' === $format) ? 'application/zip' : 'application/x-tar',
-                'Content-Description' => 'File Transfer',
-                'Content-Disposition' => 'attachment; filename="'.$repo.'-'.substr($tree, 0, 6).'.'.$format.'"',
-                'Content-Transfer-Encoding' => 'binary',
-            ));
+            return new BinaryFileResponse($file);
         })->assert('format', '(zip|tar)')
           ->assert('repo', $app['util.routing']->getRepositoryRegex())
           ->assert('branch', $app['util.routing']->getBranchRegex())

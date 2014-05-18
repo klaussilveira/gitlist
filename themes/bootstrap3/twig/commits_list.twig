@@ -1,0 +1,40 @@
+{% if commits %}
+{% for date, commit in commits %}
+<table class="table table-striped commits">
+    <thead>
+        <tr>
+            <th colspan="3">{{ date | date("F j, Y") }}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in commit %}
+        <tr>
+            <td width="5%"><img src="https://gravatar.com/avatar/{{ item.author.email | lower | md5 }}?s=40" /></td>
+            <td width="95%">
+                <span class="pull-right"><a class="btn btn-default btn-sm" href="{{ path('commit', {repo: repo, commit: item.hash}) }}"><span class="fa fa-list-alt"></span> View {{ item.shortHash }}</a></span>
+                <h4>{{ item.message }}</h4>
+                <span><a href="mailto:{{ item.author.email }}">{{ item.author.name }}</a> authored on {{ item.date | format_date }}</span>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endfor %}
+{% else %}
+<p>No results found.</p>
+{% endif %}
+
+{% if page != 'searchcommits' %}
+<ul class="pager">
+    {% if pager.current != 0 %}
+    <li class="previous">
+        <a href="?page={{ pager.previous }}">&larr; Newer</a>
+    </li>
+    {% endif %}
+    {% if pager.current != pager.last %}
+    <li class="next">
+        <a href="?page={{ pager.next }}">Older &rarr;</a>
+    </li>
+    {% endif %}
+</ul>
+{% endif %}

@@ -1,0 +1,71 @@
+{% extends 'layout_page.twig' %}
+
+{% set page = 'files' %}
+
+{% block title %}GitList{% endblock %}
+
+{% block content %}
+    {% embed 'breadcrumb.twig' with {breadcrumbs: breadcrumbs} %}
+        {% block extra %}
+            <div class="pull-right">
+                <div class="btn-group download-buttons">
+                    <button type="button" href="{{ path('archive', {repo: repo, branch: branch, format: 'zip'}) }}" class="btn btn-default btn-xs" title="Download '{{ branch }}' as a ZIP archive">ZIP</button>
+                    <button type="button" href="{{ path('archive', {repo: repo, branch: branch, format: 'tar'}) }}" class="btn btn-default btn-xs" title="Download '{{ branch }}' as a TAR archive">TAR</button>
+                    <a href="{{ path('rss', {repo: repo, branch: branch}) }}"><span class="fa fa-rss rss-icon"></span></a>
+                </div>
+            </div>
+        {% endblock %}
+    {% endembed %}
+
+    {% if files is not empty %}
+    <table class="table tree">
+        <thead>
+            <tr>
+                <th width="80%">Name</th>
+                <th width="10%">Mode</th>
+                <th width="10%">Size</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if parent is not null %}
+            <tr>
+                <td>
+                    {% if not parent %}
+                        <a href="{{ path('branch', {repo: repo, branch: branch}) }}">..</a>
+                    {% else %}
+                        <a href="{{ path('tree', {repo: repo, commitishPath: branch ~ '/' ~ parent}) }}">..</a>
+                    {% endif %}
+                </td>
+                <td></td>
+                <td></td>
+            </tr>
+            {% endif %}
+            {% for file in files %}
+            <tr>
+                <td><span class="fa {{ file.type == "folder" or file.type == "symlink" ? "fa-folder-open" : "fa-file" }}"></span> <a href="
+                    {%- if file.type == "folder" or file.type == "symlink" -%}
+                        {{ path('tree', {repo: repo, commitishPath: branch ~ '/' ~ path ~ (file.type == "symlink" ? file.path : file.name)}) }}
+                    {%- else -%}
+                        {{ path('blob', {repo: repo, commitishPath: branch ~ '/' ~ path ~ (file.type == "symlink" ? file.path : file.name)}) }}
+                    {%- endif -%}
+                ">{{ file.name }}</a></td>
+                <td>{{ file.mode }}</td>
+                <td>{% if file.size %}{{ (file.size / 1024) | number_format }} kb{% endif %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p>This repository is empty.</p>
+    {% endif %}
+    {% if readme is defined and readme is not empty %}
+        <div class="readme-view">
+            <div class="md-header">
+                <span class="meta">{{ readme.filename }}</span>
+            </div>
+            <div id="md-content">{{ readme.content }}</div>
+        </div>
+    {% endif %}
+
+    <hr />
+{% endblock %}

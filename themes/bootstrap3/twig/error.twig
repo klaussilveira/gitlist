@@ -1,0 +1,17 @@
+{% extends 'layout.twig' %}
+{% block title %}GitList{% endblock %}
+
+{% block body %}
+{% include 'navigation.twig' %}
+
+<div class="container">
+
+    <div class="alert alert-danger">
+        <strong>Oops!</strong> {{ message }}
+    </div>
+
+    <hr />
+
+    {% include 'footer.twig' %}
+</div>
+{% endblock %}
