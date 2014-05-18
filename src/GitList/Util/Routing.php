@@ -108,15 +108,15 @@ class Routing
         static $regex = null;
 
         if ($regex === null) {
-            $app = $this->app;
-            $self = $this;
+            $isWindows = $this->isWindows();
             $quotedPaths = array_map(
-               function ($repo) use ($app, $self) {
-                    $repoName = $repo['name'];
-                    //Windows
-                    if ($self->isWindows()){
-                       $repoName = str_replace('\\', '\\\\',$repoName);
+                function ($repo) use ($isWindows) {
+                    $repoName = preg_quote($repo['name']);
+
+                    if ($isWindows) {
+                        $repoName = str_replace('\\', '\\\\', $repoName);
                     }
+
                     return $repoName;
                 },
                 $this->app['git']->getRepositories($this->app['git.repos'])
