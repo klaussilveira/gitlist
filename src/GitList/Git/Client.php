@@ -46,7 +46,9 @@ class Client extends BaseClient
         }
 
         $allRepositories = array_unique($allRepositories, SORT_REGULAR);
-        ksort($allRepositories, SORT_STRING | SORT_FLAG_CASE);
+        uksort($allRepositories, function($k1, $k2) {
+            return strtolower($k2)<strtolower($k1);
+        });
 
         return $allRepositories;
     }
