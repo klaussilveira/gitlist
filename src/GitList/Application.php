@@ -34,6 +34,7 @@ class Application extends SilexApplication
         $this['date.format'] = $config->get('date', 'format') ? $config->get('date', 'format') : 'd/m/Y H:i:s';
         $this['theme'] = $config->get('app', 'theme') ? $config->get('app', 'theme') : 'default';
         $this['filetypes'] = $config->getSection('filetypes');
+        $this['binary_filetypes'] = $config->getSection('binary_filetypes');
         $this['cache.archives'] = $this->getCachePath() . 'archives';
 
         // Register services
