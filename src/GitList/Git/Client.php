@@ -28,7 +28,8 @@ class Client extends BaseClient
      * Searches for valid repositories on the specified path
      *
      * @param  array $paths Array of paths where repositories will be searched
-     * @return array Found repositories, containing their name, path and description
+     * @return array Found repositories, containing their name, path and description sorted
+     *               by repository name
      */
     public function getRepositories($paths)
     {
@@ -45,7 +46,7 @@ class Client extends BaseClient
         }
 
         $allRepositories = array_unique($allRepositories, SORT_REGULAR);
-        asort($allRepositories);
+        ksort($allRepositories, SORT_STRING | SORT_FLAG_CASE);
 
         return $allRepositories;
     }
