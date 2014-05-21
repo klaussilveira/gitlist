@@ -40,6 +40,8 @@ class Repository
         'md'       => 'markdown',
         'markdown' => 'markdown',
         'sql'      => 'mysql',
+        'ml'       => 'ocaml',
+        'mli'      => 'ocaml',
         'pl'       => 'perl',
         'pm'       => 'perl',
         'pas'      => 'pascal',
