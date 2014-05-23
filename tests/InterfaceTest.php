@@ -129,6 +129,9 @@ class InterfaceTest extends WebTestCase
         return $app;
     }
 
+    /**
+     * @covers GitList\Controller\MainController::connect
+     */
     public function testInitialPage()
     {
         $client = $this->createClient();
@@ -160,6 +163,9 @@ class InterfaceTest extends WebTestCase
         $this->assertCount(1, $crawler->filter('div.repository-body:contains("This is a NESTED test repo!")'));
     }
 
+    /**
+     * @covers GitList\Controller\TreeController::connect
+     */
     public function testRepositoryPage()
     {
         $client = $this->createClient();
@@ -190,6 +196,9 @@ class InterfaceTest extends WebTestCase
         $this->assertEquals('master', $crawler->filter('.dropdown-menu li')->eq(1)->text());
     }
 
+    /**
+     * @covers GitList\Controller\BlobController::connect
+     */
     public function testBlobPage()
     {
         $client = $this->createClient();
@@ -206,6 +215,9 @@ class InterfaceTest extends WebTestCase
                 $crawler->filter('.source-header .btn-group a')->eq(2)->attr('href'));
     }
 
+    /**
+     * @covers GitList\Controller\BlobController::connect
+     */
     public function testRawPage()
     {
         $client = $this->createClient();
@@ -215,6 +227,9 @@ class InterfaceTest extends WebTestCase
         $this->assertEquals("<?php\necho 'Hello World'; // This is a test", $client->getResponse()->getContent());
     }
 
+    /**
+     * @covers GitList\Controller\CommitController::connect
+     */
     public function testBlamePage()
     {
         $client = $this->createClient();
@@ -232,6 +247,9 @@ class InterfaceTest extends WebTestCase
                 $crawler->filter('.blame-view .commit')->eq(0)->filter('a')->attr('href'));
     }
 
+    /**
+     * @covers GitList\Controller\CommitController::connect
+     */
     public function testHistoryPage()
     {
         $client = $this->createClient();
@@ -249,6 +267,9 @@ class InterfaceTest extends WebTestCase
         $this->assertEquals('First commit', $crawler->filter('.table tbody tr td h4')->eq(0)->text());
     }
 
+    /**
+     * @covers GitList\Controller\CommitController::connect
+     */
     public function testCommitsPage()
     {
         $client = $this->createClient();
@@ -262,6 +283,9 @@ class InterfaceTest extends WebTestCase
         $this->assertEquals('First commit', $crawler->filter('.table tbody tr td h4')->eq(0)->text());
     }
 
+    /**
+     * @covers GitList\Controller\MainController::connect
+     */
     public function testStatsPage()
     {
         $client = $this->createClient();
@@ -274,6 +298,9 @@ class InterfaceTest extends WebTestCase
         $this->assertRegexp('/Luke Skywalker: 1 commits/', $crawler->filter('.table tbody')->eq(0)->text());
     }
 
+    /**
+     * @covers GitList\Controller\MainController::connect
+     */
     public function testRssPage()
     {
         $client = $this->createClient();
@@ -286,6 +313,9 @@ class InterfaceTest extends WebTestCase
         $this->assertRegexp('/Initial commit/', $client->getResponse()->getContent());
     }
 
+    /**
+     * @covers GitList\Controller\TreeController::connect
+     */
     public function testNestedRepoPage()
     {
         $client = $this->createClient();
@@ -297,6 +327,9 @@ class InterfaceTest extends WebTestCase
         $this->assertRegexp('/NESTED TEST REPO README/', $client->getResponse()->getContent());
     }
 
+    /**
+     * @covers GitList\Controller\TreeController::connect
+     */
     public function testDevelopRepo()
     {
         $client = $this->createClient();
@@ -305,6 +338,9 @@ class InterfaceTest extends WebTestCase
         $this->assertTrue($client->getResponse()->isOk());
     }
 
+    /**
+     * @covers GitList\Controller\TreeController::connect
+     */
     public function testNestedRepoBranch()
     {
         $client = $this->createClient();
