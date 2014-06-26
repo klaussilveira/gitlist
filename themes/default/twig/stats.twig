@@ -20,14 +20,14 @@
                 <td>
                     <ul>
                     {% for ext, amount in stats.extensions %}
-                        <li><strong>{{ ext }}</strong>: {{ amount }} files</li>
+                        <li><strong>{{ ext }}</strong>: {{ amount }} {{ amount > 1 ? 'files' : 'file' }} </li>
                     {% endfor %}
                     </ul>
                 </td>
                 <td>
                     <ul>
                     {% for author in authors %}
-                        <li><strong><a href="{{ app.request.basepath }}/{{repo}}/contributor/{{ author.email }}">{{ author.name }}</a></strong>: {{ author.commits }} commits</li>
+                        <li><strong><a href="{{ app.request.basepath }}/{{repo}}/contributor/{{ author.email }}">{{ author.name }}</a></strong>: {{ author.commits }} {{ author.commits > 1 ? 'commits' : 'commit'}}</li>
                     {% endfor %}
                     </ul>
                 </td>
@@ -39,16 +39,18 @@
                     <p>
                         <strong>Total bytes:</strong> {{ stats.size }} bytes ({{ ((stats.size / 1024) / 1024) | number_format }} MB)
                     </p>
+                    {#
                     {% for statistic in prettyStats.statistics %}
                     <p>
                         <strong>{{ statistic.title }}:</strong> {{ statistic.value }}
                     </p>
                     {% endfor %}
+                    #}
                 </td>
             </tr>
         </tbody>
     </table>
-
+{#
     <hr>
     <h2>Commits by date</h2>
     <div id="commitsByDate"></div>
@@ -71,4 +73,5 @@
     </script>
 
     <hr />
+#}
 {% endblock %}
