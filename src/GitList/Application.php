@@ -69,6 +69,10 @@ class Application extends SilexApplication
             return $twig;
         }));
 
+        $this['escaper.argument'] = $this->share(function() {
+            return new Escaper\ArgumentEscaper();
+        });
+
         // Handle errors
         $this->error(function (\Exception $e, $code) use ($app) {
             if ($app['debug']) {

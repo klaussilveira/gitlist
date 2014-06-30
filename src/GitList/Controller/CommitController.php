@@ -61,6 +61,7 @@ class CommitController implements ControllerProviderInterface
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
           ->assert('commitishPath', $app['util.routing']->getCommitishPathRegex())
           ->value('commitishPath', null)
+          ->convert('commitishPath', 'escaper.argument:escape')
           ->bind('commits');
 
         $route->post('{repo}/commits/{branch}/search', function (Request $request, $repo, $branch = '') use ($app) {
@@ -89,6 +90,7 @@ class CommitController implements ControllerProviderInterface
             ));
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
           ->assert('branch', $app['util.routing']->getBranchRegex())
+          ->convert('branch', 'escaper.argument:escape')
           ->bind('searchcommits');
 
         $route->get('{repo}/commit/{commit}', function ($repo, $commit) use ($app) {
@@ -125,6 +127,7 @@ class CommitController implements ControllerProviderInterface
             ));
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
           ->assert('commitishPath', $app['util.routing']->getCommitishPathRegex())
+          ->convert('commitishPath', 'escaper.argument:escape')
           ->bind('blame');
 
         return $route;

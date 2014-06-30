@@ -55,7 +55,7 @@ class NetworkController implements ControllerProviderInterface
                 }
 
                 $nextPageUrl = null;
-				
+
                 if ($pager['last'] !== $pager['current']) {
                     $nextPageUrl = $app['url_generator']->generate(
                         'networkData',
@@ -66,10 +66,10 @@ class NetworkController implements ControllerProviderInterface
                         )
                     );
                 }
-				
+
 				// when no commits are given, return an empty response - issue #369
 				if( count($commits) === 0 ) {
-					return $app->json( array( 
+					return $app->json( array(
 						'repo' => $repo,
 						'commitishPath' => $commitishPath,
 						'nextPage' => null,
@@ -91,6 +91,7 @@ class NetworkController implements ControllerProviderInterface
         )->assert('repo', $app['util.routing']->getRepositoryRegex())
         ->assert('commitishPath', $app['util.routing']->getCommitishPathRegex())
         ->value('commitishPath', null)
+        ->convert('commitishPath', 'escaper.argument:escape')
         ->assert('page', '\d+')
         ->value('page', '0')
         ->bind('networkData');
@@ -119,6 +120,7 @@ class NetworkController implements ControllerProviderInterface
         )->assert('repo', $app['util.routing']->getRepositoryRegex())
         ->assert('commitishPath', $app['util.routing']->getCommitishPathRegex())
         ->value('commitishPath', null)
+        ->convert('commitishPath', 'escaper.argument:escape')
         ->bind('network');
 
         return $route;
