@@ -50,7 +50,7 @@
                     {%- endif -%}
                 ">{{ file.name }}</a></td>
                 <td>{{ file.mode }}</td>
-                <td>{% if file.size %}{{ (file.size | format_size }}{% endif %}</td>
+                <td>{% if file.size %}{{ file.size | format_size }}{% endif %}</td>
             </tr>
             {% endfor %}
         </tbody>
