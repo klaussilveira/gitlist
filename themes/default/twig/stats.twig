@@ -37,7 +37,7 @@
                     </p>
 
                     <p>
-                        <strong>Total bytes:</strong> {{ stats.size }} bytes ({{ ((stats.size / 1024) / 1024) | number_format }} MB)
+                        <strong>Total bytes:</strong> {{ stats.size }} bytes ({{ stats.size | format_size }})
                     </p>
                 </td>
             </tr>
