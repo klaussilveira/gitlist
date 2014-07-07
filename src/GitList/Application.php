@@ -65,6 +65,7 @@ class Application extends SilexApplication
             $twig->addFilter(new \Twig_SimpleFilter('htmlentities', 'htmlentities'));
             $twig->addFilter(new \Twig_SimpleFilter('md5', 'md5'));
             $twig->addFilter(new \Twig_SimpleFilter('format_date', array($app, 'formatDate')));
+            $twig->addFilter(new \Twig_SimpleFilter('format_size', array($app, 'formatSize')));
 
             return $twig;
         }));
@@ -95,6 +96,14 @@ class Application extends SilexApplication
     public function formatDate($date)
     {
         return $date->format($this['date.format']);
+    }
+
+    public function formatSize($size)
+    {
+        $mod = 1000;
+        $units = array('B', 'kB', 'MB', 'GB');
+        for($i = 0; $size > $mod; $i++) $size /= $mod;
+        return round($size, 2) . $units[$i];
     }
 
     public function getPath()
