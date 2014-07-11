@@ -64,7 +64,7 @@
     <script>
         var commitsByHour = {{ prettyStats.charts.hour|json_encode(constant('JSON_PRETTY_PRINT'))|raw }}
     </script>
-
+#}
     <hr>
     <h2>Commits by day</h2>
     <div id="commitsByDay"></div>
@@ -73,5 +73,5 @@
     </script>
 
     <hr />
-#}
+
 {% endblock %}

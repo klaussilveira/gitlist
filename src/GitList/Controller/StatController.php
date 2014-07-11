@@ -6,8 +6,7 @@ use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
-use GitPrettyStats\Repository;
-use Gitter\Client;
+
 
 class StatController implements ControllerProviderInterface
 {
@@ -22,12 +21,55 @@ class StatController implements ControllerProviderInterface
                 $branch = $repository->getHead();
             }
 
-            $statisticsRepository = new Repository($repository->getPath());
-            $statisticsRepository->loadCommits();
-            $statistics = $statisticsRepository->getStatistics();
-
             $stats = $repository->getStatistics($branch);
             $authors = $repository->getAuthorStatistics($branch);
+
+            // Not creating a new repository will lead to php class confusion
+            // $repository above is a GitList\Repository
+            // A Gitter\Repository is needed for statistics
+            $client = new \Gitter\Client;
+            $statisticsRepository = $client->getRepository($repository->getPath());
+            $statisticsRepository->addStatistics(array(
+                // new \Gitter\Statistics\Contributors,
+                // new \Gitter\Statistics\Date,
+                new \Gitter\Statistics\Day,
+                // new \Gitter\Statistics\Hour
+            ));
+            $statistics = $statisticsRepository->getStatistics();
+            // echo '<pre>'; 
+            // print_r($statistics);
+            // echo '</pre>';
+            // $hour = $statistics['hour']->getItems();
+            // $h = array_pop($hour);
+            // print_r($hour[00][0]->getShortHash());
+            // $statistics['day']
+            // 
+            $repoStatistics = array();
+
+            $commitsByDate         = array ();
+            $commitsByHour         = array ();
+
+            $days = array('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday');
+
+            $commitsByDay          = array();
+
+            foreach ($statistics['day'] as $weekday => $commits) {
+                $commitsByDay[] = array($days[$weekday - 1], count($commits));
+            }
+
+            $commitsPerContributor = array ();
+
+            $charts                = array (
+                'date'        => $commitsByDate,
+                'hour'        => $commitsByHour,
+                'day'         => $commitsByDay,
+                'contributor' => $commitsPerContributor
+            );
+
+            $prettyStats = array ( 
+              'statistics' => $repoStatistics,
+              'charts'     => $charts
+            );
 
             return $app['twig']->render('stats.twig', array(
                 'repo'           => $repo,
@@ -36,7 +78,7 @@ class StatController implements ControllerProviderInterface
                 'tags'           => $repository->getTags(),
                 'stats'          => $stats,
                 'authors'        => $authors,
-                'prettyStats'    => $statistics,
+                'prettyStats'    => $prettyStats,
             ));
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
           ->assert('branch', $app['util.routing']->getBranchRegex())
