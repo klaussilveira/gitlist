@@ -30,21 +30,39 @@ class StatController implements ControllerProviderInterface
             $client = new \Gitter\Client;
             $statisticsRepository = $client->getRepository($repository->getPath());
             $statisticsRepository->addStatistics(array(
-                // new \Gitter\Statistics\Contributors,
+                new \Gitter\Statistics\Contributors,
                 new \Gitter\Statistics\Date,
                 new \Gitter\Statistics\Day,
                 new \Gitter\Statistics\Hour
             ));
             $statistics = $statisticsRepository->getStatistics();
             // echo '<pre>'; 
-            // print_r($statistics);
+            // print_r($statistics['date']->getItems());
             // echo '</pre>';
-            // $hour = $statistics['hour']->getItems();
-            // $h = array_pop($hour);
-            // print_r($hour[00][0]->getShortHash());
-            // $statistics['day']
-            // 
-            $repoStatistics = array();
+
+            // TODO Add conditionals
+            // TODO Display date localized
+            // Repository statistics
+            $commitsForStats = $statistics['date']->getItems();
+            $totalCommits = $statistics['date']->count();
+            // First and last commits
+            reset($commitsForStats);
+            $firstCommit = key($commitsForStats);
+            end($commitsForStats);
+            $lastCommit = key($commitsForStats);
+            // Date difference
+            $dateInterval = date_diff(date_create($firstCommit), date_create($lastCommit));
+            $activeDays = $dateInterval->format('%a');
+            // Average commits per day
+            $averageCommits = $activeDays > 0 ? ($totalCommits/$activeDays) : 0;
+
+            $repoStatistics = array(
+                'Total Commits' => $totalCommits,
+                'First Commit' => $firstCommit,
+                'Latest Commit' => $lastCommit,
+                'Active For' => $activeDays . ' Days',
+                'Average Commits Per Day' => number_format($averageCommits, 2),
+            );
 
             // Commits by date
             foreach ($statistics['date'] as $date => $commits) {

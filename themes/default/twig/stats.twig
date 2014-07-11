@@ -39,13 +39,11 @@
                     <p>
                         <strong>Total bytes:</strong> {{ stats.size }} bytes ({{ ((stats.size / 1024) / 1024) | number_format }} MB)
                     </p>
-                    {#
-                    {% for statistic in prettyStats.statistics %}
+                    {% for title, value in prettyStats.statistics %}
                     <p>
-                        <strong>{{ statistic.title }}:</strong> {{ statistic.value }}
+                        <strong>{{ title }}:</strong> {{ value }}
                     </p>
                     {% endfor %}
-                    #}
                 </td>
             </tr>
         </tbody>
