@@ -33,7 +33,7 @@ class StatController implements ControllerProviderInterface
                 // new \Gitter\Statistics\Contributors,
                 // new \Gitter\Statistics\Date,
                 new \Gitter\Statistics\Day,
-                // new \Gitter\Statistics\Hour
+                new \Gitter\Statistics\Hour
             ));
             $statistics = $statisticsRepository->getStatistics();
             // echo '<pre>'; 
@@ -46,17 +46,28 @@ class StatController implements ControllerProviderInterface
             // 
             $repoStatistics = array();
 
+            // Commits by date
             $commitsByDate         = array ();
-            $commitsByHour         = array ();
 
-            $days = array('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday');
+            // Commits by hour
+            foreach ($statistics['day'] as $hour => $commits) {
+                $hours[] = $hour;
+                $commitsPerHour[] = count($commits);
+            }
+            $commitsByHour         = array (
+                'x' => $hours,
+                'y' => $commitsPerHour
+            );
 
+            // Commits by day
             $commitsByDay          = array();
+            $days = array('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday');
 
             foreach ($statistics['day'] as $weekday => $commits) {
                 $commitsByDay[] = array($days[$weekday - 1], count($commits));
             }
 
+            // Needed here? Commits per contributor
             $commitsPerContributor = array ();
 
             $charts                = array (
