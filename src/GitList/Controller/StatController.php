@@ -31,7 +31,7 @@ class StatController implements ControllerProviderInterface
             $statisticsRepository = $client->getRepository($repository->getPath());
             $statisticsRepository->addStatistics(array(
                 // new \Gitter\Statistics\Contributors,
-                // new \Gitter\Statistics\Date,
+                new \Gitter\Statistics\Date,
                 new \Gitter\Statistics\Day,
                 new \Gitter\Statistics\Hour
             ));
@@ -47,10 +47,17 @@ class StatController implements ControllerProviderInterface
             $repoStatistics = array();
 
             // Commits by date
-            $commitsByDate         = array ();
+            foreach ($statistics['date'] as $date => $commits) {
+                $dates[] = $date;
+                $commitsPerDate[] = count($commits);
+            }
+            $commitsByDate         = array (
+                'x' => $dates,
+                'y' => $commitsPerDate
+            );
 
             // Commits by hour
-            foreach ($statistics['day'] as $hour => $commits) {
+            foreach ($statistics['hour'] as $hour => $commits) {
                 $hours[] = $hour;
                 $commitsPerHour[] = count($commits);
             }
