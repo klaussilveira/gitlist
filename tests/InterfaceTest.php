@@ -292,19 +292,17 @@ class InterfaceTest extends WebTestCase
 
         $crawler = $client->request('GET', '/GitTest/stats');
         $this->assertTrue($client->getResponse()->isOk());
-        $this->assertRegexp('/.php: 1 files/', $crawler->filter('.table tbody')->eq(0)->text());
-        $this->assertRegexp('/.md: 1 files/', $crawler->filter('.table tbody')->eq(0)->text());
+        $this->assertRegexp('/.php: 1 file/', $crawler->filter('.table tbody')->eq(0)->text());
+        $this->assertRegexp('/.md: 1 file/', $crawler->filter('.table tbody')->eq(0)->text());
         $this->assertRegexp('/Total files: 2/', $crawler->filter('.table tbody')->eq(0)->text());
-        $this->assertRegexp('/Luke Skywalker: 1 commits/', $crawler->filter('.table tbody')->eq(0)->text());
+        $this->assertRegexp('/Luke Skywalker: 1 commit/', $crawler->filter('.table tbody')->eq(0)->text());
         $this->assertRegexp('/\/GitTest\/contributor\/luke@rebel.org/', $crawler->filter('.table tbody')->eq(0)->html());
         $this->assertRegexp('/Total bytes: 85 bytes \(0 MB\)/', $crawler->filter('.table tbody')->eq(0)->text());
-        $this->assertRegexp('/Total commits: 1/', $crawler->filter('.table tbody')->eq(0)->text());
-        $this->assertRegexp('/Total contributors: 1/', $crawler->filter('.table tbody')->eq(0)->text());
-        $this->assertRegexp('/Average commits per contributor: 1.00/', $crawler->filter('.table tbody')->eq(0)->text());
-        $this->assertRegexp('/First commit date: '.date('Y-m-d').'/', $crawler->filter('.table tbody')->eq(0)->text());
-        $this->assertRegexp('/Latest commit date: '.date('Y-m-d', strtotime('+1 day', time())).'/', $crawler->filter('.table tbody')->eq(0)->text());
-        $this->assertRegexp('/Active for: 1 days/', $crawler->filter('.table tbody')->eq(0)->text());
-        $this->assertRegexp('/Average commits per day: 1.00/', $crawler->filter('.table tbody')->eq(0)->text());
+        $this->assertRegexp('/Total Commits: 1/', $crawler->filter('.table tbody')->eq(0)->text());
+        $this->assertRegexp('/First Commit: '.date('Y-m-d').'/', $crawler->filter('.table tbody')->eq(0)->text());
+        $this->assertRegexp('/Latest Commit: '.date('Y-m-d').'/', $crawler->filter('.table tbody')->eq(0)->text());
+        $this->assertRegexp('/Active For: 0 Days/', $crawler->filter('.table tbody')->eq(0)->text());
+        $this->assertRegexp('/Average Commits Per Day: 0.00/', $crawler->filter('.table tbody')->eq(0)->text());
         $this->assertCount(1, $crawler->filter('#commitsByDate'));
         $this->assertRegexp(preg_quote('/var commitsByDate = {
     "x": [
@@ -317,7 +315,7 @@ class InterfaceTest extends WebTestCase
         $this->assertCount(1, $crawler->filter('#commitsByHour'));
         $this->assertRegexp(preg_quote('/var commitsByHour = {
     "x": [
-        '.date('H').'
+        "'.date('H').'"
     ],
     "y": [
         1
@@ -344,14 +342,12 @@ class InterfaceTest extends WebTestCase
         "name": "Luke Skywalker",
         "email": "luke@rebel.org",
         "commits": 1,
-        "data": {
-            "x": [
-                "'.date('Y-m-d').'"
-            ],
-            "y": [
-                1
-            ]
-        }
+        "x": [
+            "'.date('Y-m-d').'"
+        ],
+        "y": [
+            1
+        ]
     }
 ]/'), $crawler->filter('#contributorChart-0 + script')->text());
 
@@ -363,35 +359,10 @@ class InterfaceTest extends WebTestCase
 
         $crawler = $client->request('GET', '/GitTest/contributor/luke@rebel.org');
         $this->assertTrue($client->getResponse()->isOk());
-        $this->assertCount(1, $crawler->filter('#contributorChart-0'));
-        $this->assertRegexp(preg_quote('/var contributors = [
-    {
-        "name": "Luke Skywalker",
-        "email": "luke@rebel.org",
-        "commits": 1,
-        "data": {
-            "x": [
-                "'.date('Y-m-d').'"
-            ],
-            "y": [
-                1
-            ]
-        },
-        "hashes": {
-            "'.date('Y-m-d').'": [
-                {
-
-                }
-            ]
-        }
-    }
-]/'), $crawler->filter('#contributorChart-0 + script')->text());
-
         $this->assertRegexp('/'.date('F d, Y').'/', $crawler->filter('.table thead')->eq(0)->text());
         $this->assertRegexp('/View [0-9a-f]{7}/', $crawler->filter('.table tbody')->eq(0)->text());
         $this->assertRegexp('/Initial commit/', $crawler->filter('.table tbody')->eq(0)->text());
         $this->assertRegexp('/Luke Skywalker authored on \d{2}\/\d{2}\/\d{4} at \d{2}:\d{2}:\d{2}/', $crawler->filter('.table tbody')->eq(0)->text());
-
     }
 
     /**
