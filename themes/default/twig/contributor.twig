@@ -5,24 +5,28 @@
 {% block title %}GitList{% endblock %}
 
 {% block content %}
-    {% include 'breadcrumb.twig' with {breadcrumbs: [{dir: 'Contributors', path:''}]} %}
+    {% if contributors == 'ignore' %}
+        {% include 'breadcrumb.twig' with {breadcrumbs: [{dir: 'Contributor Commits', path:''}]} %}
+    {% else %}
+        {% include 'breadcrumb.twig' with {breadcrumbs: [{dir: 'Contributors', path:''}]} %}
 
-    {% if contributors == null %}
-        <div class="alert">No one contributed to this project with the email address of {{ email }}.</div>
-        <h3>Contributors</h3>
-        <ul>
-        {% for author in authors %}
-            <li><strong><a href="{{ app.request.basepath }}/{{repo}}/contributor/{{ author.email }}">{{ author.name }}</a></strong>: {{ author.commits }} commits</li>
+        {% if contributors == null %}
+            <div class="alert">No one contributed to this project with the email address of {{ email }}.</div>
+            <h3>Contributors</h3>
+            <ul>
+            {% for author in authors %}
+                <li><strong><a href="{{ app.request.basepath }}/{{repo}}/contributor/{{ author.email }}">{{ author.name }}</a></strong>: {{ author.commits }} commits</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% for contributor in contributors %}
+            <div id="contributorChart-{{ loop.index0 }}"></div>
         {% endfor %}
-        </ul>
+        <script>
+            var contributors = {{ contributors|json_encode(constant('JSON_PRETTY_PRINT'))|raw }}
+        </script>
     {% endif %}
-
-    {% for contributor in contributors %}
-        <div id="contributorChart-{{ loop.index0 }}"></div>
-    {% endfor %}
-    <script>
-        var contributors = {{ contributors|json_encode(constant('JSON_PRETTY_PRINT'))|raw }}
-    </script>
 
 {% if commits %}
 {% for date, commit in commits %}

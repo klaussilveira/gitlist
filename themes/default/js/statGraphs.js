@@ -89,6 +89,7 @@ if (typeof commitsByDay !== 'undefined') {
     });
 }
 
+/* Commits by contributor */
 if (typeof contributors !== 'undefined') {
     for (var i = contributors.length - 1; i >= 0; i--) {
         var title = contributors[i].name + ' | ' + contributors[i].commits + ((contributors[i].commits > 1) ? ' commits' : ' commit');
@@ -131,8 +132,8 @@ if (typeof contributors !== 'undefined') {
                 margin: 45
             },
             xAxis: {
-                categories: contributors[i].data.x,
-                tickInterval: parseInt(contributors[i].data.x.length / 20),
+                categories: contributors[i].x,
+                tickInterval: parseInt(contributors[i].x.length / 20),
                 labels: {
                     rotation: -45,
                     y: 35
@@ -145,7 +146,7 @@ if (typeof contributors !== 'undefined') {
             },
             series: [{
                 name: 'Commits',
-                data: contributors[i].data.y
+                data: contributors[i].y
             }]
         });
     }

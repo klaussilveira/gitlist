@@ -30,15 +30,11 @@ class StatController implements ControllerProviderInterface
             $client = new \Gitter\Client;
             $statisticsRepository = $client->getRepository($repository->getPath());
             $statisticsRepository->addStatistics(array(
-                new \Gitter\Statistics\Contributors,
                 new \Gitter\Statistics\Date,
                 new \Gitter\Statistics\Day,
                 new \Gitter\Statistics\Hour
             ));
             $statistics = $statisticsRepository->getStatistics();
-            // echo '<pre>'; 
-            // print_r($statistics['date']->getItems());
-            // echo '</pre>';
 
             // TODO Add conditionals
             // TODO Display date localized
@@ -69,7 +65,7 @@ class StatController implements ControllerProviderInterface
                 $dates[] = $date;
                 $commitsPerDate[] = count($commits);
             }
-            $commitsByDate         = array (
+            $commitsByDate = array (
                 'x' => $dates,
                 'y' => $commitsPerDate
             );
@@ -79,27 +75,23 @@ class StatController implements ControllerProviderInterface
                 $hours[] = $hour;
                 $commitsPerHour[] = count($commits);
             }
-            $commitsByHour         = array (
+            $commitsByHour = array (
                 'x' => $hours,
                 'y' => $commitsPerHour
             );
 
             // Commits by day
-            $commitsByDay          = array();
+            $commitsByDay  = array();
             $days = array('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday');
 
             foreach ($statistics['day'] as $weekday => $commits) {
                 $commitsByDay[] = array($days[$weekday - 1], count($commits));
             }
 
-            // Needed here? Commits per contributor
-            $commitsPerContributor = array ();
-
-            $charts                = array (
+            $charts = array (
                 'date'        => $commitsByDate,
                 'hour'        => $commitsByHour,
-                'day'         => $commitsByDay,
-                'contributor' => $commitsPerContributor
+                'day'         => $commitsByDay
             );
 
             $prettyStats = array ( 
@@ -124,9 +116,49 @@ class StatController implements ControllerProviderInterface
           $route->get('{repo}/contributors/{branch}', function($repo, $branch) use ($app) {
               $repository = $app['git']->getRepositoryFromName($app['git.repos'], $repo);
 
-              $statisticsRepository = new Repository($repository->getPath());
-              $statisticsRepository->loadCommits();
-              $contributors = $statisticsRepository->getCommitsByContributor();
+              // Not creating a new repository will lead to php class confusion
+              // $repository above is a GitList\Repository
+              // A Gitter\Repository is needed for statistics
+              $client = new \Gitter\Client;
+              $statisticsRepository = $client->getRepository($repository->getPath());
+              $statisticsRepository->addStatistics(array(
+                  new \Gitter\Statistics\Contributors
+              ));
+              $statistics = $statisticsRepository->getStatistics();
+
+              // Commits per contributor
+              $contributors = array ();
+
+              foreach ($statistics['contributors'] as $email => $dates) {
+                  $commitDates = $dates->getItems();
+                  $x = array();
+                  $y = array();
+                  $total = 0;
+
+                  foreach($commitDates as $date => $commits) {
+                      $totalDaily = count($commits);
+                      $x[] = $date;
+                      $y[] = $totalDaily;
+
+                      // Add to contributor total
+                      $total = $total + $totalDaily;
+                  }
+
+                  // Gets the name from the last commit to display
+                  end($commitDates);
+                  $lastCommitDate = key($commitDates);
+                  end($commitDates[$lastCommitDate]);
+                  $lastCommit = key($commitDates[$lastCommitDate]);
+                  $name = $commitDates[$lastCommitDate][$lastCommit]->getAuthor()->getName();
+
+                  $contributors[] = array (
+                      'name' => $name,
+                      'email' => $email,
+                      'commits' => $total,
+                      'x' => $x,
+                      'y' => $y
+                  );
+              }
 
               return $app['twig']->render('contributor.twig', array(
                   'repo'           => $repo,
@@ -144,17 +176,29 @@ class StatController implements ControllerProviderInterface
           $route->get('{repo}/contributor/{email}', function($repo, $email) use ($app) {
               $repository = $app['git']->getRepositoryFromName($app['git.repos'], $repo);
 
-              $statisticsRepository = new Repository($repository->getPath());
-              $statisticsRepository->loadCommits();
-              $contributorStatistics = $statisticsRepository->getCommitsByContributor($email);
+              // Not creating a new repository will lead to php class confusion
+              // $repository above is a GitList\Repository
+              // A Gitter\Repository is needed for statistics
+              $client = new \Gitter\Client;
+              $statisticsRepository = $client->getRepository($repository->getPath());
+              $statisticsRepository->addStatistics(array(
+                  new \Gitter\Statistics\Contributors
+              ));
+              $statistics = $statisticsRepository->getStatistics();
+              $contributorCommits = $statistics['contributors']->getItems()[$email];
 
-              $categorized = array();
+              // Commits per contributor
+              $categorizedCommits = array ();
 
-              foreach ($contributorStatistics[0]['hashes'] as $commit) {
-                  $date = $commit[0]->getDate();
-                  $date = $date->format('m/d/Y');
-                  $categorized[$date][] = $commit[0];
+              $commitDates = $contributorCommits->getItems();
+
+              foreach ($commitDates as $date => $commits) {
+                  $commitDate = $date;
+                  $categorizedCommits[$commitDate][] = $commits[0];
               }
+
+              // Sort commits in reverse chronological order
+              krsort($categorizedCommits);
 
               $branch = $repository->getCurrentBranch();
               $authors = $repository->getAuthorStatistics($branch);
@@ -164,10 +208,10 @@ class StatController implements ControllerProviderInterface
                   'branch'       => $repository->getCurrentBranch(),
                   'branches'     => $repository->getBranches(),
                   'tags'         => $repository->getTags(),
-                  'contributors' => $contributorStatistics,
+                  'contributors' => 'ignore',
                   'authors'      => $authors,
                   'email'        => $email,
-                  'commits'      => $categorized,
+                  'commits'      => $categorizedCommits,
               ));
           })->assert('repo', $app['util.routing']->getRepositoryRegex())
             ->assert('email', $app['util.routing']->getEmailRegex())
