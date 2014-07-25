@@ -169,7 +169,7 @@ class Repository extends BaseRepository
                 switch ($log[0]) {
                     case "@":
                         // Set the line numbers
-                        preg_match('/@@ -([0-9]+),[0-9]+ \+([0-9]+)/', $log, $matches);
+                        preg_match('/@@ -([0-9]+)(?:,[0-9]+)? \+([0-9]+)/', $log, $matches);
                         $lineNumOld = $matches[1] - 1;
                         $lineNumNew = $matches[2] - 1;
                         break;
