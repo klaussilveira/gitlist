@@ -238,7 +238,7 @@ class Repository extends BaseRepository
         return $commits;
     }
 
-    public function searchCommitLog($query)
+    public function searchCommitLog($query, $branch)
     {
         $query = escapeshellarg($query);
         $query = strtr($query, array('[' => '\\[', ']' => '\\]'));
@@ -249,7 +249,8 @@ class Repository extends BaseRepository
             . "<date>%at</date><commiter>%cn</commiter>"
             . "<commiter_email>%ce</commiter_email>"
             . "<commiter_date>%ct</commiter_date>"
-            . "<message><![CDATA[%s]]></message></item>\"";
+            . "<message><![CDATA[%s]]></message></item>\""
+            . " $branch";
 
         try {
             $logs = $this->getPrettyFormat($command);
