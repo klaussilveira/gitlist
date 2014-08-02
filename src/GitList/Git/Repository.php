@@ -105,7 +105,7 @@ class Repository extends BaseRepository
                 );
             }
 
-            $blame[$i]['line'] .= PHP_EOL . $match[3][0];
+            $blame[$i]['line'] .= $match[3][0] . PHP_EOL;
             $previousCommit = $currentCommit;
         }
 
