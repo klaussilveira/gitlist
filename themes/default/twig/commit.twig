@@ -17,7 +17,13 @@
             <p>{{ commit.body | nl2br }}</p>
             {% endif %}
             <img src="https://gravatar.com/avatar/{{ commit.author.email | lower | md5 }}?s=32" class="pull-left space-right" />
-            <span><a href="mailto:{{ commit.author.email }}">{{ commit.author.name }}</a> authored on {{ commit.date | format_date }}<br />Showing {{ commit.changedFiles }} changed files</span>
+            <span>
+                <a href="mailto:{{ commit.author.email }}">{{ commit.author.name }}</a> authored on {{ commit.date | format_date }}
+                {% if commit.author.email != commit.commiter.email %}
+                &bull; <a href="mailto:{{ commit.commiter.email }}">{{ commit.commiter.name }}</a> committed on {{ commit.commiterDate | format_date }}
+                {% endif %}
+                <br />Showing {{ commit.changedFiles }} changed files
+            </span>
         </div>
     </div>
 
