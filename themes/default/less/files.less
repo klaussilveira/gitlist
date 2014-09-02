@@ -16,8 +16,14 @@
     height:28px;
     .meta {
       float: left;
+      max-width: 700px;
       padding: 4px 0;
       font-size: 14px;
+      white-space: nowrap;
+      overflow: hidden;
+      a {
+        float: right;
+      }
     }
   }
   pre {
@@ -130,11 +136,33 @@
     font-weight: 700;
     border-bottom: 1px solid lighten(@treeHeaderBorder, 5%);
     overflow: hidden;
+    clear: both;
+    a {
+      float: left;
+      padding-right: 4px;
+    }
+    .file-path {
+      float: left;
+      max-width: 670px;
+      white-space: nowrap;
+      overflow: hidden;
+      a {
+        float: right;
+      }
+    }
     .meta {
       font-weight: normal;
       font-size: 14px;
       color: @grayLight;
     }
+  }
+  li:before,
+  li:after {
+    content:"";
+    display:table;
+  }
+  li:after {
+    clear:both;
   }
   li:last-child {border-bottom:0;margin-bottom:25px;}
 }
