@@ -271,7 +271,7 @@ class Repository extends BaseRepository
         $query = escapeshellarg($query);
 
         try {
-            $results = $this->getClient()->run($this, "grep -I --line-number {$query} $branch");
+            $results = $this->getClient()->run($this, "grep -i --line-number {$query} $branch");
         } catch (\RuntimeException $e) {
             return false;
         }
