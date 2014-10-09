@@ -5,6 +5,7 @@ namespace GitList;
 use Silex\Application as SilexApplication;
 use Silex\Provider\TwigServiceProvider;
 use Silex\Provider\UrlGeneratorServiceProvider;
+use Silex\Provider\ValidatorServiceProvider;
 use GitList\Provider\GitServiceProvider;
 use GitList\Provider\RepositoryUtilServiceProvider;
 use GitList\Provider\ViewUtilServiceProvider;
@@ -49,6 +50,7 @@ class Application extends SilexApplication
         $this->register(new GitServiceProvider(), array(
             'git.client'         => $config->get('git', 'client'),
             'git.repos'          => $repositories,
+            'git.default_repo'   => $repositories[0],
             'ini.file'           => "config.ini",
             'git.hidden'         => $config->get('git', 'hidden') ?
                                     $config->get('git', 'hidden') : array(),
@@ -60,6 +62,7 @@ class Application extends SilexApplication
         $this->register(new RepositoryUtilServiceProvider());
         $this->register(new UrlGeneratorServiceProvider());
         $this->register(new RoutingUtilServiceProvider());
+        $this->register(new ValidatorServiceProvider());
 
         $this['twig'] = $this->share($this->extend('twig', function ($twig, $app) {
             $twig->addFilter(new \Twig_SimpleFilter('htmlentities', 'htmlentities'));

@@ -1,0 +1,8 @@
+<div class="collapse" id="fork">
+    <form class="form-inline" action="{{ app.request.basepath }}/fork" method="POST">
+        <span>Fork a repository: </span>
+        <input type="text" name="name" placeholder="Name" />
+        <input type="url" name="url" placeholder="http://github.com/user/repo" />
+        <input type="submit" value="Fork" />
+    </form>
+</div>

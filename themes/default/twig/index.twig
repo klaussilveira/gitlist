@@ -5,9 +5,19 @@
 {% include 'navigation.twig' %}
 
 <div class="container" id="repositories">
-    <div class="search">
-        <input class="search" placeholder="search" autofocus>
-    </div>
+    <form class="form-inline">
+        <span>
+            <input class="search" placeholder="search" autofocus>
+        </span>
+        <span data-toggle="collapse" data-parent="#repositories" data-target="#create">
+            <button type="button" class="btn btn-success">Create</button>
+        </span>
+        <span data-toggle="collapse" data-parent="#repositories" data-target="#fork">
+            <button type="button" class="btn btn-success">Fork</button>
+        </span>
+    </form>
+{% include 'repo_create.twig' %}
+{% include 'repo_fork.twig' %}
 
     <div class="list">
         {% for repository in repositories %}

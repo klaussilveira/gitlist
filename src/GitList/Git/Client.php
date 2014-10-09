@@ -158,14 +158,33 @@ class Client extends BaseClient
     }
 
     /**
+     * Fork a remote repository
+     *
+     * @param  string  $path   Path where the new repository will be created
+     * @param  string  $url    URL of the repository to clone
+     * @param  boolean $mirror Clone with a --mirror flag or --bare only
+     * @return Repository Instance of Repository
+     */
+    public function forkRepository($path, $url, $mirror = null)
+    {
+        if (file_exists($path)) {
+            throw new \RuntimeException('A GIT repository with this name already exists');
+        }
+
+        $repository = new Repository($path, $this);
+
+        return $repository->fork($url, $mirror);
+    }
+
+    /**
      * Overloads the parent::createRepository method for the correct Repository class instance
-     * 
+     *
      * {@inheritdoc}
      */
     public function createRepository($path, $bare = null)
     {
-        if (file_exists($path . '/.git/HEAD') && !file_exists($path . '/HEAD')) {
-            throw new \RuntimeException('A GIT repository already exists at ' . $path);
+        if (file_exists($path)) {
+            throw new \RuntimeException('A GIT repository with this name already exists');
         }
 
         $repository = new Repository($path, $this);
@@ -175,7 +194,7 @@ class Client extends BaseClient
 
     /**
      * Overloads the parent::getRepository method for the correct Repository class instance
-     * 
+     *
      * {@inheritdoc}
      */
     public function getRepository($path)
