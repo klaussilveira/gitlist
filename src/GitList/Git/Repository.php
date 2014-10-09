@@ -392,5 +392,20 @@ class Repository extends BaseRepository
 
         return false;
     }
+
+    /**
+     * Clone/Fork an existing git repository
+     */
+    public function fork($url, $mirror = null)
+    {
+        $this->getClient()->run($this, 'ls-remote ' . $url);
+
+        mkdir($this->getPath());
+        $command = 'clone ' . ($mirror ? '--mirror ' : '--bare ') . $url . ' .';
+
+        $this->getClient()->run($this, $command);
+
+        return $this;
+    }
 }
 

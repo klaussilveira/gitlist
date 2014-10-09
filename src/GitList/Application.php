@@ -49,6 +49,7 @@ class Application extends SilexApplication
         $this->register(new GitServiceProvider(), array(
             'git.client'         => $config->get('git', 'client'),
             'git.repos'          => $repositories,
+            'git.default_repo'   => $repositories[0],
             'ini.file'           => "config.ini",
             'git.hidden'         => $config->get('git', 'hidden') ?
                                     $config->get('git', 'hidden') : array(),

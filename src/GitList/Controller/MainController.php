@@ -73,6 +73,23 @@ class MainController implements ControllerProviderInterface
           ->convert('branch', 'escaper.argument:escape')
           ->bind('rss');
 
+        $route->post('/create', function (Request $request) use ($app) {
+            $app['git']->createRepository(
+                $app['git.default_repo'] . $request->get('name'),
+                true
+            );
+            return $app->redirect('/');
+        })->assert('name', $app['util.routing']->getRepositoryRegex());
+
+        $route->post('/fork', function (Request $request) use ($app) {
+            $app['git']->forkRepository(
+                $app['git.default_repo'] . $request->get('name'),
+                $request->get('url'),
+                true
+            );
+            return $app->redirect('/' . $request->get('name'));
+        })->assert('name', $app['util.routing']->getRepositoryRegex());
+
         return $route;
     }
 }
