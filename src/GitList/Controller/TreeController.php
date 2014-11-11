@@ -94,7 +94,7 @@ class TreeController implements ControllerProviderInterface
             }
 
             $res = new BinaryFileResponse($file);
-            $res->setContentDisposition('attachment', $repo . '.' . $branch . '.' . $format);
+            $res->setContentDisposition('attachment', basename($repo) . '.' . $branch . '.' . $format);
 
             return $res;
         })->assert('format', '(zip|tar)')
