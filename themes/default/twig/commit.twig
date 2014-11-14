@@ -51,7 +51,7 @@
                 <td class="lineNo">
                     {% if line.getType != 'chunk' %}
                         <a name="L{{ loop.index }}R{{ line.getNumOld }}"></a>
-                        <a href="#L{{ loop.index }}L{{ line.getNumOld }}">
+                        <a href="#L{{ loop.index }}R{{ line.getNumOld }}">
                     {% endif %}
                     {{ line.getNumOld }}
                     {% if line.getType != 'chunk' %}
