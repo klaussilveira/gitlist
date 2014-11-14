@@ -101,17 +101,17 @@ class TreeController implements ControllerProviderInterface
           ->bind('archive');
 
 
+        $route->get('{repo}/', function($repo) use ($app, $treeController) {
+            return $treeController($repo);
+        })->assert('repo', $app['util.routing']->getRepositoryRegex())
+          ->bind('repository');
+
         $route->get('{repo}/{branch}/', function($repo, $branch) use ($app, $treeController) {
             return $treeController($repo, $branch);
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
           ->assert('branch', $app['util.routing']->getBranchRegex())
           ->convert('branch', 'escaper.argument:escape')
           ->bind('branch');
-
-        $route->get('{repo}/', function($repo) use ($app, $treeController) {
-            return $treeController($repo);
-        })->assert('repo', $app['util.routing']->getRepositoryRegex())
-          ->bind('repository');
 
         return $route;
     }
