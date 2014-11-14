@@ -93,7 +93,10 @@ class TreeController implements ControllerProviderInterface
                 $repository->createArchive($tree, $file, $format);
             }
 
-            return new BinaryFileResponse($file);
+            $res = new BinaryFileResponse($file);
+            $res->setContentDisposition('attachment', basename($repo) . '.' . $branch . '.' . $format);
+
+            return $res;
         })->assert('format', '(zip|tar)')
           ->assert('repo', $app['util.routing']->getRepositoryRegex())
           ->assert('branch', $app['util.routing']->getBranchRegex())
