@@ -10,7 +10,7 @@ repositories[] = '/home/git/repositories/' ; Path to your repositories
 
 ; You can hide repositories from GitList, just copy this for each repository you want to hide
 ; hidden[] = '/home/git/repositories/BetaTest'
-
+; hidden[] = 'regex:/valid_regex/'
 [app]
 debug = false
 cache = true
