@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
-        <title>{% block title %}Welcome!{% endblock %}</title>
+        <title>{{ app.title }}{% if app.title %} - {% endif %}{% block title %}Welcome!{% endblock %}</title>
         <link rel="stylesheet" type="text/css" href="{{ app.request.basepath }}/themes/{{ app.theme }}/css/style.css">
         <link rel="shortcut icon" type="image/png" href="{{ app.request.basepath }}/themes/{{ app.theme }}/img/favicon.png" />
         <!--[if lt IE 9]>
