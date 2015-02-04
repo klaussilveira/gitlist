@@ -42,7 +42,7 @@
             {% endif %}
             {% for file in files %}
             <tr>
-                <td><span class="fa {{ file.type == "folder" or file.type == "symlink" ? "fa-folder-open" : "fa-file" }}"></span> <a href="
+                <td><span class="fa {{ file.type == "folder" or file.type == "symlink" ? "fa-folder-open" : "fa-file-text-o" }}"></span> <a href="
                     {%- if file.type == "folder" or file.type == "symlink" -%}
                         {{ path('tree', {repo: repo, commitishPath: branch ~ '/' ~ path ~ (file.type == "symlink" ? file.path : file.name)}) }}
                     {%- else -%}
