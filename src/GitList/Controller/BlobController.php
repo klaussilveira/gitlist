@@ -18,8 +18,6 @@ class BlobController implements ControllerProviderInterface
             list($branch, $file) = $app['util.routing']
                 ->parseCommitishPathParam($commitishPath, $repo);
 
-            list($branch, $file) = $app['util.repository']->extractRef($repository, $branch, $file);
-
             $blob = $repository->getBlob("$branch:\"$file\"");
             $breadcrumbs = $app['util.view']->getBreadcrumbs($file);
             $fileType = $app['util.repository']->getFileType($file);
@@ -51,8 +49,6 @@ class BlobController implements ControllerProviderInterface
 
             list($branch, $file) = $app['util.routing']
                 ->parseCommitishPathParam($commitishPath, $repo);
-
-            list($branch, $file) = $app['util.repository']->extractRef($repository, $branch, $file);
 
             $blob = $repository->getBlob("$branch:\"$file\"")->output();
 

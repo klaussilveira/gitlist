@@ -21,7 +21,6 @@ class TreeController implements ControllerProviderInterface
 
             list($branch, $tree) = $app['util.routing']->parseCommitishPathParam($commitishPath, $repo);
 
-            list($branch, $tree) = $app['util.repository']->extractRef($repository, $branch, $tree);
             $files = $repository->getTree($tree ? "$branch:\"$tree\"/" : $branch);
             $breadcrumbs = $app['util.view']->getBreadcrumbs($tree);
 

@@ -106,7 +106,6 @@ class NetworkController implements ControllerProviderInterface
                 }
 
                 list($branch, $file) = $app['util.routing']->parseCommitishPathParam($commitishPath, $repo);
-                list($branch, $file) = $app['util.repository']->extractRef($repository, $branch, $file);
 
                 return $app['twig']->render(
                     'network.twig',

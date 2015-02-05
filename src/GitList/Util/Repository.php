@@ -186,44 +186,5 @@ class Repository
 		if ($path != "") return $this->getReadme($repository, $branch, "");
         return array();
     }
-
-    /**
-     * Returns an Array where the first value is the tree-ish and the second is the path
-     *
-     * @param  \GitList\Git\Repository $repository
-     * @param  string                  $branch
-     * @param  string                  $tree
-     * @return array
-     */
-    public function extractRef($repository, $branch = '', $tree = '')
-    {
-        $branch = trim($branch, '/');
-        $tree = trim($tree, '/');
-        $input = $branch . '/' . $tree;
-
-        // If the ref appears to be a SHA, just split the string
-        if (preg_match("/^([[:alnum:]]{40})(.+)/", $input, $matches)) {
-            $branch = $matches[1];
-        } else {
-            // Otherwise, attempt to detect the ref using a list of the project's branches and tags
-            $validRefs = array_merge((array) $repository->getBranches(), (array) $repository->getTags());
-            foreach ($validRefs as $key => $ref) {
-                if (!preg_match(sprintf("#^%s/#", preg_quote($ref, '#')), $input)) {
-                    unset($validRefs[$key]);
-                }
-            }
-
-            // No exact ref match, so just try our best
-            if (count($validRefs) > 1) {
-                preg_match('/([^\/]+)(.*)/', $input, $matches);
-                $branch = preg_replace('/^\/|\/$/', '', $matches[1]);
-            } else {
-                // Extract branch name
-                $branch = array_shift($validRefs);
-            }
-        }
-
-        return array($branch, $tree);
-    }
 }
 
