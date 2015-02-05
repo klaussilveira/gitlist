@@ -1,4 +1,3 @@
-cache/
 vendor/
 build/
 *.diff
