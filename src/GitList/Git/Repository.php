@@ -45,8 +45,8 @@ class Repository extends BaseRepository
         $logs = $this->getClient()->run($this,
                   "show --pretty=format:\"<item><hash>%H</hash>"
                 . "<short_hash>%h</short_hash><tree>%T</tree><parents>%P</parents>"
-                . "<author>%an</author><author_email>%ae</author_email>"
-                . "<date>%at</date><commiter>%cn</commiter><commiter_email>%ce</commiter_email>"
+                . "<author>%aN</author><author_email>%aE</author_email>"
+                . "<date>%at</date><commiter>%cN</commiter><commiter_email>%cE</commiter_email>"
                 . "<commiter_date>%ct</commiter_date>"
                 . "<message><![CDATA[%s]]></message>"
                 . "<body><![CDATA[%b]]></body>"
@@ -213,9 +213,9 @@ class Repository extends BaseRepository
         $command =
                   "log $pager --pretty=format:\"<item><hash>%H</hash>"
                 . "<short_hash>%h</short_hash><tree>%T</tree><parents>%P</parents>"
-                . "<author>%an</author><author_email>%ae</author_email>"
-                . "<date>%at</date><commiter>%cn</commiter>"
-                . "<commiter_email>%ce</commiter_email>"
+                . "<author>%aN</author><author_email>%aE</author_email>"
+                . "<date>%at</date><commiter>%cN</commiter>"
+                . "<commiter_email>%cE</commiter_email>"
                 . "<commiter_date>%ct</commiter_date>"
                 . "<message><![CDATA[%s]]></message></item>\"";
 
@@ -245,9 +245,9 @@ class Repository extends BaseRepository
         $command =
               "log --grep={$query} -i --pretty=format:\"<item><hash>%H</hash>"
             . "<short_hash>%h</short_hash><tree>%T</tree><parents>%P</parents>"
-            . "<author>%an</author><author_email>%ae</author_email>"
-            . "<date>%at</date><commiter>%cn</commiter>"
-            . "<commiter_email>%ce</commiter_email>"
+            . "<author>%aN</author><author_email>%aE</author_email>"
+            . "<date>%at</date><commiter>%cN</commiter>"
+            . "<commiter_email>%cE</commiter_email>"
             . "<commiter_date>%ct</commiter_date>"
             . "<message><![CDATA[%s]]></message></item>\""
             . " $branch";
@@ -299,7 +299,7 @@ class Repository extends BaseRepository
 
     public function getAuthorStatistics($branch)
     {
-        $logs = $this->getClient()->run($this, 'log --pretty=format:"%an||%ae" ' . $branch);
+        $logs = $this->getClient()->run($this, 'log --pretty=format:"%aN||%aE" ' . $branch);
 
         if (empty($logs)) {
             throw new \RuntimeException('No statistics available');
