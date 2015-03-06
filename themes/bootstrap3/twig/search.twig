@@ -28,7 +28,7 @@
         <tbody>
             {% for result in results %}
             <tr>
-                <td><span class="fa fa-file"></span> <a href="{{ path('blob', {repo: repo, branch: branch, file: result.file, commitishPath: branch ~ '/' ~ result.file}) }}#L{{ result.line }}">{{ result.file }}</a></td>
+                <td><span class="fa fa-file-text-o"></span> <a href="{{ path('blob', {repo: repo, branch: branch, file: result.file, commitishPath: branch ~ '/' ~ result.file}) }}#L{{ result.line }}">{{ result.file }}</a></td>
                 <td>{{ result.match }}</td>
             </tr>
             {% endfor %}
