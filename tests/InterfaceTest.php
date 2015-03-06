@@ -114,6 +114,16 @@ class InterfaceTest extends WebTestCase
         $repository->addAll();
         $repository->commit("First commit");
         $repository->checkout('HEAD');
+
+        // mailmap repository fixture
+        $git->createRepository(self::$tmpdir . 'mailmap');
+        $repository = $git->getRepository(self::$tmpdir . 'mailmap');
+        $repository->setConfig('user.name', 'Luke Skywalker');
+        $repository->setConfig('user.email', 'luke@rebel.org');
+        file_put_contents(self::$tmpdir . 'mailmap/README.md', "## mailmap\nmailmap is a *test* repository!");
+        file_put_contents(self::$tmpdir . 'mailmap/.mailmap', "Anakin Skywalker <darth@empire.com> Luke Skywalker <luke@rebel.org>");
+        $repository->addAll();
+        $repository->commit("First commit");
     }
 
     public function createApplication()
@@ -157,9 +167,13 @@ class InterfaceTest extends WebTestCase
         $this->assertEquals('/GitTest/', $crawler->filter('.repository-header a')->eq(6)->attr('href'));
         $this->assertEquals('/GitTest/master/rss/', $crawler->filter('.repository-header a')->eq(7)->attr('href'));
 
+        $this->assertCount(1, $crawler->filter('div.repository-header a:contains("mailmap")'));
+        $this->assertEquals('/mailmap/', $crawler->filter('.repository-header a')->eq(8)->attr('href'));
+        $this->assertEquals('/mailmap/master/rss/', $crawler->filter('.repository-header a')->eq(9)->attr('href'));
+
         $this->assertCount(1, $crawler->filter('div.repository-header a:contains("nested/NestedRepo")'));
-        $this->assertEquals('/nested/NestedRepo/', $crawler->filter('.repository-header a')->eq(8)->attr('href'));
-        $this->assertEquals('/nested/NestedRepo/master/rss/', $crawler->filter('.repository-header a')->eq(9)->attr('href'));
+        $this->assertEquals('/nested/NestedRepo/', $crawler->filter('.repository-header a')->eq(10)->attr('href'));
+        $this->assertEquals('/nested/NestedRepo/master/rss/', $crawler->filter('.repository-header a')->eq(11)->attr('href'));
         $this->assertCount(1, $crawler->filter('div.repository-body:contains("This is a NESTED test repo!")'));
     }
 
@@ -265,6 +279,11 @@ class InterfaceTest extends WebTestCase
         $crawler = $client->request('GET', '/foobar/commits/master/bar.json');
         $this->assertTrue($client->getResponse()->isOk());
         $this->assertEquals('First commit', $crawler->filter('.table tbody tr td h4')->eq(0)->text());
+
+        $crawler = $client->request('GET', '/mailmap/commits/master/README.md');
+        $this->assertTrue($client->getResponse()->isOk());
+        $this->assertEquals('Anakin Skywalker', $crawler->filter('.table tbody tr td span a')->eq(1)->text());
+        $this->assertEquals('mailto:darth@empire.com', $crawler->filter('.table tbody tr td span a')->eq(1)->attr('href'));
     }
 
     /**
@@ -281,6 +300,11 @@ class InterfaceTest extends WebTestCase
         $crawler = $client->request('GET', '/foobar/commits');
         $this->assertTrue($client->getResponse()->isOk());
         $this->assertEquals('First commit', $crawler->filter('.table tbody tr td h4')->eq(0)->text());
+
+        $crawler = $client->request('GET', '/mailmap/commits');
+        $this->assertTrue($client->getResponse()->isOk());
+        $this->assertEquals('Anakin Skywalker', $crawler->filter('.table tbody tr td span a')->eq(1)->text());
+        $this->assertEquals('mailto:darth@empire.com', $crawler->filter('.table tbody tr td span a')->eq(1)->attr('href'));
     }
 
     /**
@@ -296,6 +320,10 @@ class InterfaceTest extends WebTestCase
         $this->assertRegexp('/.md: 1 files/', $crawler->filter('.table tbody')->eq(0)->text());
         $this->assertRegexp('/Total files: 2/', $crawler->filter('.table tbody')->eq(0)->text());
         $this->assertRegexp('/Luke Skywalker: 1 commits/', $crawler->filter('.table tbody')->eq(0)->text());
+
+        $crawler = $client->request('GET', '/mailmap/stats');
+        $this->assertTrue($client->getResponse()->isOk());
+        $this->assertRegexp('/Anakin Skywalker: 1 commits/', $crawler->filter('.table tbody')->eq(0)->text());
     }
 
     /**
