@@ -87,7 +87,7 @@ class TreeController implements ControllerProviderInterface
                     . substr($tree, 0, 2) . DIRECTORY_SEPARATOR
                     . substr($tree, 2)
                     . '.'
-                    . $format; 
+                    . $format;
 
             if (!file_exists($file)) {
                 $repository->createArchive($tree, $file, $format);
