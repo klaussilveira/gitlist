@@ -97,9 +97,8 @@ class TreeController implements ControllerProviderInterface
              * Generating name for downloading, lowercasing and removing all non
              * ascii and special characters
              */
-            $filename = strtolower($branch);
-            $filename = preg_replace('#[^a-z0-9]#', '_', $filename);
-            $filename = preg_replace('#_+#', '_', $filename);
+            $filename = strtolower($repo.'_'.$branch);
+            $filename = preg_replace('#[^a-z0-9]+#', '_', $filename);
             $filename = $filename . '.' . $format;
 
             $response = new BinaryFileResponse($file);
