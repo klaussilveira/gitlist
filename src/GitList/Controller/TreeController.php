@@ -93,7 +93,18 @@ class TreeController implements ControllerProviderInterface
                 $repository->createArchive($tree, $file, $format);
             }
 
-            return new BinaryFileResponse($file);
+            /**
+             * Generating name for downloading, lowercasing and removing all non
+             * ascii and special characters
+             */
+            $filename = strtolower($branch);
+            $filename = preg_replace('#[^a-z0-9]#', '_', $filename);
+            $filename = preg_replace('#_+#', '_', $filename);
+            $filename = $filename . '.' . $format;
+
+            $response = new BinaryFileResponse($file);
+            $response->setContentDisposition('attachment', $filename);
+            return $response;
         })->assert('format', '(zip|tar)')
           ->assert('repo', $app['util.routing']->getRepositoryRegex())
           ->assert('branch', $app['util.routing']->getBranchRegex())
