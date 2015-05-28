@@ -96,9 +96,13 @@ class Client extends BaseClient
                     }
 
                     if (file_exists($category)) {
-                        $category = file_get_contents($category);
+                        $category = trim(file_get_contents($category));
                     } else {
-                        $category = null;
+                        try {
+                            $category = $this->getRepository($file->getPathname())->getConfig('gitlist.category');
+                        } catch (\RuntimeException $e) {
+                            $category = "";
+                        }
                     }
 
                     if (!$topLevel) {

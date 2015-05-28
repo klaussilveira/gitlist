@@ -25,8 +25,10 @@ class MainController implements ControllerProviderInterface
                 }
                 $result[$category][] = $repository;
             }
+
             # Sort result by category name
             ksort($result, SORT_NATURAL | SORT_FLAG_CASE);
+
             # Move empty string entry to last position
             if (array_key_exists('', $result)) {
                 $emptyStringArray = $result[''];
