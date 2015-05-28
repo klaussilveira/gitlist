@@ -83,14 +83,22 @@ class Client extends BaseClient
 
                     if ($isBare) {
                         $description = $file->getPathname() . '/description';
+                        $category = $file->getPathname() . '/category';
                     } else {
                         $description = $file->getPathname() . '/.git/description';
+                        $category = $file->getPathname() . '/.git/category';
                     }
 
                     if (file_exists($description)) {
                         $description = file_get_contents($description);
                     } else {
                         $description = null;
+                    }
+
+                    if (file_exists($category)) {
+                        $category = file_get_contents($category);
+                    } else {
+                        $category = null;
                     }
 
                     if (!$topLevel) {
@@ -102,7 +110,8 @@ class Client extends BaseClient
                     $repositories[$repoName] = array(
                         'name' => $repoName,
                         'path' => $file->getPathname(),
-                        'description' => $description
+                        'description' => $description,
+                        'category' => $category
                     );
 
                     continue;

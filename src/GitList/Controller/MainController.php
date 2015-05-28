@@ -16,8 +16,33 @@ class MainController implements ControllerProviderInterface
         $route->get('/', function() use ($app) {
             $repositories = $app['git']->getRepositories($app['git.repos']);
 
+            # Map results by category
+            $result = array();
+            foreach($repositories as $repository) {
+                $category = $repository['category'];
+                if(!array_key_exists($category, $result)) {
+                    $result[$category] = array();
+                }
+                $result[$category][] = $repository;
+            }
+            # Sort result by category name
+            ksort($result, SORT_NATURAL | SORT_FLAG_CASE);
+            # Move empty string entry to last position
+            if (array_key_exists('', $result)) {
+                $emptyStringArray = $result[''];
+                unset($result['']);
+                $result[] = $emptyStringArray;
+            }
+
+            # Sort repositories by name
+            foreach ($result as $resultRepositories) {
+                usort($resultRepositories, function($a, $b) {
+                   return strcmp($a.name, $b.name);
+                });
+            }
+
             return $app['twig']->render('index.twig', array(
-                'repositories'   => $repositories,
+                'repositoryTree'   => $result,
             ));
         })->bind('homepage');
 
