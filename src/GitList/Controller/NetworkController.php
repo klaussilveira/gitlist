@@ -67,17 +67,18 @@ class NetworkController implements ControllerProviderInterface
                     );
                 }
 
-				// when no commits are given, return an empty response - issue #369
-				if( count($commits) === 0 ) {
-					return $app->json( array(
-						'repo' => $repo,
-						'commitishPath' => $commitishPath,
-						'nextPage' => null,
-						'start' => null,
-						'commits' => $jsonFormattedCommits
-						), 200
-					);
-				}
+                // when no commits are given, return an empty response - issue #369
+                if (count($commits) === 0) {
+                    return $app->json(
+                        array(
+                            'repo' => $repo,
+                            'commitishPath' => $commitishPath,
+                            'nextPage' => null,
+                            'start' => null,
+                            'commits' => $jsonFormattedCommits
+                            ), 200
+                        );
+                }
 
                 return $app->json( array(
                     'repo' => $repo,
