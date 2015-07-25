@@ -64,7 +64,7 @@ class Client extends BaseClient
                 continue;
             }
 
-            if (strrpos($file->getFilename(), '.') === 0) {
+            if (strrpos($file->getFilename(), '.') === false) {
                 continue;
             }
 
