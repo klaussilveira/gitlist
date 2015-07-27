@@ -41,10 +41,11 @@ class TreeController implements ControllerProviderInterface
                 'breadcrumbs'    => $breadcrumbs,
                 'branches'       => $repository->getBranches(),
                 'tags'           => $repository->getTags(),
-                'readme'         => $app['util.repository']->getReadme($repository, $branch),
+                'readme'         => $app['util.repository']->getReadme($repository, $branch, $tree ? "$tree" : ""),
             ));
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
           ->assert('commitishPath', $app['util.routing']->getCommitishPathRegex())
+          ->convert('commitishPath', 'escaper.argument:escape')
           ->bind('tree');
 
         $route->post('{repo}/tree/{branch}/search', function (Request $request, $repo, $branch = '', $tree = '') use ($app) {
@@ -69,6 +70,7 @@ class TreeController implements ControllerProviderInterface
             ));
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
           ->assert('branch', $app['util.routing']->getBranchRegex())
+          ->convert('branch', 'escaper.argument:escape')
           ->bind('search');
 
         $route->get('{repo}/{format}ball/{branch}', function($repo, $format, $branch) use ($app) {
@@ -91,10 +93,22 @@ class TreeController implements ControllerProviderInterface
                 $repository->createArchive($tree, $file, $format);
             }
 
-            return new BinaryFileResponse($file);
+            /**
+             * Generating name for downloading, lowercasing and removing all non
+             * ascii and special characters
+             */
+            $filename = strtolower($branch);
+            $filename = preg_replace('#[^a-z0-9]#', '_', $filename);
+            $filename = preg_replace('#_+#', '_', $filename);
+            $filename = $filename . '.' . $format;
+
+            $response = new BinaryFileResponse($file);
+            $response->setContentDisposition('attachment', $filename);
+            return $response;
         })->assert('format', '(zip|tar)')
           ->assert('repo', $app['util.routing']->getRepositoryRegex())
           ->assert('branch', $app['util.routing']->getBranchRegex())
+          ->convert('branch', 'escaper.argument:escape')
           ->bind('archive');
 
 
@@ -102,6 +116,7 @@ class TreeController implements ControllerProviderInterface
             return $treeController($repo, $branch);
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
           ->assert('branch', $app['util.routing']->getBranchRegex())
+          ->convert('branch', 'escaper.argument:escape')
           ->bind('branch');
 
         $route->get('{repo}/', function($repo) use ($app, $treeController) {

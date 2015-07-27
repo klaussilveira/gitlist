@@ -17,20 +17,26 @@
             <p>{{ commit.body | nl2br }}</p>
             {% endif %}
             <img src="https://gravatar.com/avatar/{{ commit.author.email | lower | md5 }}?s=32" class="pull-left space-right" />
-            <span><a href="mailto:{{ commit.author.email }}">{{ commit.author.name }}</a> authored on {{ commit.date | format_date }}<br />Showing {{ commit.changedFiles }} changed files</span>
+            <span>
+                <a href="mailto:{{ commit.author.email }}">{{ commit.author.name }}</a> authored on {{ commit.date | format_date }}
+                {% if commit.author.email != commit.commiter.email %}
+                &bull; <a href="mailto:{{ commit.commiter.email }}">{{ commit.commiter.name }}</a> committed on {{ commit.commiterDate | format_date }}
+                {% endif %}
+                <br />Showing {{ commit.changedFiles }} changed files
+            </span>
         </div>
     </div>
 
     <ul class="commit-list">
         {% for diff in commit.diffs %}
-            <li><i class="icon-file"></i> <a href="#{{ loop.index }}">{{ diff.file }}</a> <span class="meta pull-right">{{ diff.index }}</span></li>
+            <li><i class="icon-file"></i> <a href="#diff-{{ loop.index }}">{{ diff.file }}</a> <span class="meta pull-right">{{ diff.index }}</span></li>
         {% endfor %}
     </ul>
 
     {% for diff in commit.diffs %}
     <div class="source-view">
         <div class="source-header">
-            <div class="meta"><a name="{{ loop.index }}">{{ diff.file }}</div>
+            <div class="meta"><a id="diff-{{ loop.index }}">{{ diff.file }}</div>
 
             <div class="btn-group pull-right">
                 <a href="{{ path('commits', {repo: repo, commitishPath: commit.hash ~ '/' ~ diff.file}) }}" class="btn btn-small"><i class="icon-list-alt"></i> History</a>
@@ -45,7 +51,7 @@
                 <td class="lineNo">
                     {% if line.getType != 'chunk' %}
                         <a name="L{{ loop.index }}R{{ line.getNumOld }}"></a>
-                        <a href="#L{{ loop.index }}L{{ line.getNumOld }}">
+                        <a href="#L{{ loop.index }}R{{ line.getNumOld }}">
                     {% endif %}
                     {{ line.getNumOld }}
                     {% if line.getType != 'chunk' %}

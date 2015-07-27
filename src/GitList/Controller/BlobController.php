@@ -43,6 +43,7 @@ class BlobController implements ControllerProviderInterface
             ));
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
           ->assert('commitishPath', '.+')
+          ->convert('commitishPath', 'escaper.argument:escape')
           ->bind('blob');
 
         $route->get('{repo}/raw/{commitishPath}', function ($repo, $commitishPath) use ($app) {
@@ -66,6 +67,7 @@ class BlobController implements ControllerProviderInterface
             return new Response($blob, 200, $headers);
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
           ->assert('commitishPath', $app['util.routing']->getCommitishPathRegex())
+          ->convert('commitishPath', 'escaper.argument:escape')
           ->bind('blob_raw');
 
         return $route;

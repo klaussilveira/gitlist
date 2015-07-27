@@ -164,22 +164,26 @@ class Repository
         return false;
     }
 
-    public function getReadme($repository, $branch = null)
+    public function getReadme($repository, $branch = null, $path = "")
     {
-        $files = $repository->getTree($branch)->output();
         if ($branch === null) {
            $branch = $repository->getHead();
         }
+
+        if ($path != "") $path = "$path/";
+
+        $files = $repository->getTree($path != "" ? "$branch:\"$path\"" : $branch)->output();
 
         foreach ($files as $file) {
             if (preg_match('/^readme*/i', $file['name'])) {
                 return array(
                     'filename' => $file['name'],
-                    'content'  => $repository->getBlob("$branch:\"{$file['name']}\"")->output()
+                    'content'  => $repository->getBlob("$branch:\"$path{$file['name']}\"")->output()
                 );
             }
         }
-
+		// No contextual readme, try to catch the main one if we are in deeper context
+		if ($path != "") return $this->getReadme($repository, $branch, "");
         return array();
     }
 

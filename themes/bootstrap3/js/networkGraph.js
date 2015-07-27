@@ -182,7 +182,7 @@
 		 */
 		function getDateString( date )  {
 			return twoDigits( date.getDate() )	+ '/'
-				+ twoDigits( date.getMonth() ) + '/'
+				+ twoDigits( date.getMonth() + 1 ) + '/'
 				+ date.getFullYear() + ' at '
 				+ twoDigits(date.getHours()) + ':'
 				+ twoDigits(date.getMinutes()) + ':'

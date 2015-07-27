@@ -45,8 +45,8 @@ class Repository extends BaseRepository
         $logs = $this->getClient()->run($this,
                   "show --pretty=format:\"<item><hash>%H</hash>"
                 . "<short_hash>%h</short_hash><tree>%T</tree><parents>%P</parents>"
-                . "<author>%an</author><author_email>%ae</author_email>"
-                . "<date>%at</date><commiter>%cn</commiter><commiter_email>%ce</commiter_email>"
+                . "<author>%aN</author><author_email>%aE</author_email>"
+                . "<date>%at</date><commiter>%cN</commiter><commiter_email>%cE</commiter_email>"
                 . "<commiter_date>%ct</commiter_date>"
                 . "<message><![CDATA[%s]]></message>"
                 . "<body><![CDATA[%b]]></body>"
@@ -105,7 +105,7 @@ class Repository extends BaseRepository
                 );
             }
 
-            $blame[$i]['line'] .= PHP_EOL . $match[3][0];
+            $blame[$i]['line'] .= $match[3][0] . PHP_EOL;
             $previousCommit = $currentCommit;
         }
 
@@ -169,9 +169,9 @@ class Repository extends BaseRepository
                 switch ($log[0]) {
                     case "@":
                         // Set the line numbers
-                        preg_match('/@@ -([0-9]+)/', $log, $matches);
+                        preg_match('/@@ -([0-9]+)(?:,[0-9]+)? \+([0-9]+)/', $log, $matches);
                         $lineNumOld = $matches[1] - 1;
-                        $lineNumNew = $matches[1] - 1;
+                        $lineNumNew = $matches[2] - 1;
                         break;
                     case "-":
                         $lineNumOld++;
@@ -213,9 +213,9 @@ class Repository extends BaseRepository
         $command =
                   "log $pager --pretty=format:\"<item><hash>%H</hash>"
                 . "<short_hash>%h</short_hash><tree>%T</tree><parents>%P</parents>"
-                . "<author>%an</author><author_email>%ae</author_email>"
-                . "<date>%at</date><commiter>%cn</commiter>"
-                . "<commiter_email>%ce</commiter_email>"
+                . "<author>%aN</author><author_email>%aE</author_email>"
+                . "<date>%at</date><commiter>%cN</commiter>"
+                . "<commiter_email>%cE</commiter_email>"
                 . "<commiter_date>%ct</commiter_date>"
                 . "<message><![CDATA[%s]]></message></item>\"";
 
@@ -238,18 +238,19 @@ class Repository extends BaseRepository
         return $commits;
     }
 
-    public function searchCommitLog($query)
+    public function searchCommitLog($query, $branch)
     {
         $query = escapeshellarg($query);
         $query = strtr($query, array('[' => '\\[', ']' => '\\]'));
         $command =
-              "log --grep={$query} --pretty=format:\"<item><hash>%H</hash>"
+              "log --grep={$query} -i --pretty=format:\"<item><hash>%H</hash>"
             . "<short_hash>%h</short_hash><tree>%T</tree><parents>%P</parents>"
-            . "<author>%an</author><author_email>%ae</author_email>"
-            . "<date>%at</date><commiter>%cn</commiter>"
-            . "<commiter_email>%ce</commiter_email>"
+            . "<author>%aN</author><author_email>%aE</author_email>"
+            . "<date>%at</date><commiter>%cN</commiter>"
+            . "<commiter_email>%cE</commiter_email>"
             . "<commiter_date>%ct</commiter_date>"
-            . "<message><![CDATA[%s]]></message></item>\"";
+            . "<message><![CDATA[%s]]></message></item>\""
+            . " $branch";
 
         try {
             $logs = $this->getPrettyFormat($command);
@@ -271,7 +272,7 @@ class Repository extends BaseRepository
         $query = escapeshellarg($query);
 
         try {
-            $results = $this->getClient()->run($this, "grep -I --line-number {$query} $branch");
+            $results = $this->getClient()->run($this, "grep -i --line-number {$query} $branch");
         } catch (\RuntimeException $e) {
             return false;
         }
@@ -298,7 +299,7 @@ class Repository extends BaseRepository
 
     public function getAuthorStatistics($branch)
     {
-        $logs = $this->getClient()->run($this, 'log --pretty=format:"%an||%ae" ' . $branch);
+        $logs = $this->getClient()->run($this, 'log --pretty=format:"%aN||%aE" ' . $branch);
 
         if (empty($logs)) {
             throw new \RuntimeException('No statistics available');

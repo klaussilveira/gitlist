@@ -33,6 +33,7 @@ class Application extends SilexApplication
         $this['debug'] = $config->get('app', 'debug');
         $this['date.format'] = $config->get('date', 'format') ? $config->get('date', 'format') : 'd/m/Y H:i:s';
         $this['theme'] = $config->get('app', 'theme') ? $config->get('app', 'theme') : 'default';
+        $this['title'] = $config->get('app', 'title') ? $config->get('app', 'title') : 'GitList';
         $this['filetypes'] = $config->getSection('filetypes');
         $this['binary_filetypes'] = $config->getSection('binary_filetypes');
         $this['cache.archives'] = $this->getCachePath() . 'archives';
@@ -65,9 +66,14 @@ class Application extends SilexApplication
             $twig->addFilter(new \Twig_SimpleFilter('htmlentities', 'htmlentities'));
             $twig->addFilter(new \Twig_SimpleFilter('md5', 'md5'));
             $twig->addFilter(new \Twig_SimpleFilter('format_date', array($app, 'formatDate')));
+            $twig->addFilter(new \Twig_SimpleFilter('format_size', array($app, 'formatSize')));
 
             return $twig;
         }));
+
+        $this['escaper.argument'] = $this->share(function() {
+            return new Escaper\ArgumentEscaper();
+        });
 
         // Handle errors
         $this->error(function (\Exception $e, $code) use ($app) {
@@ -91,6 +97,14 @@ class Application extends SilexApplication
     public function formatDate($date)
     {
         return $date->format($this['date.format']);
+    }
+
+    public function formatSize($size)
+    {
+        $mod = 1000;
+        $units = array('B', 'kB', 'MB', 'GB');
+        for($i = 0; $size > $mod; $i++) $size /= $mod;
+        return round($size, 2) . $units[$i];
     }
 
     public function getPath()

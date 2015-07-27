@@ -9,8 +9,8 @@
         {% block extra %}
             <div class="pull-right">
                 <div class="btn-group download-buttons">
-                    <button type="button" href="{{ path('archive', {repo: repo, branch: branch, format: 'zip'}) }}" class="btn btn-default btn-xs" title="Download '{{ branch }}' as a ZIP archive">ZIP</button>
-                    <button type="button" href="{{ path('archive', {repo: repo, branch: branch, format: 'tar'}) }}" class="btn btn-default btn-xs" title="Download '{{ branch }}' as a TAR archive">TAR</button>
+                    <a type="button" href="{{ path('archive', {repo: repo, branch: branch, format: 'zip'}) }}" class="btn btn-default btn-xs" title="Download '{{ branch }}' as a ZIP archive">ZIP</a>
+                    <a type="button" href="{{ path('archive', {repo: repo, branch: branch, format: 'tar'}) }}" class="btn btn-default btn-xs" title="Download '{{ branch }}' as a TAR archive">TAR</a>
                     <a href="{{ path('rss', {repo: repo, branch: branch}) }}"><span class="fa fa-rss rss-icon"></span></a>
                 </div>
             </div>
@@ -42,7 +42,7 @@
             {% endif %}
             {% for file in files %}
             <tr>
-                <td><span class="fa {{ file.type == "folder" or file.type == "symlink" ? "fa-folder-open" : "fa-file" }}"></span> <a href="
+                <td><span class="fa {{ file.type == "folder" or file.type == "symlink" ? "fa-folder-open" : "fa-file-text-o" }}"></span> <a href="
                     {%- if file.type == "folder" or file.type == "symlink" -%}
                         {{ path('tree', {repo: repo, commitishPath: branch ~ '/' ~ path ~ (file.type == "symlink" ? file.path : file.name)}) }}
                     {%- else -%}
