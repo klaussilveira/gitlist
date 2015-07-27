@@ -13,7 +13,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase {
     /**
      * @var Config
      */
-    protected $object;
+    protected $config;
 
     /**
      * Sets up the fixture, for example, opens a network connection.
@@ -29,7 +29,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase {
         );
         $root->addChild($file);
         
-        $this->object = Config::fromFile(vfsStream::url('tmp/config.ini'));
+        $this->config = Config::fromFile(vfsStream::url('tmp/config.ini'));
     }
 
     /**
@@ -46,20 +46,20 @@ class ConfigTest extends \PHPUnit_Framework_TestCase {
     public function testGet() {
         $this->assertContains(
             'vfs://tmp',
-            $this->object->get('git', 'repositories')
+            $this->config->get('git', 'repositories')
         );
-        $this->assertFalse($this->object->get('dummy', 'dummy'));
-        $this->assertFalse($this->object->get('git', 'dummy'));
+        $this->assertFalse($this->config->get('dummy', 'dummy'));
+        $this->assertFalse($this->config->get('git', 'dummy'));
     }
 
     /**
      * @covers GitList\Config::getSection
      */
     public function testGetSection() {
-        $this->assertFalse($this->object->getSection('dummy'));
+        $this->assertFalse($this->config->getSection('dummy'));
         $this->assertInternalType(
             'array',
-            $this->object->getSection('git')
+            $this->config->getSection('git')
         );
     }
 
@@ -67,10 +67,10 @@ class ConfigTest extends \PHPUnit_Framework_TestCase {
      * @covers GitList\Config::set
      */
     public function testSet() {
-        $this->assertNull($this->object->set('git', 'repositories', '/tmp'));
+        $this->assertNull($this->config->set('git', 'repositories', '/tmp'));
         $this->assertEquals(
             '/tmp',
-            $this->object->get('git', 'repositories')
+            $this->config->get('git', 'repositories')
         );
     }
 
