@@ -8,12 +8,16 @@ class Client extends BaseClient
 {
     protected $defaultBranch;
     protected $hidden;
+    protected $categories;
+    protected $categoryProperty;
 
     public function __construct($options = null)
     {
         parent::__construct($options['path']);
         $this->setDefaultBranch($options['default_branch']);
         $this->setHidden($options['hidden']);
+        $this->setCategories($options['categories']);
+        $this->setCategoryProperty($options['categoryProperty']);
     }
 
     public function getRepositoryFromName($paths, $repo)
@@ -86,14 +90,28 @@ class Client extends BaseClient
 
                     if ($isBare) {
                         $description = $file->getPathname() . '/description';
+                        $category = $file->getPathname() . '/category';
                     } else {
                         $description = $file->getPathname() . '/.git/description';
+                        $category = $file->getPathname() . '/.git/category';
                     }
 
                     if (file_exists($description)) {
                         $description = file_get_contents($description);
                     } else {
                         $description = null;
+                    }
+
+                    if ($this->getCategories()) {
+                        if (file_exists($category)) {
+                            $category = trim(file_get_contents($category));
+                        } else {
+                            try {
+                                $category = $this->getRepository($file->getPathname())->getConfig($this->getCategoryProperty());
+                            } catch (\RuntimeException $e) {
+                                $category = "";
+                            }
+                        }
                     }
 
                     if (!$topLevel) {
@@ -105,7 +123,8 @@ class Client extends BaseClient
                     $repositories[$repoName] = array(
                         'name' => $repoName,
                         'path' => $file->getPathname(),
-                        'description' => $description
+                        'description' => $description,
+                        'category' => $category
                     );
 
                     continue;
@@ -159,6 +178,42 @@ class Client extends BaseClient
 
         return $this;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getCategories()
+    {
+        return $this->categories;
+    }
+
+    /**
+     * @param mixed $categories
+     */
+    public function setCategories($categories)
+    {
+        $this->categories = $categories;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCategoryProperty()
+    {
+        return $this->categoryProperty;
+    }
+
+    /**
+     * @param mixed $categoryProperty
+     */
+    public function setCategoryProperty($categoryProperty)
+    {
+        $this->categoryProperty = $categoryProperty;
+        return $this;
+    }
+
+
 
     /**
      * Overloads the parent::createRepository method for the correct Repository class instance

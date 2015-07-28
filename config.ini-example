@@ -16,6 +16,11 @@ debug = false
 cache = true
 theme = "default"
 title = ""
+; Display repositories by categories
+; (read either from the .git/category file or from the config value defined in category_property
+categories = false
+; Git config value to read the category name from. (Can be changed to reuse gitweb.category or a custom property, if set)
+category_property = "gitlist.category"
 
 ; If you need to specify custom filetypes for certain extensions, do this here
 [filetypes]

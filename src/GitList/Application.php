@@ -37,6 +37,8 @@ class Application extends SilexApplication
         $this['filetypes'] = $config->getSection('filetypes');
         $this['binary_filetypes'] = $config->getSection('binary_filetypes');
         $this['cache.archives'] = $this->getCachePath() . 'archives';
+        $this['categories'] = $config->get('app', 'categories');
+        $this['categoryProperty'] = $config->get('app', 'category_property');
 
         // Register services
         $this->register(new TwigServiceProvider(), array(
