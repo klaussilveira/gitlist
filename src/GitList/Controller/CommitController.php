@@ -31,8 +31,6 @@ class CommitController implements ControllerProviderInterface
             list($branch, $file) = $app['util.routing']
                 ->parseCommitishPathParam($commitishPath, $repo);
 
-            list($branch, $file) = $app['util.repository']->extractRef($repository, $branch, $file);
-
             $type = $file ? "$branch -- \"$file\"" : $branch;
             $pager = $app['util.view']->getPager($app['request']->get('page'), $repository->getTotalCommits($type));
             $commits = $repository->getPaginatedCommits($type, $pager['current']);
@@ -108,8 +106,6 @@ class CommitController implements ControllerProviderInterface
 
             list($branch, $file) = $app['util.routing']
                 ->parseCommitishPathParam($commitishPath, $repo);
-
-            list($branch, $file) = $app['util.repository']->extractRef($repository, $branch, $file);
 
             $blames = $repository->getBlame("$branch -- \"$file\"");
 
