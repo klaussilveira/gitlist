@@ -42,7 +42,10 @@ class Client extends BaseClient
                 throw new \RuntimeException('There are no GIT repositories in ' . $path);
             }
 
-            $allRepositories = array_merge($allRepositories, $repositories);
+            /**
+             * Use "+" to preserve keys, only a problem with numeric repos
+             */
+            $allRepositories = $allRepositories + $repositories;
         }
 
         $allRepositories = array_unique($allRepositories, SORT_REGULAR);
