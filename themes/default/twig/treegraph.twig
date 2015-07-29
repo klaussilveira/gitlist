@@ -1,0 +1,48 @@
+{% extends 'layout_page.twig' %}
+
+{% set page = 'treegraph' %}
+
+{% block title %}GitList{% endblock %}
+
+{% block content %}
+    {% include 'breadcrumb.twig' with {breadcrumbs: [{dir: 'Graph', path:''}]} %}
+    <div class="network-view">
+        <div class="network-header">
+            <div class="meta">Graph of {{ repo }} </div>
+        </div>
+
+        <div id="git-graph-container">
+            <div id="rel-container">
+                <canvas id="graph-canvas" width="100px">
+                    <ul id="graph-raw-list">
+                        {% for item in graphItems %}
+                            <li><span class="node-relation">{{ item.relation }}</span></li>
+                        {% endfor %}
+                    </ul>
+                </canvas>
+            </div>
+            <div style="float:left;" id="rev-container">
+                <ul id="rev-list">
+                    {% for item in graphItems %}
+                        <li>
+                            {% if item.rev is defined %}
+                                <a id="{{ item.short_rev }}" class="btn btn-small" href="{{ path('commit', {repo: repo, commit: item.rev}) }}"> {{ item.short_rev }} </a>
+                                <strong> {{ item.branch }} </strong>
+                                <em>{{ item.subject }}</em> by
+                                <span class="author">{{ item.author }} &lt;{{ item.author_email }}&gt;</span>
+                                <span class="time">{{ item.date }}</span>;
+                            {% else %}
+                                <span/>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div style="clear:both"><!-- --></div>
+        </div>
+    </div>
+
+
+
+    <hr/>
+{% endblock %}
