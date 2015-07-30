@@ -106,35 +106,23 @@ class Routing
     public function getRepositoryRegex()
     {
         static $regex = null;
-
         if ($regex === null) {
-            $isWindows = $this->isWindows();
             $quotedPaths = array_map(
-                function ($repo) use ($isWindows) {
-                    $repoName = preg_quote($repo['name']);
-
-                    if ($isWindows) {
-                        $repoName = str_replace('\\', '\\\\', $repoName);
-                    }
-
-                    return $repoName;
+                function ($repo) {
+                    return preg_quote($repo['name'], '#');
                 },
                 $this->app['git']->getRepositories($this->app['git.repos'])
             );
-
             usort(
                 $quotedPaths,
                 function ($a, $b) {
                     return strlen($b) - strlen($a);
                 }
             );
-
             $regex = implode('|', $quotedPaths);
         }
-
         return $regex;
     }
-
 
     public function isWindows()
     {
