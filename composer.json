@@ -19,8 +19,8 @@
     },
     "minimum-stability": "stable",
     "autoload": {
-        "psr-0": {
-            "GitList": "src/"
+        "psr-4": {
+            "GitList\\": "src/"
         }
     }
 }

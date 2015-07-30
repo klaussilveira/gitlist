@@ -47,7 +47,7 @@ class NetworkController implements ControllerProviderInterface
                             'name' => $commit->getAuthor()->getName(),
                             'email' => $commit->getAuthor()->getEmail(),
                             // due to the lack of a inbuilt javascript md5 mechanism, build the full avatar url on the php side
-                            'image' => 'http://gravatar.com/avatar/' . md5(
+                            'image' => '//gravatar.com/avatar/' . md5(
                                 strtolower($commit->getAuthor()->getEmail())
                             ) . '?s=40'
                         )
