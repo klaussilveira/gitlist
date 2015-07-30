@@ -17,6 +17,7 @@ use Symfony\Component\Filesystem\Filesystem;
 class Application extends SilexApplication
 {
     protected $path;
+    protected $version;
 
     /**
      * Constructor initialize services.
@@ -29,6 +30,9 @@ class Application extends SilexApplication
         parent::__construct();
         $app = $this;
         $this->path = realpath($root);
+        if (is_readable($root . '/version')) {
+            $this->version = file_get_contents($root . '/version');
+        }
 
         $this['debug'] = $config->get('app', 'debug');
         $this['date.format'] = $config->get('date', 'format') ? $config->get('date', 'format') : 'd/m/Y H:i:s';
@@ -67,6 +71,7 @@ class Application extends SilexApplication
             $twig->addFilter(new \Twig_SimpleFilter('md5', 'md5'));
             $twig->addFilter(new \Twig_SimpleFilter('format_date', array($app, 'formatDate')));
             $twig->addFilter(new \Twig_SimpleFilter('format_size', array($app, 'formatSize')));
+            $twig->addGlobal('gitlist_version', $this->version);
 
             return $twig;
         }));
