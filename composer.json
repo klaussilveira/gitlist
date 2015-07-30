@@ -22,5 +22,10 @@
         "psr-0": {
             "GitList": "src/"
         }
+    },
+    "scripts": {
+        "update-version": [
+            "git describe --always --long > version"
+        ]
     }
 }
