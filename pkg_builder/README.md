@@ -14,7 +14,7 @@ $ make build_deb
 $ make build_rpm
 ```
 
-### Not Ready (Comming soon)
+### Not Ready (Coming soon)
 
 Packages to install configuration files:
 
@@ -30,7 +30,7 @@ Packages to install configuration files:
 
 ## Instructions
 
-To use this builder just download the lastest stable release into this directory and build using the make functions avaible in make help
+To use this builder just download the lastest stable release into this directory and build using the make functions available in make help
 
 ## How to build
 
