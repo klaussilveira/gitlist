@@ -20,6 +20,9 @@ class Routing
      *
      * A helper for parsing routes that use commit-ish names and paths
      * separated by /, since route regexes are not enough to get that right.
+     *
+     * @param string $commitishPath
+     * @param string $repo
      */
     public function parseCommitishPathParam($commitishPath, $repo)
     {
