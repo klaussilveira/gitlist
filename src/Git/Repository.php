@@ -27,7 +27,7 @@ class Repository extends BaseRepository
     /**
      * Get the current branch, returning a default value when HEAD is detached.
      */
-    public function getHead($default = null)
+    public function getHead()
     {
         $client = $this->getClient();
 
@@ -204,6 +204,8 @@ class Repository extends BaseRepository
      * Show the repository commit log with pagination
      *
      * @access public
+     * @param string $file
+     * @param int page
      * @return array Commit log
      */
     public function getPaginatedCommits($file = null, $page = 0)
@@ -379,6 +381,7 @@ class Repository extends BaseRepository
      *
      * @param string $commitish Commitish reference; branch, tag, SHA1, etc.
      * @param string $path      Path whose existence we want to verify.
+     * @return bool
      *
      * GRIPE Arguably belongs in Gitter, as it's generally useful functionality.
      * Also, this really may not be the best way to do this.
