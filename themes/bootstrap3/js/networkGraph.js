@@ -508,8 +508,6 @@
 					[secondCommit.dot.attr('cx'),						secondCommit.dot.attr('cy')]
 				)
 			).attr({ "stroke": lineLane.color, "stroke-width": 2 }).toBack();
-
-			return;
 		}
 
 		// set together a path string from any amount of arguments
