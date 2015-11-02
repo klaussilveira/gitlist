@@ -23,6 +23,7 @@ class Routing
      *
      * @param string $commitishPath
      * @param string $repo
+     * @return array
      */
     public function parseCommitishPathParam($commitishPath, $repo)
     {
