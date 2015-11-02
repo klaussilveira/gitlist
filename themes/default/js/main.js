@@ -1,10 +1,10 @@
 $(function () {
     $('.dropdown-toggle').dropdown();
-
-    if ($('#sourcecode').length) {
-        var value = $('#sourcecode').text();
-        var mode = $('#sourcecode').attr('language');
-        var pre = $('#sourcecode').get(0);
+    var sourcecode = $('#sourcecode');
+    if (sourcecode.length) {
+        var value = sourcecode.text();
+        var mode = sourcecode.attr('language');
+        var pre = sourcecode.get(0);
         var viewer = CodeMirror(function(elt) {
             pre.parentNode.replaceChild(elt, pre);
         }, {
@@ -20,9 +20,11 @@ $(function () {
         });
     }
 
-    if ($('#md-content').length) {
+    var md_content = $('#md-content');
+
+    if (md_content.length) {
         var converter = new Showdown.converter({extensions: ['table']});
-        $('#md-content').html(converter.makeHtml($('#md-content').text()));
+        md_content.html(converter.makeHtml(md_content.text()));
     }
 
     function paginate() {
