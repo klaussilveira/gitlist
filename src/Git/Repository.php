@@ -344,9 +344,13 @@ class Repository extends BaseRepository
             if (is_numeric($file[3])) {
                 $data['size'] += $file[3];
             }
+        }
 
-            if (($pos = strrpos($file[4], '.')) !== false) {
-                $extension = substr($file[4], $pos);
+        $logs = $this->getClient()->run($this, 'ls-tree -l -r --name-only ' . $branch);
+        $files = explode("\n", $logs);
+        foreach ($files as $file) {
+            if (($pos = strrpos($file, '.')) !== false) {
+                $extension = substr($file, $pos);
 
                 if (($pos = strrpos($extension, '/')) === false) {
                     $data['extensions'][] = $extension;
