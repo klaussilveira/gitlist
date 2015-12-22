@@ -9,7 +9,7 @@
     <tbody>
         {% for item in commit %}
         <tr>
-            <td width="5%"><img src="https://gravatar.com/avatar/{{ item.author.email | lower | md5 }}?s=40" /></td>
+            <td width="5%"><img src="{{ avatar( item.author.email, 40 ) }}" /></td>
             <td width="95%">
                 <span class="pull-right"><a class="btn btn-small" href="{{ path('commit', {repo: repo, commit: item.hash}) }}"><i class="icon-list-alt"></i> View {{ item.shortHash }}</a></span>
                 <h4>{{ item.message }}</h4>

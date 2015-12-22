@@ -32,3 +32,8 @@ title = ""
 [date]
 ; timezone = UTC
 ; format = 'd/m/Y H:i:s'
+
+; custom avatar service
+[avatar]
+; url = '//gravatar.com/avatar/'
+; query[] = 'd=identicon'
