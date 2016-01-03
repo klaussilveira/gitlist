@@ -12,9 +12,9 @@
                     <a type="button" href="{{ path('archive', {repo: repo, branch: branch, format: 'zip'}) }}" class="btn btn-default btn-xs" title="Download '{{ branch }}' as a ZIP archive">ZIP</a>
                     <a type="button" href="{{ path('archive', {repo: repo, branch: branch, format: 'tar'}) }}" class="btn btn-default btn-xs" title="Download '{{ branch }}' as a TAR archive">TAR</a>
                 </div>
-				<div class="download-buttons">
-				    <a href="{{ path('rss', {repo: repo, branch: branch}) }}"><span class="fa fa-rss rss-icon"></span></a>
-				</div>
+		<div class="download-buttons">
+		    <a href="{{ path('rss', {repo: repo, branch: branch}) }}"><span class="fa fa-rss rss-icon"></span></a>
+		</div>
             </div>
         {% endblock %}
     {% endembed %}
