@@ -28,7 +28,7 @@ class Repository
         'groovy'   => 'groovy',
         'hs'       => 'haskell',
         'lhs'      => 'haskell',
-        'jsp'      => 'htmlembedded',
+        'jsp'      => 'application/x-jsp',
         'asp'      => 'htmlembedded',
         'aspx'     => 'htmlembedded',
         'html'     => 'htmlmixed',
