@@ -122,6 +122,7 @@ class Client extends BaseClient
      * Set default branch as a string.
      *
      * @param string $branch Name of branch to use when repo's HEAD is detached.
+     * @return object
      */
     protected function setDefaultBranch($branch)
     {
@@ -152,6 +153,7 @@ class Client extends BaseClient
      * Set the hidden repository list
      *
      * @param array $hidden List of repositories to hide
+     * @return object
      */
     protected function setHidden($hidden)
     {
