@@ -48,6 +48,9 @@ class Application extends SilexApplication
         ));
 
         $repositories = $config->get('git', 'repositories');
+        $this['git.projects'] = $config->get('git', 'project_list') ?
+                                $this->parseProjectList($config->get('git', 'project_list')) :
+                                false;
 
         $this->register(new GitServiceProvider(), array(
             'git.client'         => $config->get('git', 'client'),
@@ -152,5 +155,15 @@ class Application extends SilexApplication
             . DIRECTORY_SEPARATOR
             . 'twig'
             . DIRECTORY_SEPARATOR;
+    }
+
+    public function parseProjectList($project_list)
+    {
+        $projects = array();
+        $file = fopen($project_list, "r");
+        while ($file && !feof($file))
+            $projects[] = trim(fgets($file));
+        fclose($file);
+        return $projects;
     }
 }
