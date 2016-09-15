@@ -271,6 +271,10 @@ class Repository extends BaseRepository
 
     public function searchTree($query, $branch)
     {
+        if(empty($query)) {
+			return null;
+		}
+        
         $query = escapeshellarg($query);
 
         try {
