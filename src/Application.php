@@ -39,6 +39,12 @@ class Application extends SilexApplication
         $this['cache.archives'] = $this->getCachePath() . 'archives';
         $this['avatar.url'] = $config->get('avatar', 'url');
         $this['avatar.query'] = $config->get('avatar', 'query');
+        $this['show_http_remote'] = $config->get('clone_button', 'show_http_remote');
+        $this['use_https'] = $config->get('clone_button', 'use_https');
+        $this['url_subdir'] = $config->get('clone_button', 'url_subdir');
+        $this['http_user'] = $config->get('clone_button', 'http_user');
+        $this['show_ssh_remote'] = $config->get('clone_button', 'show_ssh_remote');
+        $this['ssh_user'] = $config->get('clone_button', 'ssh_user');
 
         // Register services
         $this->register(new TwigServiceProvider(), array(

@@ -27,6 +27,48 @@ $(function () {
         md_content.html(converter.makeHtml(md_content.text()));
     }
 
+    var clonePopup = $('#clone-popup')
+    var cloneButtonShow = $('#clone-button-show');
+    var cloneButtonHide = $('#clone-button-hide');
+    var cloneButtonSSH = $('#clone-button-ssh');
+    var cloneButtonHTTP = $('#clone-button-http');
+    var cloneInputSSH = $('#clone-input-ssh');
+    var cloneInputHTTP = $('#clone-input-http');
+
+    cloneButtonShow.click(function()
+    {
+        clonePopup.fadeIn();
+    });
+
+    cloneButtonHide.click(function()
+    {
+        clonePopup.fadeOut();
+    });
+
+    cloneButtonSSH.click(function()
+    {
+        if(cloneButtonSSH.hasClass('active'))
+            return;
+
+        cloneButtonSSH.addClass('active');
+        cloneInputSSH.show();
+
+        cloneButtonHTTP.removeClass('active');
+        cloneInputHTTP.hide();
+    });
+
+    cloneButtonHTTP.click(function()
+    {
+        if(cloneButtonHTTP.hasClass('active'))
+            return;
+
+        cloneButtonHTTP.addClass('active');
+        cloneInputHTTP.show();
+
+        cloneButtonSSH.removeClass('active');
+        cloneInputSSH.hide();
+    });
+
     function paginate() {
         var $pager = $('.pager');
 
