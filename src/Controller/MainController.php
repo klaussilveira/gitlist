@@ -6,6 +6,7 @@ use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
+use GitList\Exception\NoRepositoryException;
 
 class MainController implements ControllerProviderInterface
 {
@@ -13,65 +14,68 @@ class MainController implements ControllerProviderInterface
     {
         $route = $app['controllers_factory'];
 
-        $route->get('/', function() use ($app) {
-            $repositories = $app['git']->getRepositories($app['git.repos']);
+        try {
+            $route->get('/', function() use ($app) {
+                $repositories = $app['git']->getRepositories($app['git.repos']);
 
-            return $app['twig']->render('index.twig', array(
-                'repositories'   => $repositories,
-            ));
-        })->bind('homepage');
+                return $app['twig']->render('index.twig', array(
+                    'repositories'   => $repositories,
+                ));
+            })->bind('homepage');
 
 
-        $route->get('/refresh', function(Request $request) use ($app ) {
-            # Go back to calling page
-            return $app->redirect($request->headers->get('Referer'));
-        })->bind('refresh');
+            $route->get('/refresh', function(Request $request) use ($app ) {
+                # Go back to calling page
+                return $app->redirect($request->headers->get('Referer'));
+            })->bind('refresh');
 
-        $route->get('{repo}/stats/{branch}', function($repo, $branch) use ($app) {
-            $repository = $app['git']->getRepositoryFromName($app['git.repos'], $repo);
+            $route->get('{repo}/stats/{branch}', function($repo, $branch) use ($app) {
+                $repository = $app['git']->getRepositoryFromName($app['git.repos'], $repo);
 
-            if ($branch === null) {
-                $branch = $repository->getHead();
-            }
+                if ($branch === null) {
+                    $branch = $repository->getHead();
+                }
 
-            $stats = $repository->getStatistics($branch);
-            $authors = $repository->getAuthorStatistics($branch);
+                $stats = $repository->getStatistics($branch);
+                $authors = $repository->getAuthorStatistics($branch);
 
-            return $app['twig']->render('stats.twig', array(
-                'repo'           => $repo,
-                'branch'         => $branch,
-                'branches'       => $repository->getBranches(),
-                'tags'           => $repository->getTags(),
-                'stats'          => $stats,
-                'authors'        => $authors,
-            ));
-        })->assert('repo', $app['util.routing']->getRepositoryRegex())
-          ->assert('branch', $app['util.routing']->getBranchRegex())
-          ->value('branch', null)
-          ->convert('branch', 'escaper.argument:escape')
-          ->bind('stats');
+                return $app['twig']->render('stats.twig', array(
+                    'repo'           => $repo,
+                    'branch'         => $branch,
+                    'branches'       => $repository->getBranches(),
+                    'tags'           => $repository->getTags(),
+                    'stats'          => $stats,
+                    'authors'        => $authors,
+                ));
+            })->assert('repo', $app['util.routing']->getRepositoryRegex())
+              ->assert('branch', $app['util.routing']->getBranchRegex())
+              ->value('branch', null)
+              ->convert('branch', 'escaper.argument:escape')
+              ->bind('stats');
 
-        $route->get('{repo}/{branch}/rss/', function($repo, $branch) use ($app) {
-            $repository = $app['git']->getRepositoryFromName($app['git.repos'], $repo);
+            $route->get('{repo}/{branch}/rss/', function($repo, $branch) use ($app) {
+                $repository = $app['git']->getRepositoryFromName($app['git.repos'], $repo);
 
-            if ($branch === null) {
-                $branch = $repository->getHead();
-            }
+                if ($branch === null) {
+                    $branch = $repository->getHead();
+                }
 
-            $commits = $repository->getPaginatedCommits($branch);
+                $commits = $repository->getPaginatedCommits($branch);
 
-            $html = $app['twig']->render('rss.twig', array(
-                'repo'           => $repo,
-                'branch'         => $branch,
-                'commits'        => $commits,
-            ));
+                $html = $app['twig']->render('rss.twig', array(
+                    'repo'           => $repo,
+                    'branch'         => $branch,
+                    'commits'        => $commits,
+                ));
 
-            return new Response($html, 200, array('Content-Type' => 'application/rss+xml'));
-        })->assert('repo', $app['util.routing']->getRepositoryRegex())
-          ->assert('branch', $app['util.routing']->getBranchRegex())
-          ->value('branch', null)
-          ->convert('branch', 'escaper.argument:escape')
-          ->bind('rss');
+                return new Response($html, 200, array('Content-Type' => 'application/rss+xml'));
+            })->assert('repo', $app['util.routing']->getRepositoryRegex())
+              ->assert('branch', $app['util.routing']->getBranchRegex())
+              ->value('branch', null)
+              ->convert('branch', 'escaper.argument:escape')
+              ->bind('rss');
+        } catch(NoRepositoryException $e) {
+        }
 
         return $route;
     }

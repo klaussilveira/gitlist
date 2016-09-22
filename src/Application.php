@@ -45,6 +45,7 @@ class Application extends SilexApplication
         $this['http_user'] = $config->get('clone_button', 'http_user_dynamic') ? $_SERVER['PHP_AUTH_USER'] : $config->get('clone_button', 'http_user');
         $this['show_ssh_remote'] = $config->get('clone_button', 'show_ssh_remote');
         $this['ssh_user'] = $config->get('clone_button', 'ssh_user');
+        $this['username'] = $config->get('gitolite', 'active') ? $_SERVER['PHP_AUTH_USER'] : NULL;
 
         // Register services
         $this->register(new TwigServiceProvider(), array(
@@ -59,13 +60,16 @@ class Application extends SilexApplication
                                 false;
 
         $this->register(new GitServiceProvider(), array(
-            'git.client'         => $config->get('git', 'client'),
-            'git.repos'          => $repositories,
-            'ini.file'           => "config.ini",
-            'git.hidden'         => $config->get('git', 'hidden') ?
-                                    $config->get('git', 'hidden') : array(),
-            'git.default_branch' => $config->get('git', 'default_branch') ?
-                                    $config->get('git', 'default_branch') : 'master',
+            'git.client'            => $config->get('git', 'client'),
+            'git.repos'             => $repositories,
+            'ini.file'              => "config.ini",
+            'git.hidden'            => $config->get('git', 'hidden') ?
+                                       $config->get('git', 'hidden') : array(),
+            'git.default_branch'    => $config->get('git', 'default_branch') ?
+                                       $config->get('git', 'default_branch') : 'master',
+            'gitolite.active'       => $config->get('gitolite', 'active'),
+            'gitolite.wrapper_path' => $config->get('gitolite', 'wrapper_path'),
+            'username'              => $this['username'],
         ));
 
         $this->register(new ViewUtilServiceProvider());
