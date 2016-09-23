@@ -28,6 +28,7 @@ use_https = true ; generate URL with https://
 url_subdir = 'git/' ; if cloning via HTTP is triggered using virtual dir (e.g. https://example.com/git/repo.git)
                     ; has to end with trailing slash
 http_user = '' ; user to use for cloning via HTTP (default: none)
+http_user_dynamic = false ; when enabled, http_user is set to $_SERVER['PHP_AUTH_USER']
 
 ; If you need to specify custom filetypes for certain extensions, do this here
 [filetypes]
