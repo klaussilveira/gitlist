@@ -1,0 +1,48 @@
+#clone-popup
+{
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background:rgba(0, 0, 0, 0.60);
+  z-index: 9999;
+}
+
+#clone-popup > #clone-popup-inner-wrapper
+{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -60px 0 0 -300px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-sizing: content-box;
+  width: 560px;
+  height: 80px;
+  text-align: center;
+  background-color: white;
+}
+
+#clone-popup > #clone-popup-inner-wrapper > .btn-group
+{
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+#clone-popup > #clone-popup-inner-wrapper > .form-control
+{
+  width: 95%
+}
+
+#clone-popup > #clone-popup-inner-wrapper > .form-control
+{
+  display: inline-block;
+}
+
+#clone-popup > #clone-popup-inner-wrapper > .form-control:not(.visible)
+{
+  display: none;
+}
