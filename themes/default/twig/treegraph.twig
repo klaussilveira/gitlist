@@ -26,7 +26,7 @@
                     {% for item in graphItems %}
                         <li>
                             {% if item.rev is defined %}
-                                <a id="{{ item.short_rev }}" class="btn btn-small" href="{{ path('commit', {repo: repo, commit: item.rev}) }}"> {{ item.short_rev }} </a>
+                                <a id="{{ item.short_rev }}" class="btn btn-small" href="{{ path('commit', {repo: repo, commit: item.rev, size: 'short'}) }}"> {{ item.short_rev }} </a>
                                 <strong> {{ item.branch }} </strong>
                                 <em>{{ item.subject }}</em> by
                                 <span class="author">{{ item.author }} &lt;{{ item.author_email }}&gt;</span>

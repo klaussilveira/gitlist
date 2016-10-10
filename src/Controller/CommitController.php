@@ -89,15 +89,16 @@ class CommitController implements ControllerProviderInterface
           ->convert('branch', 'escaper.argument:escape')
           ->bind('searchcommits');
 
-        $route->get('{repo}/commit/{commit}', function ($repo, $commit) use ($app) {
+        $route->get('{repo}/commit/{commit}/{size}', function ($repo, $commit, $size) use ($app) {
             $repository = $app['git']->getRepositoryFromName($app['git.repos'], $repo);
-            $commit = $repository->getCommit($commit);
+            $commit = $repository->getCommit($commit, $size);
             $branch = $repository->getHead();
 
             return $app['twig']->render('commit.twig', array(
                 'branch'         => $branch,
                 'repo'           => $repo,
-                'commit'         => $commit,
+                'size'           => $size,
+                'commit'         => $commit
             ));
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
           ->assert('commit', '[a-f0-9^]+')
