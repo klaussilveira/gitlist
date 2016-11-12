@@ -14,6 +14,7 @@
             <div class="btn-group pull-right">
                 <a href="{{ path('blob_raw', {repo: repo, commitishPath: branch ~ '/' ~ file}) }}" class="btn btn-default btn-sm"><span class="fa fa-file-text-o"></span> Raw</a>
                 <a href="{{ path('blame', {repo: repo, commitishPath: branch ~ '/' ~ file}) }}" class="btn btn-default btn-sm"><span class="fa fa-bullhorn"></span> Blame</a>
+                <a href="{{ path('logpatch', {repo: repo, commitishPath: branch ~ '/' ~ file}) }}" class="btn btn-default btn-sm"><span class="fa fa-calendar"></span> Patch Log</a>
                 <a href="{{ path('commits', {repo: repo, commitishPath: branch ~ '/' ~ file}) }}" class="btn btn-default btn-sm"><span class="fa fa-list"></span> History</a>
             </div>
         </div>
