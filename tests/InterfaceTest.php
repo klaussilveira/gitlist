@@ -225,8 +225,10 @@ class InterfaceTest extends WebTestCase
                 $crawler->filter('.source-header .btn-group a')->eq(0)->attr('href'));
         $this->assertEquals('/GitTest/blame/master/test.php',
                 $crawler->filter('.source-header .btn-group a')->eq(1)->attr('href'));
+        $this->assertEquals('/GitTest/logpatch/master/test.php',
+                $crawler->filter('.source-header .btn-group a')->eq(2)->attr('href'));        
         $this->assertEquals('/GitTest/commits/master/test.php',
-                $crawler->filter('.source-header .btn-group a')->eq(2)->attr('href'));
+                $crawler->filter('.source-header .btn-group a')->eq(3)->attr('href'));
     }
 
     /**
@@ -307,6 +309,25 @@ class InterfaceTest extends WebTestCase
         $this->assertEquals('mailto:darth@empire.com', $crawler->filter('.table tbody tr td span a')->eq(1)->attr('href'));
     }
 
+
+    public function testPatchLogPage()
+    {
+        $client = $this->createClient();
+
+        $crawler = $client->request('GET', '/GitTest/logpatch/master/test.php');
+        $this->assertTrue($client->getResponse()->isOk());
+        $this->assertEquals('Initial commit', $crawler->filter('.commit-header h4')->eq(0)->text());
+
+        $crawler = $client->request('GET', '/GitTest/logpatch/master/README.md');
+        $this->assertTrue($client->getResponse()->isOk());
+        $this->assertEquals('Initial commit', $crawler->filter('.commit-header h4')->eq(0)->text());
+
+        $crawler = $client->request('GET', '/foobar/logpatch/master/bar.json');
+        $this->assertTrue($client->getResponse()->isOk());
+        $this->assertEquals('First commit', $crawler->filter('.commit-header h4')->eq(0)->text());
+    }
+
+    
     /**
      * @covers GitList\Controller\MainController::connect
      */
