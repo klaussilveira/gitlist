@@ -54,7 +54,7 @@ class Repository extends BaseRepository
             . "</item>\" $file"
         );
 
-        $patch_collection = [];
+        $patch_collection = array();
         foreach ( preg_split('/('.$record_delimiter.'\<item\>)/', $file_patches,null, PREG_SPLIT_NO_EMPTY) as $patches) {
             $patches = '<item>' . $patches;
             $xmlEnd = strpos($patches, '</item>') + 7;
