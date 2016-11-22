@@ -88,7 +88,8 @@ $(function () {
 
 if ($('#repositories').length) {
     var listOptions = {
-        valueNames: ['name']
+        valueNames: ['name'],
+        page: 500
     };
     var repoList = new List('repositories', listOptions);
 }
