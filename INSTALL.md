@@ -35,6 +35,11 @@ server {
         access_log off;
     }
 
+    location = /config.ini {
+        internal;
+        deny all;
+    }
+
     location ~* ^/index.php.*$ {
         fastcgi_index index.php;
         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
@@ -53,7 +58,7 @@ server {
     }
 
     location ~* \.(js|css|png|jpg|jpeg|gif|ico)$ {
-    add_header Vary "Accept-Encoding";
+        add_header Vary "Accept-Encoding";
         expires max;
         try_files $uri @gitlist;
         tcp_nodelay off;
