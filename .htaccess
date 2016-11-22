@@ -5,7 +5,8 @@
     #RewriteBase /path/to/gitlist/
 
     RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^(.*)$ index.php/$1 [L,NC]
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php [L,NC]
 </IfModule>
 <Files config.ini>
     order allow,deny
