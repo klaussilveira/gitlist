@@ -6,6 +6,9 @@ repositories[] = '/home/git/repositories/' ; Path to your repositories
 
 ; WINDOWS USERS
 ;client = '"C:\Program Files (x86)\Git\bin\git.exe"' ; Your git executable path
+;#Path to repositories
+;#For windows users you must specify the path below your git repo. eg.  If your git repo is in c:\path\to\Repos\MyRepo\.git 
+;#then you should specify c:\path\to\Repos\ or you will get an error. 
 ;repositories[] = 'C:\Path\to\Repos\' ; Path to your repositories
 
 ; You can hide repositories from GitList, just copy this for each repository you want to hide
