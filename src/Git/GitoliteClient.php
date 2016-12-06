@@ -33,12 +33,7 @@ class GitoliteClient extends BaseClient
         }
 
         $path = $paths[0];
-        $cmd = $this->gitoliteWrapperPath ."  '". $this->username ."'";
-        $output = shell_exec($cmd);
-
-        if($output) {
-            $output = json_decode($output, true);
-        }
+        $output = $this->getGitoliteData();
 
         if($output) {
             if(!isset($output['repos'])) {
@@ -66,6 +61,24 @@ class GitoliteClient extends BaseClient
         }
 
         return $allRepositories;
+    }
+
+    protected function getGitoliteData()
+    {
+        $cmd = $this->gitoliteWrapperPath ."  '". $this->username ."'";
+        $output = shell_exec($cmd);
+
+        if(!$output) {
+            return false;
+        }
+
+        $output = json_decode($output, true);
+
+        if(!$output) {
+            return false;
+        }
+
+        return $output;
     }
 }
 
