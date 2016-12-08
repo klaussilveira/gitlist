@@ -65,7 +65,7 @@ class GitoliteClient extends BaseClient
 
     protected function getGitoliteData()
     {
-        $cmd = $this->gitoliteWrapperPath ."  '". $this->username ."'";
+        $cmd = $this->gitoliteWrapperPath ."  ". escapeshellarg($this->username);
         $output = shell_exec($cmd);
 
         if(!$output) {
