@@ -30,6 +30,11 @@ url_subdir = 'git/' ; if cloning via HTTP is triggered using virtual dir (e.g. h
 http_user = '' ; user to use for cloning via HTTP (default: none)
 http_user_dynamic = false ; when enabled, http_user is set to $_SERVER['PHP_AUTH_USER']
 
+; gitolite integration
+[gitolite]
+active = false ; activates personalized view of available repositories
+wrapper_path = '/var/www/gitlist/bin/gitolite-wrapper.sh' ; path to DOCUMENT_ROOT/bin/gitolite-wrapper.sh
+
 ; If you need to specify custom filetypes for certain extensions, do this here
 [filetypes]
 ; extension = type

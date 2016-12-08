@@ -3,6 +3,7 @@
 namespace GitList\Provider;
 
 use GitList\Git\Client;
+use GitList\Git\GitoliteClient;
 use Silex\Application;
 use Silex\ServiceProviderInterface;
 
@@ -23,6 +24,13 @@ class GitServiceProvider implements ServiceProviderInterface
             $options['projects'] = $app['git.projects'];
             $options['ini.file'] = $app['ini.file'];
             $options['default_branch'] = $app['git.default_branch'];
+
+            if($app['gitolite.active']) {
+                $options['gitolite.wrapper_path'] = $app['gitolite.wrapper_path'];
+                $options['username'] = $app['username'];
+
+                return new GitoliteClient($options);
+            }
 
             return new Client($options);
         };
