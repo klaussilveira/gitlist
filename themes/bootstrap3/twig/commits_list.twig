@@ -1,29 +1,27 @@
 {% if commits %}
 {% for date, commit in commits %}
-<table class="table table-striped commits">
-    <thead>
-        <tr>
-            <th colspan="3">{{ date | date("F j, Y") }}</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for item in commit %}
-        <tr>
-            <td width="5%"><img src="{{ avatar(item.author.email, 40) }}" /></td>
-            <td width="95%">
-                <span class="pull-right"><a class="btn btn-default btn-sm" href="{{ path('commit', {repo: repo, commit: item.hash}) }}"><span class="fa fa-list-alt"></span> View {{ item.shortHash }}</a></span>
-                <h4>{{ item.message }}</h4>
-                <span>
-                    <a href="mailto:{{ item.author.email }}">{{ item.author.name }}</a> authored on {{ item.date | format_date }}
-                    {% if item.author.email != item.commiter.email %}
-                    &bull; <a href="mailto:{{ item.commiter.email }}">{{ item.commiter.name }}</a> committed on {{ item.commiterDate | format_date }}
-                    {% endif %}
-                </span>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="panel panel-default">
+    <div class="panel-heading bold">{{ date | date("F j, Y") }}</div>
+    <table class="table table-striped table-bordered commits">
+        <tbody>
+            {% for item in commit %}
+            <tr>
+                <td width="5%"><img src="{{ avatar(item.author.email, 40) }}" /></td>
+                <td width="95%">
+                    <span class="pull-right"><a class="btn btn-default btn-sm" href="{{ path('commit', {repo: repo, commit: item.hash}) }}"><span class="fa fa-list-alt"></span> View {{ item.shortHash }}</a></span>
+                    <h4>{{ item.message }}</h4>
+                    <span>
+                        <a href="mailto:{{ item.author.email }}">{{ item.author.name }}</a> authored on {{ item.date | format_date }}
+                        {% if item.author.email != item.commiter.email %}
+                        &bull; <a href="mailto:{{ item.commiter.email }}">{{ item.commiter.name }}</a> committed on {{ item.commiterDate | format_date }}
+                        {% endif %}
+                    </span>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endfor %}
 {% else %}
 <p>No results found.</p>

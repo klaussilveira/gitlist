@@ -1,0 +1,27 @@
+{% extends 'layout_page.twig' %}
+
+{% set page = 'commits' %}
+
+{% block title %}GitList{% endblock %}
+
+{% block content %}
+    {% include 'breadcrumb.twig' with {breadcrumbs: [{dir: 'Blame', path:''}]} %}
+
+    <div class="source-view">
+        <div class="source-header">
+            <div class="meta">{{ file }}</div>
+        </div>
+        <div class="blame-view-wrapper">
+            <table class="blame-view">
+            {% for blame in blames %}
+                <tr>
+                    <td class="commit"><a href="{{ path('commit', {repo: repo, commit: blame.commit}) }}">{{ blame.commitShort }}</a></td>
+                    <td><pre>{{ blame.line }}</pre></td>
+                </tr>
+            {% endfor %}
+            </table>
+        </div>
+    </div>
+
+    <hr />
+{% endblock %}
