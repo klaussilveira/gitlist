@@ -28,7 +28,7 @@
                         <button type="button" class="btn btn-default{{ app.show_ssh_remote and app.show_http_remote ? ' active' }}" id="clone-button-ssh">SSH</button>
                         {% endif %}
                         {% if app.show_http_remote %}
-                        <button type="button" class="btn btn-default" id="clone-button-http">HTTPS</button>
+                        <button type="button" class="btn btn-default" id="clone-button-http">HTTP{{ app.use_https ? 'S' }}</button>
                         {% endif %}
                     </div><br />
                     {% if app.show_ssh_remote %}
