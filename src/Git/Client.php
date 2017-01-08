@@ -82,7 +82,20 @@ class Client extends BaseClient
                 $isRepository = file_exists($file->getPathname() . '/.git/HEAD');
 
                 if ($isRepository || $isBare) {
-                    if (in_array($file->getPathname(), $this->getHidden())) {
+	                
+	                $hidden = function($path, $hide) {
+		                
+		                $return = false;
+		                
+		                array_walk($hide, function($value, $key) use ($path, &$return) {
+			                if ( ($path === $value) || (1 === preg_match($value, $path)) ) {
+				                $return = true;
+						    }
+		                });
+		                return $return;
+	                };
+	                
+                    if ($hidden($file->getPathname(), $this->getHidden())) {
                         continue;
                     }
 
