@@ -27,7 +27,7 @@ class Repository extends BaseRepository
     /**
      * Get the current branch, returning a default value when HEAD is detached.
      */
-    public function getHead()
+    public function getHead($default = NULL)
     {
         $client = $this->getClient();
 
