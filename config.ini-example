@@ -50,3 +50,8 @@ http_user_dynamic = false ; when enabled, http_user is set to $_SERVER['PHP_AUTH
 [avatar]
 ; url = '//gravatar.com/avatar/'
 ; query[] = 'd=identicon'
+
+; GITLIST user
+[user]
+; user_name = 'admin'
+; user_password = 'foo'
