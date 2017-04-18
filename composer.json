@@ -7,7 +7,7 @@
         "symfony/twig-bridge": "2.*",
         "symfony/filesystem": "2.4.*",
         "klaussilveira/gitter": "0.2.*",
-        "symfony/security": "3.*",
+        "symfony/security": "2.*",
         "monolog/monolog": "1.*"
     },
     "require-dev": {
