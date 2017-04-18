@@ -4,6 +4,7 @@ use Silex\WebTestCase;
 use Symfony\Component\Filesystem\Filesystem;
 use GitList\Git\Client;
 
+use Symfony\Component\Security\Http\Firewall;
 use Silex\Provider\SecurityServiceProvider;
 use Silex\Provider\SessionServiceProvider;
 use Symfony\Component\Security\Core\Encoder\MessageDigestPasswordEncoder;
