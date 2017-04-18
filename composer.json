@@ -17,7 +17,8 @@
         "phpmd/phpmd": "1.5.*",
         "phploc/phploc": "2.0.*",
         "sebastian/phpcpd": "2.0.*",
-        "squizlabs/php_codesniffer": "2.0.*@dev"
+        "squizlabs/php_codesniffer": "2.0.*@dev",
+        "symfony/security": "2.*"
     },
     "minimum-stability": "stable",
     "autoload": {
