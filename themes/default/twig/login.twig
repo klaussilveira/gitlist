@@ -1,0 +1,46 @@
+{% extends 'layout.twig' %}
+{% block title %}GitList{% endblock %}
+
+{% block body %}
+{% include 'navigation.twig' %}
+
+    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+        <div class="signin">
+            <h3>Welcome {{ app.user }}</h3>
+            <div class="repository">
+                <form action="{{ path('user_logout') }}" method="post">
+                    
+                <div>
+                    <a href="{{ path('user_logout') }}">
+                        <button type="button" class="btn btn-danger">Logout</button>
+                    </a>
+                </div>
+                </form>
+            </div>
+        <div>
+    {% else %}
+        <div class="signin">
+            <h3>Sign in to {{ app.title }}</h3>
+            {% if error is not empty %}
+            <div class="alert alert-danger">
+                {{ error }}
+            </div>
+            {% endif %}
+            <div class="repository">
+                <form action="{{ path('user_login_check') }}" method="post">
+                    
+                <div class="name">Username</div>
+                <input class="search" type="text" name="_username" value="{{ last_username }}" />
+                <div class="name">Password</div>
+                <input class="search" type="password" name="_password" value="" />
+                <div>
+                <input class="btn btn-primary" type="submit" value="Sign in"/>
+                </div>
+                </form>
+            </div>
+        <div>
+
+    {% endif %}
+
+{% include 'footer.twig' %}
+{% endblock %}

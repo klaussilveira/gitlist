@@ -3,13 +3,24 @@
 namespace GitList;
 
 use Silex\Application as SilexApplication;
+
+use Silex\Provider\SecurityServiceProvider;
+use Silex\Provider\SessionServiceProvider;
+use Silex\Provider\ValidatorServiceProvider;
+use Symfony\Component\HttpKernel\Client;
+use Symfony\Component\HttpFoundation\Request;
+
 use Silex\Provider\TwigServiceProvider;
 use Silex\Provider\UrlGeneratorServiceProvider;
+use GitList\Provider\GitSecurityServiceProvider;
 use GitList\Provider\GitServiceProvider;
 use GitList\Provider\RepositoryUtilServiceProvider;
 use GitList\Provider\ViewUtilServiceProvider;
 use GitList\Provider\RoutingUtilServiceProvider;
 use Symfony\Component\Filesystem\Filesystem;
+
+use Symfony\Component\Security\Core\Encoder\MessageDigestPasswordEncoder;
+use Silex\Provider\MonologServiceProvider;
 
 /**
  * GitList application.
@@ -46,6 +57,14 @@ class Application extends SilexApplication
         $this['show_ssh_remote'] = $config->get('clone_button', 'show_ssh_remote');
         $this['ssh_user'] = $config->get('clone_button', 'ssh_user');
 
+
+        // $this['user_name'] = (!empty($config->get('user', 'user_name'))) ? $config->get('user', 'user_name') : '';
+        // $this['user_password'] = (!empty($config->get('user', 'user_password'))) ? $config->get('user', 'user_password') : '';
+
+        // User management from config
+        $this['user_name'] = $config->get('user', 'user_name');
+        $this['user_password'] = $config->get('user', 'user_password');
+
         // Register services
         $this->register(new TwigServiceProvider(), array(
             'twig.path'       => array($this->getThemePath($this['theme']), $this->getThemePath('default')),
@@ -66,6 +85,50 @@ class Application extends SilexApplication
                                     $config->get('git', 'hidden') : array(),
             'git.default_branch' => $config->get('git', 'default_branch') ?
                                     $config->get('git', 'default_branch') : 'master',
+        ));
+
+        
+        // Access management
+        $this->register(new GitSecurityServiceProvider());
+        $encoder = new MessageDigestPasswordEncoder();
+        $encoder_password = $encoder->encodePassword($this['user_password'], '');
+
+        $this->register(new SessionServiceProvider());
+        $firewalls = array(
+            'all' => array(
+                'pattern' => '^.*$',
+                'anonymous' => true
+            )
+        );
+        $access_rules = array(
+            array('^.*$', 'IS_AUTHENTICATED_ANONYMOUSLY')
+        );
+        if (!empty($this['user_name']))
+        {
+            $firewalls = array(
+                'secured' => array(
+                    'pattern' => '^.*$',
+                    'anonymous' => true,
+                    'form' => array(
+                        'login_path' => '/user/login',
+                        'check_path' => '/user/login_check'
+                    ),
+                    'logout' => array(
+                        'logout_path' => '/user/logout',
+                    ),
+                    'users' => array(
+                        $this['user_name'] => array('ROLE_USER', $encoder_password)
+                    ),
+                ),
+            );
+            $access_rules = array(
+                array('^/user/login', 'IS_AUTHENTICATED_ANONYMOUSLY'),
+                array('^.*$', 'ROLE_USER'),
+            );
+        } // if
+        $this->register(new SecurityServiceProvider(), array(
+            'security.firewalls' => $firewalls,
+            'security.access_rules' => $access_rules
         ));
 
         $this->register(new ViewUtilServiceProvider());
