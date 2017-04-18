@@ -4,11 +4,10 @@
     "require": {
         "silex/silex": "1.*",
         "twig/twig": "1.*",
-        "symfony/twig-bridge": "2.*",
+        "symfony/twig-bridge": "2.8.*",
         "symfony/filesystem": "2.4.*",
         "klaussilveira/gitter": "0.2.*",
-        "symfony/security": "2.8.*",
-        "monolog/monolog": "1.*"
+        "symfony/security": "2.8.*"
     },
     "require-dev": {
         "symfony/browser-kit": "2.3.*",
