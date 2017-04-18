@@ -58,9 +58,6 @@ class Application extends SilexApplication
         $this['ssh_user'] = $config->get('clone_button', 'ssh_user');
 
 
-        // $this['user_name'] = (!empty($config->get('user', 'user_name'))) ? $config->get('user', 'user_name') : '';
-        // $this['user_password'] = (!empty($config->get('user', 'user_password'))) ? $config->get('user', 'user_password') : '';
-
         // User management from config
         $this['user_name'] = $config->get('user', 'user_name');
         $this['user_password'] = $config->get('user', 'user_password');
