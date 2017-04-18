@@ -7,6 +7,9 @@ use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 
+use Silex\Provider\SecurityServiceProvider;
+use Silex\Provider\SessionServiceProvider;
+use Symfony\Component\Security\Core\Encoder\MessageDigestPasswordEncoder;
 
 
 class UserController implements ControllerProviderInterface

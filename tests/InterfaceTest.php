@@ -4,6 +4,10 @@ use Silex\WebTestCase;
 use Symfony\Component\Filesystem\Filesystem;
 use GitList\Git\Client;
 
+use Silex\Provider\SecurityServiceProvider;
+use Silex\Provider\SessionServiceProvider;
+use Symfony\Component\Security\Core\Encoder\MessageDigestPasswordEncoder;
+
 class InterfaceTest extends WebTestCase
 {
     protected static $tmpdir;
