@@ -12,3 +12,4 @@ $app->mount('', new GitList\Controller\NetworkController());
 $app->mount('', new GitList\Controller\TreeGraphController());
 
 return $app;
+

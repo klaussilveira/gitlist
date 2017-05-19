@@ -4,15 +4,15 @@
     {% include 'navigation.twig' %}
 
     <div class="container">
-        <div class="row">
-            <div class="span12">
+        <div class="header row">
+            <div class="col-sm-12">
                 {% if page in ['commits', 'searchcommits'] %}
-                <form class="form-search pull-right" action="{{ app.request.basepath }}/{{repo}}/commits/{{branch}}/search" method="POST">
-                    <input type="text" name="query" class="input-medium search-query" placeholder="Search commits..." value="{{ query | default("") }}">
+                <form class="pull-right" action="{{ app.request.basepath }}/{{repo}}/commits/{{branch}}/search" method="POST">
+                    <input type="search" name="query" class="form-control input-sm" placeholder="Search commits...">
                 </form>
                 {% else %}
-                <form class="form-search pull-right" action="{{ app.request.basepath }}/{{repo}}/tree/{{branch}}/search" method="POST">
-                    <input type="text" name="query" class="input-medium search-query" placeholder="Search tree..." value="{{ query | default("") }}">
+                <form class="pull-right" action="{{ app.request.basepath }}/{{repo}}/tree/{{branch}}/search" method="POST">
+                    <input type="search" name="query" class="form-control input-sm" placeholder="Search tree...">
                 </form>
                 {% endif %}
 

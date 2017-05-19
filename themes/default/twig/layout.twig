@@ -2,29 +2,46 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
-        <title>{{ app.title }}{% if app.title %} - {% endif %}{% block title %}Welcome!{% endblock %}</title>
-        <link rel="stylesheet" type="text/css" href="{{ app.request.basepath }}/themes/{{ app.theme }}/css/style.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=yes">
+
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        <link rel="stylesheet" type="text/css" href="{{ app.request.basepath }}/themes/{{ app.theme }}/css/{{  theme  }}.css" id="bootstrap-theme">
+        <link rel="stylesheet" type="text/css" href="{{ app.request.basepath }}/themes/{{ app.theme }}/css/fontawesome.css">
         <link rel="stylesheet" type="text/css" href="{{ app.request.basepath }}/themes/{{ app.theme }}/css/gitgraph.css">
         <link rel="shortcut icon" type="image/png" href="{{ app.request.basepath }}/themes/{{ app.theme }}/img/favicon.png" />
-        <!--[if lt IE 9]>
-        <script src="{{ app.request.basepath }}/themes/{{ app.theme }}/js/html5.js"></script>
-        <![endif]-->
     </head>
 
     <body>
+
         {% block body %}{% endblock %}
         {% block javascripts %}
-        <script src="{{ app.request.basepath }}/themes/{{ app.theme }}/js/jquery.js"></script>
+
+        <!-- bower:css -->
+        <!-- endbower -->
+
+        <!-- bower:js -->
+        <script src="{{ app.request.basepath }}/bower_components/marked/lib/marked.js"></script>
+        <script src="{{ app.request.basepath }}/bower_components/jquery/dist/jquery.js"></script>
+        <script src="{{ app.request.basepath }}/bower_components/bootstrap/dist/js/bootstrap.js"></script>
+        <!-- endbower -->
+
+        <script type="text/javascript">
+            const gitlist = {
+                basepath: '{{ app.request.basepath }}',
+                branch: '{{ branch }}',
+                repo: '{{ repo }}'
+            }
+        </script>
         <script src="{{ app.request.basepath }}/themes/{{ app.theme }}/js/raphael.js"></script>
-        <script src="{{ app.request.basepath }}/themes/{{ app.theme }}/js/bootstrap.js"></script>
         <script src="{{ app.request.basepath }}/themes/{{ app.theme }}/js/codemirror.js"></script>
-        <script src="{{ app.request.basepath }}/themes/{{ app.theme }}/js/showdown.js"></script>
-        <script src="{{ app.request.basepath }}/themes/{{ app.theme }}/js/table.js"></script>
         <script src="{{ app.request.basepath }}/themes/{{ app.theme }}/js/list.min.js"></script>
         <script src="{{ app.request.basepath }}/themes/{{ app.theme }}/js/main.js"></script>
         <script src="{{ app.request.basepath }}/themes/{{ app.theme }}/js/networkGraph.js"></script>
         <script src="{{ app.request.basepath }}/themes/{{ app.theme }}/js/gitgraph.js"></script>
         <script src="{{ app.request.basepath }}/themes/{{ app.theme }}/js/draw.js"></script>
+        <script src="{{ app.request.basepath }}/themes/{{ app.theme }}/js/themes.js"></script>
+        <script src="{{ app.request.basepath }}/themes/{{ app.theme }}/js/theme-switcher.js"></script>
         {% endblock %}
+
     </body>
 </html>

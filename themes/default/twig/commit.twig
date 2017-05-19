@@ -9,7 +9,8 @@
 
     <div class="commit-view">
         <div class="commit-header">
-            <span class="pull-right"><a class="btn btn-small" href="{{ path('branch', {repo: repo, branch: commit.hash}) }}" title="Browse code at this point in history"><i class="icon-list-alt"></i> Browse code</a></span>
+            <span class="pull-right">
+                <a class="btn btn-default btn-sm" href="{{ path('branch', {repo: repo, branch: commit.hash}) }}" title="Browse code at this point in history"><span class="fa fa-list-alt"></span> Browse code</a></span>
             <h4>{{ commit.message }}</h4>
         </div>
         <div class="commit-body">
@@ -29,7 +30,7 @@
 
     <ul class="commit-list">
         {% for diff in commit.diffs %}
-            <li><i class="icon-file"></i> <a href="#diff-{{ loop.index }}">{{ diff.file }}</a> <span class="meta pull-right">{{ diff.index }}</span></li>
+            <li><i class="fa fa-file-text-o"></i> <a href="#diff-{{ loop.index }}">{{ diff.file }}</a> <span class="meta pull-right">{{ diff.index }}</span></li>
         {% endfor %}
     </ul>
 
@@ -39,8 +40,8 @@
             <div class="meta"><a id="diff-{{ loop.index }}">{{ diff.file }}</div>
 
             <div class="btn-group pull-right">
-                <a href="{{ path('commits', {repo: repo, commitishPath: commit.hash ~ '/' ~ diff.file}) }}" class="btn btn-small"><i class="icon-list-alt"></i> History</a>
-                <a href="{{ path('blob', {repo: repo, commitishPath: commit.hash ~'/' ~ diff.file}) }}" class="btn btn-small"><i class="icon-file"></i> View file @ {{ commit.shortHash }}</a>
+                <a href="{{ path('commits', {repo: repo, commitishPath: commit.hash ~ '/' ~ diff.file}) }}"  class="btn btn-default btn-sm"><span class="fa fa-list-alt"></span> History</a>
+                <a href="{{ path('blob', {repo: repo, commitishPath: commit.hash ~'/' ~ diff.file}) }}"  class="btn btn-default btn-sm"><span class="fa fa-file"></span> View file @ {{ commit.shortHash }}</a>
             </div>
         </div>
 

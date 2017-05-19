@@ -1,0 +1,22 @@
+{
+  "name": "p3x-gitlist",
+  "description": "",
+  "main": "index.js",
+  "authors": [
+    "patrikx3 <alabard@gmail.com>"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "marked": "^0.3.6",
+    "jquery": "^3.2.1",
+    "bootstrap": "^3.3.7"
+  }
+}

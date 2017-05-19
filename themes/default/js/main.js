@@ -1,10 +1,10 @@
 $(function () {
     $('.dropdown-toggle').dropdown();
-    var sourcecode = $('#sourcecode');
-    if (sourcecode.length) {
-        var value = sourcecode.text();
-        var mode = sourcecode.attr('language');
-        var pre = sourcecode.get(0);
+
+    if ($('#sourcecode').length) {
+        var value = $('#sourcecode').text();
+        var mode = $('#sourcecode').attr('language');
+        var pre = $('#sourcecode').get(0);
         var viewer = CodeMirror(function(elt) {
             pre.parentNode.replaceChild(elt, pre);
         }, {
@@ -19,12 +19,44 @@ $(function () {
             }
         });
     }
+// blob/master
 
-    var md_content = $('#md-content');
+    var markdownRenderer = new marked.Renderer();
+    markdownRenderer.link = function(href, title, text) {
+        var a;
+        if (href.startsWith('https:/') || href.startsWith('http:/')) {
+            a = '<a target="_blank" href="' + href + '">' + text + '</a>';
+        } else {
+            var start = gitlist.basepath + '/' + gitlist.repo + '/blob/' +  gitlist.branch + '/';
+            if (!location.pathname.startsWith(start)) {
+                href = start + href;
+            }
+            a = '<a href="' + href + '">' + text + '</a>';
+        }
+        return a;
+    }
 
-    if (md_content.length) {
-        var converter = new Showdown.converter({extensions: ['table']});
-        md_content.html(converter.makeHtml(md_content.text()));
+    markdownRenderer.image = function(href, title, text) {
+        title = title || '';
+        text = text || '';
+        const result = '<span style="display: block; font-size: 125%; opacity: 0.5">' +
+            title +
+            '</span>' +
+            '<a href="' + href + '" target="_blank"><img style="max-width: 100%;" src="' + href + '"/></a>' +
+            '<span style="display: block; text-align: right; opacity: 0.5">' +
+            text +
+            '</span>'
+
+        return result;
+    };
+
+
+
+    if ($('#md-content').length) {
+        var html = marked($('#md-content').text(), {
+            renderer: markdownRenderer
+        });
+        $('#md-content').html(html);
     }
 
     var clonePopup = $('#clone-popup')
