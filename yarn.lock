@@ -112,12 +112,26 @@ bootswatch@^3.3.7:
   version "3.3.7"
   resolved "https://registry.npmjs.org/bootswatch/-/bootswatch-3.3.7.tgz#eb6f9a9a8523b87a706ea91deec3e0d7eaa8ab1f"
 
+bower-config@^1.3.0:
+  version "1.4.0"
+  resolved "https://registry.npmjs.org/bower-config/-/bower-config-1.4.0.tgz#16c38c1135f8071c19f25938d61b0d8cbf18d3f1"
+  dependencies:
+    graceful-fs "^4.1.3"
+    mout "^1.0.0"
+    optimist "^0.6.1"
+    osenv "^0.1.3"
+    untildify "^2.1.0"
+
 brace-expansion@^1.1.7:
   version "1.1.7"
   resolved "https://registry.npmjs.org/brace-expansion/-/brace-expansion-1.1.7.tgz#3effc3c50e000531fb720eaff80f0ae8ef23cf59"
   dependencies:
     balanced-match "^0.4.1"
     concat-map "0.0.1"
+
+buffer-shims@~1.0.0:
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/buffer-shims/-/buffer-shims-1.0.0.tgz#9978ce317388c649ad8793028c3477ef044a8b51"
 
 builtin-modules@^1.0.0:
   version "1.1.1"
@@ -182,13 +196,18 @@ content-type@~1.0.1:
   version "1.0.2"
   resolved "https://registry.npmjs.org/content-type/-/content-type-1.0.2.tgz#b7d113aee7a8dd27bd21133c4dc2529df1721eed"
 
-corifeus-utils@^1.1.138-29:
-  version "1.1.138-29"
-  resolved "https://registry.npmjs.org/corifeus-utils/-/corifeus-utils-1.1.138-29.tgz#59c1757f62bf3eb7afb477a5a62f4f51b7eb4538"
+core-util-is@~1.0.0:
+  version "1.0.2"
+  resolved "https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.2.tgz#b5fd54220aa2bc5ab57aab7140c940754503c1a7"
+
+corifeus-utils@^1.1.244-44:
+  version "1.1.244-44"
+  resolved "https://registry.npmjs.org/corifeus-utils/-/corifeus-utils-1.1.244-44.tgz#f8a1b78e3b8db43ee19fc49f7bf73fe8ec0d7281"
   dependencies:
     fs-extra "^3.0.1"
+    glob "^7.1.1"
     lodash "^4.17.4"
-    ms "^1.0.0"
+    ms "^2.0.0"
     mz "^2.6.0"
     timestring "^4.0.0"
 
@@ -365,9 +384,20 @@ getpass@^0.1.1:
   dependencies:
     assert-plus "^1.0.0"
 
-glob@^7.0.5, glob@~7.0.0:
+glob@^7.0.3, glob@^7.0.5, glob@~7.0.0:
   version "7.0.6"
   resolved "https://registry.npmjs.org/glob/-/glob-7.0.6.tgz#211bafaf49e525b8cd93260d14ab136152b3f57a"
+  dependencies:
+    fs.realpath "^1.0.0"
+    inflight "^1.0.4"
+    inherits "2"
+    minimatch "^3.0.2"
+    once "^1.3.0"
+    path-is-absolute "^1.0.0"
+
+glob@^7.1.1, glob@~7.1.1:
+  version "7.1.1"
+  resolved "https://registry.npmjs.org/glob/-/glob-7.1.1.tgz#805211df04faaf1c63a3600306cdf5ade50b2ec8"
   dependencies:
     fs.realpath "^1.0.0"
     inflight "^1.0.4"
@@ -386,17 +416,6 @@ glob@~5.0.0:
     once "^1.3.0"
     path-is-absolute "^1.0.0"
 
-glob@~7.1.1:
-  version "7.1.1"
-  resolved "https://registry.npmjs.org/glob/-/glob-7.1.1.tgz#805211df04faaf1c63a3600306cdf5ade50b2ec8"
-  dependencies:
-    fs.realpath "^1.0.0"
-    inflight "^1.0.4"
-    inherits "2"
-    minimatch "^3.0.2"
-    once "^1.3.0"
-    path-is-absolute "^1.0.0"
-
 globule@^1.0.0:
   version "1.1.0"
   resolved "https://registry.npmjs.org/globule/-/globule-1.1.0.tgz#c49352e4dc183d85893ee825385eb994bb6df45f"
@@ -405,7 +424,7 @@ globule@^1.0.0:
     lodash "~4.16.4"
     minimatch "~3.0.2"
 
-graceful-fs@^4.1.2, graceful-fs@^4.1.6:
+graceful-fs@^4.1.2, graceful-fs@^4.1.3, graceful-fs@^4.1.6:
   version "4.1.11"
   resolved "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.1.11.tgz#0e8bdfe4d1ddb8854d64e04ea7c00e2a026e5658"
 
@@ -482,6 +501,12 @@ grunt-legacy-util@~1.0.0:
     lodash "~4.3.0"
     underscore.string "~3.2.3"
     which "~1.2.1"
+
+grunt-wiredep@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.npmjs.org/grunt-wiredep/-/grunt-wiredep-3.0.1.tgz#77e75fa70e9cf8ec6a4679d7d79af443a3202f55"
+  dependencies:
+    wiredep "^4.0.0"
 
 grunt@^1.0.1:
   version "1.0.1"
@@ -610,6 +635,10 @@ is-utf8@^0.2.0:
   version "0.2.1"
   resolved "https://registry.npmjs.org/is-utf8/-/is-utf8-0.2.1.tgz#4b0da1442104d1b336340e80797e865cf39f7d72"
 
+isarray@~1.0.0:
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/isarray/-/isarray-1.0.0.tgz#bb935d48582cba168c06834957a54a3e07124f11"
+
 isexe@^2.0.0:
   version "2.0.0"
   resolved "https://registry.npmjs.org/isexe/-/isexe-2.0.0.tgz#e8fbf374dc556ff8947a10dcb0572d633f2cfa10"
@@ -699,7 +728,7 @@ lodash@^3.10.1, lodash@~3.10.1:
   version "3.10.1"
   resolved "https://registry.npmjs.org/lodash/-/lodash-3.10.1.tgz#5bf45e8e49ba4189e17d482789dfd15bd140b7b6"
 
-lodash@^4.14.0, lodash@^4.17.4, lodash@^4.8.2:
+lodash@^4.14.0, lodash@^4.17.4, lodash@^4.6.1, lodash@^4.8.2:
   version "4.17.4"
   resolved "https://registry.npmjs.org/lodash/-/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
 
@@ -761,11 +790,11 @@ mime@^1.2.11:
   dependencies:
     brace-expansion "^1.1.7"
 
-minimist@0.0.8:
+minimist@0.0.8, minimist@~0.0.1:
   version "0.0.8"
   resolved "https://registry.npmjs.org/minimist/-/minimist-0.0.8.tgz#857fcabfc3397d2625b8228262e86aa7a011b05d"
 
-minimist@^1.1.3:
+minimist@^1.1.0, minimist@^1.1.3:
   version "1.2.0"
   resolved "https://registry.npmjs.org/minimist/-/minimist-1.2.0.tgz#a35008b20f41383eec1fb914f4cd5df79a264284"
 
@@ -775,13 +804,17 @@ mkdirp@^0.5.0:
   dependencies:
     minimist "0.0.8"
 
+mout@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/mout/-/mout-1.0.0.tgz#9bdf1d4af57d66d47cb353a6335a3281098e1501"
+
 ms@0.7.1:
   version "0.7.1"
   resolved "https://registry.npmjs.org/ms/-/ms-0.7.1.tgz#9cd13c03adbff25b65effde7ce864ee952017098"
 
-ms@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/ms/-/ms-1.0.0.tgz#59adcd22edc543f7b5381862d31387b1f4bc9473"
+ms@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/ms/-/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"
 
 mz@^2.6.0:
   version "2.6.0"
@@ -829,6 +862,28 @@ once@^1.3.0:
   resolved "https://registry.npmjs.org/once/-/once-1.4.0.tgz#583b1aa775961d4b113ac17d9c50baef9dd76bd1"
   dependencies:
     wrappy "1"
+
+optimist@^0.6.1:
+  version "0.6.1"
+  resolved "https://registry.npmjs.org/optimist/-/optimist-0.6.1.tgz#da3ea74686fa21a19a111c326e90eb15a0196686"
+  dependencies:
+    minimist "~0.0.1"
+    wordwrap "~0.0.2"
+
+os-homedir@^1.0.0:
+  version "1.0.2"
+  resolved "https://registry.npmjs.org/os-homedir/-/os-homedir-1.0.2.tgz#ffbc4988336e0e833de0c168c7ef152121aa7fb3"
+
+os-tmpdir@^1.0.0:
+  version "1.0.2"
+  resolved "https://registry.npmjs.org/os-tmpdir/-/os-tmpdir-1.0.2.tgz#bbe67406c79aa85c5cfec766fe5734555dfa1274"
+
+osenv@^0.1.3:
+  version "0.1.4"
+  resolved "https://registry.npmjs.org/osenv/-/osenv-0.1.4.tgz#42fe6d5953df06c8064be6f176c3d05aaaa34644"
+  dependencies:
+    os-homedir "^1.0.0"
+    os-tmpdir "^1.0.0"
 
 parse-json@^2.2.0:
   version "2.2.0"
@@ -892,11 +947,19 @@ pretty-ms@^2.1.0:
     parse-ms "^1.0.0"
     plur "^1.0.0"
 
+process-nextick-args@~1.0.6:
+  version "1.0.7"
+  resolved "https://registry.npmjs.org/process-nextick-args/-/process-nextick-args-1.0.7.tgz#150e20b756590ad3f91093f25a4f2ad8bff30ba3"
+
 promise@^7.1.1:
   version "7.1.1"
   resolved "https://registry.npmjs.org/promise/-/promise-7.1.1.tgz#489654c692616b8aa55b0724fa809bb7db49c5bf"
   dependencies:
     asap "~2.0.3"
+
+propprop@^0.3.0:
+  version "0.3.1"
+  resolved "https://registry.npmjs.org/propprop/-/propprop-0.3.1.tgz#a049a3568b896440067d15d8ec9f33735e570178"
 
 prr@~0.0.0:
   version "0.0.0"
@@ -940,6 +1003,18 @@ read-pkg@^1.0.0:
     load-json-file "^1.0.0"
     normalize-package-data "^2.3.2"
     path-type "^1.0.0"
+
+readable-stream@^2.1.5:
+  version "2.2.9"
+  resolved "https://registry.npmjs.org/readable-stream/-/readable-stream-2.2.9.tgz#cf78ec6f4a6d1eb43d26488cac97f042e74b7fc8"
+  dependencies:
+    buffer-shims "~1.0.0"
+    core-util-is "~1.0.0"
+    inherits "~2.0.1"
+    isarray "~1.0.0"
+    process-nextick-args "~1.0.6"
+    string_decoder "~1.0.0"
+    util-deprecate "~1.0.1"
 
 redent@^1.0.0:
   version "1.0.0"
@@ -1054,6 +1129,12 @@ statuses@1:
   version "1.3.1"
   resolved "https://registry.npmjs.org/statuses/-/statuses-1.3.1.tgz#faf51b9eb74aaef3b3acf4ad5f61abf24cb7b93e"
 
+string_decoder@~1.0.0:
+  version "1.0.1"
+  resolved "https://registry.npmjs.org/string_decoder/-/string_decoder-1.0.1.tgz#62e200f039955a6810d8df0a33ffc0f013662d98"
+  dependencies:
+    safe-buffer "^5.0.1"
+
 stringstream@~0.0.4:
   version "0.0.5"
   resolved "https://registry.npmjs.org/stringstream/-/stringstream-0.0.5.tgz#4e484cd4de5a0bbbee18e46307710a8a81621878"
@@ -1095,6 +1176,13 @@ thenify-all@^1.0.0:
   resolved "https://registry.npmjs.org/thenify/-/thenify-3.2.1.tgz#251fd1c80aff6e5cf57cb179ab1fcb724269bd11"
   dependencies:
     any-promise "^1.0.0"
+
+through2@^2.0.1:
+  version "2.0.3"
+  resolved "https://registry.npmjs.org/through2/-/through2-2.0.3.tgz#0004569b37c7c74ba39c43f3ced78d1ad94140be"
+  dependencies:
+    readable-stream "^2.1.5"
+    xtend "~4.0.1"
 
 time-grunt@^1.4.0:
   version "1.4.0"
@@ -1166,6 +1254,16 @@ unpipe@1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/unpipe/-/unpipe-1.0.0.tgz#b2bf4ee8514aae6165b4817829d21b2ef49904ec"
 
+untildify@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.npmjs.org/untildify/-/untildify-2.1.0.tgz#17eb2807987f76952e9c0485fc311d06a826a2e0"
+  dependencies:
+    os-homedir "^1.0.0"
+
+util-deprecate@~1.0.1:
+  version "1.0.2"
+  resolved "https://registry.npmjs.org/util-deprecate/-/util-deprecate-1.0.2.tgz#450d4dc9fa70de732762fbd2d4a28981419a0ccf"
+
 uuid@^3.0.0:
   version "3.0.1"
   resolved "https://registry.npmjs.org/uuid/-/uuid-3.0.1.tgz#6544bba2dfda8c1cf17e629a3a305e2bb1fee6c1"
@@ -1199,6 +1297,33 @@ which@~1.2.1:
   dependencies:
     isexe "^2.0.0"
 
+wiredep-cli@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.npmjs.org/wiredep-cli/-/wiredep-cli-0.1.0.tgz#64272bfca29461fbd07443158b1e056526f6c739"
+  dependencies:
+    chalk "^1.1.1"
+    minimist "^1.1.0"
+    wiredep "*"
+
+wiredep@*, wiredep@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.npmjs.org/wiredep/-/wiredep-4.0.0.tgz#ee9548a9504dfe7e85401a435dbed2c9b4ea2e44"
+  dependencies:
+    bower-config "^1.3.0"
+    glob "^7.0.3"
+    lodash "^4.6.1"
+    propprop "^0.3.0"
+    through2 "^2.0.1"
+    wiredep-cli "^0.1.0"
+
+wordwrap@~0.0.2:
+  version "0.0.3"
+  resolved "https://registry.npmjs.org/wordwrap/-/wordwrap-0.0.3.tgz#a3d5da6cd5c0bc0008d37234bbaf1bed63059107"
+
 wrappy@1:
   version "1.0.2"
   resolved "https://registry.npmjs.org/wrappy/-/wrappy-1.0.2.tgz#b5243d8f3ec1aa35f1364605bc0d1036e30ab69f"
+
+xtend@~4.0.1:
+  version "4.0.1"
+  resolved "https://registry.npmjs.org/xtend/-/xtend-4.0.1.tgz#a5c6d532be656e23db820efb943a1f04998d63af"
