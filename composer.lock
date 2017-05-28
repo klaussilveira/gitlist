@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "4c1c1e142b937dbe6d907fa2a0bcad43",
-    "content-hash": "0a72d37f04f04101edb150963617aa80",
+    "hash": "e39e1c54363e296e7a3927777ef3ca64",
+    "content-hash": "548377dae19e0d766f9c710c72da5d5f",
     "packages": [
         {
             "name": "danielstjules/stringy",
@@ -69,12 +69,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/patrikx3/gitter.git",
-                "reference": "3733a8edc3a2d4b198065cf0601f193ccc8a5437"
+                "reference": "fb62b2f22c4e2c51009366bceaa56efd132b83ed"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/patrikx3/gitter/zipball/3733a8edc3a2d4b198065cf0601f193ccc8a5437",
-                "reference": "3733a8edc3a2d4b198065cf0601f193ccc8a5437",
+                "url": "https://api.github.com/repos/patrikx3/gitter/zipball/fb62b2f22c4e2c51009366bceaa56efd132b83ed",
+                "reference": "fb62b2f22c4e2c51009366bceaa56efd132b83ed",
                 "shasum": ""
             },
             "require": {
@@ -117,7 +117,7 @@
                 "git",
                 "vcs"
             ],
-            "time": "2017-05-19 08:24:38"
+            "time": "2017-05-19 09:14:53"
         },
         {
             "name": "pimple/pimple",
@@ -1587,16 +1587,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "6.1.3",
+            "version": "6.1.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "824d02024916525a36b2db21847a5ef91db9e4a8"
+                "reference": "42b7f394a8e009516582331b1e03a1aba40175d1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/824d02024916525a36b2db21847a5ef91db9e4a8",
-                "reference": "824d02024916525a36b2db21847a5ef91db9e4a8",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/42b7f394a8e009516582331b1e03a1aba40175d1",
+                "reference": "42b7f394a8e009516582331b1e03a1aba40175d1",
                 "shasum": ""
             },
             "require": {
@@ -1616,8 +1616,8 @@
                 "phpunit/php-timer": "^1.0.6",
                 "phpunit/phpunit-mock-objects": "^4.0",
                 "sebastian/comparator": "^2.0",
-                "sebastian/diff": "^1.2",
-                "sebastian/environment": "^3.0.1",
+                "sebastian/diff": "^1.4.3 || ^2.0",
+                "sebastian/environment": "^3.0.2",
                 "sebastian/exporter": "^3.1",
                 "sebastian/global-state": "^1.1 || ^2.0",
                 "sebastian/object-enumerator": "^3.0.2",
@@ -1667,7 +1667,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2017-04-29 10:40:17"
+            "time": "2017-05-22 07:45:30"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
@@ -1839,16 +1839,16 @@
         },
         {
             "name": "sebastian/diff",
-            "version": "1.4.2",
+            "version": "1.4.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/diff.git",
-                "reference": "3c7d21999e815cdfac70c6c7d79d3a9cb1bc7bc2"
+                "reference": "7f066a26a962dbe58ddea9f72a4e82874a3975a4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/diff/zipball/3c7d21999e815cdfac70c6c7d79d3a9cb1bc7bc2",
-                "reference": "3c7d21999e815cdfac70c6c7d79d3a9cb1bc7bc2",
+                "url": "https://api.github.com/repos/sebastianbergmann/diff/zipball/7f066a26a962dbe58ddea9f72a4e82874a3975a4",
+                "reference": "7f066a26a962dbe58ddea9f72a4e82874a3975a4",
                 "shasum": ""
             },
             "require": {
@@ -1887,7 +1887,7 @@
             "keywords": [
                 "diff"
             ],
-            "time": "2017-05-18 13:44:30"
+            "time": "2017-05-22 07:24:03"
         },
         {
             "name": "sebastian/environment",
@@ -2343,6 +2343,59 @@
             "description": "Symfony BrowserKit Component",
             "homepage": "https://symfony.com",
             "time": "2017-04-12 14:13:17"
+        },
+        {
+            "name": "symfony/css-selector",
+            "version": "v3.2.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/css-selector.git",
+                "reference": "02983c144038e697c959e6b06ef6666de759ccbc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/css-selector/zipball/02983c144038e697c959e6b06ef6666de759ccbc",
+                "reference": "02983c144038e697c959e6b06ef6666de759ccbc",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5.9"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.2-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\CssSelector\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jean-François Simon",
+                    "email": "jeanfrancois.simon@sensiolabs.com"
+                },
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony CssSelector Component",
+            "homepage": "https://symfony.com",
+            "time": "2017-05-01 14:55:58"
         },
         {
             "name": "symfony/dom-crawler",

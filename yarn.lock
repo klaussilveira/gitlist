@@ -200,9 +200,9 @@ core-util-is@~1.0.0:
   version "1.0.2"
   resolved "https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.2.tgz#b5fd54220aa2bc5ab57aab7140c940754503c1a7"
 
-corifeus-utils@^1.1.271-56:
-  version "1.1.271-56"
-  resolved "https://registry.npmjs.org/corifeus-utils/-/corifeus-utils-1.1.271-56.tgz#c7073fe1e75f5890154c0d932deabcb3185f54b3"
+corifeus-utils@^1.1.303-88:
+  version "1.1.303-88"
+  resolved "https://registry.npmjs.org/corifeus-utils/-/corifeus-utils-1.1.303-88.tgz#414bff5f11a7dfd7a185a7710c44a4aa373fc516"
   dependencies:
     fs-extra "^3.0.1"
     glob "^7.1.2"
@@ -395,7 +395,7 @@ glob@^7.0.3, glob@^7.0.5, glob@~7.0.0:
     once "^1.3.0"
     path-is-absolute "^1.0.0"
 
-glob@^7.1.2:
+glob@^7.1.2, glob@~7.1.1:
   version "7.1.2"
   resolved "https://registry.npmjs.org/glob/-/glob-7.1.2.tgz#c19c9df9a028702d678612384a6552404c636d15"
   dependencies:
@@ -413,17 +413,6 @@ glob@~5.0.0:
     inflight "^1.0.4"
     inherits "2"
     minimatch "2 || 3"
-    once "^1.3.0"
-    path-is-absolute "^1.0.0"
-
-glob@~7.1.1:
-  version "7.1.1"
-  resolved "https://registry.npmjs.org/glob/-/glob-7.1.1.tgz#805211df04faaf1c63a3600306cdf5ade50b2ec8"
-  dependencies:
-    fs.realpath "^1.0.0"
-    inflight "^1.0.4"
-    inherits "2"
-    minimatch "^3.0.2"
     once "^1.3.0"
     path-is-absolute "^1.0.0"
 
