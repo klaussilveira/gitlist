@@ -8,7 +8,7 @@
   "devDependencies": {
     "bootstrap": "^3.3.7",
     "bootswatch": "^3.3.7",
-    "corifeus-utils": "^1.1.303-88",
+    "corifeus-utils": "^1.1.317-10",
     "font-awesome": "^4.7.0",
     "grunt": "^1.0.1",
     "grunt-contrib-clean": "^1.1.0",
