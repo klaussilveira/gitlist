@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 sudo rm -rf ./cache
 mkdir -p ./cache
@@ -15,9 +16,9 @@ git clone --bare https://github.com/patrikx3/corifeus-builder
 git clone --bare https://github.com/patrikx3/gitlist-workspace
 git clone --bare https://github.com/patrikx3/onenote
 
-sudo chmod 0777 ./git-test
 
 cd ..
+sudo chmod 0777 ./git-test
 cp ./artifacts/config.ini ./
 
 bower install
