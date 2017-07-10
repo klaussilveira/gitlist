@@ -19,7 +19,7 @@ https://github.com/klaussilveira/gitlist
 
 # Live demo
 
-http://gitlist.patrikx3.tk/
+http://gitlist.patrikx3.com/
 
 # Installation
 
