@@ -29,8 +29,11 @@ In order to run GitList on your server, you'll need:
 * ```git```
 * ```Apache``` with ```mod_rewrite``` enabled or ```nginx```
 * ```PHP``` >= 7.0 
+
+For the build (themes):
 * ```NodeJs``` >= 7.8
 * ```Bower``` (npm install -g bower)
+
 
 ## Package
 https://github.com/patrikx3/gitlist/releases

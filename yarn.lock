@@ -196,11 +196,11 @@ core-util-is@~1.0.0:
   version "1.0.2"
   resolved "https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.2.tgz#b5fd54220aa2bc5ab57aab7140c940754503c1a7"
 
-corifeus-utils@^1.1.359-54:
-  version "1.1.359-54"
-  resolved "https://registry.npmjs.org/corifeus-utils/-/corifeus-utils-1.1.359-54.tgz#6bcbaf440ef99ab1083dbc908a6b27dda172c325"
+corifeus-utils@^1.1.365-59:
+  version "1.1.365-59"
+  resolved "https://registry.npmjs.org/corifeus-utils/-/corifeus-utils-1.1.365-59.tgz#1cad33e73c38048a09ee431d85f04f0b7c7bcafd"
   dependencies:
-    fs-extra "^3.0.1"
+    fs-extra "^4.0.0"
     glob "^7.1.2"
     lodash "^4.17.4"
     ms "^2.0.0"
@@ -348,9 +348,9 @@ form-data@~2.1.1:
     combined-stream "^1.0.5"
     mime-types "^2.1.12"
 
-fs-extra@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.npmjs.org/fs-extra/-/fs-extra-3.0.1.tgz#3794f378c58b342ea7dbbb23095109c4b3b62291"
+fs-extra@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.npmjs.org/fs-extra/-/fs-extra-4.0.0.tgz#414fb4ca2d2170ba0014159d3a8aec3303418d9e"
   dependencies:
     graceful-fs "^4.1.2"
     jsonfile "^3.0.0"
