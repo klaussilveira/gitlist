@@ -196,9 +196,9 @@ core-util-is@~1.0.0:
   version "1.0.2"
   resolved "https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.2.tgz#b5fd54220aa2bc5ab57aab7140c940754503c1a7"
 
-corifeus-utils@^1.1.365-59:
-  version "1.1.365-59"
-  resolved "https://registry.npmjs.org/corifeus-utils/-/corifeus-utils-1.1.365-59.tgz#1cad33e73c38048a09ee431d85f04f0b7c7bcafd"
+corifeus-utils@^1.1.367-61:
+  version "1.1.367-61"
+  resolved "https://registry.npmjs.org/corifeus-utils/-/corifeus-utils-1.1.367-61.tgz#bdcedc3cee8844e99eea847d01229905938e19cb"
   dependencies:
     fs-extra "^4.0.0"
     glob "^7.1.2"
