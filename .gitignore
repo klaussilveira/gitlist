@@ -30,7 +30,6 @@ node_modules
 /config.ini
 cache.properties
 composer.phar
-phpunit.xml
 /git-test
 /bower_components
 .idea/workspace.xml

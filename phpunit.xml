@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit colors="true" bootstrap="vendor/autoload.php">
+    <filter>
+        <whitelist>
+            <directory suffix=".php">./src/</directory>
+        </whitelist>
+    </filter>
+    <logging>
+        <log type="coverage-html" target="build/phpunit" title="patrikx3/resume-web" charset="UTF-8" />
+        <log type="coverage-text" target="php://stdout" />
+        <log type="coverage-clover" target="build/coverage.xml" />
+    </logging>
+    <testsuites>
+        <testsuite name="patrikx3/gitlist">
+            <directory>./tests/</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>
