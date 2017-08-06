@@ -1,0 +1,34 @@
+checks:
+  php: true
+  javascript: true
+filter:
+  excluded_paths:
+    - test/*
+    - node_modules/*
+    - build/*
+    - artifacts/*
+    - deployment/vendor/*
+    - deployment/build/*
+    - deployment/public/production/*
+    - deployment/public/components/*
+
+build:
+  cache:
+    disabled: true
+  environment:
+    php:
+      version: 7.0.8
+
+  dependencies:
+    before:
+      - export LATEST=$(nvm ls-remote | tail -1)
+      - nvm install $LATEST
+#      - nvm use $LATEST
+
+  tests:
+    override:
+      -
+        command: ./vendor/bin/phpunit -c phpunit.xml
+        coverage:
+          file: build/coverage.xml
+          format: php-clover

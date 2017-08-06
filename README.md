@@ -1,18 +1,37 @@
-[![Build Status](https://travis-ci.org/patrikx3/gitlist.svg?branch=master)](https://travis-ci.org/patrikx3/gitlist)
-
+[![Build Status](https://secure.travis-ci.org/patrikx3/gitter.png)](http://travis-ci.org/patrikx3/gitter)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/patrikx3/gitlist/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/patrikx3/resume-web/?branch=master)
+[![Code Coverage](https://scrutinizer-ci.com/g/patrikx3/gitlist/badges/coverage.png?b=master)]
 
 # GitList
 
-Klaus Silveira does not respond, so I created this repo so that anyone can extend it.  
+This is Klaus Silveira's fork, since he doesn't work on this project anymore.  
  
-This is an open source project. Time is a precious thing, so I have no time to give support and fix issues for someone else. I fix a bug, when I have an error that I need. If you got an issue, error or bug, I hope someone will have time to do it for you, otherwise, you are on you own.  
-
-Though, if I know the solution, I will tell you.  
-  
-If you want to extend, fix bugs and add in new features on your own time, I help you , as ```patrikx3``` is an orgnization. I can add in anyone in no time. Not forking, you become a member, do not even need a pull merge request. 
-
 # Release version/update info
-[README](release.md) 
+# v0.5.5
+* Fixed PHPUNIT 6
+
+# v0.5.4
+* Different submodule links for Gitlist and Github
+
+# v0.5.3
+* The markdown links are working right
+* Shows submodules
+
+# v0.5.2
+* Added all Bootsswatch themes (https://bootswatch.com/)
+* Removed default theme, kept only Bootstrap (though like over 10 themes now)
+* Removed PHP 5 support, only >= 7
+* Upgraded Silex v1 to v2
+* Upgraded Twig v1 to v2
+* Upgraded Symfony/twig-bridge v2 to v3
+* Upgraded  Symfony/filesystem v2 to v3
+* Upgraded Phpunit v4 to v6
+* Moved from Showdown to Marked (more features)
+* For building requires (not required for the server):
+  * NodeJs >= 7.8
+  * Bower
+  * Grunt
+
    
 # Old info
 https://github.com/klaussilveira/gitlist
@@ -24,16 +43,15 @@ http://gitlist.patrikx3.com/
 # Installation
 
 ## Requirements
+For the build on your workstation (themes):
+* ```NodeJs``` >= 7.8
+* ```Bower``` (npm install -g bower)
+
 In order to run GitList on your server, you'll need:
 
 * ```git```
 * ```Apache``` with ```mod_rewrite``` enabled or ```nginx```
 * ```PHP``` >= 7.0 
-
-For the build (themes):
-* ```NodeJs``` >= 7.8
-* ```Bower``` (npm install -g bower)
-
 
 ## Package
 https://github.com/patrikx3/gitlist/releases
