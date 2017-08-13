@@ -7,10 +7,6 @@ filter:
     - node_modules/*
     - build/*
     - artifacts/*
-    - deployment/vendor/*
-    - deployment/build/*
-    - deployment/public/production/*
-    - deployment/public/components/*
 
 build:
   cache:

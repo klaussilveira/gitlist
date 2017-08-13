@@ -6,7 +6,7 @@
         </whitelist>
     </filter>
     <logging>
-        <log type="coverage-html" target="build/phpunit" title="patrikx3/resume-web" charset="UTF-8" />
+        <log type="coverage-html" target="build/phpunit" title="patrikx3/gitlist" charset="UTF-8" />
         <log type="coverage-text" target="php://stdout" />
         <log type="coverage-clover" target="build/coverage.xml" />
     </logging>
