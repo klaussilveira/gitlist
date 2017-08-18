@@ -7,17 +7,23 @@
 This is Klaus Silveira's fork, since he doesn't work on this project anymore.  
  
 # Release version/update info
-# v0.5.5
+
+## Package
+Done, just put on your server, nothing to build:   
+https://github.com/patrikx3/gitlist/releases
+
+
+## v0.5.5
 * Fixed PHPUNIT 6
 
-# v0.5.4
+## v0.5.4
 * Different submodule links for Gitlist and Github
 
-# v0.5.3
+## v0.5.3
 * The markdown links are working right
 * Shows submodules
 
-# v0.5.2
+## v0.5.2
 * Added all Bootsswatch themes (https://bootswatch.com/)
 * Removed default theme, kept only Bootstrap (though like over 10 themes now)
 * Removed PHP 5 support, only >= 7
@@ -52,10 +58,6 @@ In order to run GitList on your server, you'll need:
 * ```git```
 * ```Apache``` with ```mod_rewrite``` enabled or ```nginx```
 * ```PHP``` >= 7.0 
-
-## Package
-https://github.com/patrikx3/gitlist/releases
-
 
 ## By hand
 If you just want to get the project dependencies, instead of building everything:

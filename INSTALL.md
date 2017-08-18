@@ -8,9 +8,6 @@
 cd /var/www/gitlist
 mkdir cache
 chmod 777 cache
-
-composer install
-bower install
 ```
 
 That's it, installation complete!
