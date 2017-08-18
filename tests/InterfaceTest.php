@@ -1,5 +1,6 @@
 <?php
 
+
 use Silex\WebTestCase;
 use Symfony\Component\Filesystem\Filesystem;
 use GitList\Git\Client;
@@ -11,6 +12,7 @@ class InterfaceTest extends WebTestCase
 
     public static function setUpBeforeClass()
     {
+
         if (getenv('TMP')) {
             self::$tmpdir = getenv('TMP');
         } elseif (getenv('TMPDIR')) {
@@ -25,7 +27,7 @@ class InterfaceTest extends WebTestCase
         $fs->mkdir(self::$tmpdir);
 
         if (!is_writable(self::$tmpdir)) {
-            $this->markTestSkipped('There are no write permissions in order to create test repositories.');
+            WebTestCase::markTestSkipped('There are no write permissions in order to create test repositories.');
         }
 
         $options['path'] = getenv('GIT_CLIENT') ?: '/usr/bin/git';
@@ -383,5 +385,6 @@ class InterfaceTest extends WebTestCase
         $fs = new Filesystem();
         $fs->remove(self::$tmpdir);
     }
+
 }
 

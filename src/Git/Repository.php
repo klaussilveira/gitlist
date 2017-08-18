@@ -27,7 +27,7 @@ class Repository extends BaseRepository
     /**
      * Get the current branch, returning a default value when HEAD is detached.
      */
-    public function getHead()
+    public function getHead($default = NULL)
     {
         $client = $this->getClient();
 
@@ -323,7 +323,7 @@ class Repository extends BaseRepository
         return $data;
     }
 
-    public function getStatistics($branch)
+    public function getStatistics($branch = null)
     {
         // Calculate amount of files, extensions and file size
         $logs = $this->getClient()->run($this, 'ls-tree -r -l ' . $branch);

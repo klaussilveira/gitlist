@@ -1,6 +1,6 @@
 # GitList Installation
-* Download GitList from [gitlist.org](http://gitlist.org/) and decompress to your `/var/www/gitlist` folder, or anywhere else you want to place GitList.
-* Rename the `config.ini-example` file to `config.ini`.
+* Download GitList from [https://github.com/patrikx3/gitlist/releases](https://github.com/patrikx3/gitlist/releases/) and decompress to your `/var/www/gitlist` folder, or anywhere else you want to place GitList.
+* Rename the `config.example.ini-example` file to `config.ini`.
 * Open up the `config.ini` and configure your installation. You'll have to provide where your repositories are located and the base GitList URL (in our case, http://localhost/gitlist).
 * Create the cache folder and give read/write permissions to your web server user:
 
@@ -94,3 +94,7 @@ UrlToolkit {
     Match ^/gitlist/.*\.ini DenyAccess
 }
 ```
+
+If you're having problems, check the [Troubleshooting](https://github.com/patrikx3/gitlist/wiki/Troubleshooting) page.
+
+

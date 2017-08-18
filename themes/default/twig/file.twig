@@ -12,13 +12,13 @@
             <div class="meta"></div>
 
             <div class="btn-group pull-right">
-                <a href="{{ path('blob_raw', {repo: repo, commitishPath: branch ~ '/' ~ file}) }}" class="btn btn-small"><i class="icon-file"></i> Raw</a>
-                <a href="{{ path('blame', {repo: repo, commitishPath: branch ~ '/' ~ file}) }}" class="btn btn-small"><i class="icon-bullhorn"></i> Blame</a>
-                <a href="{{ path('commits', {repo: repo, commitishPath: branch ~ '/' ~ file}) }}" class="btn btn-small"><i class="icon-list-alt"></i> History</a>
+                <a href="{{ path('blob_raw', {repo: repo, commitishPath: branch ~ '/' ~ file}) }}" class="btn btn-default btn-sm"><span class="fa fa-file-text-o"></span> Raw</a>
+                <a href="{{ path('blame', {repo: repo, commitishPath: branch ~ '/' ~ file}) }}" class="btn btn-default btn-sm"><span class="fa fa-bullhorn"></span> Blame</a>
+                <a href="{{ path('commits', {repo: repo, commitishPath: branch ~ '/' ~ file}) }}" class="btn btn-default btn-sm"><span class="fa fa-list"></span> History</a>
             </div>
         </div>
         {% if fileType == 'image' %}
-        <center><img src="{{ path('blob_raw', {repo: repo, commitishPath: branch ~ '/' ~ file}) }}" alt="{{ file }}" class="image-blob" /></center>
+        <div class="text-center"><img src="{{ path('blob_raw', {repo: repo, commitishPath: branch ~ '/' ~ file}) }}" alt="{{ file }}" class="image-blob" /></div>
 
         {% elseif fileType == 'markdown' %}
         <div class="md-view"><div id="md-content">{{ blob }}</div></div>

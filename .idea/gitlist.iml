@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/vendor/patrikx3/gitter/lib" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/vendor/myclabs/deep-copy/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/vendor/phpspec/prophecy/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/vendor/psr/log" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/vendor/doctrine/instantiator/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/vendor/phpunit/phpunit/src" isTestSource="false" packagePrefix="PHPUnit" />
+      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" packagePrefix="GitList" />
+      <sourceFolder url="file://$MODULE_DIR$/vendor/patrikx3/gitter/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/vendor/phpunit/phpunit/tests" isTestSource="true" packagePrefix="PHPUnit" />
+      <sourceFolder url="file://$MODULE_DIR$/vendor/silex/silex/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/vendor/pimple/pimple/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/vendor/silex/silex/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/vendor/phpspec/prophecy" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/vendor" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/vendor/doctrine/instantiator/tests" isTestSource="true" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>

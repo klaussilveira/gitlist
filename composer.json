@@ -1,26 +1,22 @@
 {
-    "name": "klaussilveira/gitlist",
+    "name": "patrikx3/gitlist",
     "description": "An elegant git repository viewer",
-    "require": {
-        "silex/silex": "1.*",
-        "twig/twig": "1.*",
-        "symfony/twig-bridge": "2.4.*",
-        "symfony/filesystem": "2.4.*",
-        "klaussilveira/gitter": "0.2.*"
-    },
-    "require-dev": {
-        "symfony/browser-kit": "2.3.*",
-        "symfony/css-selector": "2.3.*",
-        "phpunit/phpunit": "4.1.*",
-        "phpmd/phpmd": "1.5.*",
-        "phploc/phploc": "2.0.*",
-        "sebastian/phpcpd": "2.0.*",
-        "squizlabs/php_codesniffer": "2.0.*@dev"
-    },
     "minimum-stability": "stable",
     "autoload": {
         "psr-4": {
             "GitList\\": "src/"
         }
+    },
+    "require": {
+        "symfony/filesystem": "^3.2",
+        "symfony/twig-bridge": "^3.2",
+        "twig/twig": "^2.3",
+        "silex/silex": "^2.1",
+        "patrikx3/gitter": "^0.3.4"
+    },
+    "require-dev": {
+        "symfony/browser-kit": "^3.2",
+        "phpunit/phpunit": "^6.1",
+        "symfony/css-selector": "^3.2"
     }
 }

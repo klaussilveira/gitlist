@@ -1,11 +1,18 @@
+sudo: required
+dist: trusty
 language: php
-
-before_script:
-  - curl -s http://getcomposer.org/installer | php
-  - php composer.phar install --dev
-
 php:
-  - 5.3
-  - 5.4
+  - '7.0'
+#  - '7.1'
+#  - hhvm
+#  - nightly
+before_script:
+  composer install
 
-script: phpunit
+notifications:
+  email:
+    recipients:
+      - alabard@gmail.com
+    on_success: change # default: change
+    on_failure: change # default: always
+

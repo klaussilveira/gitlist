@@ -39,8 +39,10 @@ class Routing
              $slashPosition === 40)) {
             // We may have a commit hash as our commitish.
             $hash = substr($commitishPath, 0, 40);
-            if ($repository->hasCommit($hash)) {
-                $commitish = $hash;
+            if (preg_match('/[^a-zA-Z0-9]/i', $hash) === 0) {
+                if ($repository->hasCommit($hash)) {
+                    $commitish = $hash;
+                }
             }
         }
 

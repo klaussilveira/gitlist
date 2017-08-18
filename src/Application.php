@@ -32,7 +32,9 @@ class Application extends SilexApplication
 
         $this['debug'] = $config->get('app', 'debug');
         $this['date.format'] = $config->get('date', 'format') ? $config->get('date', 'format') : 'd/m/Y H:i:s';
-        $this['theme'] = $config->get('app', 'theme') ? $config->get('app', 'theme') : 'default';
+
+        $this['theme'] = 'default';
+
         $this['title'] = $config->get('app', 'title') ? $config->get('app', 'title') : 'GitList';
         $this['filetypes'] = $config->getSection('filetypes');
         $this['binary_filetypes'] = $config->getSection('binary_filetypes');
@@ -48,7 +50,7 @@ class Application extends SilexApplication
 
         // Register services
         $this->register(new TwigServiceProvider(), array(
-            'twig.path'       => array($this->getThemePath($this['theme']), $this->getThemePath('default')),
+            'twig.path'       => array($this->getThemePath($this['theme'])),
             'twig.options'    => $config->get('app', 'cache') ?
                                  array('cache' => $this->getCachePath() . 'views') : array(),
         ));
@@ -70,20 +72,26 @@ class Application extends SilexApplication
 
         $this->register(new ViewUtilServiceProvider());
         $this->register(new RepositoryUtilServiceProvider());
-        $this->register(new UrlGeneratorServiceProvider());
         $this->register(new RoutingUtilServiceProvider());
 
-        $this['twig'] = $this->share($this->extend('twig', function ($twig, $app) {
+        $this['twig'] =  $this->extend('twig', function ($twig, $app) {
             $twig->addFilter(new \Twig_SimpleFilter('htmlentities', 'htmlentities'));
             $twig->addFilter(new \Twig_SimpleFilter('md5', 'md5'));
             $twig->addFilter(new \Twig_SimpleFilter('format_date', array($app, 'formatDate')));
             $twig->addFilter(new \Twig_SimpleFilter('format_size', array($app, 'formatSize')));
             $twig->addFunction(new \Twig_SimpleFunction('avatar', array($app, 'getAvatar')));
 
-            return $twig;
-        }));
+            $twig->addGlobal('theme', !isset($_COOKIE['gitlist-bootstrap-theme']) ? 'bootstrap-cosmo' : $_COOKIE['gitlist-bootstrap-theme']);
 
-        $this['escaper.argument'] = $this->share(function() {
+            $string = file_get_contents("./package.json");
+            $pkg = json_decode($string, true);
+
+            $twig->addGlobal('version', $pkg['version']);
+
+            return $twig;
+        });
+
+        $this['escaper.argument'] = $this->factory(function() {
             return new Escaper\ArgumentEscaper();
         });
 
