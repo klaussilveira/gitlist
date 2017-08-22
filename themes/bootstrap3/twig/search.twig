@@ -9,7 +9,7 @@
         {% block extra %}
             <div class="pull-right">
                 <div class="btn-group download-buttons">
-                    {% if app.show_http_remote or app.show_ssh_remote %}
+                    {% if show_http_remote or show_ssh_remote %}
                     <a type="button" href="#" class="btn btn-default btn-xs" title="Show remotes to clone this repository." id="clone-button-show">Clone</a>
                     {% endif %}
                     <a type="button" href="{{ path('archive', {repo: repo, branch: branch, format: 'zip'}) }}" class="btn btn-default btn-xs" title="Download '{{ branch }}' as a ZIP archive">ZIP</a>

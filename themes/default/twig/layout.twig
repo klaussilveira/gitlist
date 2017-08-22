@@ -2,29 +2,29 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
-        <title>{{ app.title }}{% if app.title %} - {% endif %}{% block title %}Welcome!{% endblock %}</title>
-        <link rel="stylesheet" type="text/css" href="{{ app.request.basepath }}/themes/{{ app.theme }}/css/style.css">
-        <link rel="stylesheet" type="text/css" href="{{ app.request.basepath }}/themes/{{ app.theme }}/css/gitgraph.css">
-        <link rel="shortcut icon" type="image/png" href="{{ app.request.basepath }}/themes/{{ app.theme }}/img/favicon.png" />
+        <title>{{ title }}{% if title %} - {% endif %}{% block title %}Welcome!{% endblock %}</title>
+        <link rel="stylesheet" type="text/css" href="{{ global.request.basepath }}/themes/{{ theme }}/css/style.css">
+        <link rel="stylesheet" type="text/css" href="{{ global.request.basepath }}/themes/{{ theme }}/css/gitgraph.css">
+        <link rel="shortcut icon" type="image/png" href="{{ global.request.basepath }}/themes/{{ theme }}/img/favicon.png" />
         <!--[if lt IE 9]>
-        <script src="{{ app.request.basepath }}/themes/{{ app.theme }}/js/html5.js"></script>
+        <script src="{{ global.request.basepath }}/themes/{{ theme }}/js/html5.js"></script>
         <![endif]-->
     </head>
 
     <body>
         {% block body %}{% endblock %}
         {% block javascripts %}
-        <script src="{{ app.request.basepath }}/themes/{{ app.theme }}/js/jquery.js"></script>
-        <script src="{{ app.request.basepath }}/themes/{{ app.theme }}/js/raphael.js"></script>
-        <script src="{{ app.request.basepath }}/themes/{{ app.theme }}/js/bootstrap.js"></script>
-        <script src="{{ app.request.basepath }}/themes/{{ app.theme }}/js/codemirror.js"></script>
-        <script src="{{ app.request.basepath }}/themes/{{ app.theme }}/js/showdown.js"></script>
-        <script src="{{ app.request.basepath }}/themes/{{ app.theme }}/js/table.js"></script>
-        <script src="{{ app.request.basepath }}/themes/{{ app.theme }}/js/list.min.js"></script>
-        <script src="{{ app.request.basepath }}/themes/{{ app.theme }}/js/main.js"></script>
-        <script src="{{ app.request.basepath }}/themes/{{ app.theme }}/js/networkGraph.js"></script>
-        <script src="{{ app.request.basepath }}/themes/{{ app.theme }}/js/gitgraph.js"></script>
-        <script src="{{ app.request.basepath }}/themes/{{ app.theme }}/js/draw.js"></script>
+        <script src="{{ global.request.basepath }}/themes/{{ theme }}/js/jquery.js"></script>
+        <script src="{{ global.request.basepath }}/themes/{{ theme }}/js/raphael.js"></script>
+        <script src="{{ global.request.basepath }}/themes/{{ theme }}/js/bootstrap.js"></script>
+        <script src="{{ global.request.basepath }}/themes/{{ theme }}/js/codemirror.js"></script>
+        <script src="{{ global.request.basepath }}/themes/{{ theme }}/js/showdown.js"></script>
+        <script src="{{ global.request.basepath }}/themes/{{ theme }}/js/table.js"></script>
+        <script src="{{ global.request.basepath }}/themes/{{ theme }}/js/list.min.js"></script>
+        <script src="{{ global.request.basepath }}/themes/{{ theme }}/js/main.js"></script>
+        <script src="{{ global.request.basepath }}/themes/{{ theme }}/js/networkGraph.js"></script>
+        <script src="{{ global.request.basepath }}/themes/{{ theme }}/js/gitgraph.js"></script>
+        <script src="{{ global.request.basepath }}/themes/{{ theme }}/js/draw.js"></script>
         {% endblock %}
     </body>
 </html>

@@ -4,9 +4,8 @@ namespace GitList\Controller;
 
 use GitList\Git\Repository;
 use Gitter\Model\Commit\Commit;
+use Silex\Api\ControllerProviderInterface;
 use Silex\Application;
-use Silex\ControllerProviderInterface;
-use Symfony\Component\HttpFoundation\Request;
 
 class NetworkController implements ControllerProviderInterface
 {
@@ -14,7 +13,8 @@ class NetworkController implements ControllerProviderInterface
     {
         $route = $app['controllers_factory'];
 
-        $route->get('{repo}/network/{commitishPath}/{page}.json',
+        $route->get(
+            '{repo}/network/{commitishPath}/{page}.json',
             function ($repo, $commitishPath, $page) use ($app) {
                 /** @var $repository Repository */
                 $repository = $app['git']->getRepositoryFromName($app['git.repos'], $repo);
@@ -26,29 +26,29 @@ class NetworkController implements ControllerProviderInterface
                 $pager = $app['util.view']->getPager($page, $repository->getTotalCommits($commitishPath));
                 $commits = $repository->getPaginatedCommits($commitishPath, $pager['current']);
 
-                $jsonFormattedCommits = array();
+                $jsonFormattedCommits = [];
 
                 foreach ($commits as $commit) {
                     $detailsUrl = $app['url_generator']->generate(
                         'commit',
-                        array(
+                        [
                             'repo' => $repo,
-                            'commit' => $commit->getHash()
-                        )
+                            'commit' => $commit->getHash(),
+                        ]
                     );
 
-                    $jsonFormattedCommits[$commit->getHash()] = array(
+                    $jsonFormattedCommits[$commit->getHash()] = [
                         'hash' => $commit->getHash(),
                         'parentsHash' => $commit->getParentsHash(),
                         'date' => $commit->getDate()->format('U'),
                         'message' => htmlentities($commit->getMessage()),
                         'details' => $detailsUrl,
-                        'author' => array(
+                        'author' => [
                             'name' => $commit->getAuthor()->getName(),
                             'email' => $commit->getAuthor()->getEmail(),
-                            'image' => $app->getAvatar($commit->getAuthor()->getEmail(), 40)
-                        )
-                    );
+                            'image' => $app->getAvatar($commit->getAuthor()->getEmail(), 40),
+                        ],
+                    ];
                 }
 
                 $nextPageUrl = null;
@@ -56,34 +56,37 @@ class NetworkController implements ControllerProviderInterface
                 if ($pager['last'] !== $pager['current']) {
                     $nextPageUrl = $app['url_generator']->generate(
                         'networkData',
-                        array(
+                        [
                             'repo' => $repo,
                             'commitishPath' => $commitishPath,
-                            'page' => $pager['next']
-                        )
+                            'page' => $pager['next'],
+                        ]
                     );
                 }
 
                 // when no commits are given, return an empty response - issue #369
                 if (count($commits) === 0) {
                     return $app->json(
-                        array(
+                        [
                             'repo' => $repo,
                             'commitishPath' => $commitishPath,
                             'nextPage' => null,
                             'start' => null,
-                            'commits' => $jsonFormattedCommits
-                            ), 200
+                            'commits' => $jsonFormattedCommits,
+                            ],
+                        200
                         );
                 }
 
-                return $app->json( array(
+                return $app->json(
+                    [
                     'repo' => $repo,
                     'commitishPath' => $commitishPath,
                     'nextPage' => $nextPageUrl,
                     'start' => $commits[0]->getHash(),
-                    'commits' => $jsonFormattedCommits
-                    ), 200
+                    'commits' => $jsonFormattedCommits,
+                    ],
+                    200
                 );
             }
         )->assert('repo', $app['util.routing']->getRepositoryRegex())
@@ -108,11 +111,11 @@ class NetworkController implements ControllerProviderInterface
 
                 return $app['twig']->render(
                     'network.twig',
-                    array(
+                    [
                         'repo' => $repo,
                         'branch' => $branch,
                         'commitishPath' => $commitishPath,
-                    )
+                    ]
                 );
             }
         )->assert('repo', $app['util.routing']->getRepositoryRegex())

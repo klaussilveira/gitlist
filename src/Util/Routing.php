@@ -2,8 +2,8 @@
 
 namespace GitList\Util;
 
-use Silex\Application;
 use GitList\Exception\EmptyRepositoryException;
+use Silex\Application;
 
 class Routing
 {
@@ -84,7 +84,7 @@ class Routing
             $path = substr($path, 1);
         }
 
-        return array($commitish, $path);
+        return [$commitish, $path];
     }
 
     public function getBranchRegex()
@@ -127,6 +127,7 @@ class Routing
             );
             $regex = implode('|', $quotedPaths);
         }
+
         return $regex;
     }
 
@@ -143,9 +144,10 @@ class Routing
     }
 
     /**
-     * Strips the base path from a full repository path
+     * Strips the base path from a full repository path.
      *
      * @param  string $repoPath Full path to the repository
+     *
      * @return string Relative path to the repository from git.repositories
      */
     public function getRelativePath($repoPath)
@@ -154,11 +156,9 @@ class Routing
             $relativePath = substr($repoPath, strlen($this->app['git.repos']));
 
             return ltrim(strtr($relativePath, '\\', '/'), '/');
-        } else {
-            throw new \InvalidArgumentException(
+        }
+        throw new \InvalidArgumentException(
                 sprintf("Path '%s' does not match configured repository directory", $repoPath)
             );
-        }
     }
 }
-

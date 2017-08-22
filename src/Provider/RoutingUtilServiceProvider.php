@@ -3,24 +3,15 @@
 namespace GitList\Provider;
 
 use GitList\Util\Routing;
-use Silex\Application;
-use Silex\ServiceProviderInterface;
+use Pimple\Container;
+use Pimple\ServiceProviderInterface;
 
 class RoutingUtilServiceProvider implements ServiceProviderInterface
 {
-    /**
-     * Register the Util\Repository class on the Application ServiceProvider
-     *
-     * @param Application $app Silex Application
-     */
-    public function register(Application $app)
+    public function register(Container $container)
     {
-        $app['util.routing'] = $app->share(function () use ($app) {
-            return new Routing($app);
-        });
-    }
-
-    public function boot(Application $app)
-    {
+        $container['util.routing'] = function () use ($container) {
+            return new Routing($container);
+        };
     }
 }

@@ -8,19 +8,19 @@
             <div class="col-sm-12">
             	<div class="tab-border nav-tabs">
                     {% if page in ['commits', 'searchcommits'] %}
-                    <form class="pull-right" action="{{ app.request.basepath }}/{{repo}}/commits/{{branch}}/search" method="POST">
+                    <form class="pull-right" action="{{ global.request.basepath }}/{{repo}}/commits/{{branch}}/search" method="POST">
                         <input type="search" name="query" class="form-control input-sm" placeholder="Search commits...">
                     </form>
                     {% else %}
-                    <form class="pull-right" action="{{ app.request.basepath }}/{{repo}}/tree/{{branch}}/search" method="POST">
+                    <form class="pull-right" action="{{ global.request.basepath }}/{{repo}}/tree/{{branch}}/search" method="POST">
                         <input type="search" name="query" class="form-control input-sm" placeholder="Search tree...">
                     </form>
                     {% endif %}
-			    
+
                     {% if branches is defined %}
                         {% include 'branch_menu.twig' %}
                     {% endif %}
-			    
+
                     {% include 'menu.twig' %}
                 </div>
             </div>

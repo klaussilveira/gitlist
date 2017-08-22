@@ -2,8 +2,8 @@
 
 namespace GitList\Controller;
 
+use Silex\Api\ControllerProviderInterface;
 use Silex\Application;
-use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 class BlobController implements ControllerProviderInterface
@@ -25,22 +25,22 @@ class BlobController implements ControllerProviderInterface
             $fileType = $app['util.repository']->getFileType($file);
 
             if ($fileType !== 'image' && $app['util.repository']->isBinary($file)) {
-                return $app->redirect($app['url_generator']->generate('blob_raw', array(
-                    'repo'   => $repo,
+                return $app->redirect($app['url_generator']->generate('blob_raw', [
+                    'repo' => $repo,
                     'commitishPath' => $commitishPath,
-                )));
+                ]));
             }
 
-            return $app['twig']->render('file.twig', array(
-                'file'           => $file,
-                'fileType'       => $fileType,
-                'blob'           => $blob->output(),
-                'repo'           => $repo,
-                'branch'         => $branch,
-                'breadcrumbs'    => $breadcrumbs,
-                'branches'       => $repository->getBranches(),
-                'tags'           => $repository->getTags(),
-            ));
+            return $app['twig']->render('file.twig', [
+                'file' => $file,
+                'fileType' => $fileType,
+                'blob' => $blob->output(),
+                'repo' => $repo,
+                'branch' => $branch,
+                'breadcrumbs' => $breadcrumbs,
+                'branches' => $repository->getBranches(),
+                'tags' => $repository->getTags(),
+            ]);
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
           ->assert('commitishPath', '.+')
           ->convert('commitishPath', 'escaper.argument:escape')
@@ -56,9 +56,9 @@ class BlobController implements ControllerProviderInterface
 
             $blob = $repository->getBlob("$branch:\"$file\"")->output();
 
-            $headers = array();
+            $headers = [];
             if ($app['util.repository']->isBinary($file)) {
-                $headers['Content-Disposition'] = 'attachment; filename="' .  $file . '"';
+                $headers['Content-Disposition'] = 'attachment; filename="' . $file . '"';
                 $headers['Content-Type'] = 'application/octet-stream';
             } else {
                 $headers['Content-Type'] = 'text/plain';
@@ -79,12 +79,12 @@ class BlobController implements ControllerProviderInterface
             $filePatchesLog = $repository->getCommitsLogPatch($file);
             $breadcrumbs = $app['util.view']->getBreadcrumbs($file);
 
-            return $app['twig']->render('logpatch.twig', array(
-                'branch'         => $branch,
-                'repo'           => $repo,
-                'breadcrumbs'    => $breadcrumbs,
-                'commits'        => $filePatchesLog,
-            ));
+            return $app['twig']->render('logpatch.twig', [
+                'branch' => $branch,
+                'repo' => $repo,
+                'breadcrumbs' => $breadcrumbs,
+                'commits' => $filePatchesLog,
+            ]);
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
             ->assert('commitishPath', '.+')
             ->convert('commitishPath', 'escaper.argument:escape')
@@ -93,4 +93,3 @@ class BlobController implements ControllerProviderInterface
         return $route;
     }
 }
-

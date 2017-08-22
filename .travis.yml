@@ -1,11 +1,20 @@
 language: php
 
-before_script:
-  - curl -s http://getcomposer.org/installer | php
-  - php composer.phar install --dev
-
 php:
-  - 5.3
   - 5.4
+  - 7.0
+  - 7.1
 
-script: phpunit
+cache:
+  directories:
+    - vendor
+
+install:
+  - travis_retry composer install --no-interaction --prefer-source
+
+script:
+  - vendor/bin/php-cs-fixer fix --dry-run -v
+  - vendor/bin/phpunit --verbose
+
+matrix:
+  fast_finish: true
