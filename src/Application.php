@@ -41,10 +41,13 @@ class Application extends SilexApplication
         $this['avatar.query'] = $config->get('avatar', 'query');
         $this['show_http_remote'] = $config->get('clone_button', 'show_http_remote');
         $this['use_https'] = $config->get('clone_button', 'use_https');
-        $this['url_subdir'] = $config->get('clone_button', 'url_subdir');
+        $this['http_url_subdir'] = $config->get('clone_button', 'http_url_subdir');
         $this['http_user'] = $config->get('clone_button', 'http_user_dynamic') ? $_SERVER['PHP_AUTH_USER'] : $config->get('clone_button', 'http_user');
+        $this['http_host'] = $config->get('clone_button', 'http_host');
         $this['show_ssh_remote'] = $config->get('clone_button', 'show_ssh_remote');
-        $this['ssh_user'] = $config->get('clone_button', 'ssh_user');
+        $this['ssh_user'] = $config->get('clone_button', 'ssh_user_dynamic') ? $_SERVER['PHP_AUTH_USER'] : $config->get('clone_button', 'ssh_user');
+        $this['ssh_url_subdir'] = $config->get('clone_button', 'ssh_url_subdir');
+        $this['ssh_host'] = $config->get('clone_button', 'ssh_host');
 
         // Register services
         $this->register(new TwigServiceProvider(), array(

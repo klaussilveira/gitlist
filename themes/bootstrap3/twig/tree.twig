@@ -28,14 +28,14 @@
                         <button type="button" class="btn btn-default{{ app.show_ssh_remote and app.show_http_remote ? ' active' }}" id="clone-button-ssh">SSH</button>
                         {% endif %}
                         {% if app.show_http_remote %}
-                        <button type="button" class="btn btn-default" id="clone-button-http">HTTPS</button>
+                        <button type="button" class="btn btn-default" id="clone-button-http">HTTP{{ app.use_https ? 'S' }}</button>
                         {% endif %}
                     </div><br />
                     {% if app.show_ssh_remote %}
-                    <input type="text" class="form-control{{ app.show_ssh_remote ? ' visible' }}" id="clone-input-ssh" value="git clone {{ app.ssh_user }}@{{ app.request.host }}:{{ repo }}">
+                    <input type="text" class="form-control{{ app.show_ssh_remote ? ' visible' }}" id="clone-input-ssh" value="git clone {{ app.ssh_user }}{{ app.ssh_user ? '@' }}{{ app.ssh_host ? app.ssh_host : app.request.host }}:{{ app.ssh_url_subdir }}{{ repo }}">
                     {% endif %}
                     {% if app.show_http_remote %}
-                    <input type="text" class="form-control{{ app.show_ssh_remote is empty and app.show_http_remote ? ' visible' }}" id="clone-input-http" value="git clone http{{ app.use_https ? 's' }}://{{ app.http_user }}{{ app.http_user ? '@' }}{{ app.request.host }}/{{ app.url_subdir }}{{ repo }}">
+                    <input type="text" class="form-control{{ app.show_ssh_remote is empty and app.show_http_remote ? ' visible' }}" id="clone-input-http" value="git clone http{{ app.use_https ? 's' }}://{{ app.http_user }}{{ app.http_user ? '@' }}{{ app.http_host ? app.http_host : app.request.host }}/{{ app.http_url_subdir }}{{ repo }}">
                     {% endif %}
                 </div>
             </div>
