@@ -35,6 +35,46 @@ class Repository extends BaseRepository
     }
 
     /**
+     * Show Patches that where apllied to the selected file
+     *
+     * @param  string $file File path for which we will retrieve a list of patch logs
+     * @return array  Collection of Commits data
+     */
+    public function getCommitsLogPatch($file)
+    {
+        $record_delimiter = chr(hexdec("0x1e"));
+        $file_patches = $this->getClient()->run($this,
+            "log -p --pretty=format:\"".$record_delimiter."<item><hash>%H</hash>"
+            . "<short_hash>%h</short_hash><tree>%T</tree><parents>%P</parents>"
+            . "<author>%aN</author><author_email>%aE</author_email>"
+            . "<date>%at</date><commiter>%cN</commiter><commiter_email>%cE</commiter_email>"
+            . "<commiter_date>%ct</commiter_date>"
+            . "<message><![CDATA[%s]]></message>"
+            . "<body><![CDATA[%b]]></body>"
+            . "</item>\" $file"
+        );
+
+        $patch_collection = array();
+        foreach ( preg_split('/('.$record_delimiter.'\<item\>)/', $file_patches,null, PREG_SPLIT_NO_EMPTY) as $patches) {
+            $patches = '<item>' . $patches;
+            $xmlEnd = strpos($patches, '</item>') + 7;
+            $commitInfo = substr($patches, 0, $xmlEnd);
+            $commitData = substr($patches, $xmlEnd);
+            $logs = explode("\n", $commitData);
+
+            // Read commit metadata
+            $format = new PrettyFormat;
+            $data = $format->parse($commitInfo);
+            $commit = new Commit;
+            $commit->importData($data[0]);
+            $commit->setDiffs($this->readDiffLogs($logs));
+            $patch_collection[] = $commit;
+        }
+
+        return $patch_collection;
+    }
+
+    /**
      * Show the data from a specific commit
      *
      * @param  string $commitHash Hash of the specific commit to read data

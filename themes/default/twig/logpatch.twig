@@ -1,0 +1,83 @@
+{% extends 'layout_page.twig' %}
+
+{% set page = 'commits' %}
+
+{% block title %}GitList{% endblock %}
+
+{% block content %}
+    
+    {% include 'breadcrumb.twig' with {breadcrumbs: breadcrumbs} %}
+    
+    {% for commit in commits %}
+
+        <div class="commit-view">
+            <div class="commit-header">
+                <span class="pull-right"><a class="btn btn-small" href="{{ path('branch', {repo: repo, branch: commit.hash}) }}" title="Browse code at this point in history"><i class="icon-list-alt"></i> Browse code</a></span>
+                <h4>{{ commit.message }}</h4>
+            </div>
+            <div class="commit-body">
+                {% if commit.body is not empty %}
+                    <p>{{ commit.body | nl2br }}</p>
+                {% endif %}
+                <img src="{{ avatar(commit.author.email, 32) }}" class="pull-left space-right" />
+                <span>
+                <a href="mailto:{{ commit.author.email }}">{{ commit.author.name }}</a> authored on {{ commit.date | format_date }}
+                    {% if commit.author.email != commit.commiter.email %}
+                        &bull; <a href="mailto:{{ commit.commiter.email }}">{{ commit.commiter.name }}</a> committed on {{ commit.commiterDate | format_date }}
+                    {% endif %}
+                    <br />Showing {{ commit.changedFiles }} changed files
+            </span>
+            </div>
+        </div>
+
+        {% for diff in commit.diffs %}
+            <div class="source-view">
+                <div class="source-header">
+                    <div class="meta"><a id="diff-{{ loop.index }}">{{ diff.file }}</div>
+
+                    <div class="btn-group pull-right">
+                        <a href="{{ path('commits', {repo: repo, commitishPath: commit.hash ~ '/' ~ diff.file}) }}" class="btn btn-small"><i class="icon-list-alt"></i> History</a>
+                        <a href="{{ path('blob', {repo: repo, commitishPath: commit.hash ~'/' ~ diff.file}) }}" class="btn btn-small"><i class="icon-file"></i> View file @ {{ commit.shortHash }}</a>
+                    </div>
+                </div>
+
+                <div class="source-diff">
+                    <table>
+                        {% for line in diff.getLines %}
+                            <tr>
+                                <td class="lineNo">
+                                    {% if line.getType != 'chunk' %}
+                                    <a name="L{{ loop.index }}R{{ line.getNumOld }}"></a>
+                                    <a href="#L{{ loop.index }}R{{ line.getNumOld }}">
+                                        {% endif %}
+                                        {{ line.getNumOld }}
+                                        {% if line.getType != 'chunk' %}
+                                    </a>
+                                    {% endif %}
+                                </td>
+                                <td class="lineNo">
+                                    {% if line.getType != 'chunk' %}
+                                    <a name="L{{ loop.index }}L{{ line.getNumNew }}"></a>
+                                    <a href="#L{{ loop.index }}L{{ line.getNumNew }}">
+                                        {% endif %}
+                                        {{ line.getNumNew }}
+                                        {% if line.getType != 'chunk' %}
+                                    </a>
+                                    {% endif %}
+                                </td>
+                                <td style="width: 100%">
+                                    <pre{% if line.getType %} class="{{ line.getType }}"{% endif %}>{{ line.getLine }}</pre>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+        {% endfor %}
+        
+    {% endfor %}
+
+
+
+    <hr />
+{% endblock %}
