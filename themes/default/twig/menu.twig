@@ -2,6 +2,6 @@
     <li{% if page == 'files' %} class="active"{% endif %}><a href="{{ path('branch', {repo: repo, branch: branch}) }}">Files</a></li>
     <li{% if page in ['commits', 'searchcommits'] %} class="active"{% endif %}><a href="{{ path('commits', {repo: repo, commitishPath: branch}) }}">Commits</a></li>
     <li{% if page == 'stats' %} class="active"{% endif %}><a href="{{ path('stats', {repo: repo, branch: branch}) }}">Stats</a></li>
-  	<li{% if page == 'network' %} class="active"{% endif %}><a href="{{ path('network', {repo: repo, branch: branch}) }}">Network</a></li>
+  	<li{% if page == 'network' %} class="active"{% endif %}><a href="{{ path('network', {repo: repo, commitishPath: branch}) }}">Network</a></li>
   	<li{% if page == 'treegraph' %} class="active"{% endif %}><a href="{{ path('treegraph', {repo: repo, branch: branch}) }}">Graph</a></li>
 </ul>
