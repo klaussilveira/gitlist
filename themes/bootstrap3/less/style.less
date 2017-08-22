@@ -18,13 +18,51 @@
   padding: @padding-large-vertical @padding-large-horizontal;
   border: 1px solid @navbar-default-border;
   border-radius: @border-radius-base;
+  .clearfix();
+  
+  li {
+	  white-space: nowrap;
+	  max-width: 100%;
+	  text-overflow: ellipsis;
+	  overflow: hidden;
+  }
+  
+  .pull-right {
+	display: inline-block;
+	margin-top: -2px;
+    .download-buttons {
+      display: inline-block;
+      &.btn-group > a.btn-xs {
+    	  font-size: inherit;
+    	  line-height: inherit;
+    	  margin-top:-2px;
+    	  margin-bottom:-2px;
+      }
+      &.rss-button {
+        display: inline-block;
+        position: relative;
+        top:6px;
+        
+        a {
+    	  display: inline-block;
+          .rss-icon {
+            padding-left: @padding-small-horizontal;
+            font-size: 23px;
+            line-height: 1rem;
+          }
+        }
+      }
+    }
+  }
 }
-.download-buttons {
-  display: inline;
-}
-.download-buttons .rss-icon {
-  padding-left: @padding-large-horizontal;
-  font-size: @font-size-h3;
+
+table.table.tree:not(.search) {
+	tr {
+		td:nth-child(3), td:nth-child(2) {
+			width: 1px;
+			white-space: nowrap;
+		}
+	}
 }
 
 .space-right {
@@ -40,3 +78,97 @@ span.rss-icon {
   }
 }
 
+.blame-view-wrapper {
+	overflow-x: auto;
+}
+
+#rev-list .btn-sm {
+	padding: 0 8px;
+}
+
+.table-border {
+  border: 1px solid @navbar-default-border;
+  margin-bottom: @line-height-computed;
+  &, * {
+    border-radius: @border-radius-base;
+  }
+  .table {
+    border: none;
+    margin-bottom: 0;
+  }
+}
+
+.panel .panel-heading.bold {
+    font-weight: bold;
+}
+
+.tab-border {
+	.clearfix();
+	.nav-tabs {
+		border-bottom: none;
+	}
+    margin-top: -@padding-large-vertical;
+	> * {
+        margin-top: @padding-large-vertical;
+	}
+    ul.nav.nav-tabs {
+	    float: left;
+    }
+    form.pull-right {
+        margin-left: @padding-large-horizontal;
+        padding-bottom:2px;
+    }
+}
+
+.commit-list {
+	li {
+		overflow:hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+		a {
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+	}
+}
+
+.source-header {
+    .meta {
+	    max-width: 100%;
+	    a {
+		    display: inline-block;
+        	overflow: hidden;
+        	text-overflow: ellipsis;
+        	white-space: nowrap;
+        	max-width: 100%;
+        }
+    }
+}
+
+.network-view, .repository, .readme-view {
+	border-radius: @border-radius-base;
+	> *:first-child {
+		border-top-left-radius: @border-radius-base;
+		border-top-right-radius: @border-radius-base;
+	}
+	> *:last-child {
+		border-bottom-left-radius: @border-radius-base;
+		border-bottom-right-radius: @border-radius-base;
+	}
+}
+
+#rev-list {
+    overflow: scroll;
+}
+
+@media (max-width: @screen-xs-max) {
+    .nav-tabs>li>a {
+	    padding: 7px 10px;
+    }
+    #git-graph-container {
+	    overflow:scroll;
+	    #rev-list {
+		    overflow: initial;
+	    }
+    }
+}

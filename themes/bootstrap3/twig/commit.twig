@@ -7,13 +7,13 @@
 {% block content %}
     {% include 'breadcrumb.twig' with {breadcrumbs: [{dir: "Commit #{commit.hash}", path:''}]} %}
 
-    <div class="commit-view">
-        <div class="commit-header">
+    <div class="panel panel-default">
+        <div class="panel-heading">
             <span class="pull-right">
                 <a class="btn btn-default btn-sm" href="{{ path('branch', {repo: repo, branch: commit.hash}) }}" title="Browse code at this point in history"><span class="fa fa-list-alt"></span> Browse code</a></span>
             <h4>{{ commit.message }}</h4>
         </div>
-        <div class="commit-body">
+        <div class="panel-body">
             {% if commit.body is not empty %}
             <p>{{ commit.body | nl2br }}</p>
             {% endif %}
@@ -25,19 +25,19 @@
                 {% endif %}
                 <br />Showing {{ commit.changedFiles }} changed files
             </span>
+            <hr>
+            <ul class="commit-list">
+                {% for diff in commit.diffs %}
+                    <li><i class="fa fa-file-text-o"></i> <a href="#diff-{{ loop.index }}">{{ diff.file }}</a> <span class="meta pull-right">{{ diff.index }}</span></li>
+                {% endfor %}
+            </ul>
         </div>
     </div>
-
-    <ul class="commit-list">
-        {% for diff in commit.diffs %}
-            <li><i class="fa fa-file-text-o"></i> <a href="#diff-{{ loop.index }}">{{ diff.file }}</a> <span class="meta pull-right">{{ diff.index }}</span></li>
-        {% endfor %}
-    </ul>
 
     {% for diff in commit.diffs %}
     <div class="source-view">
         <div class="source-header">
-            <div class="meta"><a id="diff-{{ loop.index }}">{{ diff.file }}</div>
+            <div class="meta"><a id="diff-{{ loop.index }}">{{ diff.file }}</a></div>
 
             <div class="btn-group pull-right">
                 <a href="{{ path('commits', {repo: repo, commitishPath: commit.hash ~ '/' ~ diff.file}) }}"  class="btn btn-default btn-sm"><span class="fa fa-list-alt"></span> History</a>

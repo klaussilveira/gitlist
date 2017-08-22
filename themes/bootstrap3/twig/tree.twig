@@ -15,9 +15,9 @@
                     <a type="button" href="{{ path('archive', {repo: repo, branch: branch, format: 'zip'}) }}" class="btn btn-default btn-xs" title="Download '{{ branch }}' as a ZIP archive">ZIP</a>
                     <a type="button" href="{{ path('archive', {repo: repo, branch: branch, format: 'tar'}) }}" class="btn btn-default btn-xs" title="Download '{{ branch }}' as a TAR archive">TAR</a>
                 </div>
-		<div class="download-buttons">
-		    <a href="{{ path('rss', {repo: repo, branch: branch}) }}"><span class="fa fa-rss rss-icon"></span></a>
-		</div>
+		        <div class="download-buttons rss-button">
+		            <a href="{{ path('rss', {repo: repo, branch: branch}) }}"><span class="fa fa-rss rss-icon"></span></a>
+		        </div>
             </div>
             {% if app.show_http_remote or app.show_ssh_remote %}
             <div id="clone-popup">
@@ -44,12 +44,13 @@
     {% endembed %}
 
     {% if files is not empty %}
+    <div class="table-border">
     <table class="table tree">
         <thead>
             <tr>
-                <th width="80%">Name</th>
-                <th width="10%">Mode</th>
-                <th width="10%">Size</th>
+                <th>Name</th>
+                <th>Mode</th>
+                <th>Size</th>
             </tr>
         </thead>
         <tbody>
@@ -81,6 +82,7 @@
             {% endfor %}
         </tbody>
     </table>
+    </div>
     {% else %}
         <p>This repository is empty.</p>
     {% endif %}
