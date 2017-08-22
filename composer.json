@@ -4,18 +4,19 @@
     "require": {
         "silex/silex": "~2.2",
         "twig/twig": "~2.4",
-        "symfony/twig-bridge": "~3.3",
-        "symfony/filesystem": "~3.3",
+        "symfony/twig-bridge": "~3.0",
+        "symfony/filesystem": "~3.0",
         "klaussilveira/gitter": "0.2.*"
     },
     "require-dev": {
-        "symfony/browser-kit": "~3.3",
-        "symfony/css-selector": "~3.3",
+        "symfony/browser-kit": "~3.0",
+        "symfony/css-selector": "~3.0",
         "phpunit/phpunit": "~5.0",
         "phpmd/phpmd": "1.5.*",
         "phploc/phploc": "2.0.*",
         "sebastian/phpcpd": "2.0.*",
-        "friendsofphp/php-cs-fixer": "~2.4"
+        "doctrine/annotations": "^1.4",
+        "friendsofphp/php-cs-fixer": "^2.5"
     },
     "minimum-stability": "stable",
     "autoload": {

@@ -26,7 +26,7 @@ In order to run GitList on your server, you'll need:
 
 * git
 * Apache with mod_rewrite enabled or nginx
-* PHP 5.4
+* PHP 7
 
 ## Installation
 * Download GitList from [gitlist.org](http://gitlist.org/) and decompress to your `/var/www/gitlist` folder, or anywhere else you want to place GitList.
