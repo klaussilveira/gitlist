@@ -4,13 +4,14 @@
     "require": {
         "silex/silex": "1.*",
         "twig/twig": "1.*",
-        "symfony/twig-bridge": "2.4.*",
+        "symfony/twig-bridge": "2.8.*",
         "symfony/filesystem": "2.4.*",
-        "klaussilveira/gitter": "0.2.*"
+        "klaussilveira/gitter": "0.2.*",
+        "symfony/security": "2.8.*"
     },
     "require-dev": {
         "symfony/browser-kit": "2.3.*",
-        "symfony/css-selector": "2.3.*",
+        "symfony/css-selector": "2.8.*",
         "phpunit/phpunit": "4.1.*",
         "phpmd/phpmd": "1.5.*",
         "phploc/phploc": "2.0.*",

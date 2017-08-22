@@ -9,6 +9,11 @@
             <a class="brand" href="{{ path('homepage') }}">{{ app.title }}</a>
             <div class="nav-collapse">
                 <ul class="nav pull-right">
+                    {% if app.user is not empty %}
+                        <li>
+                            <a href="{{ path('user_logout') }}">Logout</a>
+                        </li>
+                    {% endif %}
                     <li><a href="http://gitlist.org/">About</a></li>
                     <li><a href="{{ path('homepage') }}refresh">Refresh</a></li>
                     <li><a href="https://github.com/klaussilveira/gitlist/issues/new">Report bug</a></li>

@@ -1,0 +1,19 @@
+.signin {
+    width: 30%;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    font-size:14px;
+    font-weight: 600
+}
+
+.signin .repository {
+    padding:20px;
+}
+
+.signin h3 {
+    margin: 2em 0 1em 0;
+}
+.signin .name {
+    margin-bottom: 7px
+}
