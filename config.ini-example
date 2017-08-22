@@ -8,7 +8,7 @@ repositories[] = '/home/git/repositories/' ; Path to your repositories
 ;client = '"C:\Program Files (x86)\Git\bin\git.exe"' ; Your git executable path
 ;repositories[] = 'C:\Path\to\Repos\' ; Path to your repositories
 
-; You can hide repositories from GitList, just copy this for each repository you want to hide
+; You can hide repositories from GitList, just copy this for each repository you want to hide or add a regex (including delimiters), eg. hidden[] = '/(.+)\.git/'
 ; hidden[] = '/home/git/repositories/BetaTest'
 
 [app]
