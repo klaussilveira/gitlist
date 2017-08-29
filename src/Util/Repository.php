@@ -126,14 +126,14 @@ class Repository
             return 'text';
         }
 
-        if (isset($this->defaultFileTypes[$fileType])) {
-            return $this->defaultFileTypes[$fileType];
-        }
-
         if (!empty($this->app['filetypes'])) {
             if (isset($this->app['filetypes'][$fileType])) {
                 return $this->app['filetypes'][$fileType];
             }
+        }
+
+        if (isset($this->defaultFileTypes[$fileType])) {
+            return $this->defaultFileTypes[$fileType];
         }
 
         return 'text';
@@ -154,12 +154,12 @@ class Repository
             return false;
         }
 
-        if (in_array($fileType, self::$binaryTypes)) {
-            return true;
-        }
-
         if (!empty($this->app['binary_filetypes']) && array_key_exists($fileType, $this->app['binary_filetypes'])) {
             return $this->app['binary_filetypes'][$fileType];
+        }
+
+        if (in_array($fileType, self::$binaryTypes)) {
+            return true;
         }
 
         return false;
