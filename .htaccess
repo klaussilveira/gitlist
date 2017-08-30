@@ -9,6 +9,15 @@
     RewriteRule ^(.*)$ index.php/$1 [L,NC]
 </IfModule>
 <Files config.ini>
-    order allow,deny
-    deny from all
+    # Apache < 2.3
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+        Satisfy All
+    </IfModule>
+
+    # Apache ≥ 2.3
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
 </Files>
