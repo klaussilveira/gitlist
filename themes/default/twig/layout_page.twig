@@ -7,11 +7,11 @@
         <div class="row">
             <div class="span12">
                 {% if page in ['commits', 'searchcommits'] %}
-                <form class="form-search pull-right" action="{{ app.request.basepath }}/{{repo}}/commits/{{branch}}/search" method="POST">
+                <form class="form-search pull-right" action="{{ global.request.basepath }}/{{repo}}/commits/{{branch}}/search" method="POST">
                     <input type="text" name="query" class="input-medium search-query" placeholder="Search commits..." value="{{ query | default("") }}">
                 </form>
                 {% else %}
-                <form class="form-search pull-right" action="{{ app.request.basepath }}/{{repo}}/tree/{{branch}}/search" method="POST">
+                <form class="form-search pull-right" action="{{ global.request.basepath }}/{{repo}}/tree/{{branch}}/search" method="POST">
                     <input type="text" name="query" class="input-medium search-query" placeholder="Search tree..." value="{{ query | default("") }}">
                 </form>
                 {% endif %}

@@ -87,17 +87,16 @@
     </target>
 
     <target name="phpcs" description="Find coding standard violations using PHP_CodeSniffer creating a log file for the continuous integration server">
-        <exec executable="${vendordir}/phpcs" output="/dev/null">
-            <arg value="--report=checkstyle" />
-            <arg value="--report-file=${basedir}/build/logs/checkstyle.xml" />
-            <arg value="--standard=PSR2" />
-            <arg path="${basedir}/src" />
+        <exec executable="${vendordir}/php-cs-fixer" output="${basedir}/build/logs/cs.xml">
+            <arg value="fix" />
+            <arg value="--dry-run" />
+            <arg value="--format=junit" />
         </exec>
     </target>
 
     <target name="package" description="Package the application for distribution">
         <copy todir="${basedir}/build/gitlist/">
-            <fileset dir="${basedir}" excludes="cache/**, build/**, tests/**, pkg_builder/**, phpunit.xml.dist, cache.properties, .gitignore, .travis.yml, build.xml, composer.json, composer.lock, config.ini" />
+            <fileset dir="${basedir}" excludes="cache/**, build/**, tests/**, pkg_builder/**, phpunit.xml.dist, cache.properties, .gitignore, .travis.yml, build.xml, composer.json, composer.lock, composer.phar, config.ini, .php_cs, .php_cs.cache" />
         </copy>
 
         <tar destfile="${basedir}/build/gitlist-master.tar.gz"

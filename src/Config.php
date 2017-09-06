@@ -6,6 +6,11 @@ class Config
 {
     protected $data;
 
+    public function __construct($data = [])
+    {
+        $this->data = $data;
+    }
+
     public static function fromFile($file)
     {
         if (!file_exists($file)) {
@@ -17,11 +22,6 @@ class Config
         $config->validateOptions();
 
         return $config;
-    }
-
-    public function __construct($data = array())
-    {
-        $this->data = $data;
     }
 
     public function get($section, $option)
@@ -67,12 +67,11 @@ class Config
         }
 
         if (!$atLeastOneOk) {
-            die("Please, edit the config file and provide your repositories directory");
+            die('Please, edit the config file and provide your repositories directory');
         }
 
         if ($atLeastOneWrong) {
-            die("One or more of the supplied repository paths appears to be wrong. Please, check the config file");
+            die('One or more of the supplied repository paths appears to be wrong. Please, check the config file');
         }
     }
 }
-

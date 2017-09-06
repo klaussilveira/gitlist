@@ -1,8 +1,8 @@
 <?php
 
+use GitList\Git\Client;
 use Silex\WebTestCase;
 use Symfony\Component\Filesystem\Filesystem;
-use GitList\Git\Client;
 
 class InterfaceTest extends WebTestCase
 {
@@ -16,7 +16,7 @@ class InterfaceTest extends WebTestCase
         } elseif (getenv('TMPDIR')) {
             self::$tmpdir = getenv('TMPDIR');
         } else {
-           self::$tmpdir = DIRECTORY_SEPARATOR . 'tmp';
+            self::$tmpdir = DIRECTORY_SEPARATOR . 'tmp';
         }
 
         self::$tmpdir .= DIRECTORY_SEPARATOR . 'gitlist_' . md5(time() . mt_rand()) . DIRECTORY_SEPARATOR;
@@ -29,9 +29,10 @@ class InterfaceTest extends WebTestCase
         }
 
         $options['path'] = getenv('GIT_CLIENT') ?: '/usr/bin/git';
-        $options['hidden'] = array(self::$tmpdir . '/hiddenrepo');
+        $options['hidden'] = [self::$tmpdir . '/hiddenrepo'];
         $options['default_branch'] = 'master';
-        $options['ini.file'] = "config.ini";
+        $options['ini.file'] = 'config.ini';
+        $options['projects'] = false;
 
         $cacheDir = self::$tmpdir . DIRECTORY_SEPARATOR . 'cache';
         $fs->mkdir($cacheDir);
@@ -48,7 +49,7 @@ class InterfaceTest extends WebTestCase
         $repository->setConfig('user.name', 'Luke Skywalker');
         $repository->setConfig('user.email', 'luke@rebel.org');
         $repository->addAll();
-        $repository->commit("Initial commit");
+        $repository->commit('Initial commit');
         $repository->createBranch('issue12');
         $repository->createBranch('issue42');
         $repository->createBranch('branch/name/wiith/slashes');
@@ -61,14 +62,18 @@ class InterfaceTest extends WebTestCase
         file_put_contents(self::$tmpdir . 'foobar/.git/description', 'This is a test repo!');
         $fs->mkdir(self::$tmpdir . 'foobar/myfolder');
         $fs->mkdir(self::$tmpdir . 'foobar/testfolder');
-        file_put_contents(self::$tmpdir . 'foobar/myfolder/mytest.php',
-                "<?php\necho 'Hello World'; // This is my test");
-        file_put_contents(self::$tmpdir . 'foobar/testfolder/test.php',
-                "<?php\necho 'Hello World'; // This is a test");
+        file_put_contents(
+            self::$tmpdir . 'foobar/myfolder/mytest.php',
+                "<?php\necho 'Hello World'; // This is my test"
+        );
+        file_put_contents(
+            self::$tmpdir . 'foobar/testfolder/test.php',
+                "<?php\necho 'Hello World'; // This is a test"
+        );
         $repository->setConfig('user.name', 'Luke Skywalker');
         $repository->setConfig('user.email', 'luke@rebel.org');
         $repository->addAll();
-        $repository->commit("First commit");
+        $repository->commit('First commit');
 
         // Nested repository fixture
         $nested_dir = self::$tmpdir . 'nested/';
@@ -80,13 +85,13 @@ class InterfaceTest extends WebTestCase
         $repository->setConfig('user.name', 'Luke Skywalker');
         $repository->setConfig('user.email', 'luke@rebel.org');
         $repository->addAll();
-        $repository->commit("First commit");
-        $repository->createBranch("testing");
-        $repository->checkout("testing");
+        $repository->commit('First commit');
+        $repository->createBranch('testing');
+        $repository->checkout('testing');
         file_put_contents($nested_dir . 'NestedRepo/README.txt', 'NESTED TEST BRANCH README');
         $repository->addAll();
-        $repository->commit("Changing branch");
-        $repository->checkout("master");
+        $repository->commit('Changing branch');
+        $repository->checkout('master');
 
         // master-less repository fixture
         $git->createRepository(self::$tmpdir . 'develop');
@@ -95,15 +100,15 @@ class InterfaceTest extends WebTestCase
         $repository->setConfig('user.email', 'luke@rebel.org');
         file_put_contents(self::$tmpdir . 'develop/README.md', "## develop\ndevelop is a *test* repository!");
         $repository->addAll();
-        $repository->commit("First commit");
-        $repository->createBranch("develop");
+        $repository->commit('First commit');
+        $repository->createBranch('develop');
         $repository = $repository->checkout('develop');
 
         file_put_contents(self::$tmpdir . 'develop/test.php', "<?php\necho 'Hello World'; // This is a test");
         $repository->setConfig('user.name', 'Luke Skywalker');
         $repository->setConfig('user.email', 'luke@rebel.org');
         $repository->addAll();
-        $repository->commit("Initial commit");
+        $repository->commit('Initial commit');
 
         // Detached HEAD repository fixture
         $git->createRepository(self::$tmpdir . 'detached-head');
@@ -112,7 +117,7 @@ class InterfaceTest extends WebTestCase
         $repository->setConfig('user.email', 'luke@rebel.org');
         file_put_contents(self::$tmpdir . 'detached-head/README.md', "## detached head\ndetached-head is a *test* repository!");
         $repository->addAll();
-        $repository->commit("First commit");
+        $repository->commit('First commit');
         $repository->checkout('HEAD');
 
         // mailmap repository fixture
@@ -121,26 +126,33 @@ class InterfaceTest extends WebTestCase
         $repository->setConfig('user.name', 'Luke Skywalker');
         $repository->setConfig('user.email', 'luke@rebel.org');
         file_put_contents(self::$tmpdir . 'mailmap/README.md', "## mailmap\nmailmap is a *test* repository!");
-        file_put_contents(self::$tmpdir . 'mailmap/.mailmap', "Anakin Skywalker <darth@empire.com> Luke Skywalker <luke@rebel.org>");
+        file_put_contents(self::$tmpdir . 'mailmap/.mailmap', 'Anakin Skywalker <darth@empire.com> Luke Skywalker <luke@rebel.org>');
         $repository->addAll();
-        $repository->commit("First commit");
+        $repository->commit('First commit');
+    }
+
+    public static function tearDownAfterClass()
+    {
+        $fs = new Filesystem();
+        $fs->remove(self::$tmpdir);
     }
 
     public function createApplication()
     {
-        $config = new GitList\Config;
+        $config = new GitList\Config();
         $config->set('app', 'debug', true);
         $config->set('app', 'debug', false);
         $config->set('git', 'client', self::$gitPath);
         $config->set('git', 'default_branch', 'master');
-        $config->set('git', 'repositories', array(self::$tmpdir));
+        $config->set('git', 'repositories', [self::$tmpdir]);
 
         $app = require 'boot.php';
+
         return $app;
     }
 
     /**
-     * @covers GitList\Controller\MainController::connect
+     * @covers \GitList\Controller\MainController::connect
      */
     public function testInitialPage()
     {
@@ -178,7 +190,7 @@ class InterfaceTest extends WebTestCase
     }
 
     /**
-     * @covers GitList\Controller\TreeController::connect
+     * @covers \GitList\Controller\TreeController::connect
      */
     public function testRepositoryPage()
     {
@@ -211,7 +223,7 @@ class InterfaceTest extends WebTestCase
     }
 
     /**
-     * @covers GitList\Controller\BlobController::connect
+     * @covers \GitList\Controller\BlobController::connect
      */
     public function testBlobPage()
     {
@@ -221,16 +233,26 @@ class InterfaceTest extends WebTestCase
 
         $this->assertTrue($client->getResponse()->isOk());
         $this->assertCount(1, $crawler->filter('.breadcrumb .active:contains("test.php")'));
-        $this->assertEquals('/GitTest/raw/master/test.php',
-                $crawler->filter('.source-header .btn-group a')->eq(0)->attr('href'));
-        $this->assertEquals('/GitTest/blame/master/test.php',
-                $crawler->filter('.source-header .btn-group a')->eq(1)->attr('href'));
-        $this->assertEquals('/GitTest/commits/master/test.php',
-                $crawler->filter('.source-header .btn-group a')->eq(2)->attr('href'));
+        $this->assertEquals(
+            '/GitTest/raw/master/test.php',
+                $crawler->filter('.source-header .btn-group a')->eq(0)->attr('href')
+        );
+        $this->assertEquals(
+            '/GitTest/blame/master/test.php',
+                $crawler->filter('.source-header .btn-group a')->eq(1)->attr('href')
+        );
+        $this->assertEquals(
+            '/GitTest/logpatch/master/test.php',
+                $crawler->filter('.source-header .btn-group a')->eq(2)->attr('href')
+        );
+        $this->assertEquals(
+            '/GitTest/commits/master/test.php',
+                $crawler->filter('.source-header .btn-group a')->eq(3)->attr('href')
+        );
     }
 
     /**
-     * @covers GitList\Controller\BlobController::connect
+     * @covers \GitList\Controller\BlobController::connect
      */
     public function testRawPage()
     {
@@ -242,7 +264,7 @@ class InterfaceTest extends WebTestCase
     }
 
     /**
-     * @covers GitList\Controller\CommitController::connect
+     * @covers \GitList\Controller\CommitController::connect
      */
     public function testBlamePage()
     {
@@ -251,18 +273,22 @@ class InterfaceTest extends WebTestCase
         $crawler = $client->request('GET', '/GitTest/blame/master/test.php');
         $this->assertTrue($client->getResponse()->isOk());
         $this->assertCount(1, $crawler->filter('.source-header .meta:contains("test.php")'));
-        $this->assertRegexp('/\/GitTest\/commit\/[a-zA-Z0-9%]+/',
-                $crawler->filter('.blame-view .commit')->eq(0)->filter('a')->attr('href'));
+        $this->assertRegexp(
+            '/\/GitTest\/commit\/[a-zA-Z0-9%]+/',
+                $crawler->filter('.blame-view .commit')->eq(0)->filter('a')->attr('href')
+        );
 
         $crawler = $client->request('GET', '/foobar/blame/master/bar.json');
         $this->assertTrue($client->getResponse()->isOk());
         $this->assertCount(1, $crawler->filter('.source-header .meta:contains("bar.json")'));
-        $this->assertRegexp('/\/foobar\/commit\/[a-zA-Z0-9%]+/',
-                $crawler->filter('.blame-view .commit')->eq(0)->filter('a')->attr('href'));
+        $this->assertRegexp(
+            '/\/foobar\/commit\/[a-zA-Z0-9%]+/',
+                $crawler->filter('.blame-view .commit')->eq(0)->filter('a')->attr('href')
+        );
     }
 
     /**
-     * @covers GitList\Controller\CommitController::connect
+     * @covers \GitList\Controller\CommitController::connect
      */
     public function testHistoryPage()
     {
@@ -287,7 +313,7 @@ class InterfaceTest extends WebTestCase
     }
 
     /**
-     * @covers GitList\Controller\CommitController::connect
+     * @covers \GitList\Controller\CommitController::connect
      */
     public function testCommitsPage()
     {
@@ -307,8 +333,25 @@ class InterfaceTest extends WebTestCase
         $this->assertEquals('mailto:darth@empire.com', $crawler->filter('.table tbody tr td span a')->eq(1)->attr('href'));
     }
 
+    public function testPatchLogPage()
+    {
+        $client = $this->createClient();
+
+        $crawler = $client->request('GET', '/GitTest/logpatch/master/test.php');
+        $this->assertTrue($client->getResponse()->isOk());
+        $this->assertEquals('Initial commit', $crawler->filter('.commit-header h4')->eq(0)->text());
+
+        $crawler = $client->request('GET', '/GitTest/logpatch/master/README.md');
+        $this->assertTrue($client->getResponse()->isOk());
+        $this->assertEquals('Initial commit', $crawler->filter('.commit-header h4')->eq(0)->text());
+
+        $crawler = $client->request('GET', '/foobar/logpatch/master/bar.json');
+        $this->assertTrue($client->getResponse()->isOk());
+        $this->assertEquals('First commit', $crawler->filter('.commit-header h4')->eq(0)->text());
+    }
+
     /**
-     * @covers GitList\Controller\MainController::connect
+     * @covers \GitList\Controller\MainController::connect
      */
     public function testStatsPage()
     {
@@ -327,7 +370,7 @@ class InterfaceTest extends WebTestCase
     }
 
     /**
-     * @covers GitList\Controller\MainController::connect
+     * @covers \GitList\Controller\MainController::connect
      */
     public function testRssPage()
     {
@@ -342,7 +385,7 @@ class InterfaceTest extends WebTestCase
     }
 
     /**
-     * @covers GitList\Controller\TreeController::connect
+     * @covers \GitList\Controller\TreeController::connect
      */
     public function testNestedRepoPage()
     {
@@ -356,7 +399,7 @@ class InterfaceTest extends WebTestCase
     }
 
     /**
-     * @covers GitList\Controller\TreeController::connect
+     * @covers \GitList\Controller\TreeController::connect
      */
     public function testDevelopRepo()
     {
@@ -367,7 +410,7 @@ class InterfaceTest extends WebTestCase
     }
 
     /**
-     * @covers GitList\Controller\TreeController::connect
+     * @covers \GitList\Controller\TreeController::connect
      */
     public function testNestedRepoBranch()
     {
@@ -377,11 +420,4 @@ class InterfaceTest extends WebTestCase
         $this->assertTrue($client->getResponse()->isOk());
         $this->assertRegexp('/NESTED TEST BRANCH README/', $client->getResponse()->getContent());
     }
-
-    public static function tearDownAfterClass()
-    {
-        $fs = new Filesystem();
-        $fs->remove(self::$tmpdir);
-    }
 }
-

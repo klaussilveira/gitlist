@@ -8,7 +8,7 @@ repositories[] = '/home/git/repositories/' ; Path to your repositories
 ;client = '"C:\Program Files (x86)\Git\bin\git.exe"' ; Your git executable path
 ;repositories[] = 'C:\Path\to\Repos\' ; Path to your repositories
 
-; You can hide repositories from GitList, just copy this for each repository you want to hide
+; You can hide repositories from GitList, just copy this for each repository you want to hide or add a regex (including delimiters), eg. hidden[] = '/(.+)\.git/'
 ; hidden[] = '/home/git/repositories/BetaTest'
 
 [app]
@@ -20,12 +20,17 @@ title = ""
 [clone_button]
 ; ssh remote
 show_ssh_remote = false ; display remote URL for SSH
+ssh_host = '' ; host to use for cloning via HTTP (default: none => uses gitlist web host)
+ssh_url_subdir = '' ; if cloning via SSH is triggered using special dir (e.g. ssh://example.com/git/repo.git)
+                ; has to end with trailing slash
 ssh_user = 'git' ; user to use for cloning via SSH
+ssh_user_dynamic = false ; when enabled, ssh_user is set to $_SERVER['PHP_AUTH_USER']
 
 ; http remote
 show_http_remote = false ; display remote URL for HTTP
+http_host = '' ; host to use for cloning via HTTP (default: none => uses gitlist web host)
 use_https = true ; generate URL with https://
-url_subdir = 'git/' ; if cloning via HTTP is triggered using virtual dir (e.g. https://example.com/git/repo.git)
+http_url_subdir = 'git/' ; if cloning via HTTP is triggered using virtual dir (e.g. https://example.com/git/repo.git)
                     ; has to end with trailing slash
 http_user = '' ; user to use for cloning via HTTP (default: none)
 http_user_dynamic = false ; when enabled, http_user is set to $_SERVER['PHP_AUTH_USER']

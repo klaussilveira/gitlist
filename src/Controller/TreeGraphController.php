@@ -2,9 +2,8 @@
 
 namespace GitList\Controller;
 
+use Silex\Api\ControllerProviderInterface;
 use Silex\Application;
-use Silex\ControllerProviderInterface;
-use Symfony\Component\HttpFoundation\Request;
 
 class TreeGraphController implements ControllerProviderInterface
 {
@@ -22,26 +21,26 @@ class TreeGraphController implements ControllerProviderInterface
                     '--pretty=format:"B[%d] C[%H] D[%ad] A[%an] E[%ae] H[%h] S[%s]"';
                 $rawRows = $repository->getClient()->run($repository, $command);
                 $rawRows = explode("\n", $rawRows);
-                $graphItems = array();
+                $graphItems = [];
 
                 foreach ($rawRows as $row) {
                     if (preg_match("/^(.+?)(\s(B\[(.*?)\])? C\[(.+?)\] D\[(.+?)\] A\[(.+?)\] E\[(.+?)\] H\[(.+?)\] S\[(.+?)\])?$/", $row, $output)) {
                         if (!isset($output[4])) {
-                            $graphItems[] = array(
-                                "relation"=>$output[1]
-                            );
+                            $graphItems[] = [
+                                'relation' => $output[1],
+                            ];
                             continue;
                         }
-                        $graphItems[] = array(
-                            "relation"=>$output[1],
-                            "branch"=>$output[4],
-                            "rev"=>$output[5],
-                            "date"=>$output[6],
-                            "author"=>$output[7],
-                            "author_email"=>$output[8],
-                            "short_rev"=>$output[9],
-                            "subject"=>preg_replace('/(^|\s)(#[[:xdigit:]]+)(\s|$)/', '$1<a href="$2">$2</a>$3', $output[10])
-                        );
+                        $graphItems[] = [
+                            'relation' => $output[1],
+                            'branch' => $output[4],
+                            'rev' => $output[5],
+                            'date' => $output[6],
+                            'author' => $output[7],
+                            'author_email' => $output[8],
+                            'short_rev' => $output[9],
+                            'subject' => preg_replace('/(^|\s)(#[[:xdigit:]]+)(\s|$)/', '$1<a href="$2">$2</a>$3', $output[10]),
+                        ];
                     }
                 }
 
@@ -54,12 +53,12 @@ class TreeGraphController implements ControllerProviderInterface
 
                 return $app['twig']->render(
                     'treegraph.twig',
-                    array(
+                    [
                         'repo' => $repo,
                         'branch' => $branch,
                         'commitishPath' => $commitishPath,
                         'graphItems' => $graphItems,
-                    )
+                    ]
                 );
             }
         )->assert('repo', $app['util.routing']->getRepositoryRegex())

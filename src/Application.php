@@ -2,13 +2,13 @@
 
 namespace GitList;
 
-use Silex\Application as SilexApplication;
-use Silex\Provider\TwigServiceProvider;
-use Silex\Provider\UrlGeneratorServiceProvider;
 use GitList\Provider\GitServiceProvider;
 use GitList\Provider\RepositoryUtilServiceProvider;
-use GitList\Provider\ViewUtilServiceProvider;
 use GitList\Provider\RoutingUtilServiceProvider;
+use GitList\Provider\ViewUtilServiceProvider;
+use Silex\Application as SilexApplication;
+use Silex\Provider\RoutingServiceProvider;
+use Silex\Provider\TwigServiceProvider;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
@@ -31,61 +31,65 @@ class Application extends SilexApplication
         $this->path = realpath($root);
 
         $this['debug'] = $config->get('app', 'debug');
-        $this['date.format'] = $config->get('date', 'format') ? $config->get('date', 'format') : 'd/m/Y H:i:s';
         $this['theme'] = $config->get('app', 'theme') ? $config->get('app', 'theme') : 'default';
-        $this['title'] = $config->get('app', 'title') ? $config->get('app', 'title') : 'GitList';
+        $this['date.format'] = $config->get('date', 'format') ? $config->get('date', 'format') : 'd/m/Y H:i:s';
         $this['filetypes'] = $config->getSection('filetypes');
         $this['binary_filetypes'] = $config->getSection('binary_filetypes');
         $this['cache.archives'] = $this->getCachePath() . 'archives';
         $this['avatar.url'] = $config->get('avatar', 'url');
         $this['avatar.query'] = $config->get('avatar', 'query');
-        $this['show_http_remote'] = $config->get('clone_button', 'show_http_remote');
-        $this['use_https'] = $config->get('clone_button', 'use_https');
-        $this['url_subdir'] = $config->get('clone_button', 'url_subdir');
-        $this['http_user'] = $config->get('clone_button', 'http_user_dynamic') ? $_SERVER['PHP_AUTH_USER'] : $config->get('clone_button', 'http_user');
-        $this['show_ssh_remote'] = $config->get('clone_button', 'show_ssh_remote');
-        $this['ssh_user'] = $config->get('clone_button', 'ssh_user');
 
         // Register services
-        $this->register(new TwigServiceProvider(), array(
-            'twig.path'       => array($this->getThemePath($this['theme']), $this->getThemePath('default')),
-            'twig.options'    => $config->get('app', 'cache') ?
-                                 array('cache' => $this->getCachePath() . 'views') : array(),
-        ));
+        $this->register(new TwigServiceProvider(), [
+            'twig.path' => [$this->getThemePath($this['theme']), $this->getThemePath('default')],
+            'twig.options' => $config->get('app', 'cache') ?
+                                 ['cache' => $this->getCachePath() . 'views'] : [],
+        ]);
 
         $repositories = $config->get('git', 'repositories');
         $this['git.projects'] = $config->get('git', 'project_list') ?
                                 $this->parseProjectList($config->get('git', 'project_list')) :
                                 false;
 
-        $this->register(new GitServiceProvider(), array(
-            'git.client'         => $config->get('git', 'client'),
-            'git.repos'          => $repositories,
-            'ini.file'           => "config.ini",
-            'git.hidden'         => $config->get('git', 'hidden') ?
-                                    $config->get('git', 'hidden') : array(),
+        $this->register(new GitServiceProvider(), [
+            'git.client' => $config->get('git', 'client'),
+            'git.repos' => $repositories,
+            'ini.file' => 'config.ini',
+            'git.hidden' => $config->get('git', 'hidden') ?
+                                    $config->get('git', 'hidden') : [],
             'git.default_branch' => $config->get('git', 'default_branch') ?
                                     $config->get('git', 'default_branch') : 'master',
-        ));
+        ]);
 
         $this->register(new ViewUtilServiceProvider());
         $this->register(new RepositoryUtilServiceProvider());
-        $this->register(new UrlGeneratorServiceProvider());
+        $this->register(new RoutingServiceProvider());
         $this->register(new RoutingUtilServiceProvider());
 
-        $this['twig'] = $this->share($this->extend('twig', function ($twig, $app) {
+        $this->extend('twig', function ($twig, $app) use ($config) {
             $twig->addFilter(new \Twig_SimpleFilter('htmlentities', 'htmlentities'));
             $twig->addFilter(new \Twig_SimpleFilter('md5', 'md5'));
-            $twig->addFilter(new \Twig_SimpleFilter('format_date', array($app, 'formatDate')));
-            $twig->addFilter(new \Twig_SimpleFilter('format_size', array($app, 'formatSize')));
-            $twig->addFunction(new \Twig_SimpleFunction('avatar', array($app, 'getAvatar')));
+            $twig->addFilter(new \Twig_SimpleFilter('format_date', [$app, 'formatDate']));
+            $twig->addFilter(new \Twig_SimpleFilter('format_size', [$app, 'formatSize']));
+            $twig->addFunction(new \Twig_SimpleFunction('avatar', [$app, 'getAvatar']));
+            $twig->addGlobal('theme', $app['theme']);
+            $twig->addGlobal('title', $config->get('app', 'title') ? $config->get('app', 'title') : 'GitList');
+            $twig->addGlobal('show_http_remote', $config->get('clone_button', 'show_http_remote'));
+            $twig->addGlobal('use_https', $config->get('clone_button', 'use_https'));
+            $twig->addGlobal('http_url_subdir', $config->get('clone_button', 'http_url_subdir'));
+            $twig->addGlobal('http_user', $config->get('clone_button', 'http_user_dynamic') ? $_SERVER['PHP_AUTH_USER'] : $config->get('clone_button', 'http_user'));
+            $twig->addGlobal('http_host', $config->get('clone_button', 'http_host'));
+            $twig->addGlobal('show_ssh_remote', $config->get('clone_button', 'show_ssh_remote'));
+            $twig->addGlobal('ssh_user', $config->get('clone_button', 'ssh_user_dynamic') ? $_SERVER['PHP_AUTH_USER'] : $config->get('clone_button', 'ssh_user'));
+            $twig->addGlobal('ssh_url_subdir', $config->get('clone_button', 'ssh_url_subdir'));
+            $twig->addGlobal('ssh_host', $config->get('clone_button', 'ssh_host'));
 
             return $twig;
-        }));
-
-        $this['escaper.argument'] = $this->share(function() {
-            return new Escaper\ArgumentEscaper();
         });
+
+        $this['escaper.argument'] = function () {
+            return new Escaper\ArgumentEscaper();
+        };
 
         // Handle errors
         $this->error(function (\Exception $e, $code) use ($app) {
@@ -93,9 +97,9 @@ class Application extends SilexApplication
                 return;
             }
 
-            return $app['twig']->render('error.twig', array(
+            return $app['twig']->render('error.twig', [
                 'message' => $e->getMessage(),
-            ));
+            ]);
         });
 
         $this->finish(function () use ($app, $config) {
@@ -114,21 +118,26 @@ class Application extends SilexApplication
     public function formatSize($size)
     {
         $mod = 1000;
-        $units = array('B', 'kB', 'MB', 'GB');
-        for($i = 0; $size > $mod; $i++) $size /= $mod;
+        $units = ['B', 'kB', 'MB', 'GB'];
+        for ($i = 0; $size > $mod; $i++) {
+            $size /= $mod;
+        }
+
         return round($size, 2) . $units[$i];
     }
 
     public function getAvatar($email, $size)
     {
-        $url = $this['avatar.url'] ? $this['avatar.url'] : "//gravatar.com/avatar/";
-        $query = array("s=$size");
-        if (is_string($this['avatar.query']))
+        $url = $this['avatar.url'] ? $this['avatar.url'] : '//gravatar.com/avatar/';
+        $query = ["s=$size"];
+        if (is_string($this['avatar.query'])) {
             $query[] = $this['avatar.query'];
-        else if (is_array($this['avatar.query']))
+        } elseif (is_array($this['avatar.query'])) {
             $query = array_merge($query, $this['avatar.query']);
+        }
         $id = md5(strtolower($email));
-        return $url . $id . "?" . implode('&', $query);
+
+        return $url . $id . '?' . implode('&', $query);
     }
 
     public function getPath()
@@ -165,11 +174,13 @@ class Application extends SilexApplication
 
     public function parseProjectList($project_list)
     {
-        $projects = array();
-        $file = fopen($project_list, "r");
-        while ($file && !feof($file))
+        $projects = [];
+        $file = fopen($project_list, 'r');
+        while ($file && !feof($file)) {
             $projects[] = trim(fgets($file));
+        }
         fclose($file);
+
         return $projects;
     }
 }

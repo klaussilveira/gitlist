@@ -27,8 +27,6 @@
 
 .tree {
   border: 1px solid @navbar-default-border;
-  border-radius: @border-radius-base;
-
   > thead > tr > th {
     background-color: @navbar-default-bg;
     padding: 8px;
@@ -65,6 +63,7 @@
   width: 100%;
   margin-bottom: @line-height-computed;
   border: 1px solid @navbar-default-border;
+  border-radius: @border-radius-base;
 
   .source-header {
     background-color: @navbar-default-bg;
@@ -73,7 +72,10 @@
     text-align: left;
     vertical-align: bottom;
     border-bottom: 1px solid @navbar-default-border;
-    height: 47px;
+	border-top-right-radius: @border-radius-base;
+	border-top-left-radius: @border-radius-base;
+    
+    .clearfix();
 
     .meta {
       float: left;
@@ -95,6 +97,7 @@
   }
   .source-diff {
     background-color: #F8F8F8;
+    overflow-x: scroll;
     pre {
       margin: 0;
       padding: 0 0 0 6px;
@@ -181,8 +184,6 @@
     line-height: @line-height-computed;
     text-align: left;
     vertical-align: top;
-    border-bottom: 1px solid @gray-lighter;
-    border-right: 1px solid @gray-lighter;
   }
 
   h4, h5, h6 {
@@ -217,6 +218,7 @@
 
 .commit-list {
   list-style-type: none;
+  margin-bottom:0;
   li {
     padding: 8px 5px 8px 5px;
     font-size: 14px;
@@ -227,10 +229,14 @@
       font-size: 14px;
       color: @gray-light;
     }
+    .clearfix();
+  }
+  li:first-child {
+    padding-top: 0;
   }
   li:last-child {
     border-bottom: 0;
-    margin-bottom: 25px;
+    padding-bottom: 0;
   }
 }
 
