@@ -33,7 +33,6 @@ In order to run GitList on your server, you'll need:
 * Do not download a branch or tag from GitHub, unless you want to use the development version. The version available for download at the website already has all dependencies bundled, so you don't have to use composer or any other tool
 * Rename the `config.ini-example` file to `config.ini`.
 * Open up the `config.ini` and configure your installation. You'll have to provide where your repositories are located.
-* In case GitList isn't accessed through the root of the website, open .htaccess and edit RewriteBase (for example, /gitlist/ if GitList is accessed through http://localhost/gitlist/).
 * Create the cache folder and give read/write permissions to your web server user:
 
 ```
