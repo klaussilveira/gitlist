@@ -2,11 +2,16 @@
     Options -MultiViews +SymLinksIfOwnerMatch
 
     RewriteEngine On
-    #RewriteBase /path/to/gitlist/
+
+    RewriteCond %{ENV:URI} ^$
+    RewriteRule ^(.*)$ - [ENV=URI:$1]
+
+    RewriteCond %{ENV:BASE} ^$
+    RewriteCond %{ENV:URI}::%{REQUEST_URI} ^(.*)::(.*?)\1$
+    RewriteRule ^ - [ENV=BASE:%2]
 
     RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule ^(.*)$ index.php/$1 [L,NC]
+    RewriteRule ^(.*)$ %{ENV:BASE}index.php [L,QSA]
 </IfModule>
 <Files config.ini>
     order allow,deny
