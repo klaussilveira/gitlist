@@ -322,15 +322,17 @@ class Repository extends BaseRepository
             return null;
         }
 
+        $query = preg_replace('/(--?[A-Za-z0-9\-]+)/', '', $query);
         $query = escapeshellarg($query);
 
         try {
-            $results = $this->getClient()->run($this, "grep -i --line-number {$query} $branch");
+            $results = $this->getClient()->run($this, "grep -i --line-number -- {$query} $branch");
         } catch (\RuntimeException $e) {
             return false;
         }
 
         $results = explode("\n", $results);
+        $searchResults = [];
 
         foreach ($results as $result) {
             if ($result == '') {
