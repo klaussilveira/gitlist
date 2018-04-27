@@ -9,7 +9,13 @@
 
     <div class="commit-view">
         <div class="commit-header">
-            <span class="pull-right"><a class="btn btn-small" href="{{ path('branch', {repo: repo, branch: commit.hash}) }}" title="Browse code at this point in history"><i class="icon-list-alt"></i> Browse code</a></span>
+            <span class="btn-group pull-right">
+            {% if size == "full" %}
+                <a href="{{ path('commit', {repo: repo, commit: commit.hash, size:'short', numCommits: numCommits}) }}"  class="btn btn-default btn-sm"><span class="fa fa-arrow-down"></span> Short diff</a>
+            {% else %}
+                <a href="{{ path('commit', {repo: repo, commit: commit.hash, size:'full', numCommits: numCommits}) }}"  class="btn btn-default btn-sm"><span class="fa fa-arrow-up"></span> Full diff</a>
+            {% endif %}
+            <a class="btn btn-small" href="{{ path('branch', {repo: repo, branch: commit.hash}) }}" title="Browse code at this point in history"><i class="icon-list-alt"></i> Browse code</a></span>
             <h4>{{ commit.message }}</h4>
         </div>
         <div class="commit-body">

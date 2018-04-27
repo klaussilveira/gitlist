@@ -84,7 +84,7 @@ class Repository extends BaseRepository
      *
      * @return array  Commit data
      */
-    public function getCommit($commitHash)
+    public function getCommit($commitHash, $size)
     {
         $logs = $this->getClient()->run(
             $this,
@@ -110,7 +110,13 @@ class Repository extends BaseRepository
         $commit->importData($data[0]);
 
         if ($commit->getParentsHash()) {
-            $command = 'diff ' . $commitHash . '~1..' . $commitHash;
+            $command = 'diff ';
+            if ($size == "full")
+            {
+                $command .= ' -U999999 ';
+            }
+            $command .= $commitHash . '~1..' . $commitHash;
+
             $logs = explode("\n", $this->getClient()->run($this, $command));
         }
 
