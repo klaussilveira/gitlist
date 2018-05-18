@@ -13,7 +13,7 @@ cache:
     - vendor
 
 install:
-  - travis_retry composer install --no-interaction --prefer-source
+  - travis_retry composer install --no-interaction --no-dev --ignore-platform-reqs
 
 script:
   - vendor/bin/phpunit --verbose
