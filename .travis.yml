@@ -13,10 +13,13 @@ cache:
     - vendor
 
 install:
-  - travis_retry composer install --no-interaction --no-dev --ignore-platform-reqs
+  - travis_retry composer install --no-interaction --ignore-platform-reqs
 
 script:
   - vendor/bin/phpunit --verbose
 
 matrix:
   fast_finish: true
+  include:
+    - php: 5.3
+      dist: precise
