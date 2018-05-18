@@ -2,7 +2,7 @@
 
 namespace GitList\Controller;
 
-use Silex\Api\ControllerProviderInterface;
+use Silex\ControllerProviderInterface;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -25,13 +25,13 @@ class BlobController implements ControllerProviderInterface
             $fileType = $app['util.repository']->getFileType($file);
 
             if ($fileType !== 'image' && $app['util.repository']->isBinary($file)) {
-                return $app->redirect($app['url_generator']->generate('blob_raw', [
+                return $app->redirect($app['url_generator']->generate('blob_raw', array(
                     'repo' => $repo,
                     'commitishPath' => $commitishPath,
-                ]));
+                )));
             }
 
-            return $app['twig']->render('file.twig', [
+            return $app['twig']->render('file.twig', array(
                 'file' => $file,
                 'fileType' => $fileType,
                 'blob' => $blob->output(),
@@ -40,7 +40,7 @@ class BlobController implements ControllerProviderInterface
                 'breadcrumbs' => $breadcrumbs,
                 'branches' => $repository->getBranches(),
                 'tags' => $repository->getTags(),
-            ]);
+            ));
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
           ->assert('commitishPath', '.+')
           ->convert('commitishPath', 'escaper.argument:escape')
@@ -56,7 +56,7 @@ class BlobController implements ControllerProviderInterface
 
             $blob = $repository->getBlob("$branch:\"$file\"")->output();
 
-            $headers = [];
+            $headers = array();
             if ($app['util.repository']->isBinary($file)) {
                 $headers['Content-Disposition'] = 'attachment; filename="' . $file . '"';
                 $headers['Content-Type'] = 'application/octet-stream';
@@ -79,12 +79,12 @@ class BlobController implements ControllerProviderInterface
             $filePatchesLog = $repository->getCommitsLogPatch($file);
             $breadcrumbs = $app['util.view']->getBreadcrumbs($file);
 
-            return $app['twig']->render('logpatch.twig', [
+            return $app['twig']->render('logpatch.twig', array(
                 'branch' => $branch,
                 'repo' => $repo,
                 'breadcrumbs' => $breadcrumbs,
                 'commits' => $filePatchesLog,
-            ]);
+            ));
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
             ->assert('commitishPath', '.+')
             ->convert('commitishPath', 'escaper.argument:escape')

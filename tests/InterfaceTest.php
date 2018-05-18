@@ -29,7 +29,7 @@ class InterfaceTest extends WebTestCase
         }
 
         $options['path'] = getenv('GIT_CLIENT') ?: '/usr/bin/git';
-        $options['hidden'] = [self::$tmpdir . '/hiddenrepo'];
+        $options['hidden'] = array(self::$tmpdir . '/hiddenrepo');
         $options['default_branch'] = 'master';
         $options['ini.file'] = 'config.ini';
         $options['projects'] = false;
@@ -144,7 +144,7 @@ class InterfaceTest extends WebTestCase
         $config->set('app', 'debug', false);
         $config->set('git', 'client', self::$gitPath);
         $config->set('git', 'default_branch', 'master');
-        $config->set('git', 'repositories', [self::$tmpdir]);
+        $config->set('git', 'repositories', array(self::$tmpdir));
 
         $app = require 'boot.php';
 

@@ -8,7 +8,7 @@ class Repository
 {
     protected $app;
 
-    protected $defaultFileTypes = [
+    protected $defaultFileTypes = array(
         'php' => 'php',
         'c' => 'clike',
         'h' => 'clike',
@@ -94,14 +94,14 @@ class Repository
         'jpeg' => 'image',
         'bmp' => 'image',
         'csproj' => 'xml',
-    ];
+    );
 
-    protected static $binaryTypes = [
+    protected static $binaryTypes = array(
         'exe', 'com', 'so', 'la', 'o', 'dll', 'pyc',
         'jpg', 'jpeg', 'bmp', 'gif', 'png', 'xmp', 'pcx', 'svgz', 'ttf', 'tiff', 'oet',
         'gz', 'tar', 'rar', 'zip', '7z', 'jar', 'class',
         'odt', 'ods', 'pdf', 'doc', 'docx', 'dot', 'xls', 'xlsx',
-    ];
+    );
 
     public function __construct(Application $app)
     {
@@ -179,10 +179,10 @@ class Repository
 
         foreach ($files as $file) {
             if (preg_match('/^readme*/i', $file['name'])) {
-                return [
+                return array(
                     'filename' => $file['name'],
                     'content' => $repository->getBlob("$branch:\"$path{$file['name']}\"")->output(),
-                ];
+                );
             }
         }
         // No contextual readme, try to catch the main one if we are in deeper context
@@ -190,7 +190,7 @@ class Repository
             return $this->getReadme($repository, $branch, '');
         }
 
-        return [];
+        return array();
     }
 
     /**
@@ -230,6 +230,6 @@ class Repository
             }
         }
 
-        return [$branch, $tree];
+        return array($branch, $tree);
     }
 }

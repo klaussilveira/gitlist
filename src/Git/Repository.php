@@ -57,7 +57,7 @@ class Repository extends BaseRepository
             . "</item>\" $file"
         );
 
-        $patch_collection = [];
+        $patch_collection = array();
         foreach (preg_split('/(' . $record_delimiter . '\<item\>)/', $file_patches, null, PREG_SPLIT_NO_EMPTY) as $patches) {
             $patches = '<item>' . $patches;
             $xmlEnd = strpos($patches, '</item>') + 7;
@@ -128,7 +128,7 @@ class Repository extends BaseRepository
      */
     public function getBlame($file)
     {
-        $blame = [];
+        $blame = array();
         $logs = $this->getClient()->run($this, "blame --root -sl $file");
         $logs = explode("\n", $logs);
 
@@ -144,11 +144,11 @@ class Repository extends BaseRepository
             $currentCommit = $match[1][0];
             if ($currentCommit != $previousCommit) {
                 ++$i;
-                $blame[$i] = [
+                $blame[$i] = array(
                     'line' => '',
                     'commit' => $currentCommit,
                     'commitShort' => substr($currentCommit, 0, 8),
-                ];
+                );
             }
 
             $blame[$i]['line'] .= $match[3][0] . PHP_EOL;
@@ -167,7 +167,7 @@ class Repository extends BaseRepository
      */
     public function readDiffLogs(array $logs)
     {
-        $diffs = [];
+        $diffs = array();
         $lineNumOld = 0;
         $lineNumNew = 0;
         foreach ($logs as $log) {
@@ -205,7 +205,7 @@ class Repository extends BaseRepository
 
             // Handle binary files properly.
             if ('Binary' === substr($log, 0, 6)) {
-                $m = [];
+                $m = array();
                 if (preg_match('/Binary files (.+) and (.+) differ/', $log, $m)) {
                     $diff->setOld($m[1]);
                     $diff->setNew("    {$m[2]}");
@@ -275,7 +275,7 @@ class Repository extends BaseRepository
         try {
             $logs = $this->getPrettyFormat($command);
         } catch (\RuntimeException $e) {
-            return [];
+            return array();
         }
 
         foreach ($logs as $log) {
@@ -290,7 +290,7 @@ class Repository extends BaseRepository
     public function searchCommitLog($query, $branch)
     {
         $query = escapeshellarg($query);
-        $query = strtr($query, ['[' => '\\[', ']' => '\\]']);
+        $query = strtr($query, array('[' => '\\[', ']' => '\\]'));
         $command =
               "log --grep={$query} -i --pretty=format:\"<item><hash>%H</hash>"
             . '<short_hash>%h</short_hash><tree>%T</tree><parents>%P</parents>'
@@ -304,7 +304,7 @@ class Repository extends BaseRepository
         try {
             $logs = $this->getPrettyFormat($command);
         } catch (\RuntimeException $e) {
-            return [];
+            return array();
         }
 
         foreach ($logs as $log) {
@@ -332,7 +332,7 @@ class Repository extends BaseRepository
         }
 
         $results = explode("\n", $results);
-        $searchResults = [];
+        $searchResults = array();
 
         foreach ($results as $result) {
             if ($result == '') {
@@ -366,7 +366,7 @@ class Repository extends BaseRepository
 
         foreach ($logs as $user => $count) {
             $user = explode('||', $user);
-            $data[] = ['name' => $user[0], 'email' => $user[1], 'commits' => $count];
+            $data[] = array('name' => $user[0], 'email' => $user[1], 'commits' => $count);
         }
 
         return $data;
@@ -377,8 +377,8 @@ class Repository extends BaseRepository
         // Calculate amount of files, extensions and file size
         $logs = $this->getClient()->run($this, 'ls-tree -r -l ' . $branch);
         $lines = explode("\n", $logs);
-        $files = [];
-        $data['extensions'] = [];
+        $files = array();
+        $data['extensions'] = array();
         $data['size'] = 0;
         $data['files'] = 0;
 

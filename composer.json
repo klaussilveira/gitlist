@@ -2,21 +2,19 @@
     "name": "klaussilveira/gitlist",
     "description": "An elegant git repository viewer",
     "require": {
-        "silex/silex": "~2.2",
-        "twig/twig": "~2.4",
-        "symfony/twig-bridge": "~3.0",
-        "symfony/filesystem": "~3.0",
+        "silex/silex": "1.3.*",
+        "twig/twig": "1.35.*",
+        "symfony/process": "2.8.*",
+        "symfony/http-kernel": "2.8.*",
+        "symfony/twig-bridge": "2.8.*",
+        "symfony/filesystem": "2.8.*",
         "klaussilveira/gitter": "0.2.*"
     },
     "require-dev": {
-        "symfony/browser-kit": "~3.0",
-        "symfony/css-selector": "~3.0",
+        "symfony/browser-kit": "~2.8",
+        "symfony/css-selector": "~2.8",
         "phpunit/phpunit": "~5.0",
-        "phpmd/phpmd": "1.5.*",
-        "phploc/phploc": "2.0.*",
-        "sebastian/phpcpd": "2.0.*",
-        "doctrine/annotations": "^1.4",
-        "friendsofphp/php-cs-fixer": "^2.5"
+        "doctrine/annotations": "^1.4"
     },
     "minimum-stability": "stable",
     "autoload": {

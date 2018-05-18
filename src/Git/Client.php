@@ -36,7 +36,7 @@ class Client extends BaseClient
      */
     public function getRepositories($paths)
     {
-        $allRepositories = [];
+        $allRepositories = array();
 
         foreach ($paths as $path) {
             $repositories = $this->recurseDirectory($path);
@@ -161,7 +161,7 @@ class Client extends BaseClient
     {
         $dir = new \DirectoryIterator($path);
 
-        $repositories = [];
+        $repositories = array();
 
         foreach ($dir as $file) {
             if ($file->isDot()) {
@@ -219,11 +219,11 @@ class Client extends BaseClient
                         continue;
                     }
 
-                    $repositories[$repoName] = [
+                    $repositories[$repoName] = array(
                         'name' => $repoName,
                         'path' => $file->getPathname(),
                         'description' => $description,
-                    ];
+                    );
 
                     continue;
                 }

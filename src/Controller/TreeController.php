@@ -2,7 +2,7 @@
 
 namespace GitList\Controller;
 
-use Silex\Api\ControllerProviderInterface;
+use Silex\ControllerProviderInterface;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,7 +32,7 @@ class TreeController implements ControllerProviderInterface
                 $parent = '';
             }
 
-            return $app['twig']->render('tree.twig', [
+            return $app['twig']->render('tree.twig', array(
                 'files' => $files->output(),
                 'repo' => $repo,
                 'branch' => $branch,
@@ -42,7 +42,7 @@ class TreeController implements ControllerProviderInterface
                 'branches' => $repository->getBranches(),
                 'tags' => $repository->getTags(),
                 'readme' => $app['util.repository']->getReadme($repository, $branch, $tree ? "$tree" : ''),
-            ]);
+            ));
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
           ->assert('commitishPath', $app['util.routing']->getCommitishPathRegex())
           ->convert('commitishPath', 'escaper.argument:escape')
@@ -55,10 +55,10 @@ class TreeController implements ControllerProviderInterface
             }
 
             $query = $request->get('query');
-            $breadcrumbs = [['dir' => 'Search results for: ' . $query, 'path' => '']];
+            $breadcrumbs = array(array('dir' => 'Search results for: ' . $query, 'path' => ''));
             $results = $repository->searchTree($query, $branch);
 
-            return $app['twig']->render('search.twig', [
+            return $app['twig']->render('search.twig', array(
                 'results' => $results,
                 'repo' => $repo,
                 'branch' => $branch,
@@ -67,7 +67,7 @@ class TreeController implements ControllerProviderInterface
                 'branches' => $repository->getBranches(),
                 'tags' => $repository->getTags(),
                 'query' => $query,
-            ]);
+            ));
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
           ->assert('branch', $app['util.routing']->getBranchRegex())
           ->convert('branch', 'escaper.argument:escape')

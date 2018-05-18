@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="gitlist" default="build">
     <property name="vendordir" value="${basedir}/vendor/bin" />
-    <target name="build" depends="prepare,lint,phploc,pdepend,phpmd,phpcpd,phpunit,phpcs" />
+    <target name="build" depends="prepare,lint,phpunit" />
     <target name="build-package" depends="prepare-package,package" />
 
     <target name="clean" description="Clean build artifacts">
@@ -21,7 +21,6 @@
         <copy file="config.ini-example" tofile="config.ini"/>
         <exec executable="${basedir}/composer.phar" failonerror="true">
             <arg value="install" />
-            <arg value="--dev" />
         </exec>
     </target>
 
@@ -29,6 +28,7 @@
         <delete dir="${basedir}/vendor"/>
         <exec executable="${basedir}/composer.phar" failonerror="true">
             <arg value="install" />
+            <arg value="--no-dev" />
             <arg value="--optimize-autoloader" />
         </exec>
     </target>
@@ -46,64 +46,20 @@
         </apply>
     </target>
 
-    <target name="phploc" description="Measure project size using PHPLOC">
-        <exec executable="${vendordir}/phploc">
-            <arg value="--log-csv" />
-            <arg value="${basedir}/build/logs/phploc.csv" />
-            <arg path="${basedir}/src" />
-        </exec>
-    </target>
-
-    <target name="pdepend" description="Calculate software metrics using PHP_Depend">
-        <exec executable="${vendordir}/pdepend">
-            <arg value="--jdepend-xml=${basedir}/build/logs/jdepend.xml" />
-            <arg value="--jdepend-chart=${basedir}/build/pdepend/dependencies.svg" />
-            <arg value="--overview-pyramid=${basedir}/build/pdepend/overview-pyramid.svg" />
-            <arg value="--ignore=${basedir}/cache,${basedir}/vendor" />
-            <arg path="${basedir}/src" />
-        </exec>
-    </target>
-
-    <target name="phpmd" description="Perform project mess detection using PHPMD creating a log file for the continuous integration server">
-        <exec executable="${vendordir}/phpmd">
-            <arg path="${basedir}/src" />
-            <arg value="xml" />
-            <arg value="codesize,design,unusedcode,naming" />
-            <arg value="--reportfile" />
-            <arg value="${basedir}/build/logs/pmd.xml" />
-        </exec>
-    </target>
-
-    <target name="phpcpd" description="Find duplicate code using PHPCPD">
-        <exec executable="${vendordir}/phpcpd">
-            <arg value="--log-pmd" />
-            <arg value="${basedir}/build/logs/pmd-cpd.xml" />
-            <arg path="${basedir}/src" />
-        </exec>
-    </target>
-
     <target name="phpunit" description="Run unit tests with PHPUnit">
         <exec executable="${vendordir}/phpunit" failonerror="true"/>
     </target>
 
-    <target name="phpcs" description="Find coding standard violations using PHP_CodeSniffer creating a log file for the continuous integration server">
-        <exec executable="${vendordir}/php-cs-fixer" output="${basedir}/build/logs/cs.xml">
-            <arg value="fix" />
-            <arg value="--dry-run" />
-            <arg value="--format=junit" />
-        </exec>
-    </target>
-
     <target name="package" description="Package the application for distribution">
         <copy todir="${basedir}/build/gitlist/">
-            <fileset dir="${basedir}" excludes="cache/**, build/**, tests/**, pkg_builder/**, phpunit.xml.dist, cache.properties, .gitignore, .travis.yml, build.xml, composer.json, composer.lock, composer.phar, config.ini, .php_cs, .php_cs.cache" />
+            <fileset dir="${basedir}" excludes="cache/**, build/**, tests/**, pkg_builder/**, phpunit.xml.dist, cache.properties, .gitignore, .travis.yml, build.xml, composer.json, composer.lock, composer.phar, config.ini" />
         </copy>
 
         <tar destfile="${basedir}/build/gitlist-master.tar.gz"
             basedir="${basedir}/build/"
             compression="gzip"
             longfile="gnu"
-            excludes="gitlist-master.tar.gz, **/logs/**, **/pdepend/**"
+            excludes="gitlist-master.tar.gz, **/phpunit.xml.dist, **/composer.lock, **/composer.json, **/.travis.yml, **/test/**, **/tests/**, **/logs/**, **/pdepend/**"
         />
     </target>
 </project>

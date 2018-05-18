@@ -14,16 +14,16 @@ class View
     public function getBreadcrumbs($spec)
     {
         if (!$spec) {
-            return [];
+            return array();
         }
 
         $paths = explode('/', $spec);
 
         foreach ($paths as $i => $path) {
-            $breadcrumbs[] = [
+            $breadcrumbs[] = array(
                 'dir' => $path,
                 'path' => implode('/', array_slice($paths, 0, $i + 1)),
-            ];
+            );
         }
 
         return $breadcrumbs;
@@ -39,11 +39,11 @@ class View
         $nextPage = $pageNumber + 1;
         $previousPage = $pageNumber - 1;
 
-        return ['current' => $pageNumber,
+        return array('current' => $pageNumber,
                      'next' => $nextPage,
                      'previous' => $previousPage,
                      'last' => $lastPage,
                      'total' => $totalCommits,
-        ];
+        );
     }
 }

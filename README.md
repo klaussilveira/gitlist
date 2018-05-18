@@ -13,20 +13,16 @@ GitList is an elegant and modern web interface for interacting with multiple git
 * Repository statistics
 
 ## Screenshots
-[![GitList Screenshot](http://dl.dropbox.com/u/62064441/th1.jpg)](http://cloud.github.com/downloads/klaussilveira/gitlist/1.jpg)
-[![GitList Screenshot](http://dl.dropbox.com/u/62064441/th2.jpg)](http://cloud.github.com/downloads/klaussilveira/gitlist/2.jpg)
-[![GitList Screenshot](http://dl.dropbox.com/u/62064441/th3.jpg)](http://cloud.github.com/downloads/klaussilveira/gitlist/3.jpg)
-[![GitList Screenshot](http://dl.dropbox.com/u/62064441/th4.jpg)](http://cloud.github.com/downloads/klaussilveira/gitlist/4.jpg)
-[![GitList Screenshot](http://dl.dropbox.com/u/62064441/th5.jpg)](http://cloud.github.com/downloads/klaussilveira/gitlist/5.jpg)
-
-You can also see a live demo [here](http://gitlist-khornberg.rhcloud.com/).
+![Screenshot 1](https://raw.githubusercontent.com/klaussilveira/gitlist/gh-pages/img/roller/1.jpg)
+![Screenshot 1](https://raw.githubusercontent.com/klaussilveira/gitlist/gh-pages/img/roller/2.jpg)
+![Screenshot 1](https://raw.githubusercontent.com/klaussilveira/gitlist/gh-pages/img/roller/3.jpg)
 
 ## Requirements
 In order to run GitList on your server, you'll need:
 
+* PHP 5.3+
 * git
-* Apache with mod_rewrite enabled or nginx
-* PHP 7
+* Webserver (Apache, nginx, lighttpd)
 
 ## Installation
 * Download GitList from [gitlist.org](http://gitlist.org/) and decompress to your `/var/www/gitlist` folder, or anywhere else you want to place GitList.
@@ -51,14 +47,8 @@ That's it, installation complete! If you're having problems, check the [Troubles
 ## License
 [New BSD license](http://www.opensource.org/licenses/bsd-license.php)
 
-## Todo
-* improve the current test code coverage
-* test the interface
-* submodule support
-* multilanguage support
-
 ## Development
-GitList uses [Composer](http://getcomposer.org/) to manage dependencies and [Ant](http://ant.apache.org/) to build the project. In order to run all the targets in the build script, you will need [PHPUnit](http://www.phpunit.de/), [phpcpd](https://github.com/sebastianbergmann/phpcpd), [phploc](https://github.com/sebastianbergmann/phploc), [PHPMD](http://phpmd.org/) and [PHP_Depend](http://pdepend.org).
+GitList uses [Composer](http://getcomposer.org/) to manage dependencies and [Ant](http://ant.apache.org/) to build the project.
 
 Once you have all the dependencies set, you can clone the repository and run Ant:
 
@@ -80,9 +70,8 @@ If you have Composer in your path, things get easier. But you know the drill.
 ## Contributing
 If you are a developer, we need your help. GitList is a young project and we have lots of stuff to do. Some developers are contributing with new features, others with bug fixes. But you can also dedicate yourself to refactoring the current codebase and improving what we already have. This is very important, we want GitList to be a state-of-the-art application, and we need your help for that.
 
-* Stay tuned to possible bugs, suboptimal code, duplicated code, overcomplicated expressions and unused code with [PHPMD](http://ci.gitlist.org:8080/job/GitList%20\(master\)/9/pmdResult/?) in our CI server
-* Try to fix any [violations](http://ci.gitlist.org:8080/job/GitList%20\(master\)/violations/) reported
-* Improve the [test coverage](http://ci.gitlist.org:8080/job/GitList%20\(master\)/9/cloverphp-report/) by creating unit and functional tests
+* Stay tuned to possible bugs, suboptimal code, duplicated code, overcomplicated expressions and unused code
+* Improve the test coverage by creating unit and functional tests
 
 ## Further information
 If you want to know more about customizing GitList, check the [Customization](https://github.com/klaussilveira/gitlist/wiki/Customizing) page on the wiki. Also, if you're having problems with GitList, check the [Troubleshooting](https://github.com/klaussilveira/gitlist/wiki/Troubleshooting) page. Don't forget to report issues and suggest new features! :)

@@ -3,15 +3,19 @@
 namespace GitList\Provider;
 
 use GitList\Util\View;
-use Pimple\Container;
-use Pimple\ServiceProviderInterface;
+use Silex\Application;
+use Silex\ServiceProviderInterface;
 
 class ViewUtilServiceProvider implements ServiceProviderInterface
 {
-    public function register(Container $container)
+    public function register(Application $app)
     {
-        $container['util.view'] = function () {
+        $app['util.view'] = function () {
             return new View();
         };
+    }
+
+    public function boot(Application $app)
+    {
     }
 }

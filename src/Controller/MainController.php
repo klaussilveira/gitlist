@@ -2,7 +2,7 @@
 
 namespace GitList\Controller;
 
-use Silex\Api\ControllerProviderInterface;
+use Silex\ControllerProviderInterface;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,9 +16,9 @@ class MainController implements ControllerProviderInterface
         $route->get('/', function () use ($app) {
             $repositories = $app['git']->getRepositories($app['git.repos']);
 
-            return $app['twig']->render('index.twig', [
+            return $app['twig']->render('index.twig', array(
                 'repositories' => $repositories,
-            ]);
+            ));
         })->bind('homepage');
 
         $route->get('/refresh', function (Request $request) use ($app) {
@@ -36,14 +36,14 @@ class MainController implements ControllerProviderInterface
             $stats = $repository->getStatistics($branch);
             $authors = $repository->getAuthorStatistics($branch);
 
-            return $app['twig']->render('stats.twig', [
+            return $app['twig']->render('stats.twig', array(
                 'repo' => $repo,
                 'branch' => $branch,
                 'branches' => $repository->getBranches(),
                 'tags' => $repository->getTags(),
                 'stats' => $stats,
                 'authors' => $authors,
-            ]);
+            ));
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
           ->assert('branch', $app['util.routing']->getBranchRegex())
           ->value('branch', null)
@@ -59,13 +59,13 @@ class MainController implements ControllerProviderInterface
 
             $commits = $repository->getPaginatedCommits($branch);
 
-            $html = $app['twig']->render('rss.twig', [
+            $html = $app['twig']->render('rss.twig', array(
                 'repo' => $repo,
                 'branch' => $branch,
                 'commits' => $commits,
-            ]);
+            ));
 
-            return new Response($html, 200, ['Content-Type' => 'application/rss+xml']);
+            return new Response($html, 200, array('Content-Type' => 'application/rss+xml'));
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
           ->assert('branch', $app['util.routing']->getBranchRegex())
           ->value('branch', null)

@@ -84,7 +84,7 @@ class Routing
             $path = substr($path, 1);
         }
 
-        return [$commitish, $path];
+        return array($commitish, $path);
     }
 
     public function getBranchRegex()
