@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "334b0425bae24ce3c2efc79c202c3b20",
+    "content-hash": "52cd6d04c3277ab6b75b6b62ae86f00a",
     "packages": [
         {
             "name": "klaussilveira/gitter",
@@ -2157,6 +2157,8 @@
     "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
+    "platform": {
+        "php": ">=5.3"
+    },
     "platform-dev": []
 }
