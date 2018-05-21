@@ -83,6 +83,7 @@ class Application extends SilexApplication
             $twig->addGlobal('ssh_user', $config->get('clone_button', 'ssh_user_dynamic') ? $_SERVER['PHP_AUTH_USER'] : $config->get('clone_button', 'ssh_user'));
             $twig->addGlobal('ssh_url_subdir', $config->get('clone_button', 'ssh_url_subdir'));
             $twig->addGlobal('ssh_host', $config->get('clone_button', 'ssh_host'));
+            $twig->addGlobal('ssh_port', $config->get('clone_button', 'ssh_port'));
 
             return $twig;
         }));
