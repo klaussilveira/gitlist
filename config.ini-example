@@ -23,6 +23,7 @@ show_ssh_remote = false ; display remote URL for SSH
 ssh_host = '' ; host to use for cloning via HTTP (default: none => uses gitlist web host)
 ssh_url_subdir = '' ; if cloning via SSH is triggered using special dir (e.g. ssh://example.com/git/repo.git)
                 ; has to end with trailing slash
+ssh_port = '' ; port to use for cloning via SSH (default: 22 => standard ssh port)
 ssh_user = 'git' ; user to use for cloning via SSH
 ssh_user_dynamic = false ; when enabled, ssh_user is set to $_SERVER['PHP_AUTH_USER']
 
