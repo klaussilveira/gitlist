@@ -36,7 +36,7 @@ class Client extends BaseClient
      * @return array Found repositories, containing their name, path and description sorted
      *               by repository name
      */
-    public function getRepositories($paths, $onlyTopLevel)
+    public function getRepositories($paths, $onlyTopLevel = false)
     {
         $allRepositories = array();
 
