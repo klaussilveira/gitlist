@@ -9,12 +9,24 @@
         <input class="search" placeholder="search" autofocus>
     </div>
 
+    {% if not (breadcrumbs is empty) %}
+        {% include 'directory_breadcrumb.twig' with {'base': base, 'breadcrumbs': breadcrumbs} %}
+    {% endif %}
+
+    {% for directory in directories %}
+    <div class="directory">
+        <div class="directory-header">
+            <span class="fa fa-folder"></span>  <a href="{{ path('directory', {directory: base ~ directory}) }}">{{ directory }}</a>
+        </div>
+    </div>
+    {% endfor %}
+
     <div class="list">
         {% for repository in repositories %}
         <div class="repository">
             <div class="repository-header">
-                <i class="icon-folder-open icon-spaced"></i> <a href="{{ path('repository', {repo: repository.name}) }}"><span class="name">{{ repository.name }}</span></a>
-                <a href="{{ path('rss', {repo: repository.name, branch: 'master'}) }}"><i class="rss pull-right"></i></a>
+                <i class="icon-folder-open icon-spaced"></i> <a href="{{ path('repository', {repo: base ~ repository.name}) }}"><span class="name">{{ repository.name }}</span></a>
+                <a href="{{ path('rss', {repo: base ~ repository.name, branch: 'master'}) }}"><i class="rss pull-right"></i></a>
             </div>
             <div class="repository-body">
                 {% if repository.description %}

@@ -30,16 +30,18 @@ class Client extends BaseClient
      * Searches for valid repositories on the specified path.
      *
      * @param  array $paths Array of paths where repositories will be searched
+     * @param  boolean $onlyTopLevel If true, don't return repositories in directories
+     *                 other than $paths
      *
      * @return array Found repositories, containing their name, path and description sorted
      *               by repository name
      */
-    public function getRepositories($paths)
+    public function getRepositories($paths, $onlyTopLevel)
     {
         $allRepositories = array();
 
         foreach ($paths as $path) {
-            $repositories = $this->recurseDirectory($path);
+            $repositories = $this->recurseDirectory($path, $onlyTopLevel);
 
             if (empty($repositories)) {
                 throw new \RuntimeException('There are no GIT repositories in ' . $path);
@@ -57,6 +59,38 @@ class Client extends BaseClient
         });
 
         return $allRepositories;
+    }
+
+    /**
+     * Searches for directories containing other repositories in the specified paths.
+     *
+     * @param  array $paths Array of paths where repositories will be searched
+     * @param  boolean $onlyTopLevel If true, don't return nested directories
+     *
+     * @return array Found directories containing other repositories
+     */
+    public function getDirectories($paths, $onlyTopLevel = false) {
+        $allRepositories = $this->getRepositories($paths);
+
+        $allDirectories = array();
+        foreach ($allRepositories as $repository) {
+            $parts = explode(DIRECTORY_SEPARATOR, $repository['name']);
+            while (count($parts) > 1) {
+                array_pop($parts);
+                if ($onlyTopLevel && count($parts) != 1) {
+                    continue;
+                }
+
+                $directory = implode(DIRECTORY_SEPARATOR, $parts);
+                if (in_array($directory, $allDirectories)) {
+                    continue;
+                }
+
+                $allDirectories[] = $directory;
+            }
+        }
+
+        return $allDirectories;
     }
 
     /**
@@ -157,7 +191,7 @@ class Client extends BaseClient
         return $this;
     }
 
-    private function recurseDirectory($path, $topLevel = true)
+    private function recurseDirectory($path, $onlyTopLevel = false, $appendPath = '')
     {
         $dir = new \DirectoryIterator($path);
 
@@ -209,11 +243,7 @@ class Client extends BaseClient
                         $description = null;
                     }
 
-                    if (!$topLevel) {
-                        $repoName = $file->getPathInfo()->getFilename() . '/' . $file->getFilename();
-                    } else {
-                        $repoName = $file->getFilename();
-                    }
+                    $repoName = $appendPath . $file->getFilename();
 
                     if (is_array($this->getProjects()) && !in_array($repoName, $this->getProjects())) {
                         continue;
@@ -227,7 +257,10 @@ class Client extends BaseClient
 
                     continue;
                 }
-                $repositories = array_merge($repositories, $this->recurseDirectory($file->getPathname(), false));
+
+                if (!$onlyTopLevel) {
+                    $repositories = array_merge($repositories, $this->recurseDirectory($file->getPathname(), false, $appendPath . $file->getFilename() . '/'));
+                }
             }
         }
 
