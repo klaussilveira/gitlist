@@ -12,7 +12,7 @@ class BlobController implements ControllerProviderInterface
     {
         $route = $app['controllers_factory'];
 
-        $route->get('{repo}/blob/{commitishPath}', function ($repo, $commitishPath) use ($app) {
+        $route->get('show/{repo}/{commitishPath}', function ($repo, $commitishPath) use ($app) {
             $repository = $app['git']->getRepositoryFromName($app['git.repos'], $repo);
 
             list($branch, $file) = $app['util.routing']
@@ -42,11 +42,11 @@ class BlobController implements ControllerProviderInterface
                 'tags' => $repository->getTags(),
             ));
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
-          ->assert('commitishPath', '.+')
+          ->assert('commitishPath', $app['util.routing']->getCommitishPathRegex())
           ->convert('commitishPath', 'escaper.argument:escape')
           ->bind('blob');
 
-        $route->get('{repo}/raw/{commitishPath}', function ($repo, $commitishPath) use ($app) {
+        $route->get('raw/{repo}/{commitishPath}', function ($repo, $commitishPath) use ($app) {
             $repository = $app['git']->getRepositoryFromName($app['git.repos'], $repo);
 
             list($branch, $file) = $app['util.routing']
@@ -70,7 +70,7 @@ class BlobController implements ControllerProviderInterface
           ->convert('commitishPath', 'escaper.argument:escape')
           ->bind('blob_raw');
 
-        $route->get('{repo}/logpatch/{commitishPath}', function ($repo, $commitishPath) use ($app) {
+        $route->get('logpatch/{repo}/{commitishPath}', function ($repo, $commitishPath) use ($app) {
             $repository = $app['git']->getRepositoryFromName($app['git.repos'], $repo);
 
             list($branch, $file) = $app['util.routing']
@@ -86,7 +86,7 @@ class BlobController implements ControllerProviderInterface
                 'commits' => $filePatchesLog,
             ));
         })->assert('repo', $app['util.routing']->getRepositoryRegex())
-            ->assert('commitishPath', '.+')
+            ->assert('commitishPath', $app['util.routing']->getCommitishPathRegex())
             ->convert('commitishPath', 'escaper.argument:escape')
             ->bind('logpatch');
 
