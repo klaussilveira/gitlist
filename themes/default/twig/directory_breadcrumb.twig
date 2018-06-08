@@ -1,0 +1,6 @@
+<ol class="breadcrumb">
+    <li><a href="{{ path('homepage') }}">GitList</a></li>
+    {% for breadcrumb in breadcrumbs %}
+        <li{% if loop.last %} class="active"{% endif %}>{% if not loop.last %}<a href="{{ path('directory', {directory: breadcrumb.path}) }}">{{ breadcrumb.dir }}</a>{% endif %}{% if loop.last %}{{ breadcrumb.dir }}{% endif %}</li>
+    {% endfor %}
+</ol>
