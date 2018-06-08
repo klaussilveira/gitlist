@@ -43,10 +43,6 @@ class Client extends BaseClient
         foreach ($paths as $path) {
             $repositories = $this->recurseDirectory($path, $onlyTopLevel);
 
-            if (empty($repositories)) {
-                throw new \RuntimeException('There are no GIT repositories in ' . $path);
-            }
-
             /**
              * Use "+" to preserve keys, only a problem with numeric repos.
              */
