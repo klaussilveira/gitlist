@@ -56,3 +56,7 @@ http_user_dynamic = false ; when enabled, http_user is set to $_SERVER['PHP_AUTH
 [avatar]
 ; url = '//gravatar.com/avatar/'
 ; query[] = 'd=identicon'
+
+; rendering options
+[render]
+; deep_readme = true

@@ -24,14 +24,14 @@ class Config
         return $config;
     }
 
-    public function get($section, $option)
+    public function get($section, $option, $default = false)
     {
         if (!array_key_exists($section, $this->data)) {
-            return false;
+            return $default;
         }
 
         if (!array_key_exists($option, $this->data[$section])) {
-            return false;
+            return $default;
         }
 
         return $this->data[$section][$option];

@@ -109,17 +109,6 @@ class Routing
         return $commitishPathRegex;
     }
 
-    public function getPathRegex()
-    {
-        static $pathRegex = null;
-
-        if ($pathRegex === null) {
-            $pathRegex = '.+';
-        }
-
-        return $pathRegex;
-    }
-
     public function getRepositoryRegex()
     {
         static $regex = null;

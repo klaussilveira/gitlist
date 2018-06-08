@@ -31,13 +31,14 @@ class Application extends SilexApplication
         $this->path = realpath($root);
 
         $this['debug'] = $config->get('app', 'debug');
-        $this['theme'] = $config->get('app', 'theme') ? $config->get('app', 'theme') : 'default';
-        $this['date.format'] = $config->get('date', 'format') ? $config->get('date', 'format') : 'd/m/Y H:i:s';
+        $this['theme'] = $config->get('app', 'theme', 'default');
+        $this['date.format'] = $config->get('date', 'format', 'd/m/Y H:i:s');
         $this['filetypes'] = $config->getSection('filetypes');
         $this['binary_filetypes'] = $config->getSection('binary_filetypes');
         $this['cache.archives'] = $this->getCachePath() . 'archives';
         $this['avatar.url'] = $config->get('avatar', 'url');
         $this['avatar.query'] = $config->get('avatar', 'query');
+        $this['render.deep_readme'] = $config->get('render', 'deep_readme', true);
 
         // Register services
         $this->register(new TwigServiceProvider(), array(
@@ -55,10 +56,8 @@ class Application extends SilexApplication
             'git.client' => $config->get('git', 'client'),
             'git.repos' => $repositories,
             'ini.file' => 'config.ini',
-            'git.hidden' => $config->get('git', 'hidden') ?
-                                    $config->get('git', 'hidden') : array(),
-            'git.default_branch' => $config->get('git', 'default_branch') ?
-                                    $config->get('git', 'default_branch') : 'master',
+            'git.hidden' => $config->get('git', 'hidden', array()),
+            'git.default_branch' => $config->get('git', 'default_branch', 'master')
         ));
 
         $this->register(new ViewUtilServiceProvider());
@@ -73,7 +72,7 @@ class Application extends SilexApplication
             $twig->addFilter(new \Twig_SimpleFilter('format_size', array($app, 'formatSize')));
             $twig->addFunction(new \Twig_SimpleFunction('avatar', array($app, 'getAvatar')));
             $twig->addGlobal('theme', $app['theme']);
-            $twig->addGlobal('title', $config->get('app', 'title') ? $config->get('app', 'title') : 'GitList');
+            $twig->addGlobal('title', $config->get('app', 'title', 'GitList'));
             $twig->addGlobal('show_http_remote', $config->get('clone_button', 'show_http_remote'));
             $twig->addGlobal('use_https', $config->get('clone_button', 'use_https'));
             $twig->addGlobal('http_url_subdir', $config->get('clone_button', 'http_url_subdir'));
