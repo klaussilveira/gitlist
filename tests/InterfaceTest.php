@@ -183,9 +183,20 @@ class InterfaceTest extends WebTestCase
         $this->assertEquals('/mailmap/', $crawler->filter('.repository-header a')->eq(8)->attr('href'));
         $this->assertEquals('/mailmap/master/rss/', $crawler->filter('.repository-header a')->eq(9)->attr('href'));
 
-        $this->assertCount(1, $crawler->filter('div.repository-header a:contains("nested/NestedRepo")'));
-        $this->assertEquals('/nested/NestedRepo/', $crawler->filter('.repository-header a')->eq(10)->attr('href'));
-        $this->assertEquals('/nested/NestedRepo/master/rss/', $crawler->filter('.repository-header a')->eq(11)->attr('href'));
+        $this->assertCount(1, $crawler->filter('div.directory-header a:contains("nested")'));
+    }
+
+    /**
+     * @covers \GitList\Controller\MainController::connect
+     */
+    public function testDirectoryPage()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/nested/');
+
+        $this->assertCount(1, $crawler->filter('div.repository-header a:contains("NestedRepo")'));
+        $this->assertEquals('/nested/NestedRepo/', $crawler->filter('.repository-header a')->eq(0)->attr('href'));
+        $this->assertEquals('/nested/NestedRepo/master/rss/', $crawler->filter('.repository-header a')->eq(1)->attr('href'));
         $this->assertCount(1, $crawler->filter('div.repository-body:contains("This is a NESTED test repo!")'));
     }
 
