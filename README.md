@@ -1,3 +1,5 @@
+<p align="left"><img src="logo/horizontal.png" alt=gitlist" height="120px"></p>
+
 # GitList: an elegant git repository viewer
 [![Build Status](https://secure.travis-ci.org/klaussilveira/gitlist.png)](http://travis-ci.org/klaussilveira/gitlist)
 
