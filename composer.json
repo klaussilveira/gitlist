@@ -4,7 +4,7 @@
     "require": {
         "php": ">=5.3",
         "doctrine/instantiator": "1.0.*",
-        "klaussilveira/gitter": "0.2.*",
+        "klaussilveira/gitter": "0.4.*",
         "phpdocumentor/reflection-docblock": "2.0.*",
         "sebastian/comparator": "1.2.*",
         "sebastian/recursion-context": "1.0.*",
