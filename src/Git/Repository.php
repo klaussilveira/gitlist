@@ -13,7 +13,7 @@ class Repository extends BaseRepository
     /**
      * Return true if the repo contains this commit.
      *
-     * @param $commitHash Hash of commit whose existence we want to check
+     * @param string $commitHash Hash of commit whose existence we want to check
      *
      * @return bool Whether or not the commit exists in this repo
      */
@@ -251,7 +251,7 @@ class Repository extends BaseRepository
      * Show the repository commit log with pagination.
      *
      * @param string $file
-     * @param int page
+     * @param int $page
      *
      * @return array Commit log
      */

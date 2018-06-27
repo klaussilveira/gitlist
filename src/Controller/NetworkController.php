@@ -16,7 +16,7 @@ class NetworkController implements ControllerProviderInterface
         $route->get(
             '{repo}/network/{commitishPath}/{page}.json',
             function ($repo, $commitishPath, $page) use ($app) {
-                /** @var $repository Repository */
+                /** @var Repository $repository  */
                 $repository = $app['git']->getRepositoryFromName($app['git.repos'], $repo);
 
                 if ($commitishPath === null) {
