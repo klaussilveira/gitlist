@@ -54,7 +54,7 @@ class Repository extends BaseRepository
             . '<commiter_date>%ct</commiter_date>'
             . '<message><![CDATA[%s]]></message>'
             . '<body><![CDATA[%b]]></body>'
-            . "</item>\" $file"
+            . "</item>\" -- $file"
         );
 
         $patch_collection = array();
