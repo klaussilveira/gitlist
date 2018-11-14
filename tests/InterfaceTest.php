@@ -11,7 +11,7 @@ class InterfaceTest extends WebTestCase
 
     public static function setUpBeforeClass()
     {
-        if(sys_get_temp_dir()) {
+        if (sys_get_temp_dir()) {
             self::$tmpdir = sys_get_temp_dir();
         } elseif (getenv('TMP')) {
             self::$tmpdir = getenv('TMP');
