@@ -15,9 +15,16 @@ GitList is an elegant and modern web interface for interacting with multiple git
 * Repository statistics
 
 ## Screenshots
-![Screenshot 1](https://raw.githubusercontent.com/klaussilveira/gitlist/gh-pages/img/roller/1.jpg)
-![Screenshot 1](https://raw.githubusercontent.com/klaussilveira/gitlist/gh-pages/img/roller/2.jpg)
-![Screenshot 1](https://raw.githubusercontent.com/klaussilveira/gitlist/gh-pages/img/roller/3.jpg)
+![Screenshot 1](https://raw.githubusercontent.com/klaussilveira/gitlist/gh-pages/img/roller/1.png)
+![Screenshot 2](https://raw.githubusercontent.com/klaussilveira/gitlist/gh-pages/img/roller/2.png)
+![Screenshot 3](https://raw.githubusercontent.com/klaussilveira/gitlist/gh-pages/img/roller/3.png)
+![Screenshot 4](https://raw.githubusercontent.com/klaussilveira/gitlist/gh-pages/img/roller/4.png)
+![Screenshot 5](https://raw.githubusercontent.com/klaussilveira/gitlist/gh-pages/img/roller/5.png)
+![Screenshot 6](https://raw.githubusercontent.com/klaussilveira/gitlist/gh-pages/img/roller/6.png)
+![Screenshot 7](https://raw.githubusercontent.com/klaussilveira/gitlist/gh-pages/img/roller/7.png)
+![Screenshot 8](https://raw.githubusercontent.com/klaussilveira/gitlist/gh-pages/img/roller/8.png)
+![Screenshot 9](https://raw.githubusercontent.com/klaussilveira/gitlist/gh-pages/img/roller/9.png)
+![Screenshot 10](https://raw.githubusercontent.com/klaussilveira/gitlist/gh-pages/img/roller/10.png)
 
 ## Requirements
 In order to run GitList on your server, you'll need:
