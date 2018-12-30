@@ -32,10 +32,10 @@
                         {% endif %}
                     </div><br />
                     {% if show_ssh_remote %}
-                    <input type="text" class="form-control{{ show_ssh_remote ? ' visible' }}" id="clone-input-ssh" value="git clone {{ ssh_port ? 'ssh://' }}{{ ssh_user }}{{ ssh_user ? '@' }}{{ ssh_host ? ssh_host : app.request.host }}:{{ ssh_port ? ssh_port ~ '/' : '' }}{{ ssh_url_subdir }}{{ repo }}">
+                    <input type="text" class="form-control{{ show_ssh_remote ? ' visible' }}" id="clone-input-ssh" value="git clone {{ ssh_port ? 'ssh://' }}{{ ssh_user | url_encode }}{{ ssh_user ? '@' }}{{ ssh_host ? ssh_host : app.request.host }}:{{ ssh_port ? ssh_port ~ '/' : '' }}{{ ssh_url_subdir }}{{ repo }}">
                     {% endif %}
                     {% if show_http_remote %}
-                    <input type="text" class="form-control{{ show_ssh_remote is empty and show_http_remote ? ' visible' }}" id="clone-input-http" value="git clone http{{ use_https ? 's' }}://{{ http_user }}{{ http_user ? '@' }}{{ http_host ? http_host : app.request.host }}/{{ http_url_subdir }}{{ repo }}">
+                    <input type="text" class="form-control{{ show_ssh_remote is empty and show_http_remote ? ' visible' }}" id="clone-input-http" value="git clone http{{ use_https ? 's' }}://{{ http_user | url_encode }}{{ http_user ? '@' }}{{ http_host ? http_host : app.request.host }}/{{ http_url_subdir }}{{ repo }}">
                     {% endif %}
                 </div>
             </div>
