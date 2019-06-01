@@ -41,17 +41,17 @@ In order to run GitList on your server, you'll need:
 * In case GitList isn't accessed through the root of the website, open .htaccess and edit RewriteBase (for example, /gitlist/ if GitList is accessed through http://localhost/gitlist/).
 * Set file permissions for .htaccess
 
-```
-chmod 644 .htaccess
-```
+  ```
+  chmod 644 .htaccess
+  ```
 
 * Create the cache folder and give read/write permissions to your web server user:
 
-```
-cd /var/www/gitlist
-mkdir cache
-chmod 777 cache
-```
+  ```
+  cd /var/www/gitlist
+  mkdir cache
+  chmod 777 cache
+  ```
 
 That's it, installation complete! If you're having problems, check the [Troubleshooting](https://github.com/klaussilveira/gitlist/wiki/Troubleshooting) page.
 
