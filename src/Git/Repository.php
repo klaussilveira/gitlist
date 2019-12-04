@@ -2,6 +2,7 @@
 
 namespace GitList\Git;
 
+use Silex\Application;
 use Gitter\Model\Commit\Commit;
 use Gitter\Model\Commit\Diff;
 use Gitter\PrettyFormat;
@@ -10,6 +11,15 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class Repository extends BaseRepository
 {
+    protected $app;
+	
+    public function __construct(Application $app, $path, Client $client)
+    {
+        parent::__construct($path, $client);
+		$this->app = $app;
+    }
+	
+	
     /**
      * Return true if the repo contains this commit.
      *
@@ -204,7 +214,9 @@ class Repository extends BaseRepository
             }
 
             // Handle binary files properly.
+			$is_binary = false;
             if ('Binary' === substr($log, 0, 6)) {
+				$is_binary = true;
                 $m = array();
                 if (preg_match('/Binary files (.+) and (.+) differ/', $log, $m)) {
                     $diff->setOld($m[1]);
@@ -236,6 +248,9 @@ class Repository extends BaseRepository
             }
 
             if (isset($diff)) {
+				if (!$is_binary) {
+					$log = $this->app->encode_text($log);
+				}
                 $diff->addLine($log, $lineNumOld, $lineNumNew);
             }
         }

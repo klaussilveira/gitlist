@@ -2,6 +2,7 @@
 
 namespace GitList\Git;
 
+use Silex\Application;
 use Gitter\Client as BaseClient;
 
 class Client extends BaseClient
@@ -9,13 +10,15 @@ class Client extends BaseClient
     protected $defaultBranch;
     protected $hidden;
     protected $projects;
+    protected $app;
 
-    public function __construct($options = null)
+    public function __construct(Application $app, $options = null)
     {
         parent::__construct($options['path']);
         $this->setDefaultBranch($options['default_branch']);
         $this->setHidden($options['hidden']);
         $this->setProjects($options['projects']);
+		$this->app = $app;
     }
 
     public function getRepositoryFromName($paths, $repo)
@@ -78,7 +81,7 @@ class Client extends BaseClient
             throw new \RuntimeException('A GIT repository already exists at ' . $path);
         }
 
-        $repository = new Repository($path, $this);
+        $repository = new Repository($app, $path, $this);
 
         return $repository->create($bare);
     }
@@ -94,7 +97,7 @@ class Client extends BaseClient
             throw new \RuntimeException('There is no GIT repository at ' . $path);
         }
 
-        return new Repository($path, $this);
+        return new Repository($this->app, $path, $this);
     }
 
     /**

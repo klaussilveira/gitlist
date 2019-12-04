@@ -39,6 +39,16 @@ class Application extends SilexApplication
         $this['avatar.url'] = $config->get('avatar', 'url');
         $this['avatar.query'] = $config->get('avatar', 'query');
 
+        $this['encoding.enable'] = $config->get('encoding', 'enable');
+        $this['encoding.detect_order'] = $config->get('encoding', 'detect_order') 
+			? explode(",", $config->get('encoding', 'detect_order')) 
+			: array('ASCII', 'UTF-8', 'ISO-8859-1', 'Windows-1252', 'Windows-1251', 'Windows-1254', 'UCS-2', 'ISO-8859-2', 'ISO-8859-3', 'ISO-8859-4', 'ISO-8859-5', 'ISO-8859-6', 'ISO-8859-7', 'ISO-8859-8', 'ISO-8859-9', 'ISO-8859-10', 'ISO-8859-13', 'ISO-8859-14', 'ISO-8859-15', 'ISO-8859-16', 'SJIS', 'eucJP-win', 'SJIS-win', 'CP932', 'CP936', 'BIG-5', 'CP950', 'KOI8-R', 'KOI8-U');
+        $this['encoding.search_all'] = $config->get('encoding', 'search_all') ? $config->get('encoding', 'search_all') : true;
+        $this['encoding.fallback'] = $config->get('encoding', 'fallback') ? $config->get('encoding', 'fallback') : "ISO-8859-1";
+        $this['encoding.convert_to'] = $config->get('encoding', 'convert_to') ? $config->get('encoding', 'convert_to') : "UTF-8";
+
+
+
         // Register services
         $this->register(new TwigServiceProvider(), array(
             'twig.path' => array($this->getThemePath($this['theme']), $this->getThemePath('default')),
@@ -183,5 +193,26 @@ class Application extends SilexApplication
         fclose($file);
 
         return $projects;
+    }
+
+    public function encode_text($text)
+    {
+		if ($this['encoding.enable']) {
+			$encoding = mb_detect_encoding($text, $this['encoding.detect_order']);
+
+			if (!$encoding) {
+				if ($this['encoding.search_all']) {
+					// search all encodings
+					$encoding = mb_detect_encoding($text, mb_list_encodings());
+				}
+				if (!$encoding) {
+					// last resort
+					$encoding = $this['encoding.fallback'];
+				}
+			}
+
+			return mb_convert_encoding($text, $this['encoding.convert_to'], $encoding);				
+		}
+		return $text;
     }
 }

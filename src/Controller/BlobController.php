@@ -30,11 +30,16 @@ class BlobController implements ControllerProviderInterface
                     'commitishPath' => $commitishPath,
                 )));
             }
-
+			 
+			$blob_data = $blob->output();
+			if ($fileType !== 'image' && $fileType !== 'markdown') {
+				$blob_data = $app->encode_text($blob_data);
+			}
+			
             return $app['twig']->render('file.twig', array(
                 'file' => $file,
                 'fileType' => $fileType,
-                'blob' => $blob->output(),
+                'blob' => $blob_data,
                 'repo' => $repo,
                 'branch' => $branch,
                 'breadcrumbs' => $breadcrumbs,
