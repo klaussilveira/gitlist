@@ -194,25 +194,4 @@ class Application extends SilexApplication
 
         return $projects;
     }
-
-    public function encode_text($text)
-    {
-		if ($this['encoding.enable']) {
-			$encoding = mb_detect_encoding($text, $this['encoding.detect_order']);
-
-			if (!$encoding) {
-				if ($this['encoding.search_all']) {
-					// search all encodings
-					$encoding = mb_detect_encoding($text, mb_list_encodings());
-				}
-				if (!$encoding) {
-					// last resort
-					$encoding = $this['encoding.fallback'];
-				}
-			}
-
-			return mb_convert_encoding($text, $this['encoding.convert_to'], $encoding);				
-		}
-		return $text;
-    }
 }

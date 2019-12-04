@@ -2,24 +2,15 @@
 
 namespace GitList\Git;
 
-use Silex\Application;
 use Gitter\Model\Commit\Commit;
 use Gitter\Model\Commit\Diff;
 use Gitter\PrettyFormat;
 use Gitter\Repository as BaseRepository;
 use Symfony\Component\Filesystem\Filesystem;
+use GitList\Util\Encoder;
 
 class Repository extends BaseRepository
 {
-    protected $app;
-	
-    public function __construct(Application $app, $path, Client $client)
-    {
-        parent::__construct($path, $client);
-		$this->app = $app;
-    }
-	
-	
     /**
      * Return true if the repo contains this commit.
      *
@@ -249,7 +240,7 @@ class Repository extends BaseRepository
 
             if (isset($diff)) {
 				if (!$is_binary) {
-					$log = $this->app->encode_text($log);
+					$log = Encoder::encode_text($log, $this->getClient()->getEncodingOptions());
 				}
                 $diff->addLine($log, $lineNumOld, $lineNumNew);
             }

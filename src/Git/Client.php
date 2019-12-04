@@ -2,7 +2,6 @@
 
 namespace GitList\Git;
 
-use Silex\Application;
 use Gitter\Client as BaseClient;
 
 class Client extends BaseClient
@@ -10,15 +9,15 @@ class Client extends BaseClient
     protected $defaultBranch;
     protected $hidden;
     protected $projects;
-    protected $app;
+    protected $encodingOptions;
 
-    public function __construct(Application $app, $options = null)
+    public function __construct($options = null)
     {
         parent::__construct($options['path']);
         $this->setDefaultBranch($options['default_branch']);
         $this->setHidden($options['hidden']);
         $this->setProjects($options['projects']);
-		$this->app = $app;
+        $this->setEncodingOptions($options);
     }
 
     public function getRepositoryFromName($paths, $repo)
@@ -81,7 +80,7 @@ class Client extends BaseClient
             throw new \RuntimeException('A GIT repository already exists at ' . $path);
         }
 
-        $repository = new Repository($app, $path, $this);
+        $repository = new Repository($path, $this);
 
         return $repository->create($bare);
     }
@@ -97,7 +96,7 @@ class Client extends BaseClient
             throw new \RuntimeException('There is no GIT repository at ' . $path);
         }
 
-        return new Repository($this->app, $path, $this);
+        return new Repository($path, $this);
     }
 
     /**
@@ -134,6 +133,34 @@ class Client extends BaseClient
     protected function setHidden($hidden)
     {
         $this->hidden = $hidden;
+
+        return $this;
+    }
+
+    /**
+     * Get encoding options.
+     *
+     * @return array with encoding options
+     */
+    public function getEncodingOptions()
+    {
+        return $this->encodingOptions;
+    }
+
+    /**
+     * Set encoding options.
+     *
+     * @param array with encoding options
+     *
+     * @return object
+     */
+    protected function setEncodingOptions($encodingOptions)
+    {
+		$this->encodingOptions['encoding.enable'] = $encodingOptions['encoding.enable'];
+		$this->encodingOptions['encoding.detect_order'] = $encodingOptions['encoding.detect_order'];
+		$this->encodingOptions['encoding.search_all'] = $encodingOptions['encoding.search_all'];
+		$this->encodingOptions['encoding.fallback'] = $encodingOptions['encoding.fallback'];
+		$this->encodingOptions['encoding.convert_to'] = $encodingOptions['encoding.convert_to'];
 
         return $this;
     }

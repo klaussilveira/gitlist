@@ -16,8 +16,13 @@ class GitServiceProvider implements ServiceProviderInterface
             $options['projects'] = $app['git.projects'];
             $options['ini.file'] = $app['ini.file'];
             $options['default_branch'] = $app['git.default_branch'];
+            $options['encoding.enable'] = $app['encoding.enable'];
+            $options['encoding.detect_order'] = $app['encoding.detect_order'];
+            $options['encoding.search_all'] = $app['encoding.search_all'];
+            $options['encoding.fallback'] = $app['encoding.fallback'];
+            $options['encoding.convert_to'] = $app['encoding.convert_to'];
 
-            return new Client($app, $options);
+            return new Client($options);
         };
     }
 
