@@ -13,7 +13,7 @@
         "symfony/http-kernel": "2.8.*",
         "symfony/process": "2.8.*",
         "symfony/twig-bridge": "2.8.*",
-        "twig/twig": "1.35.*"
+        "twig/twig": "1.42.*"
     },
     "require-dev": {
         "symfony/browser-kit": "~2.8",
