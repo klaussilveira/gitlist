@@ -15,6 +15,16 @@
         </exec>
     </target>
 
+    <exec executable="/bin/bash" outputproperty="gitTag" >
+        <arg value="-c" />
+        <arg value="git describe --tags --exact-match || git describe --all --abbrev --exact-match || git describe --tags" />
+        <redirector outputproperty="gitTag" error="/dev/null">
+            <outputfilterchain>
+                <replacestring from="heads/" to="" />
+            </outputfilterchain>
+        </redirector>
+    </exec>
+
     <target name="prepare" depends="clean,get-composer" description="Prepare for build">
         <mkdir dir="${basedir}/build/logs"/>
         <mkdir dir="${basedir}/build/pdepend"/>
@@ -55,11 +65,11 @@
             <fileset dir="${basedir}" excludes="cache/**, build/**, tests/**, pkg_builder/**, phpunit.xml.dist, cache.properties, .gitignore, .travis.yml, build.xml, composer.json, composer.lock, composer.phar, config.ini" />
         </copy>
 
-        <tar destfile="${basedir}/build/gitlist-master.tar.gz"
+        <tar destfile="${basedir}/build/gitlist-${gitTag}.tar.gz"
             basedir="${basedir}/build/"
             compression="gzip"
             longfile="gnu"
-            excludes="gitlist-master.tar.gz, **/phpunit.xml.dist, **/composer.lock, **/composer.json, **/.travis.yml, **/test/**, **/tests/**, **/logs/**, **/pdepend/**"
+            excludes="gitlist-${gitTag}.tar.gz, **/phpunit.xml.dist, **/composer.lock, **/composer.json, **/.travis.yml, **/test/**, **/tests/**, **/logs/**, **/pdepend/**"
         />
     </target>
 </project>
