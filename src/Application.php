@@ -17,6 +17,7 @@ use Symfony\Component\Filesystem\Filesystem;
 class Application extends SilexApplication
 {
     protected $path;
+    protected $release;
 
     /**
      * Constructor initialize services.
@@ -66,6 +67,8 @@ class Application extends SilexApplication
         $this->register(new RoutingUtilServiceProvider());
         $this->register(new UrlGeneratorServiceProvider());
 
+	$this->release=parse_ini_file('release.ini', true);
+
         $this['twig'] = $this->share($this->extend('twig', function ($twig, $app) use ($config) {
             $twig->addFilter(new \Twig_SimpleFilter('htmlentities', 'htmlentities'));
             $twig->addFilter(new \Twig_SimpleFilter('md5', 'md5'));
@@ -84,6 +87,8 @@ class Application extends SilexApplication
             $twig->addGlobal('ssh_url_subdir', $config->get('clone_button', 'ssh_url_subdir'));
             $twig->addGlobal('ssh_host', $config->get('clone_button', 'ssh_host'));
             $twig->addGlobal('ssh_port', $config->get('clone_button', 'ssh_port'));
+            $twig->addGlobal('release_name', $this->release['release_name']);
+
 
             return $twig;
         }));

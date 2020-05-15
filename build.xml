@@ -24,6 +24,9 @@
             </outputfilterchain>
         </redirector>
     </exec>
+    <propertyfile file="${basedir}/release.ini">
+        <entry  key="release_name" value="${gitTag}"/>
+    </propertyfile>
 
     <target name="prepare" depends="clean,get-composer" description="Prepare for build">
         <mkdir dir="${basedir}/build/logs"/>
