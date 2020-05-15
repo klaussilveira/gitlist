@@ -51,6 +51,11 @@ class Config
         $this->data[$section][$option] = $value;
     }
 
+    public function setSection($section, $value)
+    {
+        $this->data[$section] = $value;
+    }
+
     protected function validateOptions()
     {
         $repositories = $this->get('git', 'repositories');
