@@ -17,6 +17,14 @@ cache = true
 theme = "default"
 title = ""
 
+[encoding]
+; Use encoding in case your repository contains text files that are not UTF-8 encoded (e.g. ISO-8859-1 or Windows-1252)
+; enable = true
+; detect_order = "ASCII,UTF-8,ISO-8859-1,Windows-1252"
+; search_all  = false                                    ; in case detect_order did not find a match, search all installed encodings
+; fallback  = "ISO-8859-1"                               ; fallback source-encoding to use, if no match was found
+; convert_to = "UTF-8"                                   ; target encoding
+
 [clone_button]
 ; ssh remote
 show_ssh_remote = false ; display remote URL for SSH

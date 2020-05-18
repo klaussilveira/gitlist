@@ -9,6 +9,7 @@ class Client extends BaseClient
     protected $defaultBranch;
     protected $hidden;
     protected $projects;
+    protected $encodingOptions;
 
     public function __construct($options = null)
     {
@@ -16,6 +17,7 @@ class Client extends BaseClient
         $this->setDefaultBranch($options['default_branch']);
         $this->setHidden($options['hidden']);
         $this->setProjects($options['projects']);
+        $this->setEncodingOptions($options);
     }
 
     public function getRepositoryFromName($paths, $repo)
@@ -131,6 +133,34 @@ class Client extends BaseClient
     protected function setHidden($hidden)
     {
         $this->hidden = $hidden;
+
+        return $this;
+    }
+
+    /**
+     * Get encoding options.
+     *
+     * @return array with encoding options
+     */
+    public function getEncodingOptions()
+    {
+        return $this->encodingOptions;
+    }
+
+    /**
+     * Set encoding options.
+     *
+     * @param array with encoding options
+     *
+     * @return object
+     */
+    protected function setEncodingOptions($encodingOptions)
+    {
+		$this->encodingOptions['encoding.enable'] = $encodingOptions['encoding.enable'];
+		$this->encodingOptions['encoding.detect_order'] = $encodingOptions['encoding.detect_order'];
+		$this->encodingOptions['encoding.search_all'] = $encodingOptions['encoding.search_all'];
+		$this->encodingOptions['encoding.fallback'] = $encodingOptions['encoding.fallback'];
+		$this->encodingOptions['encoding.convert_to'] = $encodingOptions['encoding.convert_to'];
 
         return $this;
     }

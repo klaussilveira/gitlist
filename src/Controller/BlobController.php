@@ -5,6 +5,7 @@ namespace GitList\Controller;
 use Silex\ControllerProviderInterface;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Response;
+use GitList\Util\Encoder;
 
 class BlobController implements ControllerProviderInterface
 {
@@ -30,11 +31,18 @@ class BlobController implements ControllerProviderInterface
                     'commitishPath' => $commitishPath,
                 )));
             }
-
+			 
+			$blob_data = '';
+			if ($fileType !== 'image' && $fileType !== 'markdown') {
+				$blob_data = Encoder::encode_text($blob->output(), $app);
+			} else {
+				$blob_data = $blob->output();
+			}
+			
             return $app['twig']->render('file.twig', array(
                 'file' => $file,
                 'fileType' => $fileType,
-                'blob' => $blob->output(),
+                'blob' => $blob_data,
                 'repo' => $repo,
                 'branch' => $branch,
                 'breadcrumbs' => $breadcrumbs,
