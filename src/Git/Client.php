@@ -9,6 +9,7 @@ class Client extends BaseClient
     protected $defaultBranch;
     protected $hidden;
     protected $projects;
+    protected $stripDotGit;
 
     public function __construct($options = null)
     {
@@ -16,6 +17,7 @@ class Client extends BaseClient
         $this->setDefaultBranch($options['default_branch']);
         $this->setHidden($options['hidden']);
         $this->setProjects($options['projects']);
+	$this->stripDotGit = $options['strip_dot_git'];
     }
 
     public function getRepositoryFromName($paths, $repo)
@@ -209,7 +211,11 @@ class Client extends BaseClient
                         $description = null;
                     }
 
-                    $repoName = $appendPath . $file->getFilename();
+                    if (($file->getExtension() == 'git') and $this->stripDotGit) {
+                        $repoName = $appendPath . pathinfo($file->getFilename(), PATHINFO_FILENAME);
+                    } else {
+                        $repoName = $appendPath . $file->getFilename();
+                    }
 
                     if (is_array($this->getProjects()) && !in_array($repoName, $this->getProjects())) {
                         continue;
