@@ -1,0 +1,72 @@
+on:
+  push:
+    tags:
+    - '*'
+
+name: Release Gitlist
+
+jobs:
+  build:
+    name: Build and upload Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup PHP
+        uses: nanasess/setup-php@v3.0.4
+        with:
+          php-version: '7.1'
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Build project
+        id: build
+        run: |
+                echo ::set-output name=TAG_NAME::$(echo ${GITHUB_REF##refs\/tags\/})
+                ant build
+                ant build-package
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: build/gitlist-${{ steps.build.outputs.TAG_NAME }}.tar.gz
+          asset_name: gitlist-${{ steps.build.outputs.TAG_NAME }}.tar.gz
+          asset_content_type: application/tar+gzip
+
+  gh-pages:
+    name: Update GitHub pages
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          ref: 'gh-pages'
+      - name: Update index.html
+        id: index_html
+        env:
+          TAG_NAME: ${{ github.ref }}
+        run: |
+          sed -i "
+          /<!-- The following line is updated automatically by a Github action./ { N; /\/releases\/download\// D }
+          /\/releases\/download\// c\
+          \                        <!-- The following line is updated automatically by a Github action. To modify, update '${GITHUB_WORKFLOW}' workflow instead. -->\n\
+          \                        <a class=\"btn btn-large btn-primary\" href=\"https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG_NAME##refs/tags/}/gitlist-${TAG_NAME##refs/tags/}.tar.gz\"><b>Latest stable(${TAG_NAME##refs/tags/})</b></a>" index.html
+          echo ::set-output name=TAG_NAME::$(echo ${GITHUB_REF##refs\/tags\/})
+      - name: Commit GitHub pages
+        uses: EndBug/add-and-commit@v4.2.0
+        with:
+           add: 'index.html'
+           ref: 'gh-pages'
+           message: 'Auto update download link to ${{ steps.index_html.outputs.TAG_NAME }}'
+        env:
+           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Leave this line unchanged
