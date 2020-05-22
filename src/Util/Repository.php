@@ -165,7 +165,7 @@ class Repository
         return false;
     }
 
-    public function getReadme($repository, $branch = null, $path = '')
+    public function getReadme($app, $repository, $branch = null, $path = '')
     {
         if ($branch === null) {
             $branch = $repository->getHead();
@@ -186,8 +186,8 @@ class Repository
             }
         }
         // No contextual readme, try to catch the main one if we are in deeper context
-        if ($path != '') {
-            return $this->getReadme($repository, $branch, '');
+        if ($path != '' && $app['render.deep_readme']) {
+            return $this->getReadme($app, $repository, $branch, '');
         }
 
         return array();

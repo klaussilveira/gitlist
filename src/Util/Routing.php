@@ -103,7 +103,7 @@ class Routing
         static $commitishPathRegex = null;
 
         if ($commitishPathRegex === null) {
-            $commitishPathRegex = '.+';
+            $commitishPathRegex = '.*[^/]';
         }
 
         return $commitishPathRegex;
