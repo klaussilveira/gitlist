@@ -84,6 +84,8 @@ class Application extends SilexApplication
             $twig->addGlobal('ssh_url_subdir', $config->get('clone_button', 'ssh_url_subdir'));
             $twig->addGlobal('ssh_host', $config->get('clone_button', 'ssh_host'));
             $twig->addGlobal('ssh_port', $config->get('clone_button', 'ssh_port'));
+            $twig->addGlobal('release_name', $config->get('release', 'release_name'));
+
 
             return $twig;
         }));

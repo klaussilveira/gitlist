@@ -20,6 +20,7 @@ if (!is_writable(__DIR__ . DIRECTORY_SEPARATOR . 'cache')) {
 require 'vendor/autoload.php';
 
 $config = GitList\Config::fromFile('config.ini');
+$config->setSection('release', parse_ini_file('release.ini', true));
 
 if ($config->get('date', 'timezone')) {
     date_default_timezone_set($config->get('date', 'timezone'));

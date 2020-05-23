@@ -29,6 +29,7 @@ nbproject
 .idea
 node_modules
 config.ini
+release.ini
 cache.properties
 composer.phar
 phpunit.xml

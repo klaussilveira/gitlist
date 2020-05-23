@@ -147,6 +147,7 @@ class InterfaceTest extends WebTestCase
         $config->set('git', 'client', self::$gitPath);
         $config->set('git', 'default_branch', 'master');
         $config->set('git', 'repositories', array(self::$tmpdir));
+        $config->set('release', 'release_name', 'test');
 
         $app = require 'boot.php';
 
