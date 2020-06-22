@@ -131,6 +131,28 @@ class Routing
         return $regex;
     }
 
+    public function getDirectoryRegex()
+    {
+        static $regex = null;
+        if ($regex === null) {
+            $quotedPaths = array_map(
+                function ($repo) {
+                    return preg_quote($repo, '#');
+                },
+                $this->app['git']->getDirectories($this->app['git.repos'])
+            );
+            usort(
+                $quotedPaths,
+                function ($a, $b) {
+                    return strlen($b) - strlen($a);
+                }
+            );
+            $regex = implode('|', $quotedPaths);
+        }
+
+        return $regex;
+    }
+
     public function isWindows()
     {
         switch (PHP_OS) {

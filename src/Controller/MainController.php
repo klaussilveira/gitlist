@@ -14,9 +14,12 @@ class MainController implements ControllerProviderInterface
         $route = $app['controllers_factory'];
 
         $route->get('/', function () use ($app) {
-            $repositories = $app['git']->getRepositories($app['git.repos']);
+            $repositories = $app['git']->getRepositories($app['git.repos'], true);
+            $directories = $app['git']->getDirectories($app['git.repos'], true);
 
             return $app['twig']->render('index.twig', array(
+                'base' => '',
+                'directories' => $directories,
                 'repositories' => $repositories,
             ));
         })->bind('homepage');
@@ -71,6 +74,35 @@ class MainController implements ControllerProviderInterface
           ->value('branch', null)
           ->convert('branch', 'escaper.argument:escape')
           ->bind('rss');
+
+        $route->get('{directory}/', function ($directory) use ($app) {
+            $searchDirectories = array_map(
+                function ($baseDirectory) use ($directory) {
+                    return $baseDirectory . DIRECTORY_SEPARATOR . $directory;
+                },
+                $app['git.repos']
+            );
+            $repositories = $app['git']->getRepositories($searchDirectories, true);
+            $directories = $app['git']->getDirectories($searchDirectories, true);
+
+            $base = '';
+            $breadcrumbs = array_map(
+                function ($part) use (&$base) {
+                    $breadcrumb = array('path' => $base . $part, 'dir' => $part);
+                    $base = $base . $part . DIRECTORY_SEPARATOR;
+                    return $breadcrumb;
+                },
+                explode(DIRECTORY_SEPARATOR, $directory)
+            );
+
+            return $app['twig']->render('index.twig', array(
+                'base' => $directory . DIRECTORY_SEPARATOR,
+                'breadcrumbs' => $breadcrumbs,
+                'directories' => $directories,
+                'repositories' => $repositories,
+            ));
+        })->assert('directory', $app['util.routing']->getDirectoryRegex())
+          ->bind('directory');
 
         return $route;
     }

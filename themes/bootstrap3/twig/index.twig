@@ -6,11 +6,23 @@
 
 <div class="container">
 
+    {% if not (breadcrumbs is empty) %}
+        {% include 'directory_breadcrumb.twig' with {'base': base, 'breadcrumbs': breadcrumbs} %}
+    {% endif %}
+
+    {% for directory in directories %}
+    <div class="directory">
+        <div class="directory-header">
+            <span class="fa fa-folder"></span>  <a href="{{ path('directory', {directory: base ~ directory}) }}">{{ directory }}</a>
+        </div>
+    </div>
+    {% endfor %}
+
     {% for repository in repositories %}
     <div class="repository">
         <div class="repository-header">
-            <span class="fa fa-folder-open"></span>  <a href="{{ path('repository', {repo: repository.name}) }}">{{ repository.name }}</a>
-            <a href="{{ path('rss', {repo: repository.name, branch: 'master'}) }}"><span class="fa fa-rss rss-icon pull-right"></span></a>
+            <span class="fa fa-folder-open"></span>  <a href="{{ path('repository', {repo: base ~ repository.name}) }}">{{ repository.name }}</a>
+            <a href="{{ path('rss', {repo: base ~ repository.name, branch: 'master'}) }}"><span class="fa fa-rss rss-icon pull-right"></span></a>
         </div>
         <div class="repository-body">
             {% if repository.description %}
