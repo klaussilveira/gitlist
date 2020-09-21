@@ -178,7 +178,7 @@ class Repository
         $files = $repository->getTree($path != '' ? "$branch:\"$path\"" : $branch)->output();
 
         foreach ($files as $file) {
-            if (preg_match('/^readme*/i', $file['name'])) {
+            if ($file['type'] == 'blob' && preg_match('/^readme*/i', $file['name'])) {
                 return array(
                     'filename' => $file['name'],
                     'content' => $repository->getBlob("$branch:\"$path{$file['name']}\"")->output(),
