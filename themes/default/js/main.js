@@ -93,6 +93,18 @@ if ($('#repositories').length) {
     var repoList = new List('repositories', listOptions);
 }
 
+if($('.category').length){
+    var $categories = $('.category');
+
+    for(let i = 0; i < $categories.length; i++){
+        let listOptions = {
+            valueNames: ['name']
+        };
+
+        var repoList = new List('category_' + i, listOptions);
+    }
+}
+
 if ($('#branchList').length) {
     var listBranchOptions = {
         valueNames: ['item']

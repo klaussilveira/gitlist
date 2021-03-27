@@ -15,10 +15,31 @@ class MainController implements ControllerProviderInterface
 
         $route->get('/', function () use ($app) {
             $repositories = $app['git']->getRepositories($app['git.repos']);
+            $categories = array();
+            $noCategory = array();
 
-            return $app['twig']->render('index.twig', array(
-                'repositories' => $repositories,
-            ));
+            $arrLen = count($repositories);
+
+            foreach($repositories as &$repo) {
+	        if(!is_null($repo["category"])){
+                    if(!array_key_exists($repo["category"], $categories)){
+                        $categories[$repo["category"]] = array();
+                    }
+
+                    $categories[$repo["category"]][] = $repo;
+                } else {
+                    $noCategory[] = $repo;
+                }
+            }
+
+	  // print count($noCategory);
+	  // print count($categories);
+            uksort($categories, function ($k1, $k2) {
+                return strtolower($k2) < strtolower($k1);
+            });
+
+
+            return $app['twig']->render('index.twig', array( 'noCategory' => $noCategory, 'categories' => $categories ));
         })->bind('homepage');
 
         $route->get('/refresh', function (Request $request) use ($app) {

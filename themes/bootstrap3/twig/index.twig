@@ -1,15 +1,15 @@
 {% extends 'layout.twig' %}
-{% block title %}GitList{% endblock %}
+{% block title %}SmartLearn - GitList{% endblock %}
 
 {% block body %}
 {% include 'navigation.twig' %}
 
 <div class="container">
-
-    {% for repository in repositories %}
+{% for repository in noCategory %}
     <div class="repository">
         <div class="repository-header">
             <span class="fa fa-folder-open"></span>  <a href="{{ path('repository', {repo: repository.name}) }}">{{ repository.name }}</a>
+            <span>{{ repository.category }}</span>
             <a href="{{ path('rss', {repo: repository.name, branch: 'master'}) }}"><span class="fa fa-rss rss-icon pull-right"></span></a>
         </div>
         <div class="repository-body">
@@ -22,6 +22,35 @@
     </div>
     {% endfor %}
 
+
+    {% for key, value in categories %}
+<div id="accordion" class="panel-group">
+<div class="panel panel-default">
+    <div class="panel-heading" style="padding-left: 10px;">
+        <div class="panel-title">
+            <span class="fa fa-book" style="margin-right: 8px;"></span><a data-toggle="collapse" data-parent="#accordion" href="#collapse_{{ loop.index }}" style="font-weight: 600; color:#555;">{{ key }}</a>
+        </div>
+    </div>
+    <div id="collapse_{{ loop.index }}" class="panel-collapse collapse in">
+        {% for repository in value %}
+    <div class="repository" style="margin-bottom: 0px;">
+        <div class="repository-header">
+            <span class="fa fa-folder-open"></span>  <a href="{{ path('repository', {repo: repository.name}) }}">{{ repository.name }}</a>
+            <a href="{{ path('rss', {repo: repository.name, branch: 'master'}) }}"><span class="fa fa-rss rss-icon pull-right"></span></a>
+        </div>
+        <div class="repository-body">
+            {% if repository.description %}
+            <p>{{ repository.description }}</p>
+            {% else %}
+            <p>There is no repository description file. Please, create one to remove this message.</p>
+            {% endif %}
+        </div>
+    </div>
+        {% endfor %}
+    </div>
+</div>
+</div>
+    {% endfor %}
     <hr />
 
     {% include 'footer.twig' %}
