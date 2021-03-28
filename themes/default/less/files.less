@@ -139,6 +139,30 @@
   li:last-child {border-bottom:0;margin-bottom:25px;}
 }
 
+.category {
+  margin-bottom: @baseLineHeight;
+  border: 1px solid lighten(@treeHeaderBorder, 5%);
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+
+  .category-header {
+    border-bottom: 1px solid lighten(@treeHeaderBorder, 5%);
+    text-shadow: 1px 1px 1px #fff;
+    padding: 8px;
+    font-weight: 700;
+    font-size: 14px;
+
+    > .fa {
+      margin-right: 8px;
+    }
+  }
+  
+  .category-body {
+    padding: 8px
+  }
+}
+
 .repository {
   margin-bottom: @baseLineHeight;
   border: 1px solid lighten(@treeHeaderBorder, 5%);
