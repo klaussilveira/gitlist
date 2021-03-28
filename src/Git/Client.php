@@ -31,7 +31,7 @@ class Client extends BaseClient
      *
      * @param  array $paths Array of paths where repositories will be searched
      *
-     * @return array Found repositories, containing their name, path and description sorted
+     * @return array Found repositories, containing their name, path, description and category sorted
      *               by repository name
      */
     public function getRepositories($paths)
@@ -199,8 +199,10 @@ class Client extends BaseClient
 
                     if ($isBare) {
                         $description = $file->getPathname() . '/description';
+			$category = $file->getPathname() . '/category';
                     } else {
                         $description = $file->getPathname() . '/.git/description';
+			$category = $file->getPathname() . '/.git/category';
                     }
 
                     if (file_exists($description)) {
@@ -208,6 +210,12 @@ class Client extends BaseClient
                     } else {
                         $description = null;
                     }
+
+	            if (file_exists($category)) {
+	                $category = file_get_contents($category);
+		    } else {
+		        $category = null;
+		    }
 
                     $repoName = $appendPath . $file->getFilename();
 
@@ -219,6 +227,7 @@ class Client extends BaseClient
                         'name' => $repoName,
                         'path' => $file->getPathname(),
                         'description' => $description,
+		        'category' => $category,
                     );
 
                     continue;
