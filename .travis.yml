@@ -6,6 +6,8 @@ php:
   - 7.1
   - 7.4
 
+before_install: echo 'xdebug.mode = "coverage"' >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+
 install:
   - travis_retry composer install --no-interaction --ignore-platform-reqs
 
