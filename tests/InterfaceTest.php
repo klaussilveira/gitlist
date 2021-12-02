@@ -34,6 +34,7 @@ class InterfaceTest extends WebTestCase
         $options['hidden'] = array(self::$tmpdir . '/hiddenrepo');
         $options['default_branch'] = 'master';
         $options['ini.file'] = 'config.ini';
+        $options['strip_dot_git'] = false;
         $options['projects'] = false;
 
         $cacheDir = self::$tmpdir . DIRECTORY_SEPARATOR . 'cache';
