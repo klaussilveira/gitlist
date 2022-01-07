@@ -23,7 +23,7 @@ $(function () {
     var md_content = $('#md-content');
 
     if (md_content.length) {
-        var converter = new Showdown.converter({extensions: ['table']});
+        var converter = new showdown.Converter({ tables: true, strikethrough: true });
         md_content.html(converter.makeHtml(md_content.text()));
     }
 
