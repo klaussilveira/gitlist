@@ -35,3 +35,4 @@ phpunit.xml
 .php_cs.cache
 web.config
 .vscode/
+.phpunit.result.cache

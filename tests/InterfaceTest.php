@@ -1,7 +1,7 @@
 <?php
 
+use GitList\Test\WebTestCase;
 use GitList\Git\Client;
-use Silex\WebTestCase;
 use Symfony\Component\Filesystem\Filesystem;
 
 class InterfaceTest extends WebTestCase
@@ -9,7 +9,7 @@ class InterfaceTest extends WebTestCase
     protected static $tmpdir;
     protected static $gitPath;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         if (sys_get_temp_dir()) {
             self::$tmpdir = sys_get_temp_dir();
@@ -134,7 +134,7 @@ class InterfaceTest extends WebTestCase
         $repository->commit('First commit');
     }
 
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass(): void
     {
         $fs = new Filesystem();
         $fs->remove(self::$tmpdir);
