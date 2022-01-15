@@ -16,9 +16,9 @@ GitList is an elegant and modern web interface for interacting with multiple git
 * Repository statistics
 
 ## Screenshots
-![Screenshot 1](https://raw.githubusercontent.com/klaussilveira/gitlist/gh-pages/img/roller/1.png)
-![Screenshot 2](https://raw.githubusercontent.com/klaussilveira/gitlist/gh-pages/img/roller/2.png)
-![Screenshot 3](https://raw.githubusercontent.com/klaussilveira/gitlist/gh-pages/img/roller/3.png)
+<img src="https://raw.githubusercontent.com/klaussilveira/gitlist/gh-pages/img/screenshots/1.png" width="300">
+<img src="https://raw.githubusercontent.com/klaussilveira/gitlist/gh-pages/img/screenshots/2.png" width="300">
+<img src="https://raw.githubusercontent.com/klaussilveira/gitlist/gh-pages/img/screenshots/3.png" width="300">
 
 ## Requirements
 In order to run GitList on your server, you'll need:
