@@ -1,222 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <title>GitList - An elegant and modern git repository viewer</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link href="css/bootstrap.css" rel="stylesheet">
-        <link href="css/style.css" rel="stylesheet">
-        <!--[if lt IE 9]>
-            <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-        <![endif]-->
-    </head>
-    <body>
-        <a href="https://github.com/klaussilveira/gitlist"><img class="ribbon" src="img/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
-        <div class="navbar navbar-fixed-top">
-            <div class="navbar-inner">
-                <div class="container">
-                    <a class="brand" href="http://www.gitlist.org/">
-                        GitList
-                    </a>
-                    <div class="nav-collapse fr">
-                        <ul class="nav">
-                            <li class="active"><a href="http://www.gitlist.org/">Home</a></li>
-                            <li><a href="https://travis-ci.org/klaussilveira/gitlist">Continuous Integration</a></li>
-                            <li><a href="https://github.com/klaussilveira/gitlist/issues?state=open">Issues</a></li>
-                            <li><a href="https://github.com/klaussilveira/gitlist/wiki">Wiki</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
+<head>
+  <meta charset="utf-8">
+  <title>GitList - An elegant and modern git repository viewer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="css/bootstrap.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+  <a href="https://github.com/klaussilveira/gitlist"><img class="ribbon" src="img/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
+  <div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+      <div class="container">
+        <a class="brand" href="http://www.gitlist.org/">
+          GitList
+        </a>
+        <div class="nav-collapse fr">
+          <ul class="nav">
+            <li class="active"><a href="http://www.gitlist.org/">Home</a></li>
+            <li><a href="https://github.com/klaussilveira/gitlist/actions">Continuous Integration</a></li>
+            <li><a href="https://github.com/klaussilveira/gitlist/issues?state=open">Issues</a></li>
+            <li><a href="https://github.com/klaussilveira/gitlist/wiki">Wiki</a></li>
+          </ul>
         </div>
+      </div>
+    </div>
+  </div>
 
-        <div class="hero-unit">
-            <div class="container">
-                <h1 class="ac">GitList</h1><br />
-                <p class="ac">
-                    an elegant and modern git repository viewer
-                </p>
+  <div class="hero-unit">
+    <div class="container">
+      <h1 class="ac">GitList</h1><br />
+      <p class="ac">
+        an elegant and modern git repository viewer
+      </p>
 
-                <div id="gitlist_roller">
-                    <div id="gitlist_preview" class="carousel slide" rel="carousel">
-                        <div class="carousel-inner">
-                            <div class="active item">
-                                <span 
-                                	class="feature" 
-                                	style="width:101px;height:20px;" 
-                                	data-top="42" 
-                                	data-left="13" 
-                                	rel="popover" 
-                                	data-placement="bottom" 
-                                	data-title="Branch Switching" 
-                                	data-content="Easily switch between branches">
-                                </span>
-                                <span 
-                                	class="feature" 
-                                	style="width:256px;height:23px;" 
-                                	data-top="43" 
-                                	data-left="120" 
-                                	rel="popover" 
-                                	data-placement="bottom" 
-                                	data-title="Repository Tools" 
-                                	data-content="Browse files, view commits, check stats and view graphs of the repositories">
-                                </span>
-                                <span
-                                	class="feature"
-                                	style="width:121px;height:17px;"
-                                	data-top="43"
-                                	data-left="547"
-                                	rel="popover"
-                                	data-placement="bottom"
-                                	data-title="Search Files"
-                                	data-content="Search through the files within the repository">
-                                </span>
-                                <span
-                                	class="feature"
-                                	style="width:77px;height:14px;"
-                                	data-top="83"
-                                	data-left="557"
-                                	rel="popover"
-                                	data-placement="bottom"
-                                	data-title="Get the Repo"
-                                	data-content="Get links to clone, zip, tarball of the repository">
-                                </span>
-                                <span 
-                                	class="feature" 
-                                	style="width:14px;height:14px;" 
-                                	data-top="83" 
-                                	data-left="642" 
-                                	rel="popover" 
-                                	data-placement="bottom" 
-                                	data-title="Repository Feed" 
-                                	data-content="Stay tuned to repository commits with RSS feeds">
-                                </span>
-                                <img src="img/roller/1.png" />
-                            </div>
-                            <div class="item">
-                            	<span
-                            		class="feature"
-                            		style="width:654px;height:326px;"
-                            		data-top="100"
-                            		data-left="12"
-                            		rel="popover"
-                            		data-placement="bottom"
-                            		data-title="Readme Rendering"
-                            		data-content="Render the markdown for the readme file">
-                            	</span>
-                                <img src="img/roller/2.png" />
-                            </div>
-                            <div class="item">
-                                <span
-                                	class="feature"
-                                	style="width:40px;height:265px;"
-                                	data-top="150"
-                                	data-left="11"
-                                	rel="popover"
-                                	data-placement="bottom"
-                                	data-title="Avatar Images"
-                                	data-content="Render avatar images via Gravatar">
-                                </span>
-                                <img src="img/roller/3.png" />
-                            </div>
-                            <div class="item">
-                                <img src="img/roller/4.png" />
-                            </div>
-                            <div class="item">
-                                <span
-                                	class="feature"
-                                	style="width:195px;height:17px;"
-                                	data-top="60"
-                                	data-left="302"
-                                	rel="popover"
-                                	data-placement="bottom"
-                                	data-title="File tools"
-                                	data-content="Easily check the raw version of a file, blame it or check commit history of a file">
-                                </span>
-                                <img src="img/roller/5.png" />
-                            </div>
-                            <div class="item">
-                                <img src="img/roller/6.png" />
-                            </div>
-                            <div class="item">
-                                <img src="img/roller/7.png" />
-                            </div>
-                            <div class="item">
-                                <img src="img/roller/8.png" />
-                            </div>
-                            <div class="item">
-                                <img src="img/roller/9.png" />
-                            </div>
-                            <div class="item">
-                                <img src="img/roller/10.png" />
-                            </div>
-                        </div>
-                        <a class="carousel-control left" href="#gitlist_preview" data-slide="prev">&lsaquo;</a>
-                        <a class="carousel-control right" href="#gitlist_preview" data-slide="next">&rsaquo;</a>
-                    </div>
-                </div>
+      <div id="gitlist_roller">
+        <div id="gitlist_preview" class="carousel slide" rel="carousel">
+          <div class="carousel-inner">
+            <div class="active item">
+              <img src="img/screenshots/1.png" alt="Screenshot: Repository page" />
             </div>
+            <div class="item">
+              <img src="img/screenshots/2.png" alt="Screenshot: Commit view" />
+            </div>
+            <div class="item">
+              <img src="img/screenshots/3.png" alt="Screenshot: File view" />
+            </div>
+          </div>
+
+          <a class="carousel-control left" href="#gitlist_preview" data-slide="prev">&lsaquo;</a>
+          <a class="carousel-control right" href="#gitlist_preview" data-slide="next">&rsaquo;</a>
         </div>
+      </div>
+    </div>
+  </div>
 
-        <div class="container">
+  <div class="container">
+    <div class="row">
+      <div class="span8">
+        <h1 class="lead">
+          GitList allows you to browse repositories using your favorite browser, viewing files under different revisions, commit history and diffs. GitList is free and open source software, written in PHP, on top of <a href="http://silex.sensiolabs.org/">Silex</a> and the <a href="http://twig.sensiolabs.org/">Twig</a> template engine.
+        </h1>
+      </div>
+      <div class="span4">
+        <h2 class="ac download">Download</h2>
+        <p class="ac">
+          <a class="btn btn-large btn-primary" href="https://github.com/klaussilveira/gitlist-test/releases/latest"><b>Latest stable</b></a>
+        </p>
+        <p class="ac">
+          <a class="btn btn-large btn-inverse" href="https://github.com/klaussilveira/gitlist/releases/download/nightly/gitlist-nightly.zip"><b>Nightly build (master)</b></a>
+        </p>
+      </div>
+    </div>
 
-            <div class="row">
-                <div class="span8">
-                    <h1 class="lead">
-                        GitList allows you to browse repositories using your favorite browser, viewing files under different revisions, commit history and diffs. GitList is free and open source software, written in PHP, on top of <a href="http://silex.sensiolabs.org/">Silex</a> and the <a href="http://twig.sensiolabs.org/">Twig</a> template engine.
-                        <div class="addthis_toolbox addthis_default_style ">
-                            <a class="addthis_button_tweet"></a>
-                            <a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
-                            <a class="addthis_counter addthis_pill_style"></a>
-                        </div>
-                    </h1>
-                </div>
-                <div class="span4">
-                    <h2 class="ac download">Download</h2>
-                    <p class="ac">
-                        <a class="btn btn-large btn-primary" href="https://github.com/klaussilveira/gitlist/releases/download/1.0.2/gitlist-1.0.2.tar.gz"><b>Latest stable (1.0.2)</b></a>
-                    </p>
-                    <p class="ac">
-                        <a class="btn btn-large btn-inverse" href="https://s3.amazonaws.com/gitlist/gitlist-master.tar.gz"><b>Development build (master)</b></a>
-                    </p>
-                </div>
-            </div>
+    <hr />
 
-            <hr />
+    <div class="row">
+      <div class="span4">
+        <h2>Development</h2>
+        <p >GitList is actively maintained by many developers around the world. You can <a href="https://github.com/klaussilveira/gitlist/">fork the project on GitHub</a> and start contributing yourself. The project is <a href="https://travis-ci.org/klaussilveira/gitlist">continuously integrated</a>, so we can improve code quality and build effortlessly.</p>
+      </div>
+      <div class="span4">
+        <h2>Mailing list</h2>
+        <p>The <a href="http://groups.google.com/group/gitlist">GitList mailing list</a> is where you can find support and where we discuss the development of the project.</p>
+      </div>
+      <div class="span4">
+        <h2>Contributors</h2>
+        <p>This is a list of developers who have contributed to GitList. Thank you! :)</p>
+        <div id="contributors"></div>
+      </div>
+    </div>
+    <hr />
+    <br />
+  </div>
 
-            <div class="row">
-                <div class="span4">
-                    <h2>Development</h2>
-                    <p >GitList is actively maintained by many developers around the world. You can <a href="https://github.com/klaussilveira/gitlist/">fork the project on GitHub</a> and start contributing yourself. The project is <a href="https://travis-ci.org/klaussilveira/gitlist">continuously integrated</a>, so we can improve code quality and build effortlessly.</p>
-                </div>
-                <div class="span4">
-                    <h2>Mailing list</h2>
-                    <p>The <a href="http://groups.google.com/group/gitlist">GitList mailing list</a> is where you can find support and where we discuss the development of the project.</p>
-                </div>
-                <div class="span4">
-                    <h2>Contributors</h2>
-                    <p>This is a list of developers who have contributed to GitList. Thank you! :)</p>
-                    <div id="contributors"></div>
-                </div>
-            </div>
-            <hr />
-            <br />
-        </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+  <script type="text/javascript" src="js/bootstrap.js"></script>
+  <script type="text/javascript" src="js/main.js"></script>
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-33185077-1']);
+    _gaq.push(['_trackPageview']);
 
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-        <script type="text/javascript" src="js/bootstrap.js"></script>
-        <script type="text/javascript" src="js/main.js"></script>
-        <script type="text/javascript" src="https://s7.addthis.com/js/250/addthis_widget.js#pubid=ra-4ff4f44714213073"></script>
-        <script type="text/javascript">
-          var _gaq = _gaq || [];
-          _gaq.push(['_setAccount', 'UA-33185077-1']);
-          _gaq.push(['_trackPageview']);
-
-          (function() {
-            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-          })();
-        </script>
-    </body>
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+</body>
 </html>
