@@ -1,0 +1,11 @@
+{
+  "baseUrl": "http://0.0.0.0:8880",
+  "experimentalStudio": true,
+  "downloadsFolder": "tests/cypress/downloads",
+  "fixturesFolder": "tests/cypress/fixtures",
+  "integrationFolder": "tests/cypress/integration",
+  "pluginsFile": false,
+  "screenshotsFolder": "tests/cypress/screenshots",
+  "supportFile": false,
+  "video": false
+}

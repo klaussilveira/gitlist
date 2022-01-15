@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+{% form_theme form 'bootstrap_5_layout.html.twig' %}
+
+{% block title %}
+  {{ 'REPOSITORY_SEARCH_FORM_TITLE'|trans }} - {{ repository.name }}
+{% endblock %}
+
+{% block header %}
+  {% include 'page-header.html.twig' with { repository: repository, baseRef: repository.defaultBranch, current: 'search' } %}
+{% endblock %}
+
+{% block search %}
+  {% include 'search.html.twig' with { repository: repository, commitish: commitish } %}
+{% endblock %}
+
+{% block body %}
+  <div class="row module-row">
+    {{ form_start(form) }}
+    <div class="row">
+      <div class="form-group col-6">
+        <label>Commits ranging from:</label>
+        {{ form_widget(form.from) }}
+      </div>
+      <div class="form-group col-6">
+        <label>To:</label>
+        {{ form_widget(form.to) }}
+      </div>
+    </div>
+    <div class="row mt-4">
+      <div class="form-group col-4">
+        <label>Author:</label>
+        {{ form_widget(form.author) }}
+      </div>
+      <div class="form-group col-8">
+        <label>Message contains:</label>
+        {{ form_widget(form.message) }}
+      </div>
+    </div>
+
+    <div class="row mt-4">
+      <div class="form-group">
+        {{ form_widget(form.submit) }}
+      </div>
+    </div>
+
+    {{ form_end(form) }}
+  </div>
+{% endblock %}

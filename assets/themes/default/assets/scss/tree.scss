@@ -1,0 +1,67 @@
+.table-tree {
+  margin-bottom: 0;
+
+  tr:first-child {
+    td,
+    th {
+      border-top: 0;
+    }
+  }
+
+  td,
+  th {
+    padding: $spacer;
+  }
+
+  .tree-truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+  }
+
+  .tree-filename {
+    max-width: 200px;
+    color: $body-color;
+
+    .icon {
+      margin-right: 0.4rem;
+    }
+
+    a {
+      color: $body-color;
+      font-weight: $font-weight-normal;
+      text-decoration: none;
+
+      &:hover {
+        color: $body-color;
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .tree-commit {
+    color: $text-muted;
+    max-width: 320px;
+
+    a {
+      color: $text-muted;
+      font-weight: $font-weight-normal;
+      text-decoration: none;
+
+      &:hover {
+        color: $text-muted;
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .tree-timestamp {
+    color: $text-muted;
+    text-align: right;
+  }
+
+  .tree-filesize {
+    color: $text-muted;
+  }
+}

@@ -1,0 +1,103 @@
+@mixin gradient-generator($color: null) {
+  background-color: $color;
+  @include gradient-y($color, shade-color($color, 10%));
+}
+
+@mixin button-generator(
+  $background,
+  $border: shade-color($background, 15%),
+  $color: tint-color(color-contrast($background), 10%),
+  $hover-background:
+    if(
+      $color == $color-contrast-light,
+      shade-color($background, $btn-hover-bg-shade-amount),
+      tint-color($background, $btn-hover-bg-tint-amount)
+    ),
+  $hover-border:
+    if(
+      $color == $color-contrast-light,
+      shade-color($border, $btn-hover-border-shade-amount),
+      tint-color($border, $btn-hover-border-tint-amount)
+    ),
+  $hover-color: color-contrast($hover-background),
+  $active-background:
+    if(
+      $color == $color-contrast-light,
+      shade-color($background, $btn-active-bg-shade-amount),
+      tint-color($background, $btn-active-bg-tint-amount)
+    ),
+  $active-border:
+    if(
+      $color == $color-contrast-light,
+      shade-color($border, $btn-active-border-shade-amount),
+      tint-color($border, $btn-active-border-tint-amount)
+    ),
+  $active-color: color-contrast($active-background),
+  $disabled-background: $background,
+  $disabled-border: $border,
+  $disabled-color: color-contrast($disabled-background)
+) {
+  color: $color;
+  @include gradient-generator($background);
+  border-color: $border;
+  border-bottom-color: shade-color($border, 15%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 1px 2px rgba(0, 0, 0, 0.05);
+  text-shadow: 0 1px 1px rgba(color-contrast($color), 0.75);
+
+  .btn-check:focus + &,
+  &:focus,
+  &:hover {
+    color: $hover-color;
+    @include gradient-generator(shade-color($background, 15%));
+    border-color: $border;
+    border-bottom-color: shade-color($border, 15%);
+    outline: 0;
+  }
+
+  .btn-check:checked + &,
+  .btn-check:active + &,
+  &:active,
+  &.active,
+  .show > &.dropdown-toggle {
+    color: $active-color;
+    background-color: $active-background;
+    background-image: none;
+    border-color: $active-border;
+    border-bottom-color: shade-color($active-border, 15%);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15),
+      0 1px 2px rgba(0, 0, 0, 0.05);
+    outline: 0;
+  }
+
+  &:disabled,
+  &.disabled {
+    color: $disabled-color;
+    background-color: $disabled-background;
+    background-image: none;
+    border-color: $disabled-border;
+    border-bottom-color: shade-color($disabled-border, 15%);
+    box-shadow: none;
+    text-shadow: none;
+  }
+}
+
+@each $color, $value in $theme-colors {
+  .btn-#{$color} {
+    @include button-generator($value);
+  }
+}
+
+.btn-blend-left {
+  border: $input-border-width solid $input-group-addon-border-color;
+  border-left: 0;
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+}
+
+.btn-blend-right {
+  border: $input-border-width solid $input-group-addon-border-color;
+  border-right: 0;
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
+}

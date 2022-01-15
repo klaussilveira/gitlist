@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>{{ 'REPOSITORY_FEED_RECENT_COMMITS'|trans }} {{ repository.name }} ({{ commitish.hash }})</title>
+    <link>{{ url('repository_tree', { repository: repository.name, commitish: commitish.hash }) }}</link>
+    <atom:link href="{{ url('repository_feed', { repository: repository.name, commitish: commitish.hash, format: 'atom' }) }}" rel="self" type="application/rss+xml" />
+    <description>{{ 'REPOSITORY_FEED_RECENT_COMMITS_SOURCE'|trans }}</description>
+    {% for commit in commits %}
+    <item>
+      <title>{{ commit.subject }}</title>
+      <description>{{ commit.body }}</description>
+      <link>{{ url('commit_show', { repository: repository.name, commitish: commit.hash }) }}</link>
+      <author>{{ commit.author.email }} ({{ commit.author.name }})</author>
+      <pubDate>{{ commit.commitedAt|date('r') }}</pubDate>
+      <guid isPermaLink="false">{{ commit.hash }}</guid>
+    </item>
+    {% endfor %}
+  </channel>
+</rss>

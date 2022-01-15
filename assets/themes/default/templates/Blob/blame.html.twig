@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+  {{ blob.name }} ({{ blob.shortHash }}) - {{ repository.name }}
+{% endblock %}
+
+{% block header %}
+  {% include 'page-header.html.twig' with { repository: repository, baseRef: blob.hash, current: 'code' } %}
+{% endblock %}
+
+{% block search %}
+  {% include 'search.html.twig' with { repository: repository, commitish: blob.hash } %}
+{% endblock %}
+
+{% block body %}
+  {% include 'Blob/breadcrumb.html.twig' with { repository: repository, blob: blob } %}
+
+  <div class="row module-row">
+    <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            {{ blame.path }}
+          </div>
+          <div class="card-body card-body-diff">
+            <table class="table table-responsive blame-lines">
+              {% for line in blame.annotatedLines %}
+                <tr>
+                  <td class="col-3 author-info">
+                    <img src="{{ getAvatar(line.commit.author.email, 20) }}" class="rounded mr-1" alt="{{ line.commit.author.name }}" />
+
+                    <a href="{{ path('commit_show', { repository: repository.name, commitish: line.commit.hash }) }}" title="{{ line.commit.author.name }} ({{ line.commit.author.email }}) {{ 'REPOSITORY_COMMIT_AUTHORED_ON'|trans }} {{ line.commit.commitedAt|date(commit_list_date_format) }}">
+                      {{ line.commit.subject|truncate(30, '...') }}
+                    </a>
+                    <p>{{ line.commit.author.name }} {{ 'REPOSITORY_COMMIT_AUTHORED'|trans }} {{ line.commit.commitedAt|ago }}</p>
+                  </td>
+                  <td class="col-9 line">
+                    <pre><code>{{ line.contents }}</code></pre>
+                  </td>
+                </tr>
+              {% endfor %}
+            </table>
+          </div>
+        </div>
+    </div>
+  </div>
+{% endblock %}

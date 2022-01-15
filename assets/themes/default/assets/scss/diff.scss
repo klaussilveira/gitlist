@@ -1,0 +1,60 @@
+$diff-add-bg: #cdffd8 !default;
+$diff-delete-bg: #ffdce0 !default;
+$diff-hover-bg: #fffbdd !default;
+$diff-hunk-bg: $gray-200 !default;
+$diff-hunk-color: $gray-500 !default;
+$diff-line-border: $gray-300 !default;
+$diff-line-color: $gray-500 !default;
+
+.diff-lines {
+  border-spacing: 0;
+  border: 0;
+  margin: 0;
+
+  pre {
+    margin: 0;
+    border: 0;
+    padding: 0 0 0 0.5rem;
+    width: inherit;
+
+    &:hover {
+      background-color: $diff-hover-bg;
+    }
+  }
+
+  td {
+    padding: 0;
+    border: 0;
+  }
+
+  .hunk {
+    background-color: $diff-hunk-bg;
+    color: $diff-hunk-color;
+  }
+
+  .add {
+    background-color: $diff-add-bg;
+  }
+
+  .delete {
+    background-color: $diff-delete-bg;
+  }
+
+  .line-number {
+    color: $diff-line-color;
+    padding: 0 0.5rem;
+    text-align: right;
+    border-right: 1px solid $diff-line-border;
+    font-family: $font-family-monospace;
+    font-size: $font-size-sm;
+
+    a {
+      color: inherit;
+    }
+  }
+
+  .line {
+    padding: 0;
+    width: 100%;
+  }
+}

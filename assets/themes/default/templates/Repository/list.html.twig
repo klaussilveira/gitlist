@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+  {{ 'REPOSITORY_LIST_TITLE'|trans }}
+{% endblock %}
+
+{% block body %}
+<div class="row row-cols-3 g-4">
+  {% for repository in repositories %}
+    <div class="col">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <a href="{{ path('repository_show', { repository: repository.name }) }}">{{ repository.name }}</a>
+
+          <a href="{{ path('repository_feed', { repository: repository.name, commitish: repository.defaultBranch, format: 'rss' }) }}" class="btn btn-sm btn-secondary">
+            <i class="icon ion-logo-rss"></i> {{ 'REPOSITORY_TOOLBAR_FEED_RSS'|trans }}
+          </a>
+        </div>
+        <div class="card-body">
+          {{ repository.description }}
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

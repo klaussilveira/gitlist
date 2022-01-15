@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block header %}
+  {% include 'page-header.html.twig' with { repository: repository, baseRef: repository.defaultBranch, current: 'tags' } %}
+{% endblock %}
+
+{% block search %}
+  {% include 'search.html.twig' with { repository: repository, commitish: repository.defaultBranch } %}
+{% endblock %}
+
+{% block body %}
+<div class="row module-row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        {{ 'REPOSITORY_TAGS_TITLE'|trans }}
+      </div>
+      <div class="card-body">
+        {% if tags %}
+          <ul class="list-group list-group-flush">
+            {% for tag in tags %}
+              <li class="list-group-item">
+                <h5>
+                  <i class="icon ion-md-pricetag"></i>
+                  <a href="{{ path('repository_tree', {repository: repository.name, commitish: tag.name }) }}" title="{{ tag.name }}">
+                    {{ tag.name }}
+                  </a>
+                </h5>
+                <p>
+                  <i class="icon ion-md-git-commit"></i>
+                  <a href="{{ path('commit_show', { repository: repository.name, commitish: tag.target.hash }) }}">
+                    {{ tag.target.shortHash }}
+                  </a>
+                  {{ tag.target.subject }}
+                  <span class="badge badge-secondary">
+                    {{ tag.target.commitedAt|date(commit_list_date_format) }}
+                  </span>
+                </p>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          {{ 'REPOSITORY_TAGS_NO_TAGS_AVAILABLE'|trans }}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

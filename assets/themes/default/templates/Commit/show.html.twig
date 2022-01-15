@@ -1,0 +1,118 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+  {{ commit.subject }} ({{ commit.shortHash }}) - {{ repository.name }}
+{% endblock %}
+
+{% block header %}
+  {% include 'page-header.html.twig' with { repository: repository, baseRef: commit.hash, current: 'commits' } %}
+{% endblock %}
+
+{% block search %}
+  {% include 'search.html.twig' with { repository: repository, commitish: commit.hash } %}
+{% endblock %}
+
+{% block body %}
+  <div class="row module-row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          {{ commit.subject }}
+
+          <div class="btn-group" role="group">
+            {% if commit.firstParent.hash %}
+              <a href="{{ path('commit_show', { repository: repository.name, commitish: commit.firstParent.hash }) }}" class="btn btn-secondary">
+                <i class="icon ion-md-git-commit"></i> {{ 'REPOSITORY_COMMIT_PARENT'|trans }} {{ commit.firstParent.shortHash }}
+              </a>
+            {% endif %}
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="d-flex justify-content-start align-items-center">
+            <img src="{{ getAvatar(commit.author.email, 48) }}" class="rounded me-2" alt="{{ commit.author.name }}" />
+            <p class="card-text">
+              <a href="mailto:{{ commit.author.email }}" title="{{ commit.author.name }}">{{ commit.author.name }}</a> {{ 'REPOSITORY_COMMIT_COMMITED_ON'|trans }} {{ commit.commitedAt|date(commit_list_date_format) }}<br />
+              {{ 'REPOSITORY_COMMIT_CHANGE_STATS'|trans({'%changed%': commit.diffs|length, '%additions%': commit.additions,'%deletions%': commit.deletions}) }}
+            </p>
+          </div>
+          {% if commit.body %}
+            <hr />
+            <pre>{{ commit.body }}</pre>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row module-row">
+    <div class="col-12">
+      <ul class="list-group list-group-flush">
+        {% for file in commit.diffs %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span><i class="icon ion-md-document"></i> <a href="#diff-{{ loop.index }}">{{ file.name }}</a></span>
+            <span class="badge badge-secondary badge-pill">{{ file.index }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  {% for file in commit.diffs %}
+    <div class="row module-row">
+      <div class="col-12">
+          <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <a id="diff-{{ loop.index }}"><i class="icon ion-md-document"></i> {{ file.name }}</a>
+              <div class="btn-group" role="group">
+                {% if file.type == 'deleted' %}
+                  <a href="{{ path('blob_show', { repository: repository.name, commitish: getCommitish(commit.firstParent.hash, file.name) }) }}" class="btn btn-secondary">
+                    {{ 'REPOSITORY_COMMIT_VIEW_FILE_AT'|trans }} {{ commit.firstParent.shortHash }}
+                  </a>
+                {% else %}
+                  <a href="{{ path('blob_show', { repository: repository.name, commitish: getCommitish(commit.hash, file.name) }) }}" class="btn btn-secondary">
+                    {{ 'REPOSITORY_COMMIT_VIEW_FILE_AT'|trans }} {{ commit.shortHash }}
+                  </a>
+                {% endif %}
+              </div>
+            </div>
+            <div class="card-body card-body-diff">
+              <table class="table table-responsive diff-lines">
+                {% for hunk in file.hunks %}
+                  <tr>
+                    <td class="line-number">
+                      ...
+                    </td>
+                    <td class="line-number">
+                      ...
+                    </td>
+                    <td class="line">
+                      <pre class="hunk">{{ hunk.contents }}</pre>
+                    </td>
+                  </tr>
+                  {% for line in hunk.lines %}
+                    <tr>
+                      <td class="line-number {{ line.type }}">
+                        {% if line.type != 'add' %}
+                          <a name="L{{ loop.index }}R{{ line.oldNumber }}"></a>
+                          <a href="#L{{ loop.index }}R{{ line.oldNumber }}">{{ line.oldNumber }}</a>
+                        {% endif %}
+                      </td>
+                      <td class="line-number {{ line.type }}">
+                        {% if line.type != 'delete' %}
+                          <a name="L{{ loop.index }}L{{ line.newNumber }}"></a>
+                          <a href="#L{{ loop.index }}L{{ line.newNumber }}">{{ line.newNumber }}</a>
+                        {% endif %}
+                      </td>
+                      <td class="line">
+                        <pre class="{{ line.type }}">{{ line.contents }}</pre>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                {% endfor %}
+              </table>
+            </div>
+          </div>
+      </div>
+    </div>
+  {% endfor %}
+{% endblock %}

@@ -1,0 +1,89 @@
+// Basic configuration
+$enable-gradients: true;
+$enable-print-styles: false;
+
+// Typography scale
+$font-size-root: 1rem;
+$font-size-base: 1rem;
+$font-size-sm: $font-size-base * 0.875;
+$font-size-md: $font-size-base * 1;
+$font-size-lg: $font-size-base * 1.25;
+$line-height-base: 1.5;
+$line-height-sm: 1.25;
+$line-height-lg: 2;
+$btn-font-weight: 700;
+
+// Colors
+$min-contrast-ratio: 2;
+$blue: #4078c0;
+$gray: #767676;
+$green: #6cc644;
+$orange: #c9510c;
+$purple: #6e5494;
+$red: #bd2c00;
+$cyan: #b8cbd4;
+
+// Theme
+$primary: $blue;
+$secondary: #fcfcfc;
+$success: $green;
+$info: $cyan;
+$warning: $orange;
+$danger: $red;
+$light: #999;
+$dark: #333;
+
+// Component colors
+$card-cap-bg: $secondary;
+$card-cap-color: $dark;
+$code-bg: #f5f5f5;
+$code-border-radius: 6px;
+
+@import 'bootstrap';
+@import '~ionicons/dist/scss/ionicons';
+@import 'buttons';
+@import 'breadcrumb';
+@import 'card';
+@import 'navbar';
+@import 'repository';
+@import 'blame';
+@import 'diff';
+@import 'tree';
+
+// Layout
+.module-row {
+  margin-bottom: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+header {
+  margin-bottom: 1rem;
+}
+
+.icon {
+  margin-right: 0.25rem;
+}
+
+.icon-solo {
+  margin-right: 0;
+}
+
+footer {
+  color: tint-color($gray, 40%);
+  margin: 2rem 0;
+
+  a {
+    color: inherit;
+  }
+}
+
+// Editor styling fixes
+.CodeMirror {
+  font-family: $font-family-monospace;
+  color: $body-color;
+  height: 600px;
+}
+
+.ace_editor {
+  margin-bottom: 0;
+}

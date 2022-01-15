@@ -1,0 +1,122 @@
+.card-header {
+  color: $dark;
+  background-color: $secondary;
+  @include gradient-y($secondary, shade-color($secondary, 5%));
+  border-bottom: 1px solid shade-color($secondary, 10%);
+}
+
+.card-body-diff {
+  padding: 0;
+  margin: 0;
+  overflow: clip;
+}
+
+.card-body {
+  textarea {
+    width: 100%;
+    height: 600px;
+  }
+}
+
+.card-body-markdown {
+  padding: 2rem;
+
+  > *:first-child {
+    margin-top: 0 !important;
+  }
+
+  > *:last-child {
+    margin-bottom: 0 !important;
+  }
+
+  p,
+  blockquote,
+  ul,
+  ol,
+  dl,
+  table,
+  pre,
+  details {
+    margin-top: 0;
+    margin-bottom: $spacer;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin-top: $spacer * 1.5;
+    margin-bottom: $spacer;
+    font-weight: $font-weight-bold;
+
+    tt,
+    code {
+      padding: 0 0.2rem;
+      font-size: inherit;
+    }
+  }
+
+  h1 {
+    padding-bottom: 0.3rem;
+    font-size: 2rem;
+    border-bottom: $border-width solid $border-color;
+  }
+
+  h2 {
+    padding-bottom: 0.3rem;
+    font-size: 1.5rem;
+    border-bottom: $border-width solid $border-color;
+  }
+
+  h3 {
+    font-size: 1.25rem;
+  }
+
+  h4 {
+    font-size: 1rem;
+  }
+
+  h5 {
+    font-size: 0.875rem;
+  }
+
+  h6 {
+    font-size: 0.85rem;
+  }
+
+  pre {
+    background-color: $code-bg;
+    border-radius: $code-border-radius;
+    padding: $spacer;
+
+    br {
+      display: none;
+    }
+
+    code {
+      display: block;
+    }
+  }
+
+  code {
+    background-color: $code-bg;
+    border-radius: $code-border-radius;
+    margin: 0;
+    padding: 0.2rem 0.4rem;
+  }
+
+  blockquote {
+    padding: 0 $spacer;
+    border-left: 0.25rem solid $border-color;
+
+    > :first-child {
+      margin-top: 0;
+    }
+
+    > :last-child {
+      margin-bottom: 0;
+    }
+  }
+}

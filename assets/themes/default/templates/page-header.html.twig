@@ -1,0 +1,23 @@
+<div class="page-header">
+  <div class="container">
+    <h1>{{ repository.name }}</h1>
+
+    <ul class="nav nav-tabs">
+      <li class="nav-item">
+        <a class="nav-link{{ current == 'code' ? ' active' }}" href="{{ path('repository_show', { repository: repository.name }) }}"><i class="icon ion-md-code"></i> {{ 'REPOSITORY_MENU_CODE'|trans }}</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link{{ current == 'commits' ? ' active' }}" href="{{ path('commit_list', { repository: repository.name, commitish: baseRef }) }}"><i class="icon ion-md-git-commit"></i> {{ 'REPOSITORY_MENU_COMMITS'|trans }}</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link{{ current == 'branches' ? ' active' }}" href="{{ path('repository_list_branches', { repository: repository.name }) }}"><i class="icon ion-md-git-branch"></i> {{ 'REPOSITORY_MENU_BRANCHES'|trans }}</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link{{ current == 'tags' ? ' active' }}" href="{{ path('repository_list_tags', { repository: repository.name }) }}"><i class="icon ion-md-pricetags"></i> {{ 'REPOSITORY_MENU_TAGS'|trans }}</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link{{ current == 'search' ? ' active' }}" href="{{ path('repository_search_commits', { repository: repository.name, commitish: baseRef }) }}"><i class="icon ion-md-search"></i> {{ 'REPOSITORY_MENU_SEARCH'|trans }}</a>
+      </li>
+    </ul>
+  </div>
+</div>

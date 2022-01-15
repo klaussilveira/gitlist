@@ -1,0 +1,10 @@
+.commit-body-popover {
+  max-width: none;
+
+  .popover-body {
+    display: block;
+    unicode-bidi: embed;
+    font-family: $font-family-monospace;
+    white-space: pre;
+  }
+}

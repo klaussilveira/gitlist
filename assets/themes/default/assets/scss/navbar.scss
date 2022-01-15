@@ -1,0 +1,5 @@
+.navbar-light {
+  background-color: $secondary;
+  @include gradient-y($secondary, shade-color($secondary, 5%));
+  border-bottom: 1px solid shade-color($secondary, 10%);
+}

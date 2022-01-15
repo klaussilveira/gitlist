@@ -1,0 +1,49 @@
+#!/usr/bin/env php
+<?php
+# Converts data from https://github.com/github/linguist to GitList's own format
+
+set_time_limit(0);
+
+require __DIR__ . '/../vendor/autoload.php';
+
+// Fetch latest github/linguist database
+$database = file_get_contents('https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml');
+
+// Remove document identifier so Symfony is happy
+$database = str_replace('---', '', $database);
+
+$languages = Symfony\Component\Yaml\Yaml::parse($database);
+$languageMap = [];
+
+foreach ($languages as $name => $language) {
+    if (!isset($language['extensions'])) {
+        continue;
+    }
+
+    foreach ($language['extensions'] as $extension) {
+        $extension = substr($extension, 1);
+        $languageMap[$extension] = [
+            'name' => $name,
+            'group' => $language['group'] ?? null,
+            'color' => $language['color'] ?? null,
+            'ace' => $language['ace_mode'] ?? null,
+            'cm' => $language['codemirror_mode'] ?? null,
+        ];
+    }
+}
+
+$sourceFile = __DIR__ . '/../src/SCM/Language.php';
+$template = file_get_contents($sourceFile);
+$blockStart = 'const MAP = [';
+$blockEnd = '];';
+$blockStartPos = strpos($template, $blockStart) + strlen($blockStart);
+$blockEndPos = strpos($template, $blockEnd);
+
+$languageMapSource = var_export($languageMap, true);
+$languageMapSource = substr($languageMapSource, 7);
+$languageMapSource = substr($languageMapSource, 0, -1);
+
+$updatedSource = substr_replace($template, $languageMapSource, $blockStartPos);
+$updatedSource .= substr($template, $blockEndPos);
+
+file_put_contents($sourceFile, $updatedSource);

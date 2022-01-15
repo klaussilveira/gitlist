@@ -1,0 +1,51 @@
+framework:
+  secret: '%env(APP_SECRET)%'
+  session:
+    handler_id: ~
+  php_errors:
+    log: true
+  cache:
+    prefix_seed: gl
+  router:
+    strict_requirements: ~
+    utf8: true
+  default_locale: '%locale%'
+  translator:
+    paths:
+      - '%kernel.project_dir%/assets/translations'
+    fallbacks:
+      - '%locale%'
+  assets:
+    base_path: 'assets'
+
+twig:
+  paths: ['%kernel.project_dir%/assets/themes/%theme%/templates']
+  debug: '%kernel.debug%'
+  strict_variables: '%kernel.debug%'
+  form_themes: ['bootstrap_5_horizontal_layout.html.twig']
+  globals:
+    title: '%title%'
+    theme: '%theme%'
+    navigation: '%navigation%'
+    commit_date_format: '%commit_date_format%'
+    commit_group_date_format: '%commit_group_date_format%'
+    commit_list_date_format: '%commit_list_date_format%'
+    ssh_clone_url: '%ssh_clone_url%'
+    https_clone_url: '%https_clone_url%'
+    default_blob_viewer: '%default_blob_viewer%'
+    tree_show_file_size: '%tree_show_file_size%'
+    tree_show_last_commit: '%tree_show_last_commit%'
+
+monolog:
+  handlers:
+    file_log:
+      type: stream
+      path: "%kernel.logs_dir%/%kernel.environment%.log"
+      level: debug
+
+    syslog_handler:
+      type: syslog
+      level: error
+
+webpack_encore:
+  output_path: '%kernel.project_dir%/public/assets'

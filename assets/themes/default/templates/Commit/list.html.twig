@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+  {{ 'REPOSITORY_COMMITS_TITLE'|trans }} - {{ repository.name }}
+{% endblock %}
+
+{% block header %}
+  {% include 'page-header.html.twig' with { repository: repository, baseRef: repository.defaultBranch, current: 'commits' } %}
+{% endblock %}
+
+{% block search %}
+  {% include 'search.html.twig' with { repository: repository, commitish: commitish } %}
+{% endblock %}
+
+{% block body %}
+  <div class="module-row">
+    {% include 'reflist.html.twig' with { ref: commitish, refPath: '', path: 'commit_list', repository: repository } %}
+  </div>
+
+  {% for commitGroup, commits in commitGroups %}
+    <div class="row module-row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            {{ commitGroup|date(commit_group_date_format) }}
+          </div>
+          <div class="card-body p-0">
+            {% include 'Commit/list-items.html.twig' with { repository: repository, commits: commits } %}
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+
+  <nav aria-label="{{ 'REPOSITORY_COMMITS_NAV_TITLE'|trans }}">
+    <ul class="pagination justify-content-center">
+      <li class="page-item{{ page == 1 ? ' disabled' }}">
+        <a class="page-link" href="{{ path('commit_list', { repository: repository.name, commitish: commitish, page: previousPage }) }}" aria-label="{{ 'REPOSITORY_COMMITS_NAV_NEWER'|trans }}">
+          <span aria-hidden="true">&laquo;</span>
+          <span>{{ 'REPOSITORY_COMMITS_NAV_NEWER'|trans }}</span>
+        </a>
+      </li>
+      <li class="page-item{{ commitGroups|length == 0 ? ' disabled' }}">
+        <a class="page-link" href="{{ path('commit_list', { repository: repository.name, commitish: commitish, page: nextPage }) }}" aria-label="{{ 'REPOSITORY_COMMITS_NAV_OLDER'|trans }}">
+          <span>{{ 'REPOSITORY_COMMITS_NAV_OLDER'|trans }}</span>
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+{% endblock %}

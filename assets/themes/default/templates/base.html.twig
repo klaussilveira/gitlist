@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{% block title %}{{ 'REPOSITORY_LIST_TITLE'|trans }}{% endblock %} &middot; {{ title }}</title>
+    {% block stylesheets %}{% endblock %}
+    {% if default_blob_viewer != 'simple' %}
+      {{ encore_entry_link_tags(default_blob_viewer ~ '/css/main') }}
+    {% endif %}
+    {{ encore_entry_link_tags(theme ~ '/css/main') }}
+
+    {% block javascripts %}{% endblock %}
+    {{ encore_entry_script_tags(theme ~ '/js/main') }}
+
+    {% if default_blob_viewer != 'simple' %}
+      {{ encore_entry_script_tags(default_blob_viewer ~ '/js/main') }}
+    {% endif %}
+  </head>
+  <body>
+    <header>
+      <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container d-flex">
+          <a class="navbar-brand" href="{{ path('repository_list') }}"><i class="icon ion-md-git-compare"></i> {{ title }}</a>
+
+          <ul class="navbar-nav">
+            <li class="nav-item active">
+              <a class="nav-link" href="{{ path('repository_list') }}">{{ 'REPOSITORY_LIST_TITLE'|trans }}</a>
+            </li>
+            {% for item in navigation %}
+              <li class="nav-item">
+                <a class="nav-link" href="{{ item.target }}">{{ item.label }}</a>
+              </li>
+            {% endfor %}
+          </ul>
+
+          {% block search %}
+          {% endblock %}
+        </div>
+      </nav>
+    </header>
+
+    <div class="container mt-2">
+      {% for label, messages in app.flashes() %}
+        {% for message in messages %}
+          <div class="alert alert-{{ label }}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endfor %}
+    </div>
+
+    {% block header %}{% endblock %}
+
+    <div class="container">
+    {% block body %}{% endblock %}
+    </div>
+
+    <footer class="d-flex justify-content-center">
+      <p>&copy; 2012 - {{ 'now'|date('Y') }} Powered by <a href="https://gitlist.org">GitList.org</a></p>
+    </footer>
+  </body>
+</html>

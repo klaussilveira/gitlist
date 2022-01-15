@@ -1,0 +1,9 @@
+parameters:
+    level: max
+    checkMissingIterableValueType: false
+    paths:
+        - src
+    ignoreErrors:
+        - '#Method GitList\\Kernel::configureContainer\(\) is unused.#'
+        - '#Method GitList\\Kernel::configureRoutes\(\) is unused.#'
+        - '#Call to an undefined method Symfony\\Component\\HttpFoundation\\Session\\SessionInterface::getFlashBag#'

@@ -1,0 +1,64 @@
+# GitList configuration
+parameters:
+  # Web application title
+  title: GitList
+
+  # Locale configuration
+  locale: en
+
+  # Theme
+  theme: default
+
+  # Navigation links
+  navigation:
+    -
+      label: Help
+      target: https://github.com/klaussilveira/gitlist/wiki
+    -
+      label: Report an Issue
+      target: https://github.com/klaussilveira/gitlist/issues
+
+  # List of directories containing repositories
+  default_repository_dir: /var/www
+  repositories:
+    - '%env(default:default_repository_dir:DEFAULT_REPOSITORY_DIR)%'
+
+  # List of repositories to exclude
+  exclude_repositories:
+    - /var/example/gitlist
+
+  # How many levels should be recursively traversed looking for repositories
+  repository_depth: '0'
+
+  # Commits to show per page
+  commits_per_page: 10
+
+  # Blob viewer: simple, codemirror or ace
+  default_blob_viewer: ace
+
+  # Show file size in tree
+  tree_show_file_size: false
+
+  # Show last commit in tree
+  tree_show_last_commit: true
+
+  # Default binary paths
+  git_path: /usr/bin/git
+  hg_path: /usr/bin/hg
+
+  secret: '%env(APP_SECRET)%'
+
+  avatar_url: '//gravatar.com/avatar'
+  avatar_config: []
+
+  commit_date_format: 'Y-m-d H:i:s'
+  commit_group_date_format: 'F j, Y'
+  commit_list_date_format: 'Y-m-d H:i:s'
+
+  ssh_clone_url: 'git@gitlist.org:%s.git' # %s will be replaced by the repository name
+  https_clone_url: 'https://gitlist.org/%s.git' # %s will be replaced by the repository name
+
+  # Route validators
+  valid_repository_name: '[a-zA-Z0-9\-\_\.]+'
+  #valid_commitish_format: '.+'
+  valid_commitish_format: '[a-zA-Z0-9\_\.\-\/]+'

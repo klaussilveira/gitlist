@@ -1,0 +1,7 @@
+.git/
+node_modules/
+vendor/
+var/cache
+var/logs
+var/log
+var/sessions

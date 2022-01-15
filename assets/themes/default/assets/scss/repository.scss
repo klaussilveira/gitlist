@@ -1,0 +1,48 @@
+.page-header {
+  h1 {
+    font-size: 3.5rem;
+    font-weight: 300;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+  }
+}
+
+.repository-description {
+  margin: 0;
+}
+
+.repository-stats a {
+  color: $gray-700;
+  font-size: $font-size-base;
+}
+
+.ref-list {
+  .input-group {
+    padding: 0 0.75rem 0.75rem 0.75rem;
+
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .nav-tabs {
+    padding-left: 0.75rem;
+  }
+
+  .tab-content {
+    max-height: 200px;
+    overflow: scroll;
+  }
+}
+
+.clone-input {
+  margin-right: 1rem;
+
+  .form-control {
+    font-family: $font-family-monospace;
+
+    &[readonly] {
+      background-color: $input-bg;
+      opacity: 1;
+    }
+  }
+}

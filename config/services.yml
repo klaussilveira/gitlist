@@ -1,0 +1,44 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  GitList\:
+    resource: '../src/*'
+
+  GitList\App\Controller\:
+    resource: '../src/App/Controller'
+    tags: ['controller.service_arguments']
+
+  GitList\App\Controller\Commit:
+    arguments:
+      $perPage: '%commits_per_page%'
+    tags: ['controller.service_arguments']
+
+  GitList\App\Controller\Blob:
+    arguments:
+      $perPage: '%commits_per_page%'
+    tags: ['controller.service_arguments']
+
+  GitList\Repository\Index:
+    arguments:
+      $paths: '%repositories%'
+      $excludePaths: '%exclude_repositories%'
+      $depth: '%repository_depth%'
+      $systems:
+        - '@GitList\SCM\System\Git\CommandLine'
+        - '@GitList\SCM\System\Mercurial\CommandLine'
+
+  GitList\SCM\System\Git\CommandLine:
+    arguments:
+      $path: '%git_path%'
+
+  GitList\SCM\System\Mercurial\CommandLine:
+    arguments:
+      $path: '%hg_path%'
+
+  GitList\App\Twig\AvatarExtension:
+    arguments:
+      $avatarUrl: '%avatar_url%'
+      $avatarConfig: '%avatar_config%'

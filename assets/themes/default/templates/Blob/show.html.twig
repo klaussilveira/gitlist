@@ -1,0 +1,70 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+  {{ blob.name }} ({{ blob.shortHash }}) - {{ repository.name }}
+{% endblock %}
+
+{% block header %}
+  {% include 'page-header.html.twig' with { repository: repository, baseRef: blob.hash, current: 'code' } %}
+{% endblock %}
+
+{% block search %}
+  {% include 'search.html.twig' with { repository: repository, commitish: blob.hash } %}
+{% endblock %}
+
+{% block body %}
+  {% include 'Blob/breadcrumb.html.twig' with { repository: repository, blob: blob } %}
+
+  <div class="row module-row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body d-flex align-items-center">
+          <img src="{{ getAvatar(commit.author.email, 48) }}" class="rounded me-3" alt="{{ commit.author.name }}" />
+          <div>
+            <h5>{{ commit.subject }}</h5>
+            <strong>{{ commit.author.name }}</strong> commited <strong>{{ commit.shortHash }}</strong> at {{ commit.commitedAt|date(commit_date_format) }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row module-row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          {{ file.name }}
+
+          <div class="btn-group" role="group">
+            <a href="{{ path('blob_blame', { repository: repository.name, commitish: getCommitish(commit.hash, blob.name) }) }}" class="btn btn-secondary">
+              <i class="icon ion-md-git-merge"></i> Blame
+            </a>
+            <a href="{{ path('blob_history', { repository: repository.name, commitish: getCommitish(commit.hash, blob.name) }) }}" class="btn btn-secondary">
+              <i class="icon ion-md-time"></i> History
+            </a>
+            <a href="{{ path('blob_raw', { repository: repository.name, commitish: getCommitish(commit.hash, blob.name) }) }}" class="btn btn-secondary">
+              <i class="icon ion-md-code-download"></i> Raw
+            </a>
+          </div>
+        </div>
+        {% if file.isImage %}
+          <div class="card-body text-center">
+            <img src="{{ path('blob_raw', {repository: repository.name, commitish: getCommitish(commit.hash, blob.name) }) }}" />
+          </div>
+        {% elseif file.isAudio %}
+          <div class="card-body p-0">
+            <audio controls src="{{ path('blob_raw', {repository: repository.name, commitish: getCommitish(commit.hash, blob.name) }) }}" />
+          </audio>
+        {% elseif file.isVideo %}
+          <div class="card-body p-0">
+            <video controls>
+              <source type="{{ file.mimeType }}" src="{{ path('blob_raw', {repository: repository.name, commitish: getCommitish(commit.hash, blob.name) }) }}">
+            </video>
+          </div>
+        {% else %}
+          {% include 'Blob/viewer/' ~ default_blob_viewer ~ '.html.twig' with { repository: repository, commitish: blob.hash } %}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

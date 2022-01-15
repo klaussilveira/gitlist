@@ -1,0 +1,40 @@
+{
+  "name": "gitlist",
+  "main": "index.js",
+  "repository": "https://github.com/klaussilveira/gitlist",
+  "license": "BSD-3-Clause",
+  "scripts": {
+    "dev-server": "encore dev-server",
+    "dev": "encore dev",
+    "watch": "encore dev --watch",
+    "build": "encore production",
+    "test": "npm run lint",
+    "format": "prettier --write 'assets/**/*.{js,ts,json,css,scss,yaml}'",
+    "lint": "prettier --check 'assets/**/*.{js,ts,json,css,scss,yaml}'",
+    "cypress": "cypress run"
+  },
+  "dependencies": {
+    "@popperjs/core": "^2.11.2",
+    "ace-builds": "^1.4",
+    "bootstrap": "^5.1",
+    "codemirror": "^5.65",
+    "ionicons": "^4.6"
+  },
+  "devDependencies": {
+    "@symfony/webpack-encore": "^1.7",
+    "autoprefixer": "^10.4",
+    "cssnano": "^5.0",
+    "cypress": "^9.2.1",
+    "file-loader": "^6.2",
+    "husky": "^7.0",
+    "postcss-loader": "^6.2",
+    "prettier": "^2.5",
+    "pretty-quick": "^3.1",
+    "sass": "^1.45",
+    "sass-loader": "^12.4"
+  },
+  "browserslist": [
+    "> 1%",
+    "IE 10"
+  ]
+}

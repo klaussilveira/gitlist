@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" xml:lang="en-US">
+  <id>{{ url('repository_tree', { repository: repository.name, commitish: commitish.hash }) }}</id>
+  <link type="text/html" rel="alternate" href="{{ url('repository_tree', { repository: repository.name, commitish: commitish.hash }) }}"/>
+  <link type="application/atom+xml" rel="self" href="{{ url('repository_feed', { repository: repository.name, commitish: commitish.hash, format: 'atom' }) }}"/>
+  <title>{{ 'REPOSITORY_FEED_RECENT_COMMITS'|trans }} {{ repository.name }} ({{ commitish.hash }})</title>
+  <updated>{{ commits|first.commitedAt|date('Y-m-d\\TH:i:sP') }}</updated>
+  {% for commit in commits %}
+  <entry>
+    <id>tag:gitlist.org,2012:commit/{{ commit.hash }}</id>
+    <link type="text/html" rel="alternate" href="{{ url('commit_show', { repository: repository.name, commitish: commit.hash }) }}" />
+    <title>{{ commit.subject }}</title>
+    <updated>{{ commit.commitedAt|date('Y-m-d\\TH:i:sP') }}</updated>
+    <media:thumbnail height="30" width="30" url="http:{{ getAvatar(commit.author.email, 30) }}" />
+    <author>
+      <name>{{ commit.author.name }}</name>
+      <email>{{ commit.author.email }}</email>
+    </author>
+    <content type="html">
+      {{ '<pre>' ~ commit.body ~ '</pre>'|escape }}
+    </content>
+  </entry>
+  {% endfor %}
+</feed>

@@ -1,0 +1,35 @@
+name: Nightly Build
+on:
+  workflow_dispatch: ~
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v2.5.1
+        with:
+          node-version: '16'
+
+      - name: Install frontend dependencies
+        run: npm install
+
+      - name: Build package
+        run: make build
+
+      - name: Rename package
+        run: mv build.zip gitlist-nightly.zip
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: nightly
+          tag_name: nightly
+          prerelease: true
+          body: Nightly release generated from `master` at 12 AM UTC.
+          files: gitlist-nightly.zip

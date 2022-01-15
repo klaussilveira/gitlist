@@ -1,0 +1,22 @@
+<div class="d-flex justify-content-start align-items-center module-row">
+  {% include 'reflist.html.twig' with { ref: blob.shortHash, refPath: blob.name, path: 'blob_show', repository: repository } %}
+
+  <nav>
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a href="{{ path('repository_tree', {repository: repository.name, commitish: blob.hash }) }}">{{ repository.name }}</a>
+      </li>
+      {% for breadcrumb in getBreadcrumbs(blob) %}
+        {% if loop.last %}
+          <li class="breadcrumb-item active">
+            {{ breadcrumb.name }}
+          </li>
+        {% else %}
+          <li class="breadcrumb-item">
+            <a href="{{ path('repository_tree', {repository: repository.name, commitish: breadcrumb.commitish }) }}">{{ breadcrumb.name }}</a>
+          </li>
+        {% endif %}
+      {% endfor %}
+    </ol>
+  </nav>
+</div>

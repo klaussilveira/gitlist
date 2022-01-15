@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+  {{ 'REPOSITORY_SEARCH_RESULTS_TITLE'|trans }} - {{ repository.name }}
+{% endblock %}
+
+{% block header %}
+  {% include 'page-header.html.twig' with { repository: repository, baseRef: repository.defaultBranch, current: 'search' } %}
+{% endblock %}
+
+{% block search %}
+  {% include 'search.html.twig' with { repository: repository, commitish: commitish } %}
+{% endblock %}
+
+{% block body %}
+  {% for commitGroup, commits in commitGroups %}
+    <div class="row module-row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            {{ commitGroup|date(commit_group_date_format) }}
+          </div>
+          <div class="card-body p-0">
+            {% include 'Commit/list-items.html.twig' with { repository: repository, commits: commits } %}
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+{% endblock %}

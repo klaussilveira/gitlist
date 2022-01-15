@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block header %}
+  {% include 'page-header.html.twig' with { repository: repository, baseRef: repository.defaultBranch, current: 'branches' } %}
+{% endblock %}
+
+{% block search %}
+  {% include 'search.html.twig' with { repository: repository, commitish: repository.defaultBranch } %}
+{% endblock %}
+
+{% block body %}
+<div class="row module-row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        {{ 'REPOSITORY_BRANCH_TITLE'|trans }}
+      </div>
+      <div class="card-body">
+        <ul class="list-group list-group-flush">
+          {% for branch in branches %}
+            <li class="list-group-item">
+              <h5>
+                <i class="icon ion-md-git-branch"></i>
+                <a href="{{ path('repository_tree', {repository: repository.name, commitish: branch.name }) }}" title="{{ branch.name }}">
+                  {{ branch.name }}
+                </a>
+              </h5>
+              <p>
+                <i class="icon ion-md-git-commit"></i>
+                <a href="{{ path('commit_show', { repository: repository.name, commitish: branch.target.hash }) }}">{{ branch.target.shortHash }}</a>
+                {{ branch.target.subject }}
+                <span class="badge badge-secondary">
+                  {{ branch.target.commitedAt|date(commit_list_date_format) }}
+                </span>
+              </p>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
