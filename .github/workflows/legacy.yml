@@ -2,10 +2,14 @@ name: Legacy Build
 
 on:
   push:
-    branches: [ legacy ]
+    branches:
+      - legacy
+    tags:
+      - 1.*
 
   pull_request:
-    branches: [ legacy ]
+    branches:
+      - legacy
 
 jobs:
   build:
