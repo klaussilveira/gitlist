@@ -1,0 +1,7 @@
+project_identifier: gitlist
+base_path: .
+preserve_hierarchy: false
+files:
+  - source: /assets/translations/messages.en.yaml
+    translation: /assets/translations/messages.%two_letters_code%.yaml
+    type: yaml
