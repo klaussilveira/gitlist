@@ -1,11 +1,13 @@
 name: Legacy Build
 
 on:
+  workflow_dispatch: ~
+
   push:
     branches:
       - legacy
     tags:
-      - 1.*.*
+      - 1.**
 
   pull_request:
     branches:
