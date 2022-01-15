@@ -28,8 +28,8 @@ In order to run GitList on your server, you'll need:
 * Webserver (Apache, nginx)
 
 ## Installation
-* Download GitList from [gitlist.org](http://gitlist.org/) and decompress to your `/var/www/gitlist` folder, or anywhere else you want to place GitList.
-* Do not download a branch or tag from GitHub, unless you want to use the development version. The version available for download at the website already has all dependencies bundled, so you don't have to use composer or any other tool
+* Download the [latest release](https://github.com/klaussilveira/gitlist/releases) or the [nightly build](https://github.com/klaussilveira/gitlist/releases/download/nightly/gitlist-nightly.zip) and decompress to your `/var/www/gitlist` folder, or anywhere else you want to place GitList.
+  * Do not use the source release, or download a branch or tag from GitHub. It is not suited for end-users, only development.
 * Open up the `config/config.yml` and configure your installation. You'll have to provide where your repositories are located.
   * Alternatively, you can export the environment variable `DEFAULT_REPOSITORY_DIR` with the directory containing your repositories
 * Create the cache and log folder and give it read/write permissions to your web server user:
@@ -41,6 +41,8 @@ chmod 777 var/cache
 mkdir -p var/log
 chmod 777 var/log
 ```
+
+* Point your webserver to the `/var/www/gitlist/public` folder, where `index.php` is.
 
 That's it, installation complete! If you're having problems, check the [Troubleshooting](https://github.com/klaussilveira/gitlist/wiki/Troubleshooting) page.
 
