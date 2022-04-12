@@ -21,6 +21,8 @@ class Repository
     {
         $repositories = $this->index->getRepositories();
 
+        ksort($repositories);
+
         return new Response($this->templating->render('Repository/list.html.twig', [
             'repositories' => $repositories,
         ]));
