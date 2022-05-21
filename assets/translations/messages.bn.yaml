@@ -37,7 +37,7 @@ REPOSITORY_COMMITS_NAV_OLDER: পুরোনো
 REPOSITORY_COMMIT_COMMITED_ON: কমিট করেছেন
 REPOSITORY_COMMIT_AUTHORED_ON: প্রস্তুতের সময়
 REPOSITORY_COMMIT_AUTHORED: প্রস্তুত করেছেন
-REPOSITORY_COMMIT_PARENT: Parent
+REPOSITORY_COMMIT_PARENT: মূল
 REPOSITORY_COMMIT_CHANGE_STATS: '%changed%টি পরিবর্তিত ফাইল, যার মধ্যে %additions% নতুন লাইন এবং %deletions% মুছে ফেলা লাইন দেখানো হচ্ছে।'
 REPOSITORY_COMMIT_VIEW_FILE_AT: '@ ফাইল দেখুন'
 REPOSITORY_BLOB_HISTORY_FOR: ইতিহাস
