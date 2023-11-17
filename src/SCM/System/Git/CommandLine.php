@@ -47,19 +47,19 @@ class CommandLine implements System
     {
         $path = $repository->getPath();
 
-        return file_exists($path) && (file_exists($path . '/.git/HEAD') || file_exists($path . '/HEAD'));
+        return file_exists($path) && (file_exists($path.'/.git/HEAD') || file_exists($path.'/HEAD'));
     }
 
     public function getDescription(Repository $repository): string
     {
         $path = $repository->getPath();
 
-        if (file_exists($path . '/description')) {
-            return file_get_contents($path . '/description');
+        if (file_exists($path.'/description')) {
+            return file_get_contents($path.'/description');
         }
 
-        if (file_exists($path . '/.git/description')) {
-            return file_get_contents($path . '/.git/description');
+        if (file_exists($path.'/.git/description')) {
+            return file_get_contents($path.'/.git/description');
         }
 
         return '';
@@ -151,7 +151,7 @@ class CommandLine implements System
 
     public function getPathTree(Repository $repository, string $path, ?string $hash = 'HEAD'): Tree
     {
-        $path = rtrim($path, '/') . '/';
+        $path = rtrim($path, '/').'/';
         $output = $this->run(['ls-tree', '-lz', $hash, '--', $path], $repository);
         $tree = $this->buildTreeFromOutput($repository, $hash, $output, true);
         $tree->setName(rtrim($path, '/'));
@@ -330,12 +330,12 @@ class CommandLine implements System
 
             $file = preg_split('/[\s]+/', $line, 5);
 
-            if ($file[1] == 'commit') {
+            if ('commit' == $file[1]) {
                 // Don't handle submodules yet
                 continue;
             }
 
-            if ($file[0] == '120000') {
+            if ('120000' == $file[0]) {
                 $symlinkTarget = $this->run(['show', $file[2]], $repository);
                 $symlink = new Symlink($repository, $file[2]);
                 $symlink->setMode($file[0]);
@@ -347,7 +347,7 @@ class CommandLine implements System
                 continue;
             }
 
-            if ($file[1] == 'blob') {
+            if ('blob' == $file[1]) {
                 $blob = new Blob($repository, $file[2]);
                 $blob->setMode($file[0]);
                 $blob->setName($file[4]);
@@ -396,7 +396,7 @@ class CommandLine implements System
     {
         $xmlStart = strpos($input, '<item>');
 
-        if ($xmlStart === false) {
+        if (false === $xmlStart) {
             throw new InvalidCommitException($input);
         }
 
@@ -408,7 +408,7 @@ class CommandLine implements System
 
     protected function parseCommitsDataXml(Repository $repository, string $input): array
     {
-        $items = new SimpleXMLElement('<items>' . $input . '</items>');
+        $items = new SimpleXMLElement('<items>'.$input.'</items>');
         $commits = [];
 
         foreach ($items as $item) {
@@ -429,10 +429,10 @@ class CommandLine implements System
             $commit->setCommitedAt(new CarbonImmutable((string) $item->commiter_date));
 
             $signatureStatus = (string) $item->valid_signature;
-            if ($signatureStatus != 'N') {
+            if ('N' != $signatureStatus) {
                 $signature = new Signature((string) $item->signer, (string) $item->signer_key);
 
-                if ($signatureStatus == 'B') {
+                if ('B' == $signatureStatus) {
                     $signature->validate();
                 }
 

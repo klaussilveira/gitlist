@@ -36,7 +36,7 @@ class Repository
         $readme = $tree->getReadme();
 
         if ($readme) {
-            $blob = $repository->getBlob($tree->getHash() . '/' . $readme->getName());
+            $blob = $repository->getBlob($tree->getHash().'/'.$readme->getName());
             $readme = File::createFromBlob($blob);
         }
 
@@ -56,7 +56,7 @@ class Repository
         $readme = $tree->getReadme();
 
         if ($readme) {
-            $blob = $repository->getBlob($tree->getHash() . '/' . $readme->getName());
+            $blob = $repository->getBlob($tree->getHash().'/'.$readme->getName());
             $readme = File::createFromBlob($blob);
         }
 

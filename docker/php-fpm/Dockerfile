@@ -1,4 +1,4 @@
-FROM php:8.1-fpm-alpine
+FROM php:8.2-fpm-alpine
 
 ENV PHP_EXT_DEPS \
     gettext=gettext-dev \
@@ -11,6 +11,7 @@ ENV PHP_EXT_DEPS \
 RUN set -x; \
     apk add --no-cache --virtual .php-extensions-build-dependencies \
         $PHPIZE_DEPS \
+        linux-headers \
         $(echo ${PHP_EXT_DEPS} | tr ' ' '\n' | cut -d = -f 2) \
     && apk add --no-cache \
         $(echo ${PHP_EXT_DEPS} | tr ' ' '\n' | cut -d = -f 1) \

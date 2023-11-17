@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace GitList\SCM\Exception;
 
-class InvalidCommitException extends \RuntimeException
+use RuntimeException;
+
+class InvalidCommitException extends RuntimeException
 {
 }
