@@ -17,7 +17,7 @@ use ZipArchive;
 
 class CommandLineTest extends TestCase
 {
-    public const FIXTURE_REPO = FIXTURE_DIR . '/git-bare-repo';
+    public const FIXTURE_REPO = FIXTURE_DIR.'/git-bare-repo';
 
     public function setUp(): void
     {

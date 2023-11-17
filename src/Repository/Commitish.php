@@ -24,7 +24,7 @@ class Commitish
             $this->hash = $rev->getName();
             $revSuffix = substr($commitish, strlen($this->hash));
 
-            if ($revSuffix && ($revSuffix[0] === '@' || $revSuffix[0] === '^' || $revSuffix[0] === '~')) {
+            if ($revSuffix && ('@' === $revSuffix[0] || '^' === $revSuffix[0] || '~' === $revSuffix[0])) {
                 $this->hash .= strtok($revSuffix, '/');
             }
         }

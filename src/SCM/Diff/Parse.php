@@ -128,7 +128,7 @@ class Parse
 
         $this->currentHunk->addLine(new Line($line, Line::TYPE_DELETE, $oldNumber, $newNumber));
         $this->currentFile->increaseDeletions();
-        $this->deletedLines++;
+        ++$this->deletedLines;
     }
 
     protected function addedLine(string $line, array $context): void
@@ -138,7 +138,7 @@ class Parse
 
         $this->currentHunk->addLine(new Line($line, Line::TYPE_ADD, $oldNumber, $newNumber));
         $this->currentFile->increaseAdditions();
-        $this->addedLines++;
+        ++$this->addedLines;
     }
 
     protected function line(string $line): void
@@ -151,8 +151,8 @@ class Parse
         $newNumber = $this->newCounter + $this->addedLines;
 
         $this->currentHunk->addLine(new Line($line, Line::TYPE_NO_CHANGE, $oldNumber, $newNumber));
-        $this->oldCounter++;
-        $this->newCounter++;
+        ++$this->oldCounter;
+        ++$this->newCounter;
     }
 
     protected function clearAccumulator(): void

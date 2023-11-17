@@ -47,7 +47,7 @@ class Repository
         return $this->system->getTags($this->repository);
     }
 
-    public function getTree(?string $commitish = null): Tree
+    public function getTree(string $commitish = null): Tree
     {
         if (!$commitish) {
             return $this->system->getTree($this->repository);
@@ -62,7 +62,7 @@ class Repository
         return $this->system->getTree($this->repository, $commitish->getHash());
     }
 
-    public function getCommit(?string $commitish = null): Commit
+    public function getCommit(string $commitish = null): Commit
     {
         if (!$commitish) {
             return $this->system->getCommit($this->repository);
@@ -102,7 +102,7 @@ class Repository
         $annotatedLines = $blame->getAnnotatedLines();
         $lineAccumulator = '';
         foreach ($annotatedLines as $index => $currentLine) {
-            $lineAccumulator .= $currentLine->getContents() . PHP_EOL;
+            $lineAccumulator .= $currentLine->getContents().PHP_EOL;
             $nextLine = $annotatedLines[$index + 1] ?? null;
 
             if ($nextLine && $currentLine->getCommit() != $nextLine->getCommit()) {
@@ -129,7 +129,7 @@ class Repository
         }
     }
 
-    public function searchCommits(Criteria $criteria, ?string $commitish = null): array
+    public function searchCommits(Criteria $criteria, string $commitish = null): array
     {
         if (!$commitish) {
             return $this->system->searchCommits($this->repository, $criteria);

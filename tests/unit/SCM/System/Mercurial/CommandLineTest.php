@@ -16,7 +16,7 @@ use ZipArchive;
 
 class CommandLineTest extends TestCase
 {
-    public const FIXTURE_REPO = FIXTURE_DIR . '/hg-repo';
+    public const FIXTURE_REPO = FIXTURE_DIR.'/hg-repo';
 
     public function setUp(): void
     {
