@@ -135,7 +135,12 @@ class Parse
     {
         $oldNumber = $this->oldCounter;
         $newNumber = $this->newCounter + $this->addedLines;
-
+      
+        if ($this->currentHunk == null) {
+			    $this->hunk($line, $context);
+		    } else {
+          $this->currentHunk->addLine(new Line($line, Line::TYPE_ADD, $oldNumber, $newNumber));
+		    }
         $this->currentHunk->addLine(new Line($line, Line::TYPE_ADD, $oldNumber, $newNumber));
         $this->currentFile->increaseAdditions();
         ++$this->addedLines;
