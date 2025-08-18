@@ -1,10 +1,12 @@
 services:
   node:
-    image: node:16-alpine
+    build:
+      context: docker/node/
     working_dir: /application
     volumes:
       - .:/application
-    command: npm install && npm run watch
+    command: sh -lc "npm ci && npm run watch"
+    tty: true
 
   webserver:
     build:

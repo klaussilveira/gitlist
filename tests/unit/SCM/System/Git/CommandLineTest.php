@@ -24,9 +24,6 @@ class CommandLineTest extends TestCase
         if (empty(shell_exec('which git 2> /dev/null'))) {
             $this->markTestSkipped('Git is not available.');
         }
-
-        // Git 2.35+ introduced ownership checks to prevent attacks when running git commands in directories owned by a different user
-        shell_exec('git config --global --add safe.directory "*"');
     }
 
     public function testIsValidatingRepository(): void

@@ -3,6 +3,8 @@ public/assets/
 var/
 vendor/
 node_modules/
+tests/fixtures/hg-repo/.hg/cache
+.cache/
 .env
 docker-compose.override.yml
 npm-debug.log

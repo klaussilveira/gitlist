@@ -34,7 +34,7 @@ class CommandLine implements System
 
     protected ?string $path;
 
-    public function __construct(string $path = null)
+    public function __construct(?string $path = null)
     {
         if (!$path) {
             $path = (new ExecutableFinder())->find('hg', '/usr/bin/hg');
@@ -297,7 +297,7 @@ class CommandLine implements System
         return $destination;
     }
 
-    protected function run(array $command, Repository $repository = null): string
+    protected function run(array $command, ?Repository $repository = null): string
     {
         array_unshift($command, $this->path);
 

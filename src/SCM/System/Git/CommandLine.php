@@ -34,7 +34,7 @@ class CommandLine implements System
 
     protected ?string $path;
 
-    public function __construct(string $path = null)
+    public function __construct(?string $path = null)
     {
         if (!$path) {
             $path = (new ExecutableFinder())->find('git', '/usr/bin/git');
@@ -67,7 +67,18 @@ class CommandLine implements System
 
     public function getDefaultBranch(Repository $repository): string
     {
-        $branch = $this->run(['symbolic-ref', '--short', 'HEAD'], $repository);
+        try {
+            $branch = $this->run(['symbolic-ref', '--short', 'HEAD'], $repository);
+        } catch (CommandException $e) {
+            $isOwnershipCheck = 0 === strpos($e->getMessage(), 'fatal: detected dubious ownership');
+            if (!$isOwnershipCheck) {
+                throw $e;
+            }
+
+            // Git 2.35+ introduced ownership checks to prevent attacks when running git commands in directories owned by a different user
+            $this->run(['config', '--global', '--add', 'safe.directory', '*']);
+            $branch = $this->run(['symbolic-ref', '--short', 'HEAD'], $repository);
+        }
 
         return trim($branch);
     }
@@ -298,7 +309,7 @@ class CommandLine implements System
         return $destination;
     }
 
-    protected function run(array $command, Repository $repository = null): string
+    protected function run(array $command, ?Repository $repository = null): string
     {
         array_unshift($command, $this->path);
 
