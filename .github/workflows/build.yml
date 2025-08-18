@@ -7,17 +7,17 @@ jobs:
 
     strategy:
       matrix:
-        php: [8.1, 8.2]
+        php: [8.1, 8.2, 8.3, 8.4]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Validate composer.json and composer.lock
         run: composer validate --strict --no-check-version
 
       - name: Cache Composer packages
         id: composer-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: vendor
           key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
@@ -42,10 +42,10 @@ jobs:
   frontend:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Setup Node.js environment
-        uses: actions/setup-node@v2.5.1
+        uses: actions/setup-node@v4
         with:
           node-version: '16'
 
@@ -59,11 +59,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Cache Composer packages
         id: composer-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: vendor
           key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
@@ -71,7 +71,7 @@ jobs:
             ${{ runner.os }}-php-
 
       - name: Setup Node.js environment
-        uses: actions/setup-node@v2.5.1
+        uses: actions/setup-node@v4
         with:
           node-version: '16'
 
@@ -85,7 +85,7 @@ jobs:
         run: echo 'deb [trusted=yes] https://repo.symfony.com/apt/ /' | sudo tee /etc/apt/sources.list.d/symfony-cli.list && sudo apt update && sudo apt install symfony-cli && APP_ENV=prod DEFAULT_REPOSITORY_DIR=${{ github.workspace }}/tests/fixtures symfony server:start --port=8880 -d
 
       - name: Run Cypress acceptance tests
-        uses: cypress-io/github-action@v2
+        uses: cypress-io/github-action@v6
 
   release:
     if: startsWith(github.ref, 'refs/tags/')
@@ -93,10 +93,10 @@ jobs:
     needs: [backend, frontend]
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Setup Node.js environment
-        uses: actions/setup-node@v2.5.1
+        uses: actions/setup-node@v4
         with:
           node-version: '16'
 
@@ -110,7 +110,7 @@ jobs:
         run: mv build.zip gitlist-${{ github.ref_name }}.zip
 
       - name: Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
           files: gitlist-${{ github.ref_name }}.zip
