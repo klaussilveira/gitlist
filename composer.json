@@ -5,32 +5,31 @@
   "type": "project",
   "license": "BSD-3-Clause",
   "require": {
-    "php": ">=8.1",
+    "php": ">=8.4.1",
     "ext-iconv": "*",
     "ext-mbstring": "*",
-    "league/commonmark": "^2.7",
-    "nesbot/carbon": "^3.10",
-    "symfony/asset": "^6.4",
-    "symfony/cache": "^6.4",
-    "symfony/console": "^6.4",
-    "symfony/form": "^6.4",
-    "symfony/framework-bundle": "^6.4",
-    "symfony/monolog-bundle": "^3.10",
-    "symfony/process": "^6.4",
-    "symfony/string": "^6.4",
-    "symfony/templating": "^6.4",
-    "symfony/translation": "^6.4",
-    "symfony/twig-bundle": "^6.4",
-    "symfony/webpack-encore-bundle": "^2.3",
-    "symfony/yaml": "^6.4"
+    "league/commonmark": "^2.10",
+    "nesbot/carbon": "^3.13",
+    "symfony/asset": "^8.1",
+    "symfony/cache": "^8.1",
+    "symfony/console": "^8.1",
+    "symfony/form": "^8.1",
+    "symfony/framework-bundle": "^8.1",
+    "symfony/monolog-bundle": "^4.0",
+    "symfony/process": "^8.1",
+    "symfony/string": "^8.1",
+    "symfony/translation": "^8.1",
+    "symfony/twig-bundle": "^8.1",
+    "symfony/webpack-encore-bundle": "^2.4",
+    "symfony/yaml": "^8.1"
   },
   "require-dev": {
-    "friendsofphp/php-cs-fixer": "^3.86",
-    "phpspec/prophecy-phpunit": "^2.0",
-    "phpstan/phpstan": "^1.10",
-    "phpunit/phpunit": "^9.6",
-    "symfony/debug-bundle": "^6.4",
-    "symfony/dotenv": "^6.4"
+    "friendsofphp/php-cs-fixer": "^3.95",
+    "phpspec/prophecy-phpunit": "^2.5",
+    "phpstan/phpstan": "^2.2",
+    "phpunit/phpunit": "^13.3",
+    "symfony/debug-bundle": "^8.1",
+    "symfony/dotenv": "^8.1"
   },
   "config": {
     "preferred-install": {
@@ -77,7 +76,7 @@
       "vendor/bin/phpunit"
     ],
     "stan": [
-      "vendor/bin/phpstan analyse -c phpstan.neon -l 5 src/"
+      "vendor/bin/phpstan analyse -c phpstan.neon"
     ]
   },
   "conflict": {

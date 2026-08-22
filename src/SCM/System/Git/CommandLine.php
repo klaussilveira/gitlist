@@ -67,20 +67,7 @@ class CommandLine implements System
 
     public function getDefaultBranch(Repository $repository): string
     {
-        try {
-            $branch = $this->run(['symbolic-ref', '--short', 'HEAD'], $repository);
-        } catch (CommandException $e) {
-            $isOwnershipCheck = 0 === strpos($e->getMessage(), 'fatal: detected dubious ownership');
-            if (!$isOwnershipCheck) {
-                throw $e;
-            }
-
-            // Git 2.35+ introduced ownership checks to prevent attacks when running git commands in directories owned by a different user
-            $this->run(['config', '--global', '--add', 'safe.directory', '*']);
-            $branch = $this->run(['symbolic-ref', '--short', 'HEAD'], $repository);
-        }
-
-        return trim($branch);
+        return trim($this->run(['symbolic-ref', '--short', 'HEAD'], $repository));
     }
 
     public function getBranches(Repository $repository): array
@@ -122,10 +109,6 @@ class CommandLine implements System
             }
 
             $tagInfo = explode('||', $tagItem);
-
-            if (!isset($tagInfo[0])) {
-                continue;
-            }
 
             $author = new Person($tagInfo[3], trim($tagInfo[4], '<>'));
             $authoredAt = new CarbonImmutable($tagInfo[5]);
@@ -311,6 +294,10 @@ class CommandLine implements System
 
     protected function run(array $command, ?Repository $repository = null): string
     {
+        if ($repository) {
+            array_unshift($command, '-c', 'safe.directory='.realpath($repository->getPath()));
+        }
+
         array_unshift($command, $this->path);
 
         $process = new Process($command);

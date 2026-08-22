@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace GitList\App\Twig;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class StringExtensionTest extends TestCase
 {
-    /**
-     * @dataProvider provideTruncateFixtures
-     */
+    #[DataProvider('provideTruncateFixtures')]
     public function testIsTruncatingText(string $expected, string $string, int $length, string $ellipsis, bool $cut = true): void
     {
         $extension = new StringExtension();

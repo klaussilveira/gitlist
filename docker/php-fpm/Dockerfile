@@ -1,4 +1,4 @@
-FROM php:8.2-fpm-alpine
+FROM php:8.4-fpm-alpine
 
 ENV PHP_EXT_DEPS \
     gettext=gettext-dev \
@@ -35,6 +35,8 @@ RUN apk add --no-cache \
     mercurial \
     make \
     wget
+
+RUN git config --global --add safe.directory /application
 
 ENV COMPOSER_ALLOW_SUPERUSER 1
 

@@ -100,10 +100,6 @@ class CommandLine implements System
 
             $tagInfo = explode('||', $tagItem);
 
-            if (!isset($tagInfo[0])) {
-                continue;
-            }
-
             $author = new Person($tagInfo[3], $tagInfo[4]);
             $authoredAt = new CarbonImmutable($tagInfo[5]);
             $tag = new Tag($repository, $tagInfo[0], $author, $authoredAt);

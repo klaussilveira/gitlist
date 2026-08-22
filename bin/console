@@ -4,8 +4,7 @@
 use GitList\Kernel;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArgvInput;
-use Symfony\Component\Debug\Debug;
-use Symfony\Component\Dotenv\Dotenv;
+use Symfony\Component\ErrorHandler\Debug;
 
 set_time_limit(0);
 
@@ -17,10 +16,7 @@ $debug = (bool) ($_SERVER['APP_DEBUG'] ?? ('prod' !== $env)) && !$input->hasPara
 
 if ($debug) {
     umask(0000);
-
-    if (class_exists(Debug::class)) {
-        Debug::enable();
-    }
+    Debug::enable();
 }
 
 $kernel = new Kernel($env, $debug);

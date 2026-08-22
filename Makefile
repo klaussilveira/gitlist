@@ -77,6 +77,7 @@ build: # Build application package
 	-x '.php-cs-fixer.cache' \
 	-x '.php-cs-fixer.php' \
 	-x '.phpunit.result.cache' \
+	-x '.phpunit.cache/*' \
 	-x '.prettierrc' \
 	-x 'composer.json' \
 	-x 'composer.lock' \

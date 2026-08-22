@@ -3,7 +3,7 @@ var bootstrap = require('bootstrap');
 document.addEventListener('DOMContentLoaded', function () {
   // Initialize all dropdowns
   var dropdowns = [].slice.call(
-    document.querySelectorAll('[data-bs-toggle="dropdown"]')
+    document.querySelectorAll('[data-bs-toggle="dropdown"]'),
   );
   dropdowns.map(function (el) {
     return new bootstrap.Dropdown(el);
@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Initialize all tooltip
   var tooltip = [].slice.call(
-    document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    document.querySelectorAll('[data-bs-toggle="tooltip"]'),
   );
   tooltip.map(function (el) {
     return new bootstrap.Tooltip(el);
@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Initialize all popovers
   var popovers = [].slice.call(
-    document.querySelectorAll('[data-bs-toggle="popover"]')
+    document.querySelectorAll('[data-bs-toggle="popover"]'),
   );
   popovers.map(function (el) {
     return new bootstrap.Popover(el);
@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Initialize commit body popover
   var commitBody = [].slice.call(
-    document.querySelectorAll('[data-toggle="commit-body"]')
+    document.querySelectorAll('[data-toggle="commit-body"]'),
   );
   commitBody.map(function (el) {
     return new bootstrap.Popover(el, {
@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   var reflistInput = [].slice.call(
-    document.querySelectorAll('.ref-list input')
+    document.querySelectorAll('.ref-list input'),
   );
   reflistInput.forEach(function (el) {
     el.addEventListener('input', function (event) {
@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var cloneInput = [].slice.call(document.querySelectorAll('.clone-input'));
   cloneInput.map(function (el) {
     var dropdown = new bootstrap.Dropdown(
-      el.querySelector('[data-toggle="clone-input"]')
+      el.querySelector('[data-toggle="clone-input"]'),
     );
     var input = el.querySelector('input');
     var toggle = el.querySelector('.dropdown-toggle');

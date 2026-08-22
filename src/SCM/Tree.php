@@ -84,7 +84,7 @@ class Tree extends Item
     public function getReadme(): ?Blob
     {
         foreach ($this->children as $child) {
-            if (!($child instanceof Blob)) {
+            if (!$child instanceof Blob) {
                 continue;
             }
 

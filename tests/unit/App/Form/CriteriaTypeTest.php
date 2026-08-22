@@ -6,8 +6,10 @@ namespace GitList\App\Form;
 
 use DateTime;
 use GitList\SCM\Commit\Criteria;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use Symfony\Component\Form\Test\TypeTestCase;
 
+#[AllowMockObjectsWithoutExpectations]
 class CriteriaTypeTest extends TypeTestCase
 {
     public function testIsSubmittingValidData(): void

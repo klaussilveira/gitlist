@@ -25,7 +25,7 @@ class DateTimeExtension extends AbstractExtension
 
     public function ago(DateTimeInterface $date): string
     {
-        if (!($date instanceof CarbonInterface)) {
+        if (!$date instanceof CarbonInterface) {
             $date = new Carbon($date);
         }
 

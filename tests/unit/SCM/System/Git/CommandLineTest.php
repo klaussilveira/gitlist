@@ -13,6 +13,7 @@ use GitList\SCM\Repository;
 use GitList\SCM\Symlink;
 use GitList\SCM\Tree;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Process\Process;
 use ZipArchive;
 
 class CommandLineTest extends TestCase
@@ -43,6 +44,35 @@ class CommandLineTest extends TestCase
     {
         $commandLine = new CommandLine();
         $this->assertEquals('master', $commandLine->getDefaultBranch(new Repository(self::FIXTURE_REPO)));
+    }
+
+    public function testIsGettingDefaultBranchOfRepositoryOwnedByAnotherUser(): void
+    {
+        $globalConfig = sys_get_temp_dir().'/gitlist-'.uniqid().'-gitconfig';
+
+        $_ENV['GIT_TEST_ASSUME_DIFFERENT_OWNER'] = '1';
+        $_ENV['GIT_CONFIG_GLOBAL'] = $globalConfig;
+
+        try {
+            $probe = new Process(['git', 'symbolic-ref', '--short', 'HEAD']);
+            $probe->setWorkingDirectory(self::FIXTURE_REPO);
+            $probe->run();
+
+            if (0 === $probe->getExitCode()) {
+                $this->markTestSkipped('Git does not enforce the ownership check.');
+            }
+
+            $commandLine = new CommandLine();
+
+            $this->assertEquals('master', $commandLine->getDefaultBranch(new Repository(self::FIXTURE_REPO)));
+            $this->assertFileDoesNotExist($globalConfig);
+        } finally {
+            unset($_ENV['GIT_TEST_ASSUME_DIFFERENT_OWNER'], $_ENV['GIT_CONFIG_GLOBAL']);
+
+            if (file_exists($globalConfig)) {
+                unlink($globalConfig);
+            }
+        }
     }
 
     public function testIsGettingBranches(): void

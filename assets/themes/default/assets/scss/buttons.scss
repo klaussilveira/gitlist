@@ -7,27 +7,23 @@
   $background,
   $border: shade-color($background, 15%),
   $color: tint-color(color-contrast($background), 10%),
-  $hover-background:
-    if(
+  $hover-background: if(
       $color == $color-contrast-light,
       shade-color($background, $btn-hover-bg-shade-amount),
       tint-color($background, $btn-hover-bg-tint-amount)
     ),
-  $hover-border:
-    if(
+  $hover-border: if(
       $color == $color-contrast-light,
       shade-color($border, $btn-hover-border-shade-amount),
       tint-color($border, $btn-hover-border-tint-amount)
     ),
   $hover-color: color-contrast($hover-background),
-  $active-background:
-    if(
+  $active-background: if(
       $color == $color-contrast-light,
       shade-color($background, $btn-active-bg-shade-amount),
       tint-color($background, $btn-active-bg-tint-amount)
     ),
-  $active-border:
-    if(
+  $active-border: if(
       $color == $color-contrast-light,
       shade-color($border, $btn-active-border-shade-amount),
       tint-color($border, $btn-active-border-tint-amount)
@@ -41,7 +37,8 @@
   @include gradient-generator($background);
   border-color: $border;
   border-bottom-color: shade-color($border, 15%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2),
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
     0 1px 2px rgba(0, 0, 0, 0.05);
   text-shadow: 0 1px 1px rgba(color-contrast($color), 0.75);
 
@@ -65,7 +62,8 @@
     background-image: none;
     border-color: $active-border;
     border-bottom-color: shade-color($active-border, 15%);
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15),
+    box-shadow:
+      inset 0 2px 4px rgba(0, 0, 0, 0.15),
       0 1px 2px rgba(0, 0, 0, 0.05);
     outline: 0;
   }

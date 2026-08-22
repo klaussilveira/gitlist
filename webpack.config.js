@@ -1,4 +1,4 @@
-const encore = require('@symfony/webpack-encore');
+const encore = require('@symfony/webpack-encore').default;
 const webpack = require('webpack');
 const { readdirSync, statSync } = require('fs');
 const { join } = require('path');

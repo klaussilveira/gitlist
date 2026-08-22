@@ -23,7 +23,7 @@ GitList is an elegant and modern web interface for interacting with multiple git
 ## Requirements
 In order to run GitList on your server, you'll need:
 
-* PHP 8.1
+* PHP 8.4
   * php-xml
   * php-mbstring
 * git 2
