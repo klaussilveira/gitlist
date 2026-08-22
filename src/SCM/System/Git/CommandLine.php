@@ -6,6 +6,7 @@ namespace GitList\SCM\System\Git;
 
 use Carbon\CarbonImmutable;
 use DateTime;
+use Exception;
 use GitList\SCM\AnnotatedLine;
 use GitList\SCM\Blame;
 use GitList\SCM\Blob;
@@ -22,7 +23,6 @@ use GitList\SCM\Symlink;
 use GitList\SCM\System;
 use GitList\SCM\Tag;
 use GitList\SCM\Tree;
-use SimpleXMLElement;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
@@ -30,7 +30,12 @@ use Symfony\Component\Process\Process;
 class CommandLine implements System
 {
     public const DEFAULT_TIMEOUT = 3600;
-    public const DEFAULT_COMMIT_FORMAT = '--pretty=format:<item><hash>%H</hash><short_hash>%h</short_hash><tree>%T</tree><short_tree>%t</short_tree><parent>%P</parent><short_parent>%p</short_parent><subject><![CDATA[%s]]></subject><author>%aN</author><author_email>%aE</author_email><author_date>%aD</author_date><commiter>%cN</commiter><commiter_email>%cE</commiter_email><commiter_date>%cD</commiter_date><signer><![CDATA[%GS]]></signer><signer_key>%GK</signer_key><valid_signature>%G?</valid_signature><body><![CDATA[%b]]></body></item>';
+
+    public const COMMIT_FIELDS = [
+        '%H', '%h', '%T', '%t', '%P', '%p',
+        '%aN', '%aE', '%aD', '%cN', '%cE', '%cD',
+        '%GS', '%GK', '%G?', '%s', '%b',
+    ];
 
     protected ?string $path;
 
@@ -85,7 +90,7 @@ class CommandLine implements System
 
             $commit = new Commit($repository, $branchInfo[1], $branchInfo[2] ?? null);
             $commit->setAuthor(new Person($branchInfo[3], trim($branchInfo[4], '<>')));
-            $commit->setAuthoredAt(new CarbonImmutable($branchInfo[5]));
+            $commit->setAuthoredAt($this->parseDate($branchInfo[5]));
 
             if (isset($branchInfo[6])) {
                 $commit->setSubject($branchInfo[6]);
@@ -111,7 +116,7 @@ class CommandLine implements System
             $tagInfo = explode('||', $tagItem);
 
             $author = new Person($tagInfo[3], trim($tagInfo[4], '<>'));
-            $authoredAt = new CarbonImmutable($tagInfo[5]);
+            $authoredAt = $this->parseDate($tagInfo[5]);
             $tag = new Tag($repository, $tagInfo[0], $author, $authoredAt);
 
             if (isset($tagInfo[1])) {
@@ -155,11 +160,10 @@ class CommandLine implements System
 
     public function getCommit(Repository $repository, ?string $hash = 'HEAD'): Commit
     {
-        $output = $this->run(['show', '--ignore-blank-lines', '-w', '-b', '--cc', self::DEFAULT_COMMIT_FORMAT, $hash], $repository);
-        $commits = $this->parseCommitDataXml($repository, $output);
-        $commit = reset($commits);
+        $delimiter = $this->generateSafeCommitDelimiter();
+        $output = $this->run(['show', '--ignore-blank-lines', '-w', '-b', '--cc', $this->getCommitFormat($delimiter), $hash], $repository);
+        [$commit, $rawDiffBlock] = $this->parseFirstCommitData($repository, $output, $delimiter);
 
-        $rawDiffBlock = substr($output, strpos($output, '</item>') + 7);
         $commit->setRawDiffs($rawDiffBlock);
 
         $fileDiffs = (new Parse())->fromRawBlock($rawDiffBlock);
@@ -170,41 +174,44 @@ class CommandLine implements System
 
     public function getCommits(Repository $repository, ?string $hash = 'HEAD', int $page = 1, int $perPage = 10): array
     {
+        $delimiter = $this->generateSafeCommitDelimiter();
         $output = $this->run([
             'log',
             '--skip',
             ($page - 1) * $perPage,
             '--max-count',
             $page * $perPage,
-            self::DEFAULT_COMMIT_FORMAT,
+            $this->getCommitFormat($delimiter),
             $hash,
         ], $repository);
 
-        return $this->parseCommitsDataXml($repository, $output);
+        return $this->parseCommitsData($repository, $output, $delimiter);
     }
 
     public function getCommitsFromPath(Repository $repository, string $path, ?string $hash = 'HEAD', int $page = 1, int $perPage = 10): array
     {
+        $delimiter = $this->generateSafeCommitDelimiter();
         $output = $this->run([
             'log',
             '--skip',
             ($page - 1) * $perPage,
             '--max-count',
             $page * $perPage,
-            self::DEFAULT_COMMIT_FORMAT,
+            $this->getCommitFormat($delimiter),
             $hash,
             '--',
             $path,
         ], $repository);
 
-        return $this->parseCommitsDataXml($repository, $output);
+        return $this->parseCommitsData($repository, $output, $delimiter);
     }
 
     public function getSpecificCommits(Repository $repository, array $hashes): array
     {
-        $output = $this->run([...['show', '-s', self::DEFAULT_COMMIT_FORMAT], ...$hashes], $repository);
+        $delimiter = $this->generateSafeCommitDelimiter();
+        $output = $this->run([...['show', '-s', $this->getCommitFormat($delimiter)], ...$hashes], $repository);
 
-        return $this->parseCommitsDataXml($repository, $output);
+        return $this->parseCommitsData($repository, $output, $delimiter);
     }
 
     public function getBlame(Repository $repository, string $hash, string $path): Blame
@@ -255,7 +262,8 @@ class CommandLine implements System
 
     public function searchCommits(Repository $repository, Criteria $criteria, ?string $hash = 'HEAD'): array
     {
-        $command = ['log', self::DEFAULT_COMMIT_FORMAT];
+        $delimiter = $this->generateSafeCommitDelimiter();
+        $command = ['log', $this->getCommitFormat($delimiter)];
 
         if ($criteria->getFrom()) {
             $command[] = '--after';
@@ -280,7 +288,7 @@ class CommandLine implements System
         $command[] = $hash;
         $output = $this->run($command, $repository);
 
-        return $this->parseCommitsDataXml($repository, $output);
+        return $this->parseCommitsData($repository, $output, $delimiter);
     }
 
     public function archive(Repository $repository, string $format, string $hash, string $path = '.'): string
@@ -384,62 +392,112 @@ class CommandLine implements System
 
     protected function getLatestCommitFromPath(Repository $repository, string $path, string $hash): Commit
     {
-        $output = $this->run(['log', '-n', 1, self::DEFAULT_COMMIT_FORMAT, $hash, '--', $path], $repository);
-        $commits = $this->parseCommitDataXml($repository, $output);
+        $delimiter = $this->generateSafeCommitDelimiter();
+        $output = $this->run(['log', '-n', 1, $this->getCommitFormat($delimiter), $hash, '--', $path], $repository);
+        [$commit] = $this->parseFirstCommitData($repository, $output, $delimiter);
 
-        return reset($commits);
+        return $commit;
     }
 
-    protected function parseCommitDataXml(Repository $repository, string $input): array
+    protected function getCommitFormat(string $delimiter): string
     {
-        $xmlStart = strpos($input, '<item>');
-
-        if (false === $xmlStart) {
-            throw new InvalidCommitException($input);
-        }
-
-        $xmlEnd = strpos($input, '</item>') + 7;
-        $xml = substr($input, $xmlStart, $xmlEnd);
-
-        return $this->parseCommitsDataXml($repository, $xml);
+        return '--pretty=format:'.implode($delimiter, self::COMMIT_FIELDS).$delimiter;
     }
 
-    protected function parseCommitsDataXml(Repository $repository, string $input): array
+    protected function generateSafeCommitDelimiter(): string
     {
-        $items = new SimpleXMLElement('<items>'.$input.'</items>');
+        return bin2hex(random_bytes(16));
+    }
+
+    protected function parseCommitsData(Repository $repository, string $input, string $delimiter): array
+    {
+        $fieldCount = count(self::COMMIT_FIELDS);
+        $records = array_chunk(explode($delimiter, $input), $fieldCount);
         $commits = [];
 
-        foreach ($items as $item) {
-            $commit = new Commit($repository, (string) $item->hash, (string) $item->short_hash);
-            $commit->setTree(new Tree($repository, (string) $item->tree, (string) $item->short_tree));
-
-            $parents = explode(' ', (string) $item->parent);
-            $shortParents = explode(' ', (string) $item->short_parent);
-            foreach ($parents as $key => $parent) {
-                $commit->addParent(new Commit($repository, $parent, $shortParents[$key] ?? null));
+        foreach ($records as $fields) {
+            if (count($fields) < $fieldCount) {
+                continue;
             }
 
-            $commit->setSubject((string) $item->subject);
-            $commit->setBody((string) $item->body);
-            $commit->setAuthor(new Person((string) $item->author, (string) $item->author_email));
-            $commit->setAuthoredAt(new CarbonImmutable((string) $item->author_date));
-            $commit->setCommiter(new Person((string) $item->commiter, (string) $item->commiter_email));
-            $commit->setCommitedAt(new CarbonImmutable((string) $item->commiter_date));
-
-            $signatureStatus = (string) $item->valid_signature;
-            if ('N' != $signatureStatus) {
-                $signature = new Signature((string) $item->signer, (string) $item->signer_key);
-
-                if ('B' == $signatureStatus) {
-                    $signature->validate();
-                }
-
-                $commit->setSignature($signature);
-            }
-
+            $commit = $this->buildCommit($repository, $fields);
             $commits[$commit->getHash()] = $commit;
         }
 
         return $commits;
+    }
+
+    protected function parseFirstCommitData(Repository $repository, string $input, string $delimiter): array
+    {
+        $fieldCount = count(self::COMMIT_FIELDS);
+        $fields = explode($delimiter, $input);
+
+        if (count($fields) <= $fieldCount) {
+            throw new InvalidCommitException($input);
+        }
+
+        return [
+            $this->buildCommit($repository, array_slice($fields, 0, $fieldCount)),
+            $fields[$fieldCount],
+        ];
+    }
+
+    protected function buildCommit(Repository $repository, array $fields): Commit
+    {
+        [
+            $hash,
+            $shortHash,
+            $tree,
+            $shortTree,
+            $parents,
+            $shortParents,
+            $author,
+            $authorEmail,
+            $authorDate,
+            $commiter,
+            $commiterEmail,
+            $commiterDate,
+            $signer,
+            $signerKey,
+            $signatureStatus,
+            $subject,
+            $body,
+        ] = $fields;
+
+        $commit = new Commit($repository, ltrim($hash, "\r\n"), $shortHash);
+        $commit->setTree(new Tree($repository, $tree, $shortTree));
+
+        $shortParents = explode(' ', $shortParents);
+        foreach (explode(' ', $parents) as $key => $parent) {
+            $commit->addParent(new Commit($repository, $parent, $shortParents[$key] ?? null));
+        }
+
+        $commit->setSubject($subject);
+        $commit->setBody($body);
+        $commit->setAuthor(new Person($author, $authorEmail));
+        $commit->setAuthoredAt($this->parseDate($authorDate));
+        $commit->setCommiter(new Person($commiter, $commiterEmail));
+        $commit->setCommitedAt($this->parseDate($commiterDate));
+
+        if ('N' != $signatureStatus) {
+            $signature = new Signature($signer, $signerKey);
+
+            if ('B' == $signatureStatus) {
+                $signature->validate();
+            }
+
+            $commit->setSignature($signature);
+        }
+
+        return $commit;
+    }
+
+    protected function parseDate(string $date): CarbonImmutable
+    {
+        try {
+            return new CarbonImmutable($date);
+        } catch (Exception) {
+            return CarbonImmutable::createFromTimestamp(0);
+        }
     }
 }

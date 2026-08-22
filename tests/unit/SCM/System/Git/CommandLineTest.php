@@ -13,18 +13,28 @@ use GitList\SCM\Repository;
 use GitList\SCM\Symlink;
 use GitList\SCM\Tree;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
 use ZipArchive;
 
 class CommandLineTest extends TestCase
 {
     public const FIXTURE_REPO = FIXTURE_DIR.'/git-bare-repo';
+    public const COMMIT_DATE = '2016-11-23 13:17:29 +0000';
+
+    protected array $temporaryRepositories = [];
 
     public function setUp(): void
     {
         if (empty(shell_exec('which git 2> /dev/null'))) {
             $this->markTestSkipped('Git is not available.');
         }
+    }
+
+    public function tearDown(): void
+    {
+        (new Filesystem())->remove($this->temporaryRepositories);
+        $this->temporaryRepositories = [];
     }
 
     public function testIsValidatingRepository(): void
@@ -525,5 +535,98 @@ class CommandLineTest extends TestCase
 
         $archive = $commandLine->archive(new Repository(self::FIXTURE_REPO), 'tar.gz', 'master');
         $this->assertFileExists($archive);
+    }
+
+    public function testIsParsingCommitsWithMarkupBreakingMetadata(): void
+    {
+        $path = $this->createTemporaryRepository();
+        $this->commit($path, 'a.txt', 'A & B ]]', 'a&b@example.com', "init & <item> ]]> </item>\n\nbody & <![CDATA[ ]]> </body>\n");
+
+        $repository = new Repository($path);
+        $commandLine = new CommandLine();
+        $commits = $commandLine->getCommits($repository);
+
+        $this->assertCount(1, $commits);
+
+        $commit = reset($commits);
+        $this->assertEquals('init & <item> ]]> </item>', $commit->getSubject());
+        $this->assertEquals('body & <![CDATA[ ]]> </body>', trim($commit->getBody()));
+        $this->assertEquals('A & B ]]', $commit->getAuthor()->getName());
+        $this->assertEquals('a&b@example.com', $commit->getAuthor()->getEmail());
+        $this->assertEquals('2016-11-23 13:17:29', $commit->getAuthoredAt()->format('Y-m-d H:i:s'));
+        $this->assertEquals('2016-11-23 13:17:29', $commit->getCommitedAt()->format('Y-m-d H:i:s'));
+    }
+
+    public function testIsParsingCommitWithMarkupBreakingMetadataAndItsDiff(): void
+    {
+        $path = $this->createTemporaryRepository();
+        $this->commit($path, 'a.txt', 'A & B ]]', 'a&b@example.com', "init & <item> ]]> </item>\n");
+
+        $repository = new Repository($path);
+        $commandLine = new CommandLine();
+        $commit = $commandLine->getCommit($repository);
+
+        $this->assertEquals('init & <item> ]]> </item>', $commit->getSubject());
+        $this->assertEquals('A & B ]]', $commit->getAuthor()->getName());
+        $this->assertCount(1, $commit->getDiffs());
+        $this->assertMatchesRegularExpression('/^diff --git a\/a.txt b\/a.txt/m', $commit->getRawDiffs());
+    }
+
+    public function testIsParsingCommitsWithMetadataCarryingFieldDelimiters(): void
+    {
+        $path = $this->createTemporaryRepository();
+        $this->commit($path, 'a.txt', 'Klaus Silveira', 'contact@klaussilveira.com', "Initial commit.\n");
+        $this->commit($path, 'b.txt', "R\x1eS\x1fT", 'test@example.com', "injected \x1f subject\n\ninjected \x1e body\n");
+
+        $repository = new Repository($path);
+        $commandLine = new CommandLine();
+        $commits = $commandLine->getCommits($repository);
+
+        $this->assertCount(2, $commits);
+
+        $injected = array_shift($commits);
+        $this->assertEquals("injected \x1f subject", $injected->getSubject());
+        $this->assertEquals("injected \x1e body", trim($injected->getBody()));
+        $this->assertEquals("R\x1eS\x1fT", $injected->getAuthor()->getName());
+        $this->assertEquals('test@example.com', $injected->getAuthor()->getEmail());
+        $this->assertEquals('2016-11-23 13:17:29', $injected->getAuthoredAt()->format('Y-m-d H:i:s'));
+
+        $initial = array_shift($commits);
+        $this->assertEquals('Initial commit.', $initial->getSubject());
+        $this->assertEquals('Klaus Silveira', $initial->getAuthor()->getName());
+        $this->assertEquals('contact@klaussilveira.com', $initial->getAuthor()->getEmail());
+        $this->assertEquals('2016-11-23 13:17:29', $initial->getAuthoredAt()->format('Y-m-d H:i:s'));
+    }
+
+    protected function createTemporaryRepository(): string
+    {
+        $path = sys_get_temp_dir().'/gitlist-'.uniqid();
+        mkdir($path);
+        $this->temporaryRepositories[] = $path;
+
+        $this->git(['-c', 'init.defaultBranch=master', 'init', '--quiet', '.'], $path);
+
+        return $path;
+    }
+
+    protected function commit(string $path, string $file, string $name, string $email, string $message): void
+    {
+        file_put_contents($path.'/'.$file, "contents\n");
+
+        $this->git(['add', $file], $path);
+        $this->git(['-c', 'commit.gpgsign=false', 'commit', '--quiet', '--cleanup=verbatim', '--file', '-'], $path, [
+            'GIT_AUTHOR_NAME' => $name,
+            'GIT_AUTHOR_EMAIL' => $email,
+            'GIT_AUTHOR_DATE' => self::COMMIT_DATE,
+            'GIT_COMMITTER_NAME' => $name,
+            'GIT_COMMITTER_EMAIL' => $email,
+            'GIT_COMMITTER_DATE' => self::COMMIT_DATE,
+        ], $message);
+    }
+
+    protected function git(array $command, string $path, array $env = [], ?string $input = null): void
+    {
+        $process = new Process([...['git'], ...$command], $path, $env, $input);
+        $process->mustRun();
     }
 }
