@@ -179,7 +179,7 @@ class CommandLine implements System
      */
     public function getCommits(Repository $repository, ?string $hash = 'tip', int $page = 1, int $perPage = 10): array
     {
-        $range = sprintf('limit(branch("%s"), %d, %d)', $hash, $page * $perPage, ($page - 1) * $perPage);
+        $range = sprintf('limit(branch("%s"), %d, %d)', $hash, $perPage, ($page - 1) * $perPage);
 
         $output = $this->run([
             'log',
@@ -196,7 +196,7 @@ class CommandLine implements System
      */
     public function getCommitsFromPath(Repository $repository, string $path, ?string $hash = 'tip', int $page = 1, int $perPage = 10): array
     {
-        $range = sprintf('limit(branch("%s"), %d, %d)', $hash, $page * $perPage, ($page - 1) * $perPage);
+        $range = sprintf('limit(branch("%s"), %d, %d)', $hash, $perPage, ($page - 1) * $perPage);
 
         $output = $this->run([
             'log',

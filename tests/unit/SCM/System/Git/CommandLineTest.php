@@ -386,6 +386,41 @@ class CommandLineTest extends TestCase
         $this->assertCount(2, $commits);
     }
 
+    public function testIsNotOverFetchingCommitsAfterFirstPage(): void
+    {
+        $repository = new Repository(self::FIXTURE_REPO);
+
+        $commandLine = new CommandLine();
+        $page1 = $commandLine->getCommits($repository, 'HEAD', 1, 2);
+        $page2 = $commandLine->getCommits($repository, 'HEAD', 2, 2);
+        $page3 = $commandLine->getCommits($repository, 'HEAD', 3, 2);
+
+        $this->assertCount(2, $page1);
+        $this->assertCount(2, $page2);
+        $this->assertCount(1, $page3);
+        $this->assertEmpty(array_intersect_key($page1, $page2));
+        $this->assertEmpty(array_intersect_key($page2, $page3));
+    }
+
+    public function testIsNotOverFetchingCommitsFromPathAfterFirstPage(): void
+    {
+        $path = $this->createTemporaryRepository();
+        mkdir($path.'/pages');
+
+        for ($index = 1; $index <= 5; ++$index) {
+            $this->commit($path, 'pages/file'.$index.'.txt', 'Klaus Silveira', 'contact@klaussilveira.com', "Change {$index}.\n");
+        }
+
+        $commandLine = new CommandLine();
+        $repository = new Repository($path);
+        $page1 = $commandLine->getCommitsFromPath($repository, 'pages', 'HEAD', 1, 2);
+        $page2 = $commandLine->getCommitsFromPath($repository, 'pages', 'HEAD', 2, 2);
+
+        $this->assertCount(2, $page1);
+        $this->assertCount(2, $page2);
+        $this->assertEmpty(array_intersect_key($page1, $page2));
+    }
+
     public function testIsGettingCommitsFromPath(): void
     {
         $repository = new Repository(self::FIXTURE_REPO);

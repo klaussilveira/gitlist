@@ -215,7 +215,7 @@ class CommandLine implements System
             '--skip',
             (string) (($page - 1) * $perPage),
             '--max-count',
-            (string) ($page * $perPage),
+            (string) $perPage,
             $this->getCommitFormat($delimiter),
             $hash,
         ], $repository);
@@ -236,7 +236,7 @@ class CommandLine implements System
             '--skip',
             (string) (($page - 1) * $perPage),
             '--max-count',
-            (string) ($page * $perPage),
+            (string) $perPage,
             $this->getCommitFormat($delimiter),
             $hash,
             '--',

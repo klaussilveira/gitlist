@@ -255,7 +255,7 @@ class CommandLineTest extends TestCase
         $this->assertCount(3, $commits);
 
         $commits = $commandLine->getCommits($repository, 'tip', 2, 3);
-        $this->assertCount(5, $commits);
+        $this->assertCount(3, $commits);
     }
 
     public function testIsGettingCommitsFromPath(): void
