@@ -27,6 +27,9 @@ class Blame
         return $this->hash;
     }
 
+    /**
+     * @return AnnotatedLine[]
+     */
     public function getAnnotatedLines(): array
     {
         return $this->annotatedLines;

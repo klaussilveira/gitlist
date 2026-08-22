@@ -70,6 +70,9 @@ class File
         $this->to = $to;
     }
 
+    /**
+     * @return Hunk[]
+     */
     public function getHunks(): array
     {
         return $this->hunks;

@@ -9,11 +9,13 @@ use GitList\Repository\Commitish;
 use GitList\SCM\AnnotatedLine;
 use GitList\SCM\Blame;
 use GitList\SCM\Blob;
+use GitList\SCM\Branch;
 use GitList\SCM\Commit;
 use GitList\SCM\Commit\Criteria;
 use GitList\SCM\Exception\CommandException;
 use GitList\SCM\Repository as SourceRepository;
 use GitList\SCM\System;
+use GitList\SCM\Tag;
 use GitList\SCM\Tree;
 
 class Repository
@@ -37,11 +39,17 @@ class Repository
         return $this->system->getDefaultBranch($this->repository);
     }
 
+    /**
+     * @return Branch[]
+     */
     public function getBranches(): array
     {
         return $this->system->getBranches($this->repository);
     }
 
+    /**
+     * @return Tag[]
+     */
     public function getTags(): array
     {
         return $this->system->getTags($this->repository);
@@ -73,6 +81,9 @@ class Repository
         return $this->system->getCommit($this->repository, $commitish->getHash());
     }
 
+    /**
+     * @return array<string, Commit>
+     */
     public function getCommits(?string $commitish, int $page, int $perPage): array
     {
         if (!$commitish) {
@@ -88,6 +99,11 @@ class Repository
         return $this->system->getCommits($this->repository, $commitish->getHash(), $page, $perPage);
     }
 
+    /**
+     * @param string[] $hashes
+     *
+     * @return array<string, Commit>
+     */
     public function getSpecificCommits(array $hashes): array
     {
         return $this->system->getSpecificCommits($this->repository, $hashes);
@@ -129,6 +145,9 @@ class Repository
         }
     }
 
+    /**
+     * @return array<string, Commit>
+     */
     public function searchCommits(Criteria $criteria, ?string $commitish = null): array
     {
         if (!$commitish) {

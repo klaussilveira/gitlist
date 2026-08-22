@@ -121,6 +121,19 @@ class CommandLineTest extends TestCase
         $this->assertEquals('production', $commandLine->getDefaultBranch(new Repository($path)));
     }
 
+    public function testIsGettingDefaultBranchOfRepositoryWithDetachedHead(): void
+    {
+        $path = $this->createTemporaryRepository();
+        $this->commit($path, 'a.txt', 'Klaus Silveira', 'contact@klaussilveira.com', "Initial commit.\n");
+        $this->git(['checkout', '--quiet', '--detach'], $path);
+
+        $commandLine = new CommandLine();
+        $repository = new Repository($path);
+
+        $this->assertEquals('HEAD', $commandLine->getDefaultBranch($repository));
+        $this->assertCount(1, $commandLine->getTree($repository)->getChildren());
+    }
+
     public function testIsGettingTreeWhenHeadPointsToMissingBranch(): void
     {
         $path = $this->createTemporaryRepository();

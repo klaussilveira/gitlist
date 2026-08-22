@@ -31,6 +31,9 @@ class Tree extends Item
         $childToRemove->clearParents();
     }
 
+    /**
+     * @return Item[]
+     */
     public function getChildren(): array
     {
         return $this->children;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GitList\App\Twig;
 
+use GitList\SCM\Blob;
 use GitList\SCM\Repository;
 use GitList\SCM\Tree;
 use PHPUnit\Framework\TestCase;
@@ -13,14 +14,15 @@ class RepositoryExtensionTest extends TestCase
     public function testIsDetectingTree(): void
     {
         $extension = new RepositoryExtension();
-        $this->assertFalse($extension->isTree(false));
+        $this->assertFalse($extension->isTree(null));
+        $this->assertFalse($extension->isTree(new Blob(new Repository('foo'), '123')));
         $this->assertTrue($extension->isTree(new Tree(new Repository('foo'), '123')));
     }
 
     public function testIsFormattingFileSizeWithInvalidInput(): void
     {
         $extension = new RepositoryExtension();
-        $this->assertEquals('0 B', $extension->formatFileSize(false));
+        $this->assertEquals('0 B', $extension->formatFileSize(0));
         $this->assertEquals('0 B', $extension->formatFileSize(null));
         $this->assertEquals('0 B', $extension->formatFileSize());
     }

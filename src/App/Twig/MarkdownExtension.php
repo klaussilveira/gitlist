@@ -10,10 +10,9 @@ use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
 use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
 use League\CommonMark\Extension\TaskList\TaskListExtension;
 use League\CommonMark\MarkdownConverter;
-use Twig\Extension\AbstractExtension;
-use Twig\TwigFilter;
+use Twig\Attribute\AsTwigFilter;
 
-class MarkdownExtension extends AbstractExtension
+class MarkdownExtension
 {
     private MarkdownConverter $converter;
 
@@ -32,14 +31,8 @@ class MarkdownExtension extends AbstractExtension
         $this->converter = new MarkdownConverter($environment);
     }
 
-    public function getFilters()
-    {
-        return [
-            new TwigFilter('markdown', [$this, 'markdown']),
-        ];
-    }
-
-    public function markdown($string): string
+    #[AsTwigFilter('markdown')]
+    public function markdown(?string $string): string
     {
         if (!$string) {
             return '';

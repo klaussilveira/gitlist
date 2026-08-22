@@ -68,6 +68,9 @@ class CommandLine implements System
         return 'default';
     }
 
+    /**
+     * @return Branch[]
+     */
     public function getBranches(Repository $repository): array
     {
         $output = $this->run(['heads', '-T {bookmarks}||{node}\n'], $repository);
@@ -87,6 +90,9 @@ class CommandLine implements System
         return $branches;
     }
 
+    /**
+     * @return Tag[]
+     */
     public function getTags(Repository $repository): array
     {
         $output = $this->run(['tags', '-T', '{tag}||{node}||{node|short}||{author|person}||{author|email}||{date|rfc822date}||{desc|firstline}\n'], $repository);
@@ -139,7 +145,11 @@ class CommandLine implements System
         $tree = $this->getTree($repository, $hash);
 
         foreach ($tree->getChildren() as $child) {
-            if (str_starts_with($child->getName(), $path)) {
+            if (!$child instanceof Blob) {
+                continue;
+            }
+
+            if (str_starts_with($child->getName() ?? '', $path)) {
                 continue;
             }
 
@@ -164,6 +174,9 @@ class CommandLine implements System
         return $commit;
     }
 
+    /**
+     * @return array<string, Commit>
+     */
     public function getCommits(Repository $repository, ?string $hash = 'tip', int $page = 1, int $perPage = 10): array
     {
         $range = sprintf('limit(branch("%s"), %d, %d)', $hash, $page * $perPage, ($page - 1) * $perPage);
@@ -178,6 +191,9 @@ class CommandLine implements System
         return $this->parseCommitDataXml($repository, $output);
     }
 
+    /**
+     * @return array<string, Commit>
+     */
     public function getCommitsFromPath(Repository $repository, string $path, ?string $hash = 'tip', int $page = 1, int $perPage = 10): array
     {
         $range = sprintf('limit(branch("%s"), %d, %d)', $hash, $page * $perPage, ($page - 1) * $perPage);
@@ -193,6 +209,11 @@ class CommandLine implements System
         return $this->parseCommitDataXml($repository, $output);
     }
 
+    /**
+     * @param string[] $hashes
+     *
+     * @return array<string, Commit>
+     */
     public function getSpecificCommits(Repository $repository, array $hashes): array
     {
         $output = $this->run(['log', self::DEFAULT_COMMIT_FORMAT, '-r', implode(':', $hashes)], $repository);
@@ -243,6 +264,9 @@ class CommandLine implements System
         return $blob;
     }
 
+    /**
+     * @return array<string, Commit>
+     */
     public function searchCommits(Repository $repository, Criteria $criteria, ?string $hash = 'tip'): array
     {
         $command = ['log', self::DEFAULT_COMMIT_FORMAT];
@@ -293,6 +317,9 @@ class CommandLine implements System
         return $destination;
     }
 
+    /**
+     * @param string[] $command
+     */
     protected function run(array $command, ?Repository $repository = null): string
     {
         array_unshift($command, $this->path);
@@ -313,6 +340,9 @@ class CommandLine implements System
         return $process->getOutput();
     }
 
+    /**
+     * @return array<string, Commit>
+     */
     protected function parseCommitDataXml(Repository $repository, string $input): array
     {
         $items = new SimpleXMLElement('<items>'.$input.'</items>');

@@ -6,7 +6,11 @@
     executionOrder="depends,defects"
     requireCoverageMetadata="false"
     beStrictAboutCoverageMetadata="false"
-    beStrictAboutOutputDuringTests="true">
+    beStrictAboutOutputDuringTests="true"
+    displayDetailsOnTestsThatTriggerDeprecations="true"
+    failOnDeprecation="true"
+    failOnNotice="true"
+    failOnWarning="true">
   <php>
     <const name="FIXTURE_DIR" value="./tests/fixtures" />
   </php>

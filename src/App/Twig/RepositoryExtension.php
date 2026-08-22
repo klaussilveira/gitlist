@@ -5,42 +5,36 @@ declare(strict_types=1);
 namespace GitList\App\Twig;
 
 use GitList\SCM\Blob;
+use GitList\SCM\Item;
 use GitList\SCM\Tree;
-use Twig\Extension\AbstractExtension;
-use Twig\TwigFilter;
-use Twig\TwigFunction;
+use Twig\Attribute\AsTwigFilter;
+use Twig\Attribute\AsTwigFunction;
 
-class RepositoryExtension extends AbstractExtension
+class RepositoryExtension
 {
-    public function getFunctions()
-    {
-        return [
-            new TwigFunction('getCommitish', [$this, 'getCommitish']),
-            new TwigFunction('getParent', [$this, 'getParent']),
-            new TwigFunction('getBreadcrumbs', [$this, 'getBreadcrumbs']),
-        ];
-    }
-
-    public function getFilters()
-    {
-        return [
-            new TwigFilter('formatFileSize', [$this, 'formatFileSize']),
-            new TwigFilter('onlyTrees', [$this, 'onlyTrees']),
-            new TwigFilter('onlyFiles', [$this, 'onlyFiles']),
-        ];
-    }
-
-    public function onlyTrees($items): array
+    /**
+     * @param Item[] $items
+     *
+     * @return Item[]
+     */
+    #[AsTwigFilter('onlyTrees')]
+    public function onlyTrees(array $items): array
     {
         return array_filter($items, [$this, 'isTree']);
     }
 
-    public function onlyFiles($items): array
+    /**
+     * @param Item[] $items
+     *
+     * @return Item[]
+     */
+    #[AsTwigFilter('onlyFiles')]
+    public function onlyFiles(array $items): array
     {
         return array_filter($items, fn ($item) => !$this->isTree($item));
     }
 
-    public function isTree($value): bool
+    public function isTree(?Item $value): bool
     {
         if (!$value) {
             return false;
@@ -49,11 +43,13 @@ class RepositoryExtension extends AbstractExtension
         return $value instanceof Tree;
     }
 
+    #[AsTwigFunction('getCommitish')]
     public function getCommitish(string $hash, string $path): string
     {
         return $hash.'/'.$path;
     }
 
+    #[AsTwigFunction('getParent')]
     public function getParent(string $path): string
     {
         $parent = dirname($path);
@@ -65,6 +61,10 @@ class RepositoryExtension extends AbstractExtension
         return $parent;
     }
 
+    /**
+     * @return array<int, array{name: string, commitish: string}>
+     */
+    #[AsTwigFunction('getBreadcrumbs')]
     public function getBreadcrumbs(Blob $blob): array
     {
         $breadcrumbs = [];
@@ -82,7 +82,8 @@ class RepositoryExtension extends AbstractExtension
         return $breadcrumbs;
     }
 
-    public function formatFileSize($value = null): string
+    #[AsTwigFilter('formatFileSize')]
+    public function formatFileSize(?int $value = null): string
     {
         if (!$value) {
             return '0 B';

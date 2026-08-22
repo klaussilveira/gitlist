@@ -117,11 +117,17 @@ class Commit extends Item
         $this->body = $body;
     }
 
+    /**
+     * @return File[]
+     */
     public function getDiffs(): array
     {
         return $this->diffs;
     }
 
+    /**
+     * @param File[] $diffs
+     */
     public function setDiffs(array $diffs): void
     {
         $this->diffs = $diffs;

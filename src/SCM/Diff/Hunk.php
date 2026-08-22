@@ -40,6 +40,9 @@ class Hunk
         return $this->contents;
     }
 
+    /**
+     * @return Line[]
+     */
     public function getLines(): array
     {
         return $this->lines;

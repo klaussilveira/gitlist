@@ -5,19 +5,12 @@ declare(strict_types=1);
 namespace GitList\App\Twig;
 
 use Symfony\Component\String\UnicodeString;
-use Twig\Extension\AbstractExtension;
-use Twig\TwigFilter;
+use Twig\Attribute\AsTwigFilter;
 
-class StringExtension extends AbstractExtension
+class StringExtension
 {
-    public function getFilters()
-    {
-        return [
-            new TwigFilter('truncate', [$this, 'truncate']),
-        ];
-    }
-
-    public function truncate($string, int $maxLength = 30, string $terminator = '', bool $cut = true): string
+    #[AsTwigFilter('truncate')]
+    public function truncate(?string $string, int $maxLength = 30, string $terminator = '', bool $cut = true): string
     {
         if (!$string) {
             return '';

@@ -74,9 +74,9 @@ class CommandLine implements System
 
     public function getDefaultBranch(Repository $repository): string
     {
-        $head = trim($this->run(['symbolic-ref', '--short', 'HEAD'], $repository));
+        $head = $this->getResolvableHead($repository);
 
-        if ($this->isValidHash($repository, $head)) {
+        if ($head) {
             return $head;
         }
 
@@ -88,9 +88,12 @@ class CommandLine implements System
             }
         }
 
-        return $branches[0] ?? $head;
+        return $branches[0] ?? trim($this->run(['symbolic-ref', '--short', 'HEAD'], $repository));
     }
 
+    /**
+     * @return Branch[]
+     */
     public function getBranches(Repository $repository): array
     {
         $output = $this->run(['for-each-ref', 'refs/heads', '--format=%(refname:short)||%(objectname)||%(objectname:short)||%(authorname)||%(authoremail)||%(authordate)||%(subject)'], $repository);
@@ -118,6 +121,9 @@ class CommandLine implements System
         return $branches;
     }
 
+    /**
+     * @return Tag[]
+     */
     public function getTags(Repository $repository): array
     {
         $output = $this->run(['for-each-ref', 'refs/tags', '--format=%(refname:short)||%(objectname)||%(objectname:short)||%(taggername)||%(taggeremail)||%(taggerdate)||%(subject)'], $repository);
@@ -196,6 +202,9 @@ class CommandLine implements System
         return $commit;
     }
 
+    /**
+     * @return array<string, Commit>
+     */
     public function getCommits(Repository $repository, ?string $hash = 'HEAD', int $page = 1, int $perPage = 10): array
     {
         $hash = $this->resolveHash($repository, $hash);
@@ -204,9 +213,9 @@ class CommandLine implements System
         $output = $this->run([
             'log',
             '--skip',
-            ($page - 1) * $perPage,
+            (string) (($page - 1) * $perPage),
             '--max-count',
-            $page * $perPage,
+            (string) ($page * $perPage),
             $this->getCommitFormat($delimiter),
             $hash,
         ], $repository);
@@ -214,6 +223,9 @@ class CommandLine implements System
         return $this->parseCommitsData($repository, $output, $delimiter);
     }
 
+    /**
+     * @return array<string, Commit>
+     */
     public function getCommitsFromPath(Repository $repository, string $path, ?string $hash = 'HEAD', int $page = 1, int $perPage = 10): array
     {
         $hash = $this->resolveHash($repository, $hash);
@@ -222,9 +234,9 @@ class CommandLine implements System
         $output = $this->run([
             'log',
             '--skip',
-            ($page - 1) * $perPage,
+            (string) (($page - 1) * $perPage),
             '--max-count',
-            $page * $perPage,
+            (string) ($page * $perPage),
             $this->getCommitFormat($delimiter),
             $hash,
             '--',
@@ -234,6 +246,11 @@ class CommandLine implements System
         return $this->parseCommitsData($repository, $output, $delimiter);
     }
 
+    /**
+     * @param string[] $hashes
+     *
+     * @return array<string, Commit>
+     */
     public function getSpecificCommits(Repository $repository, array $hashes): array
     {
         $delimiter = $this->generateSafeCommitDelimiter();
@@ -292,6 +309,9 @@ class CommandLine implements System
         return $blob;
     }
 
+    /**
+     * @return array<string, Commit>
+     */
     public function searchCommits(Repository $repository, Criteria $criteria, ?string $hash = 'HEAD'): array
     {
         $hash = $this->resolveHash($repository, $hash);
@@ -336,6 +356,9 @@ class CommandLine implements System
         return $destination;
     }
 
+    /**
+     * @param string[] $command
+     */
     protected function run(array $command, ?Repository $repository = null): string
     {
         if ($repository) {
@@ -371,6 +394,15 @@ class CommandLine implements System
         }
 
         return $this->getDefaultBranch($repository);
+    }
+
+    protected function getResolvableHead(Repository $repository): ?string
+    {
+        try {
+            return trim($this->run(['rev-parse', '--verify', '--quiet', '--abbrev-ref', 'HEAD'], $repository));
+        } catch (CommandException) {
+            return null;
+        }
     }
 
     protected function isValidHash(Repository $repository, string $hash): bool
@@ -453,7 +485,7 @@ class CommandLine implements System
     protected function getLatestCommitFromPath(Repository $repository, string $path, string $hash): Commit
     {
         $delimiter = $this->generateSafeCommitDelimiter();
-        $output = $this->run(['log', '-n', 1, $this->getCommitFormat($delimiter), $hash, '--', $path], $repository);
+        $output = $this->run(['log', '-n', '1', $this->getCommitFormat($delimiter), $hash, '--', $path], $repository);
         [$commit] = $this->parseFirstCommitData($repository, $output, $delimiter);
 
         return $commit;
@@ -469,6 +501,9 @@ class CommandLine implements System
         return bin2hex(random_bytes(16));
     }
 
+    /**
+     * @return array<string, Commit>
+     */
     protected function parseCommitsData(Repository $repository, string $input, string $delimiter): array
     {
         $fieldCount = count(self::COMMIT_FIELDS);
@@ -487,6 +522,9 @@ class CommandLine implements System
         return $commits;
     }
 
+    /**
+     * @return array{Commit, string}
+     */
     protected function parseFirstCommitData(Repository $repository, string $input, string $delimiter): array
     {
         $fieldCount = count(self::COMMIT_FIELDS);
@@ -502,6 +540,9 @@ class CommandLine implements System
         ];
     }
 
+    /**
+     * @param string[] $fields
+     */
     protected function buildCommit(Repository $repository, array $fields): Commit
     {
         [

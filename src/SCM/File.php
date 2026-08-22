@@ -1009,7 +1009,7 @@ class File
         $this->mimeType = self::MIME_TYPES[$this->extension] ?? 'text/plain';
     }
 
-    public static function createFromBlob(Blob $blob)
+    public static function createFromBlob(Blob $blob): self
     {
         $file = new File(basename($blob->getName()));
         $file->setContents($blob->getContents());

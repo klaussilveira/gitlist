@@ -35,6 +35,9 @@ class Item
         $this->shortHash = $shortHash;
     }
 
+    /**
+     * @return self[]
+     */
     public function getParents(): array
     {
         return $this->parents;

@@ -26,7 +26,7 @@ class Tag
         return $this->name;
     }
 
-    public function getSubject()
+    public function getSubject(): ?string
     {
         return $this->subject;
     }

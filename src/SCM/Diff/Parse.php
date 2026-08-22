@@ -23,6 +23,9 @@ class Parse
         '/^\+/' => 'addedLine',
     ];
 
+    /**
+     * @var File[]
+     */
     protected array $files = [];
     protected ?File $currentFile = null;
     protected ?Hunk $currentHunk = null;
@@ -31,7 +34,10 @@ class Parse
     protected int $deletedLines = 0;
     protected int $addedLines = 0;
 
-    public function fromRawBlock(string $rawBlock)
+    /**
+     * @return File[]
+     */
+    public function fromRawBlock(string $rawBlock): array
     {
         $rawLines = explode(PHP_EOL, $rawBlock);
         $this->files = [];
@@ -60,6 +66,9 @@ class Parse
         return $this->files;
     }
 
+    /**
+     * @param string[] $context
+     */
     protected function start(string $line, array $context): void
     {
         $this->clearAccumulator();
@@ -71,16 +80,25 @@ class Parse
         $this->currentFile = new File($filename);
     }
 
+    /**
+     * @param string[] $context
+     */
     protected function newFile(string $line, array $context): void
     {
         $this->currentFile->setType(File::TYPE_NEW);
     }
 
+    /**
+     * @param string[] $context
+     */
     protected function deletedFile(string $line, array $context): void
     {
         $this->currentFile->setType(File::TYPE_DELETED);
     }
 
+    /**
+     * @param string[] $context
+     */
     protected function index(string $line, array $context): void
     {
         $headerParts = explode(' ', $line);
@@ -88,21 +106,33 @@ class Parse
         $this->currentFile->setIndex($headerParts[1]);
     }
 
+    /**
+     * @param string[] $context
+     */
     protected function mergeIndex(string $line, array $context): void
     {
         $this->currentFile->setIndex($context[2]);
     }
 
+    /**
+     * @param string[] $context
+     */
     protected function fromFile(string $line, array $context): void
     {
         $this->currentFile->setFrom(trim($line, '- '));
     }
 
+    /**
+     * @param string[] $context
+     */
     protected function toFile(string $line, array $context): void
     {
         $this->currentFile->setTo(trim($line, '+ '));
     }
 
+    /**
+     * @param string[] $context
+     */
     protected function hunk(string $line, array $context): void
     {
         if ($this->currentHunk) {
@@ -121,6 +151,9 @@ class Parse
         $this->currentHunk = new Hunk($line, $oldStart, $oldCount, $newStart, $newCount);
     }
 
+    /**
+     * @param string[] $context
+     */
     protected function deletedLine(string $line, array $context): void
     {
         $oldNumber = $this->oldCounter + $this->deletedLines;
@@ -131,6 +164,9 @@ class Parse
         ++$this->deletedLines;
     }
 
+    /**
+     * @param string[] $context
+     */
     protected function addedLine(string $line, array $context): void
     {
         $oldNumber = $this->oldCounter;

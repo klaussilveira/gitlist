@@ -4,23 +4,19 @@ declare(strict_types=1);
 
 namespace GitList\App\Twig;
 
-use Twig\Extension\AbstractExtension;
-use Twig\TwigFunction;
+use Twig\Attribute\AsTwigFunction;
 
-class AvatarExtension extends AbstractExtension
+class AvatarExtension
 {
+    /**
+     * @param array<string, string|int> $avatarConfig
+     */
     public function __construct(protected string $avatarUrl, protected array $avatarConfig = [])
     {
     }
 
-    public function getFunctions()
-    {
-        return [
-            new TwigFunction('getAvatar', [$this, 'getAvatar']),
-        ];
-    }
-
-    public function getAvatar($email, $size = 60): string
+    #[AsTwigFunction('getAvatar')]
+    public function getAvatar(?string $email, int $size = 60): string
     {
         if (!$email) {
             return '';
