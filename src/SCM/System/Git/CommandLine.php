@@ -161,7 +161,7 @@ class CommandLine implements System
     public function getCommit(Repository $repository, ?string $hash = 'HEAD'): Commit
     {
         $delimiter = $this->generateSafeCommitDelimiter();
-        $output = $this->run(['show', '--ignore-blank-lines', '-w', '-b', '--cc', $this->getCommitFormat($delimiter), $hash], $repository);
+        $output = $this->run(['show', '--no-textconv', '--ignore-blank-lines', '-w', '-b', '--cc', $this->getCommitFormat($delimiter), $hash], $repository);
         [$commit, $rawDiffBlock] = $this->parseFirstCommitData($repository, $output, $delimiter);
 
         $commit->setRawDiffs($rawDiffBlock);
@@ -216,7 +216,7 @@ class CommandLine implements System
 
     public function getBlame(Repository $repository, string $hash, string $path): Blame
     {
-        $output = $this->run(['blame', '--root', '-ls', $hash, '--', $path], $repository);
+        $output = $this->run(['blame', '--no-textconv', '--root', '-ls', $hash, '--', $path], $repository);
         $blameLines = explode(PHP_EOL, $output);
         $annotatedLines = [];
         $commits = [];

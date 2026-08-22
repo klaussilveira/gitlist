@@ -598,6 +598,34 @@ class CommandLineTest extends TestCase
         $this->assertEquals('2016-11-23 13:17:29', $initial->getAuthoredAt()->format('Y-m-d H:i:s'));
     }
 
+    public function testIsNotExecutingRepositoryControlledTextconvHelper(): void
+    {
+        $path = $this->createTemporaryRepository();
+        $marker = sys_get_temp_dir().'/gitlist-textconv-'.uniqid();
+        $this->temporaryRepositories[] = $marker;
+
+        file_put_contents($path.'/rce.sh', sprintf("#!/bin/sh\ntouch %s\ncat \"\$1\"\n", escapeshellarg($marker)));
+        chmod($path.'/rce.sh', 0755);
+        file_put_contents($path.'/.gitattributes', "*.poc diff=poc\n");
+        file_put_contents($path.'/demo.poc', "first\n");
+
+        $this->git(['config', 'user.name', 'tester'], $path);
+        $this->git(['config', 'user.email', 'tester@example.com'], $path);
+        $this->git(['config', 'diff.poc.textconv', './rce.sh'], $path);
+        $this->git(['add', '.gitattributes', 'demo.poc', 'rce.sh'], $path);
+        $this->git(['-c', 'commit.gpgsign=false', 'commit', '--quiet', '--message', 'init'], $path);
+
+        file_put_contents($path.'/demo.poc', "second\n");
+        $this->git(['add', 'demo.poc'], $path);
+        $this->git(['-c', 'commit.gpgsign=false', 'commit', '--quiet', '--message', 'second'], $path);
+
+        $commandLine = new CommandLine();
+        $commandLine->getCommit(new Repository($path));
+        $commandLine->getBlame(new Repository($path), 'HEAD', 'demo.poc');
+
+        $this->assertFileDoesNotExist($marker);
+    }
+
     protected function createTemporaryRepository(): string
     {
         $path = sys_get_temp_dir().'/gitlist-'.uniqid();
