@@ -85,6 +85,56 @@ class CommandLineTest extends TestCase
         }
     }
 
+    public function testIsGettingDefaultBranchWhenHeadPointsToMissingBranch(): void
+    {
+        $path = $this->createTemporaryRepository();
+        $this->commit($path, 'a.txt', 'Klaus Silveira', 'contact@klaussilveira.com', "Initial commit.\n");
+        $this->git(['symbolic-ref', 'HEAD', 'refs/heads/nonexistent'], $path);
+
+        $commandLine = new CommandLine();
+
+        $this->assertEquals('master', $commandLine->getDefaultBranch(new Repository($path)));
+    }
+
+    public function testIsPreferringPlausibleDefaultBranchWhenHeadPointsToMissingBranch(): void
+    {
+        $path = $this->createTemporaryRepository();
+        $this->commit($path, 'a.txt', 'Klaus Silveira', 'contact@klaussilveira.com', "Initial commit.\n");
+        $this->git(['branch', '--move', 'aaa'], $path);
+        $this->git(['branch', 'main'], $path);
+        $this->git(['symbolic-ref', 'HEAD', 'refs/heads/nonexistent'], $path);
+
+        $commandLine = new CommandLine();
+
+        $this->assertEquals('main', $commandLine->getDefaultBranch(new Repository($path)));
+    }
+
+    public function testIsFallingBackToFirstBranchWhenHeadPointsToMissingBranch(): void
+    {
+        $path = $this->createTemporaryRepository();
+        $this->commit($path, 'a.txt', 'Klaus Silveira', 'contact@klaussilveira.com', "Initial commit.\n");
+        $this->git(['branch', '--move', 'production'], $path);
+        $this->git(['symbolic-ref', 'HEAD', 'refs/heads/nonexistent'], $path);
+
+        $commandLine = new CommandLine();
+
+        $this->assertEquals('production', $commandLine->getDefaultBranch(new Repository($path)));
+    }
+
+    public function testIsGettingTreeWhenHeadPointsToMissingBranch(): void
+    {
+        $path = $this->createTemporaryRepository();
+        $this->commit($path, 'a.txt', 'Klaus Silveira', 'contact@klaussilveira.com', "Initial commit.\n");
+        $this->git(['symbolic-ref', 'HEAD', 'refs/heads/nonexistent'], $path);
+
+        $commandLine = new CommandLine();
+        $tree = $commandLine->getTree(new Repository($path));
+
+        $this->assertEquals('master', $tree->getHash());
+        $this->assertCount(1, $tree->getChildren());
+        $this->assertEquals('a.txt', $tree->getChildren()[0]->getName());
+    }
+
     public function testIsGettingBranches(): void
     {
         $repository = new Repository(self::FIXTURE_REPO);

@@ -37,6 +37,8 @@ class CommandLine implements System
         '%GS', '%GK', '%G?', '%s', '%b',
     ];
 
+    public const DEFAULT_BRANCH_CANDIDATES = ['master', 'main', 'trunk'];
+
     protected ?string $path;
 
     public function __construct(?string $path = null)
@@ -72,7 +74,21 @@ class CommandLine implements System
 
     public function getDefaultBranch(Repository $repository): string
     {
-        return trim($this->run(['symbolic-ref', '--short', 'HEAD'], $repository));
+        $head = trim($this->run(['symbolic-ref', '--short', 'HEAD'], $repository));
+
+        if ($this->isValidHash($repository, $head)) {
+            return $head;
+        }
+
+        $branches = array_map(static fn (Branch $branch): string => $branch->getName(), $this->getBranches($repository));
+
+        foreach (self::DEFAULT_BRANCH_CANDIDATES as $candidate) {
+            if (in_array($candidate, $branches, true)) {
+                return $candidate;
+            }
+        }
+
+        return $branches[0] ?? $head;
     }
 
     public function getBranches(Repository $repository): array
@@ -136,6 +152,8 @@ class CommandLine implements System
 
     public function getTree(Repository $repository, ?string $hash = 'HEAD'): Tree
     {
+        $hash = $this->resolveHash($repository, $hash);
+
         $output = $this->run(['ls-tree', '-lz', '--full-tree', '--', $hash], $repository);
 
         return $this->buildTreeFromOutput($repository, $hash, $output, true);
@@ -143,6 +161,8 @@ class CommandLine implements System
 
     public function getRecursiveTree(Repository $repository, ?string $hash = 'HEAD'): Tree
     {
+        $hash = $this->resolveHash($repository, $hash);
+
         $output = $this->run(['ls-tree', '-lzr', '--full-tree', '--', $hash], $repository);
 
         return $this->buildTreeFromOutput($repository, $hash, $output);
@@ -150,6 +170,8 @@ class CommandLine implements System
 
     public function getPathTree(Repository $repository, string $path, ?string $hash = 'HEAD'): Tree
     {
+        $hash = $this->resolveHash($repository, $hash);
+
         $path = rtrim($path, '/').'/';
         $output = $this->run(['ls-tree', '-lz', $hash, '--', $path], $repository);
         $tree = $this->buildTreeFromOutput($repository, $hash, $output, true);
@@ -160,6 +182,8 @@ class CommandLine implements System
 
     public function getCommit(Repository $repository, ?string $hash = 'HEAD'): Commit
     {
+        $hash = $this->resolveHash($repository, $hash);
+
         $delimiter = $this->generateSafeCommitDelimiter();
         $output = $this->run(['show', '--no-textconv', '--ignore-blank-lines', '-w', '-b', '--cc', $this->getCommitFormat($delimiter), $hash], $repository);
         [$commit, $rawDiffBlock] = $this->parseFirstCommitData($repository, $output, $delimiter);
@@ -174,6 +198,8 @@ class CommandLine implements System
 
     public function getCommits(Repository $repository, ?string $hash = 'HEAD', int $page = 1, int $perPage = 10): array
     {
+        $hash = $this->resolveHash($repository, $hash);
+
         $delimiter = $this->generateSafeCommitDelimiter();
         $output = $this->run([
             'log',
@@ -190,6 +216,8 @@ class CommandLine implements System
 
     public function getCommitsFromPath(Repository $repository, string $path, ?string $hash = 'HEAD', int $page = 1, int $perPage = 10): array
     {
+        $hash = $this->resolveHash($repository, $hash);
+
         $delimiter = $this->generateSafeCommitDelimiter();
         $output = $this->run([
             'log',
@@ -216,6 +244,8 @@ class CommandLine implements System
 
     public function getBlame(Repository $repository, string $hash, string $path): Blame
     {
+        $hash = $this->resolveHash($repository, $hash);
+
         $output = $this->run(['blame', '--no-textconv', '--root', '-ls', $hash, '--', $path], $repository);
         $blameLines = explode(PHP_EOL, $output);
         $annotatedLines = [];
@@ -249,6 +279,8 @@ class CommandLine implements System
 
     public function getBlob(Repository $repository, string $hash, string $path): Blob
     {
+        $hash = $this->resolveHash($repository, $hash);
+
         $commits = $this->getCommitsFromPath($repository, $path, $hash, 1, 1);
         $commit = reset($commits);
         $blobOutput = $this->run(['show', sprintf('%s:%s', $hash, $path)], $repository);
@@ -262,6 +294,8 @@ class CommandLine implements System
 
     public function searchCommits(Repository $repository, Criteria $criteria, ?string $hash = 'HEAD'): array
     {
+        $hash = $this->resolveHash($repository, $hash);
+
         $delimiter = $this->generateSafeCommitDelimiter();
         $command = ['log', $this->getCommitFormat($delimiter)];
 
@@ -293,6 +327,8 @@ class CommandLine implements System
 
     public function archive(Repository $repository, string $format, string $hash, string $path = '.'): string
     {
+        $hash = $this->resolveHash($repository, $hash);
+
         $destination = sprintf('%s/%s.%s', sys_get_temp_dir(), $hash, $format);
 
         $this->run(['archive', '--output', $destination, $hash, '--', $path], $repository);
@@ -322,6 +358,30 @@ class CommandLine implements System
         }
 
         return $process->getOutput();
+    }
+
+    protected function resolveHash(Repository $repository, ?string $hash): string
+    {
+        if ($hash && 'HEAD' !== $hash) {
+            return $hash;
+        }
+
+        if ($this->isValidHash($repository, 'HEAD')) {
+            return 'HEAD';
+        }
+
+        return $this->getDefaultBranch($repository);
+    }
+
+    protected function isValidHash(Repository $repository, string $hash): bool
+    {
+        try {
+            $this->run(['rev-parse', '--verify', '--quiet', $hash], $repository);
+
+            return true;
+        } catch (CommandException) {
+            return false;
+        }
     }
 
     protected function buildTreeFromOutput(Repository $repository, string $hash, string $output, bool $fetchCommitInfo = false): Tree
