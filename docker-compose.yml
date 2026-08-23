@@ -5,7 +5,7 @@ services:
     working_dir: /application
     volumes:
       - .:/application
-    command: sh -lc "npm ci && npm run watch"
+    command: sh -lc "npm ci && sleep infinity"
     tty: true
 
   webserver:

@@ -21,13 +21,13 @@
             {% for tag in tags %}
               <li class="list-group-item">
                 <h5>
-                  <i class="icon ion-md-pricetag"></i>
+                  <svg class="icon"><use href="#i-pricetag"/></svg>
                   <a href="{{ path('repository_tree', {repository: repository.name, commitish: tag.name }) }}" title="{{ tag.name }}">
                     {{ tag.name }}
                   </a>
                 </h5>
                 <p>
-                  <i class="icon ion-md-git-commit"></i>
+                  <svg class="icon"><use href="#i-git-commit"/></svg>
                   <a href="{{ path('commit_show', { repository: repository.name, commitish: tag.target.hash }) }}">
                     {{ tag.target.shortHash }}
                   </a>

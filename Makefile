@@ -27,6 +27,7 @@ setup: check-deps # Setup dependencies and development configuration
 	$(DOCKER_COMPOSE) pull || true
 	$(DOCKER_COMPOSE) up -d --build
 	$(EXEC_PHP) composer install
+	$(EXEC_PHP) php bin/console sass:build
 
 up: # Create and start containers
 	$(DOCKER_COMPOSE) up -d
@@ -54,11 +55,15 @@ update: # Update dependencies
 format: # Run code style autoformatter
 	$(EXEC_PHP) composer format
 
+watch: # Rebuild stylesheets when sources change
+	$(EXEC_PHP) php bin/console sass:build --watch
+
 build: # Build application package
 	@rm -rf vendor/
 	@rm -rf public/assets/*
 	@composer install --ignore-platform-reqs --no-dev --no-scripts -o
-	@npm run build
+	@APP_ENV=prod php bin/console sass:build
+	@APP_ENV=prod php bin/console asset-map:compile
 	@zip ./build.zip \
 	-r * .[^.]* \
 	-x '.github/*' \
@@ -67,7 +72,9 @@ build: # Build application package
 	-x 'node_modules/*' \
 	-x 'tests/' \
 	-x 'var/cache/*' \
+	-x 'var/dart-sass/*' \
 	-x 'var/log/*' \
+	-x 'var/sass/*' \
 	-x '.dockerignore' \
 	-x '.editorconfig' \
 	-x '.env' \
@@ -78,6 +85,7 @@ build: # Build application package
 	-x '.php-cs-fixer.php' \
 	-x '.phpunit.result.cache' \
 	-x '.phpunit.cache/*' \
+	-x '.prettierignore' \
 	-x '.prettierrc' \
 	-x 'composer.json' \
 	-x 'composer.lock' \
@@ -89,8 +97,6 @@ build: # Build application package
 	-x 'package.json' \
 	-x 'phpstan.neon' \
 	-x 'phpunit.xml.dist' \
-	-x 'postcss.config.js' \
-	-x 'webpack.config.js' \
 
 fix-perms:
 	sudo setfacl -R -m u:root:rwX -m u:`whoami`:rwX var/cache var/log vendor/

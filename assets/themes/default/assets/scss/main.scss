@@ -40,7 +40,6 @@ $code-bg: #f5f5f5;
 $code-border-radius: 6px;
 
 @import 'bootstrap';
-@import '~ionicons/dist/scss/ionicons';
 @import 'buttons';
 @import 'breadcrumb';
 @import 'card';
@@ -61,7 +60,11 @@ header {
 }
 
 .icon {
+  fill: currentcolor;
+  height: 1em;
   margin-right: 0.25rem;
+  vertical-align: -0.125em;
+  width: 1em;
 }
 
 .icon-solo {
@@ -75,15 +78,4 @@ footer {
   a {
     color: inherit;
   }
-}
-
-// Editor styling fixes
-.CodeMirror {
-  font-family: $font-family-monospace;
-  color: $body-color;
-  height: 600px;
-}
-
-.ace_editor {
-  margin-bottom: 0;
 }

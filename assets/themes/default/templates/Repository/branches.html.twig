@@ -20,13 +20,13 @@
           {% for branch in branches %}
             <li class="list-group-item">
               <h5>
-                <i class="icon ion-md-git-branch"></i>
+                <svg class="icon"><use href="#i-git-branch"/></svg>
                 <a href="{{ path('repository_tree', {repository: repository.name, commitish: branch.name }) }}" title="{{ branch.name }}">
                   {{ branch.name }}
                 </a>
               </h5>
               <p>
-                <i class="icon ion-md-git-commit"></i>
+                <svg class="icon"><use href="#i-git-commit"/></svg>
                 <a href="{{ path('commit_show', { repository: repository.name, commitish: branch.target.hash }) }}">{{ branch.target.shortHash }}</a>
                 {{ branch.target.subject }}
                 <span class="badge badge-secondary">

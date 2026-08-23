@@ -11,6 +11,7 @@
     "league/commonmark": "^2.10",
     "nesbot/carbon": "^3.13",
     "symfony/asset": "^8.1",
+    "symfony/asset-mapper": "^8.1",
     "symfony/cache": "^8.1",
     "symfony/console": "^8.1",
     "symfony/form": "^8.1",
@@ -20,8 +21,9 @@
     "symfony/string": "^8.1",
     "symfony/translation": "^8.1",
     "symfony/twig-bundle": "^8.1",
-    "symfony/webpack-encore-bundle": "^2.4",
-    "symfony/yaml": "^8.1"
+    "symfony/yaml": "^8.1",
+    "symfonycasts/sass-bundle": "^0.10.0",
+    "twbs/bootstrap": "5.3.8"
   },
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^3.95",

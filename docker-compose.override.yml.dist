@@ -1,5 +1,6 @@
 volumes:
   var-cache-volume:
+  var-dart-sass-volume:
 
 services:
   webserver:
@@ -13,4 +14,5 @@ services:
       - /var/www:/var/repositories
       - .:/application:cached
       - var-cache-volume:/application/var/cache
+      - var-dart-sass-volume:/application/var/dart-sass
       - $HOME/.composer:/root/.composer/:cached

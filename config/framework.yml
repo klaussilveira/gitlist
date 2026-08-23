@@ -15,8 +15,14 @@ framework:
       - '%kernel.project_dir%/assets/translations'
     fallbacks:
       - '%locale%'
-  assets:
-    base_path: 'assets'
+  asset_mapper:
+    paths:
+      '%kernel.project_dir%/assets/themes/%theme%/assets': 'theme'
+      '%kernel.project_dir%/assets/viewers': 'viewers'
+      '%kernel.project_dir%/assets/vendor': ''
+    excluded_patterns:
+      - '*/scss/_*.scss'
+    importmap_polyfill: false
 
 twig:
   paths: ['%kernel.project_dir%/assets/themes/%theme%/templates']
@@ -47,5 +53,12 @@ monolog:
       type: syslog
       level: error
 
-webpack_encore:
-  output_path: '%kernel.project_dir%/public/assets'
+symfonycasts_sass:
+  root_sass:
+    - '%kernel.project_dir%/assets/themes/%theme%/assets/scss/main.scss'
+  sass_options:
+    charset: false
+    style: compressed
+    source_map: '%kernel.debug%'
+    load_path:
+      - '%kernel.project_dir%/vendor/twbs'

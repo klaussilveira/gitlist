@@ -22,7 +22,7 @@
           <div class="btn-group" role="group">
             {% if commit.firstParent.hash %}
               <a href="{{ path('commit_show', { repository: repository.name, commitish: commit.firstParent.hash }) }}" class="btn btn-secondary">
-                <i class="icon ion-md-git-commit"></i> {{ 'REPOSITORY_COMMIT_PARENT'|trans }} {{ commit.firstParent.shortHash }}
+                <svg class="icon"><use href="#i-git-commit"/></svg> {{ 'REPOSITORY_COMMIT_PARENT'|trans }} {{ commit.firstParent.shortHash }}
               </a>
             {% endif %}
           </div>
@@ -49,7 +49,7 @@
       <ul class="list-group list-group-flush">
         {% for file in commit.diffs %}
           <li class="list-group-item d-flex justify-content-between align-items-center">
-            <span><i class="icon ion-md-document"></i> <a href="#diff-{{ loop.index }}">{{ file.name }}</a></span>
+            <span><svg class="icon"><use href="#i-document"/></svg> <a href="#diff-{{ loop.index }}">{{ file.name }}</a></span>
             <span class="badge badge-secondary badge-pill">{{ file.index }}</span>
           </li>
         {% endfor %}
@@ -62,7 +62,7 @@
       <div class="col-12">
           <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
-              <a id="diff-{{ loop.index }}"><i class="icon ion-md-document"></i> {{ file.name }}</a>
+              <a id="diff-{{ loop.index }}"><svg class="icon"><use href="#i-document"/></svg> {{ file.name }}</a>
               <div class="btn-group" role="group">
                 {% if file.type == 'deleted' %}
                   <a href="{{ path('blob_show', { repository: repository.name, commitish: getCommitish(commit.firstParent.hash, file.name) }) }}" class="btn btn-secondary">

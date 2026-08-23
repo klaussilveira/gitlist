@@ -14,7 +14,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
-use Symfony\WebpackEncoreBundle\WebpackEncoreBundle;
+use Symfonycasts\SassBundle\SymfonycastsSassBundle;
 
 class Kernel extends BaseKernel
 {
@@ -41,7 +41,7 @@ class Kernel extends BaseKernel
             FrameworkBundle::class,
             TwigBundle::class,
             MonologBundle::class,
-            WebpackEncoreBundle::class,
+            SymfonycastsSassBundle::class,
         ];
 
         if ($this->debug) {

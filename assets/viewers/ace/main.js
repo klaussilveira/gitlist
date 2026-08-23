@@ -1,6 +1,3 @@
-var ace = require('ace-builds/src-min-noconflict/ace');
-require('ace-builds/webpack-resolver');
-
 window.addEventListener('load', function () {
   var editor = document.getElementById('ace-editor');
 
@@ -8,10 +5,13 @@ window.addEventListener('load', function () {
     return;
   }
 
-  ace.edit(editor, {
+  window.ace.config.set('basePath', editor.dataset.basePath);
+
+  window.ace.edit(editor, {
     mode: 'ace/mode/' + editor.dataset.mode,
     maxLines: 50,
     minLines: 10,
     fontSize: 16,
+    useWorker: false,
   });
 });

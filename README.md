@@ -49,7 +49,7 @@ chmod 777 var/log
 That's it, installation complete! If you're having problems, check the [Troubleshooting](https://github.com/klaussilveira/gitlist/wiki/Troubleshooting) page.
 
 ## Development
-GitList comes with a Docker Compose configuration intended for development purposes. It contains a PHP image with all necessary extensions, as well as a Node image for frontend assets.
+GitList comes with a Docker Compose configuration intended for development purposes. It contains a PHP image with all necessary extensions, as well as a Node image used only to run the acceptance test suite.
 
 To get started, just clone the repo and run the setup script:
 
@@ -70,6 +70,19 @@ There are other commands available. To learn more:
 ```bash
 make help
 ```
+
+### Frontend assets
+Assets are handled by Symfony AssetMapper, so there is no bundler and no Node.js in the asset pipeline. Stylesheets are compiled by `symfonycasts/sass-bundle`, which downloads a standalone Sass binary into `var/dart-sass` on first use. That directory is a named Docker volume rather than part of the project bind mount, so the container and the host each keep the build matching their own C library. While working on stylesheets, keep them compiling with:
+
+```bash
+make watch
+```
+
+Bootstrap arrives twice on purpose: `twbs/bootstrap` provides the Sass sources that the theme customizes, and the `importmap.php` entry provides the browser module. Keep both pinned to the same version when upgrading.
+
+The Ace and CodeMirror runtimes live in `public/vendor` because both resolve the URLs of their syntax modes at runtime, which means the asset mapper cannot rename their files. That directory is committed and regenerated with `bin/vendor-assets`.
+
+The icon sprite in `assets/themes/default/templates/icons.html.twig` is derived from Ionicons 4.6.3, MIT licensed, Copyright (c) 2015-present Ionic (http://ionic.io/).
 
 ## Contributing
 If you are a developer, we need your help. GitList is small, but we have lots of stuff to do. Some developers are contributing with new features, others with bug fixes. But you can also dedicate yourself to refactoring the current codebase and improving what we already have. This is very important, we want GitList to be a state-of-the-art application, and we need your help for that.

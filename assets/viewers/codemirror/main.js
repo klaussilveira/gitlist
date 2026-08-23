@@ -1,11 +1,3 @@
-var CodeMirror = require('codemirror');
-
-// Dynamically load modes
-var requireContext = require.context('codemirror/mode/', true, /\.js$/);
-requireContext.keys().forEach(function (key) {
-  requireContext(key);
-});
-
 window.addEventListener('load', function () {
   var editor = document.getElementById('cm-editor');
 
@@ -13,10 +5,16 @@ window.addEventListener('load', function () {
     return;
   }
 
-  CodeMirror.fromTextArea(editor, {
+  window.CodeMirror.modeURL = editor.dataset.modeUrl;
+
+  var instance = window.CodeMirror.fromTextArea(editor, {
     mode: editor.dataset.mode,
     lineNumbers: true,
     lineWrapping: true,
     autofocus: true,
   });
+
+  if (editor.dataset.mode) {
+    window.CodeMirror.autoLoadMode(instance, editor.dataset.mode);
+  }
 });

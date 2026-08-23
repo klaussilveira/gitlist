@@ -13,7 +13,7 @@
           <a href="{{ path('repository_show', { repository: repository.name }) }}">{{ repository.name }}</a>
 
           <a href="{{ path('repository_feed', { repository: repository.name, commitish: repository.defaultBranch, format: 'rss' }) }}" class="btn btn-sm btn-secondary">
-            <i class="icon ion-logo-rss"></i> {{ 'REPOSITORY_TOOLBAR_FEED_RSS'|trans }}
+            <svg class="icon"><use href="#i-rss"/></svg> {{ 'REPOSITORY_TOOLBAR_FEED_RSS'|trans }}
           </a>
         </div>
         <div class="card-body">

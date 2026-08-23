@@ -16,11 +16,11 @@
         </div>
         <div>
           <a href="{{ path('commit_show', { repository: repository.name, commitish: commit.hash }) }}" class="btn btn-secondary" title="View commit details">
-            <i class="icon ion-md-git-commit"></i>
+            <svg class="icon"><use href="#i-git-commit"/></svg>
             {{ commit.shortHash }}
           </a>
           <a href="{{ path('repository_tree', { repository: repository.name, commitish: commit.hash }) }}" class="btn btn-secondary" title="{{ 'REPOSITORY_BROWSE_AT_COMMIT'|trans }} {{ commit.shortHash }}">
-            <i class="icon icon-solo ion-md-code"></i>
+            <svg class="icon icon-solo"><use href="#i-code"/></svg>
           </a>
         </div>
       </div>

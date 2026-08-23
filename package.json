@@ -4,44 +4,15 @@
   "repository": "https://github.com/klaussilveira/gitlist",
   "license": "BSD-3-Clause",
   "scripts": {
-    "dev-server": "encore dev-server",
-    "dev": "encore dev",
-    "watch": "encore dev --watch",
-    "build": "encore production",
     "test": "npm run lint",
     "format": "prettier --write 'assets/**/*.{js,ts,json,css,scss,yaml}'",
     "lint": "prettier --check 'assets/**/*.{js,ts,json,css,scss,yaml}'",
     "cypress": "cypress run"
   },
-  "dependencies": {
-    "@popperjs/core": "^2.11.8",
-    "ace-builds": "^1.44",
-    "bootstrap": "^5.3",
-    "codemirror": "^5.65",
-    "ionicons": "^4.6"
-  },
   "devDependencies": {
-    "@babel/core": "^8.0",
-    "@babel/preset-env": "^8.0",
-    "@symfony/webpack-encore": "^7.2",
-    "autoprefixer": "^10.5",
-    "cssnano": "^8.0",
     "cypress": "^15.21",
-    "file-loader": "^6.2",
     "husky": "^9.1",
-    "postcss": "^8.5",
-    "postcss-loader": "^8.2",
     "prettier": "^3.9",
-    "pretty-quick": "^4.2",
-    "sass": "^1.103",
-    "sass-loader": "^17.0",
-    "webpack": "^5.109",
-    "webpack-cli": "^7.2",
-    "webpack-dev-server": "^6.0"
-  },
-  "browserslist": [
-    "> 0.5%",
-    "last 2 versions",
-    "not dead"
-  ]
+    "pretty-quick": "^4.2"
+  }
 }

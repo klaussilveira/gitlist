@@ -1,0 +1,39 @@
+#!/bin/sh
+
+set -eu
+
+ACE_VERSION=1.44.0
+CODEMIRROR_VERSION=5.65.21
+
+ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+VENDOR="$ROOT/public/vendor"
+WORK=$(mktemp -d)
+trap 'rm -rf "$WORK"' EXIT
+
+fetch() {
+  echo "Fetching $1"
+  curl -sSfL "$1" | tar -xzf - -C "$WORK"
+  mv "$WORK/package" "$WORK/$2"
+}
+
+fetch "https://registry.npmjs.org/ace-builds/-/ace-builds-$ACE_VERSION.tgz" ace-builds
+fetch "https://registry.npmjs.org/codemirror/-/codemirror-$CODEMIRROR_VERSION.tgz" codemirror
+
+rm -rf "$VENDOR/ace" "$VENDOR/codemirror"
+mkdir -p "$VENDOR/ace" "$VENDOR/codemirror/mode"
+
+cp "$WORK/ace-builds/src-min-noconflict/ace.js" "$VENDOR/ace/"
+cp "$WORK/ace-builds/src-min-noconflict/theme-textmate.js" "$VENDOR/ace/"
+cp "$WORK"/ace-builds/src-min-noconflict/mode-*.js "$VENDOR/ace/"
+cp "$WORK/ace-builds/LICENSE" "$VENDOR/ace/"
+
+cp "$WORK/codemirror/lib/codemirror.js" "$VENDOR/codemirror/"
+cp "$WORK/codemirror/lib/codemirror.css" "$VENDOR/codemirror/"
+cp "$WORK/codemirror/addon/mode/loadmode.js" "$VENDOR/codemirror/"
+cp -R "$WORK"/codemirror/mode/. "$VENDOR/codemirror/mode/"
+cp "$WORK/codemirror/LICENSE" "$VENDOR/codemirror/"
+
+find "$VENDOR/codemirror/mode" -type f ! -name '*.js' -delete
+find "$VENDOR/codemirror/mode" -name '*test*.js' -delete
+
+echo "Wrote $VENDOR"

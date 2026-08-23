@@ -5,23 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>{% block title %}{{ 'REPOSITORY_LIST_TITLE'|trans }}{% endblock %} &middot; {{ title }}</title>
     {% block stylesheets %}{% endblock %}
-    {% if default_blob_viewer != 'simple' %}
-      {{ encore_entry_link_tags(default_blob_viewer ~ '/css/main') }}
-    {% endif %}
-    {{ encore_entry_link_tags(theme ~ '/css/main') }}
+    <link rel="stylesheet" href="{{ asset('theme/scss/main.scss') }}">
 
     {% block javascripts %}{% endblock %}
-    {{ encore_entry_script_tags(theme ~ '/js/main') }}
+    {{ importmap('theme/js/main.js') }}
 
-    {% if default_blob_viewer != 'simple' %}
-      {{ encore_entry_script_tags(default_blob_viewer ~ '/js/main') }}
+    {% if default_blob_viewer == 'ace' %}
+      <link rel="stylesheet" href="{{ asset('viewers/ace/main.css') }}">
+      <script defer src="{{ asset('vendor/ace/ace.js') }}"></script>
+      <script type="module" src="{{ asset('viewers/ace/main.js') }}"></script>
+    {% elseif default_blob_viewer == 'codemirror' %}
+      <link rel="stylesheet" href="{{ asset('vendor/codemirror/codemirror.css') }}">
+      <link rel="stylesheet" href="{{ asset('viewers/codemirror/main.css') }}">
+      <script defer src="{{ asset('vendor/codemirror/codemirror.js') }}"></script>
+      <script defer src="{{ asset('vendor/codemirror/loadmode.js') }}"></script>
+      <script type="module" src="{{ asset('viewers/codemirror/main.js') }}"></script>
     {% endif %}
   </head>
   <body>
+    {% include 'icons.html.twig' %}
     <header>
       <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container d-flex">
-          <a class="navbar-brand" href="{{ path('repository_list') }}"><i class="icon ion-md-git-compare"></i> {{ title }}</a>
+          <a class="navbar-brand" href="{{ path('repository_list') }}"><svg class="icon"><use href="#i-git-compare"/></svg> {{ title }}</a>
 
           <ul class="navbar-nav">
             <li class="nav-item active">

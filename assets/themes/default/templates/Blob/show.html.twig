@@ -37,13 +37,13 @@
 
           <div class="btn-group" role="group">
             <a href="{{ path('blob_blame', { repository: repository.name, commitish: getCommitish(commit.hash, blob.name) }) }}" class="btn btn-secondary">
-              <i class="icon ion-md-git-merge"></i> Blame
+              <svg class="icon"><use href="#i-git-merge"/></svg> Blame
             </a>
             <a href="{{ path('blob_history', { repository: repository.name, commitish: getCommitish(commit.hash, blob.name) }) }}" class="btn btn-secondary">
-              <i class="icon ion-md-time"></i> History
+              <svg class="icon"><use href="#i-time"/></svg> History
             </a>
             <a href="{{ path('blob_raw', { repository: repository.name, commitish: getCommitish(commit.hash, blob.name) }) }}" class="btn btn-secondary">
-              <i class="icon ion-md-code-download"></i> Raw
+              <svg class="icon"><use href="#i-code-download"/></svg> Raw
             </a>
           </div>
         </div>

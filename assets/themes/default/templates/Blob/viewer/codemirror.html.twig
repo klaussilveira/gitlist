@@ -1,3 +1,3 @@
 <div class="card-body p-0">
-  <textarea id="cm-editor" data-mode="{{ file.language.codeMirrorMode }}">{{ file.contents }}</textarea>
+  <textarea id="cm-editor" data-mode="{{ file.language.codeMirrorMode }}" data-mode-url="{{ asset('vendor/codemirror/mode') }}/%N/%N.js">{{ file.contents }}</textarea>
 </div>

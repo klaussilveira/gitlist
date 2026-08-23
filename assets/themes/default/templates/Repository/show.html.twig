@@ -23,10 +23,10 @@
         <div class="card-body p-0">
           <ul class="nav repository-stats justify-content-center">
             <li class="nav-item">
-              <a class="nav-link" href="#"><i class="icon ion-md-git-branch"></i> <strong>{{ repository.branches|length }}</strong> {{ 'REPOSITORY_SUBMENU_BRANCHES'|trans }}</a>
+              <a class="nav-link" href="#"><svg class="icon"><use href="#i-git-branch"/></svg> <strong>{{ repository.branches|length }}</strong> {{ 'REPOSITORY_SUBMENU_BRANCHES'|trans }}</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#"><i class="icon ion-md-pricetags"></i> <strong>{{ repository.tags|length }}</strong> {{ 'REPOSITORY_SUBMENU_TAGS'|trans }}</a>
+              <a class="nav-link" href="#"><svg class="icon"><use href="#i-pricetags"/></svg> <strong>{{ repository.tags|length }}</strong> {{ 'REPOSITORY_SUBMENU_TAGS'|trans }}</a>
             </li>
           </ul>
         </div>
@@ -56,7 +56,7 @@
           </div>
           <input type="text" class="form-control" readonly="readonly" value="{{ ssh_clone_url|format(repository.name) }}">
           <div class="input-group-append">
-            <button class="btn btn-secondary btn-blend-left" type="button" data-placement="right" title="{{ 'REPOSITORY_TOOLBAR_CLONE_COPIED'|trans }}"><i class="icon icon-solo ion-md-clipboard"></i></button>
+            <button class="btn btn-secondary btn-blend-left" type="button" data-placement="right" title="{{ 'REPOSITORY_TOOLBAR_CLONE_COPIED'|trans }}"><svg class="icon icon-solo"><use href="#i-clipboard"/></svg></button>
           </div>
         </div>
 
@@ -108,7 +108,7 @@
               <tr>
                 <th scope="row" class="tree-filename">
                   <span class="tree-truncate">
-                    <i class="icon ion-md-folder"></i>
+                    <svg class="icon"><use href="#i-folder"/></svg>
                     <a href="{{ path('repository_tree', {repository: repository.name, commitish: getCommitish(tree.hash, getParent(tree.name)) }) }}">
                       ..
                     </a>
@@ -128,7 +128,7 @@
               <tr>
                 <th scope="row" class="tree-filename">
                   <span class="tree-truncate">
-                    <i class="icon ion-md-folder"></i>
+                    <svg class="icon"><use href="#i-folder"/></svg>
                     <a href="{{ path('repository_tree', {repository: repository.name, commitish: getCommitish(tree.hash, object.name) }) }}" title="{{ object.fileName }}">
                       {{ object.fileName }}
                     </a>
@@ -160,7 +160,7 @@
               <tr>
                 <th scope="row" class="tree-filename">
                   <span class="tree-truncate">
-                    <i class="icon ion-md-document"></i>
+                    <svg class="icon"><use href="#i-document"/></svg>
                     <a href="{{ path('blob_show', {repository: repository.name, commitish: getCommitish(tree.hash, object.name) }) }}" title="{{ object.fileName }}">
                       {{ object.fileName }}
                     </a>

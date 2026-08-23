@@ -1,0 +1,5 @@
+.CodeMirror {
+  color: var(--bs-body-color);
+  font-family: var(--bs-font-monospace);
+  height: 600px;
+}

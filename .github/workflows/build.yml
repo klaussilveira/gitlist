@@ -93,7 +93,9 @@ jobs:
         run: composer install --prefer-dist --no-progress && npm install
 
       - name: Build frontend assets
-        run: npm run build
+        run: |
+          APP_ENV=prod php bin/console sass:build
+          APP_ENV=prod php bin/console asset-map:compile
 
       - name: Run Cypress acceptance tests
         uses: cypress-io/github-action@v6
@@ -113,13 +115,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v4
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
         with:
-          node-version: '22'
-
-      - name: Install frontend dependencies
-        run: npm install
+          php-version: '8.4'
+          extensions: iconv, mbstring, xml
+          coverage: none
 
       - name: Build package
         run: make build
