@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/13.3/phpunit.xsd"
-    bootstrap="vendor/autoload.php"
+    bootstrap="tests/bootstrap.php"
     cacheDirectory=".phpunit.cache"
     executionOrder="depends,defects"
     requireCoverageMetadata="false"
@@ -13,10 +13,20 @@
     failOnWarning="true">
   <php>
     <const name="FIXTURE_DIR" value="./tests/fixtures" />
+    <env name="KERNEL_CLASS" value="GitList\Kernel" />
+    <env name="APP_DEBUG" value="0" />
+    <server name="PANTHER_APP_ENV" value="prod" />
+    <server name="PANTHER_WEB_SERVER_DIR" value="./public" />
   </php>
+  <extensions>
+    <bootstrap class="Symfony\Component\Panther\ServerExtension" />
+  </extensions>
   <testsuites>
-    <testsuite name="default">
-      <directory suffix="Test.php">tests</directory>
+    <testsuite name="unit">
+      <directory suffix="Test.php">tests/unit</directory>
+    </testsuite>
+    <testsuite name="e2e">
+      <directory suffix="Test.php">tests/e2e</directory>
     </testsuite>
   </testsuites>
   <source>

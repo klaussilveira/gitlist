@@ -29,12 +29,17 @@ RUN set -x; \
 
 RUN apk add --no-cache \
     bash \
+    chromium \
+    chromium-chromedriver \
     coreutils \
     git \
     grep \
     mercurial \
     make \
     wget
+
+ENV PANTHER_CHROME_BINARY=/usr/bin/chromium-browser
+ENV PANTHER_NO_SANDBOX=1
 
 RUN git config --global --add safe.directory /application
 

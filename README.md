@@ -49,7 +49,7 @@ chmod 777 var/log
 That's it, installation complete! If you're having problems, check the [Troubleshooting](https://github.com/klaussilveira/gitlist/wiki/Troubleshooting) page.
 
 ## Development
-GitList comes with a Docker Compose configuration intended for development purposes. It contains a PHP image with all necessary extensions, as well as a Node image used only to run the acceptance test suite.
+GitList comes with a Docker Compose configuration intended for development purposes. It contains a PHP image with all necessary extensions, including the headless Chromium and chromedriver binaries used by the end-to-end test suite.
 
 To get started, just clone the repo and run the setup script:
 
@@ -64,6 +64,8 @@ It should take care of letting you know what is missing, if anything. Once finis
 make test
 make acceptance
 ```
+
+The end-to-end suite lives in `tests/e2e` and runs on Symfony Panther. Pages that do not depend on JavaScript are driven over plain HTTP, the rest through headless Chromium. Both share a web server that Panther starts on port 9080 against the repositories in `tests/fixtures`. Running it outside the container needs `chromedriver` on your `PATH`.
 
 There are other commands available. To learn more:
 
@@ -96,6 +98,6 @@ If you are not a developer, you can also contribute by helping [translate GitLis
 If you want to know more about customizing GitList, check the [Customization](https://github.com/klaussilveira/gitlist/wiki/Customizing) page on the wiki. Also, if you're having problems with GitList, check the [Troubleshooting](https://github.com/klaussilveira/gitlist/wiki/Troubleshooting) page. Don't forget to report issues and suggest new features! :)
 
 ## Legacy
-GitList was born in [May 2012](https://github.com/klaussilveira/gitlist/commit/df43c987cf02a3521ac65cf5bd4a4f54cf749177), a time were Composer was still a novelty and Silex was all the rage. We have tried to maintain GitList as-is for as long as possible, but the PHP ecosystem changed so much in all those years that it became too time consuming to maintain it. Thus, `2.0` was born on top of Symfony 6 and we'll keep moving with the times.
+GitList was born in [May 2012](https://github.com/klaussilveira/gitlist/commit/df43c987cf02a3521ac65cf5bd4a4f54cf749177), a time were Composer was still a novelty and Silex was all the rage. We have tried to maintain GitList as-is for as long as possible, but the PHP ecosystem changed so much in all those years that it became too time consuming to maintain it. Thus, `2.0` was born on top of Symfony 6 and we'll keep moving with the times. `3.0` follows Symfony 8.
 
 Legacy, however, is still [available here](https://github.com/klaussilveira/gitlist/tree/legacy) and we will try to keep it secure and working on newer PHP versions.

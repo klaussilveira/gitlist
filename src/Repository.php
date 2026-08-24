@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GitList;
 
 use GitList\Exception\BlobNotFoundException;
+use GitList\Exception\CommitNotFoundException;
 use GitList\Repository\Commitish;
 use GitList\SCM\AnnotatedLine;
 use GitList\SCM\Blame;
@@ -78,7 +79,15 @@ class Repository
 
         $commitish = new Commitish($this, $commitish);
 
-        return $this->system->getCommit($this->repository, $commitish->getHash());
+        try {
+            return $this->system->getCommit($this->repository, $commitish->getHash());
+        } catch (CommandException $exception) {
+            if ($exception->isNotFoundException()) {
+                throw new CommitNotFoundException();
+            }
+
+            throw $exception;
+        }
     }
 
     /**
@@ -92,11 +101,19 @@ class Repository
 
         $commitish = new Commitish($this, $commitish);
 
-        if ($commitish->hasPath()) {
-            return $this->system->getCommitsFromPath($this->repository, $commitish->getPath(), $commitish->getHash(), $page, $perPage);
-        }
+        try {
+            if ($commitish->hasPath()) {
+                return $this->system->getCommitsFromPath($this->repository, $commitish->getPath(), $commitish->getHash(), $page, $perPage);
+            }
 
-        return $this->system->getCommits($this->repository, $commitish->getHash(), $page, $perPage);
+            return $this->system->getCommits($this->repository, $commitish->getHash(), $page, $perPage);
+        } catch (CommandException $exception) {
+            if ($exception->isNotFoundException()) {
+                throw new CommitNotFoundException();
+            }
+
+            throw $exception;
+        }
     }
 
     /**

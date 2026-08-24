@@ -57,10 +57,12 @@ class Commit
         $commits = $repository->getCommits($commitish, 1, $this->perPage);
         $commitish = new Commitish($repository, $commitish);
 
+        $contentType = 'atom' === $format ? 'application/atom+xml' : 'application/rss+xml';
+
         return new Response($this->templating->render(sprintf('Commit/feed.%s.twig', $format), [
             'repository' => $repository,
             'commitish' => $commitish,
             'commits' => $commits,
-        ]));
+        ]), Response::HTTP_OK, ['Content-Type' => $contentType]);
     }
 }

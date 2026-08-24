@@ -41,23 +41,19 @@
     <div class="col-8">
       <div class="btn-toolbar justify-content-end">
         <div class="input-group clone-input">
-          <div class="input-group-prepend">
-            <button class="btn btn-secondary btn-blend-right dropdown-toggle" type="button" data-toggle="clone-input">
+          <button class="btn btn-secondary btn-blend-right dropdown-toggle" type="button" data-toggle="clone-input">
+            {{ 'REPOSITORY_TOOLBAR_CLONE_SSH'|trans }}
+          </button>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="#" data-clone-url="{{ ssh_clone_url|format(repository.name) }}">
               {{ 'REPOSITORY_TOOLBAR_CLONE_SSH'|trans }}
-            </button>
-            <div class="dropdown-menu">
-              <a class="dropdown-item" href="#" data-clone-url="{{ ssh_clone_url|format(repository.name) }}">
-                {{ 'REPOSITORY_TOOLBAR_CLONE_SSH'|trans }}
-              </a>
-              <a class="dropdown-item" href="#" data-clone-url="{{ https_clone_url|format(repository.name) }}">
-                {{ 'REPOSITORY_TOOLBAR_CLONE_HTTPS'|trans }}
-              </a>
-            </div>
+            </a>
+            <a class="dropdown-item" href="#" data-clone-url="{{ https_clone_url|format(repository.name) }}">
+              {{ 'REPOSITORY_TOOLBAR_CLONE_HTTPS'|trans }}
+            </a>
           </div>
           <input type="text" class="form-control" readonly="readonly" value="{{ ssh_clone_url|format(repository.name) }}">
-          <div class="input-group-append">
-            <button class="btn btn-secondary btn-blend-left" type="button" data-placement="right" title="{{ 'REPOSITORY_TOOLBAR_CLONE_COPIED'|trans }}"><svg class="icon icon-solo"><use href="#i-clipboard"/></svg></button>
-          </div>
+          <button class="btn btn-secondary btn-blend-left" type="button" data-placement="right" title="{{ 'REPOSITORY_TOOLBAR_CLONE_COPIED'|trans }}"><svg class="icon icon-solo"><use href="#i-clipboard"/></svg></button>
         </div>
 
         <div class="btn-group" role="group">
@@ -98,7 +94,7 @@
             <strong>{{ lastCommit.author.name }}</strong>
             {{ lastCommit.subject }}
           </span>
-          <span class="float-right">
+          <span class="float-end">
             {{ lastCommit.shortHash }} @ {{ lastCommit.commitedAt|date(commit_date_format) }}
           </span>
         </div>

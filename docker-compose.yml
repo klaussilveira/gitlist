@@ -1,13 +1,4 @@
 services:
-  node:
-    build:
-      context: docker/node/
-    working_dir: /application
-    volumes:
-      - .:/application
-    command: sh -lc "npm ci && sleep infinity"
-    tty: true
-
   webserver:
     build:
       context: docker/nginx/
@@ -21,5 +12,6 @@ services:
     build:
       context: docker/php-fpm/
     working_dir: /application
+    shm_size: 1gb
     volumes:
       - .:/application

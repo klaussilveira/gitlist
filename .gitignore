@@ -3,14 +3,10 @@ public/assets/
 config/reference.php
 var/
 /vendor/
-node_modules/
 tests/fixtures/hg-repo/.hg/cache
-.cache/
 .env
 .env.local
 docker-compose.override.yml
-npm-debug.log
-yarn-error.log
 .php_cs.cache
 .phpunit.result.cache
 .phpunit.cache/

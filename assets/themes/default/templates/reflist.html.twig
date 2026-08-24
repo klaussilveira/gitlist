@@ -29,22 +29,22 @@
 
     <div class="tab-content">
       <div class="tab-pane active" id="branches" role="tabpanel" aria-labelledby="branches-tab">
-        <ul class="list-group list-group-flush">
+        <div class="list-group list-group-flush">
         {% if hasBranches %}
           {% for branch in repository.branches %}
             <a class="list-group-item list-group-item-action" href="{{ path(path, {repository: repository.name, commitish: getCommitish(branch.name, refPath) }) }}" title="{{ branch.name }}">{{ branch.name }}</a>
           {% endfor %}
         {% endif %}
-        </ul>
+        </div>
       </div>
       <div class="tab-pane" id="tags" role="tabpanel" aria-labelledby="tags-tab">
-        <ul class="list-group list-group-flush">
+        <div class="list-group list-group-flush">
           {% if hasTags %}
             {% for tag in repository.tags %}
               <a class="list-group-item list-group-item-action" href="{{ path(path, {repository: repository.name, commitish: getCommitish(tag.name, refPath) }) }}" title="{{ tag.name }}">{{ tag.name }}</a>
             {% endfor %}
           {% endif %}
-        </ul>
+        </div>
       </div>
     </div>
 

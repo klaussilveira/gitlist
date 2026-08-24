@@ -29,7 +29,7 @@
                 <svg class="icon"><use href="#i-git-commit"/></svg>
                 <a href="{{ path('commit_show', { repository: repository.name, commitish: branch.target.hash }) }}">{{ branch.target.shortHash }}</a>
                 {{ branch.target.subject }}
-                <span class="badge badge-secondary">
+                <span class="badge text-bg-secondary">
                   {{ branch.target.commitedAt|date(commit_list_date_format) }}
                 </span>
               </p>

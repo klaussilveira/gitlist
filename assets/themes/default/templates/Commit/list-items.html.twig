@@ -2,7 +2,7 @@
   {% for commit in commits %}
     <li class="list-group-item list-group-item-action">
       <div class="d-flex justify-content-between align-items-center">
-        <img src="{{ getAvatar(commit.author.email, 32) }}" class="rounded me-2" alt="{{ commit.author.name }}" />
+        <img src="{{ getAvatar(commit.author.email, 48) }}" class="rounded me-3" alt="{{ commit.author.name }}" />
 
         <div class="me-auto">
           <a href="{{ path('commit_show', { repository: repository.name, commitish: commit.hash }) }}">{{ commit.subject }}</a>

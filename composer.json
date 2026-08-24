@@ -22,16 +22,19 @@
     "symfony/translation": "^8.1",
     "symfony/twig-bundle": "^8.1",
     "symfony/yaml": "^8.1",
-    "symfonycasts/sass-bundle": "^0.10.0",
-    "twbs/bootstrap": "5.3.8"
+    "symfonycasts/sass-bundle": "^0.10",
+    "twbs/bootstrap": "^5.3"
   },
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^3.95",
     "phpspec/prophecy-phpunit": "^2.5",
     "phpstan/phpstan": "^2.2",
     "phpunit/phpunit": "^13.3",
+    "symfony/css-selector": "^8.1",
     "symfony/debug-bundle": "^8.1",
-    "symfony/dotenv": "^8.1"
+    "symfony/dotenv": "^8.1",
+    "symfony/mime": "^8.1",
+    "symfony/panther": "^2.4"
   },
   "config": {
     "preferred-install": {
@@ -43,6 +46,11 @@
   "autoload": {
     "psr-4": {
       "GitList\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "GitList\\E2E\\": "tests/e2e/"
     }
   },
   "scripts": {
@@ -75,7 +83,16 @@
       "vendor/bin/php-cs-fixer fix --dry-run -v --show-progress=dots"
     ],
     "unit": [
-      "vendor/bin/phpunit"
+      "vendor/bin/phpunit --testsuite unit"
+    ],
+    "e2e": [
+      "@build-assets",
+      "vendor/bin/phpunit --testsuite e2e"
+    ],
+    "build-assets": [
+      "APP_ENV=prod bin/console cache:clear",
+      "APP_ENV=prod bin/console sass:build",
+      "APP_ENV=prod bin/console asset-map:compile"
     ],
     "stan": [
       "vendor/bin/phpstan analyse -c phpstan.neon"

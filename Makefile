@@ -41,10 +41,9 @@ bash: # Start a bash session in the PHP container
 
 test: # Run automated test suite
 	$(EXEC_PHP) composer test
-	$(EXEC_NODE) npm run test
 
-acceptance: # Run acceptance test suite
-	$(EXEC_NODE) npm run cypress
+acceptance: # Run end-to-end test suite
+	$(EXEC_PHP) composer e2e
 
 show-app: # Open application in your browser
 	xdg-open http://$$(docker compose port webserver 80)/
@@ -69,8 +68,7 @@ build: # Build application package
 	-x '.github/*' \
 	-x 'bin/*' \
 	-x 'docker/*' \
-	-x 'node_modules/*' \
-	-x 'tests/' \
+	-x 'tests/*' \
 	-x 'var/cache/*' \
 	-x 'var/dart-sass/*' \
 	-x 'var/log/*' \
@@ -85,16 +83,12 @@ build: # Build application package
 	-x '.php-cs-fixer.php' \
 	-x '.phpunit.result.cache' \
 	-x '.phpunit.cache/*' \
-	-x '.prettierignore' \
-	-x '.prettierrc' \
 	-x 'composer.json' \
 	-x 'composer.lock' \
 	-x 'docker-compose.override.yml' \
 	-x 'docker-compose.override.yml.dist' \
 	-x 'docker-compose.yml' \
 	-x 'Makefile' \
-	-x 'package-lock.json' \
-	-x 'package.json' \
 	-x 'phpstan.neon' \
 	-x 'phpunit.xml.dist' \
 

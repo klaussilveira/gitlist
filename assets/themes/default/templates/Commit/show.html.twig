@@ -50,7 +50,7 @@
         {% for file in commit.diffs %}
           <li class="list-group-item d-flex justify-content-between align-items-center">
             <span><svg class="icon"><use href="#i-document"/></svg> <a href="#diff-{{ loop.index }}">{{ file.name }}</a></span>
-            <span class="badge badge-secondary badge-pill">{{ file.index }}</span>
+            <span class="badge text-bg-secondary rounded-pill">{{ file.index }}</span>
           </li>
         {% endfor %}
       </ul>

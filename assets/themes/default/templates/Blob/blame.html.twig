@@ -26,7 +26,7 @@
               {% for line in blame.annotatedLines %}
                 <tr>
                   <td class="col-3 author-info">
-                    <img src="{{ getAvatar(line.commit.author.email, 20) }}" class="rounded mr-1" alt="{{ line.commit.author.name }}" />
+                    <img src="{{ getAvatar(line.commit.author.email, 20) }}" class="rounded me-1" alt="{{ line.commit.author.name }}" />
 
                     <a href="{{ path('commit_show', { repository: repository.name, commitish: line.commit.hash }) }}" title="{{ line.commit.author.name }} ({{ line.commit.author.email }}) {{ 'REPOSITORY_COMMIT_AUTHORED_ON'|trans }} {{ line.commit.commitedAt|date(commit_list_date_format) }}">
                       {{ line.commit.subject|truncate(30, '...') }}
