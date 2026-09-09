@@ -12,17 +12,28 @@ use GitList\SCM\Commit\Person;
 use GitList\SCM\Repository;
 use GitList\SCM\Symlink;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Process\Process;
 use ZipArchive;
 
 class CommandLineTest extends TestCase
 {
     public const FIXTURE_REPO = FIXTURE_DIR.'/hg-repo';
+    public const COMMIT_DATE = '2016-11-23 13:17:29 +0000';
+
+    protected array $temporaryRepositories = [];
 
     public function setUp(): void
     {
         if (empty(shell_exec('which hg 2> /dev/null'))) {
             $this->markTestSkipped('Mercurial is not available.');
         }
+    }
+
+    public function tearDown(): void
+    {
+        (new Filesystem())->remove($this->temporaryRepositories);
+        $this->temporaryRepositories = [];
     }
 
     public function testIsValidatingRepository(): void
@@ -502,5 +513,148 @@ class CommandLineTest extends TestCase
 
         $archive = $commandLine->archive(new Repository(self::FIXTURE_REPO), 'tar.gz', 'tip');
         $this->assertFileExists($archive);
+    }
+
+    public function testIsParsingCommitsWithMarkupBreakingMetadata(): void
+    {
+        $path = $this->createTemporaryRepository();
+        $this->commit($path, 'a.txt', 'A & B ]]', 'a&b@example.com', "init & <item> ]]> </item>\n\nbody & <![CDATA[ ]]> </body>\n");
+
+        $repository = new Repository($path);
+        $commandLine = new CommandLine();
+        $commits = $commandLine->getCommits($repository);
+
+        $this->assertCount(1, $commits);
+
+        $commit = reset($commits);
+        $this->assertEquals('init & <item> ]]> </item>', $commit->getSubject());
+        // Mercurial has no body-only keyword, so the body carries the full description
+        $this->assertEquals("init & <item> ]]> </item>\n\nbody & <![CDATA[ ]]> </body>", trim($commit->getBody()));
+        $this->assertEquals('A & B ]]', $commit->getAuthor()->getName());
+        $this->assertEquals('a&b@example.com', $commit->getAuthor()->getEmail());
+        $this->assertEquals('2016-11-23 13:17:29', $commit->getAuthoredAt()->format('Y-m-d H:i:s'));
+        $this->assertEquals('2016-11-23 13:17:29', $commit->getCommitedAt()->format('Y-m-d H:i:s'));
+    }
+
+    public function testIsParsingCommitWithMarkupBreakingMetadataAndItsDiff(): void
+    {
+        $path = $this->createTemporaryRepository();
+        $this->commit($path, 'a.txt', 'A & B ]]', 'a&b@example.com', "init & <item> ]]> </item>\n");
+
+        $repository = new Repository($path);
+        $commandLine = new CommandLine();
+        $commit = $commandLine->getCommit($repository);
+
+        $this->assertEquals('init & <item> ]]> </item>', $commit->getSubject());
+        $this->assertEquals('A & B ]]', $commit->getAuthor()->getName());
+        $this->assertCount(1, $commit->getDiffs());
+        $this->assertMatchesRegularExpression('/^diff -r/m', $commit->getRawDiffs());
+    }
+
+    public function testIsParsingCommitsWithMetadataCarryingFieldDelimiters(): void
+    {
+        $path = $this->createTemporaryRepository();
+        $this->commit($path, 'a.txt', 'Klaus Silveira', 'contact@klaussilveira.com', "Initial commit.\n");
+        $this->commit($path, 'b.txt', "R\x1eS\x1fT", 'test@example.com', "injected \x1f 0123456789abcdef0123456789abcdef subject\n\ninjected \x1e deadbeefdeadbeefdeadbeefdeadbeef body\n");
+
+        $repository = new Repository($path);
+        $commandLine = new CommandLine();
+        $commits = $commandLine->getCommits($repository);
+
+        $this->assertCount(2, $commits);
+
+        $initial = array_shift($commits);
+        $this->assertEquals('Initial commit.', $initial->getSubject());
+        $this->assertEquals('Klaus Silveira', $initial->getAuthor()->getName());
+        $this->assertEquals('contact@klaussilveira.com', $initial->getAuthor()->getEmail());
+        $this->assertEquals('2016-11-23 13:17:29', $initial->getAuthoredAt()->format('Y-m-d H:i:s'));
+
+        $injected = array_shift($commits);
+        $this->assertEquals("injected \x1f 0123456789abcdef0123456789abcdef subject", $injected->getSubject());
+        $this->assertStringContainsString("injected \x1e deadbeefdeadbeefdeadbeefdeadbeef body", $injected->getBody());
+        $this->assertEquals("R\x1eS\x1fT", $injected->getAuthor()->getName());
+        $this->assertEquals('test@example.com', $injected->getAuthor()->getEmail());
+        $this->assertEquals('2016-11-23 13:17:29', $injected->getAuthoredAt()->format('Y-m-d H:i:s'));
+    }
+
+    public function testIsParsingTagsWithMetadataCarryingFieldSeparators(): void
+    {
+        $path = $this->createTemporaryRepository();
+        $this->commit($path, 'a.txt', 'Klaus Silveira', 'contact@klaussilveira.com', "Initial commit.\n");
+        $this->hg([
+            '--config',
+            'ui.username=a||b <evil@example.com>',
+            'tag',
+            '--date',
+            self::COMMIT_DATE,
+            '--message',
+            'tagged',
+            '1.0',
+        ], $path);
+
+        $repository = new Repository($path);
+        $commandLine = new CommandLine();
+        $tags = $commandLine->getTags($repository);
+
+        $this->assertCount(2, $tags);
+
+        $this->assertEquals('tip', $tags[0]->getName());
+        $this->assertEquals('tagged', $tags[0]->getSubject());
+        $this->assertEquals('a||b', $tags[0]->getAuthor()->getName());
+        $this->assertEquals('evil@example.com', $tags[0]->getAuthor()->getEmail());
+        $this->assertEquals('2016-11-23 13:17:29', $tags[0]->getAuthoredAt()->format('Y-m-d H:i:s'));
+
+        $this->assertEquals('1.0', $tags[1]->getName());
+        $this->assertEquals('Initial commit.', $tags[1]->getSubject());
+        $this->assertEquals('Klaus Silveira', $tags[1]->getAuthor()->getName());
+        $this->assertEquals('2016-11-23 13:17:29', $tags[1]->getAuthoredAt()->format('Y-m-d H:i:s'));
+    }
+
+    public function testIsParsingBranchesWithNamesCarryingFieldSeparators(): void
+    {
+        $path = $this->createTemporaryRepository();
+        $this->commit($path, 'a.txt', 'Klaus Silveira', 'contact@klaussilveira.com', "Initial commit.\n");
+        $this->hg(['bookmark', 'a||b'], $path);
+
+        $repository = new Repository($path);
+        $commandLine = new CommandLine();
+        $branches = $commandLine->getBranches($repository);
+
+        $this->assertCount(1, $branches);
+        $this->assertEquals('a||b', $branches[0]->getName());
+        $this->assertEquals('Initial commit.', $branches[0]->getTarget()->getSubject());
+    }
+
+    protected function createTemporaryRepository(): string
+    {
+        $path = sys_get_temp_dir().'/gitlist-'.uniqid();
+        mkdir($path);
+        $this->temporaryRepositories[] = $path;
+
+        $this->hg(['init', '.'], $path);
+
+        return $path;
+    }
+
+    protected function commit(string $path, string $file, string $name, string $email, string $message): void
+    {
+        file_put_contents($path.'/'.$file, "contents\n");
+
+        $this->hg(['add', $file], $path);
+        $this->hg([
+            '--config',
+            sprintf('ui.username=%s <%s>', $name, $email),
+            'commit',
+            '--date',
+            self::COMMIT_DATE,
+            '--logfile',
+            '-',
+        ], $path, $message);
+    }
+
+    protected function hg(array $command, string $path, ?string $input = null): void
+    {
+        $process = new Process([...['hg'], ...$command], $path, null, $input);
+        $process->mustRun();
     }
 }
