@@ -7,15 +7,19 @@ namespace GitList\App\Controller;
 use GitList\App\Form\CriteriaType;
 use GitList\Repository\Index;
 use GitList\SCM\Commit\Criteria;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\FlashBagAwareSessionInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Twig\Environment;
 
 class CommitSearch
 {
+    use CommitGrouping;
+
     public function __construct(protected Environment $templating, protected Index $index, protected FormFactoryInterface $formFactory, protected RouterInterface $router)
     {
     }
@@ -35,14 +39,20 @@ class CommitSearch
     public function showResults(Request $request, string $repository, string $commitish): Response
     {
         $criteria = new Criteria();
-        $criteria->setMessage($request->request->get('query', ''));
+        $criteria->setMessage($request->request->getString('query'));
 
         $form = $this->formFactory->create(CriteriaType::class, $criteria);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && !$form->isValid()) {
-            foreach ($form->getErrors(true) as $error) {
-                $request->getSession()->getFlashBag()->add('danger', $error->getMessage());
+            $session = $request->getSession();
+
+            if ($session instanceof FlashBagAwareSessionInterface) {
+                foreach ($form->getErrors(true) as $error) {
+                    if ($error instanceof FormError) {
+                        $session->getFlashBag()->add('danger', $error->getMessage());
+                    }
+                }
             }
 
             return new RedirectResponse($this->router->generate('repository_tree', [
@@ -52,12 +62,8 @@ class CommitSearch
         }
 
         $repository = $this->index->getRepository($repository);
-        $commits = $repository->searchCommits($form->getData(), $commitish);
-        $commitGroups = [];
-
-        foreach ($commits as $commit) {
-            $commitGroups[$commit->getCommitedAt()->format('Y-m-d')][] = $commit;
-        }
+        $commits = $repository->searchCommits($criteria, $commitish);
+        $commitGroups = $this->groupCommitsByDate($commits);
 
         return new Response($this->templating->render('Search/list.html.twig', [
             'repository' => $repository,

@@ -13,6 +13,8 @@ use Twig\Environment;
 
 class Blob
 {
+    use CommitGrouping;
+
     public function __construct(protected Environment $templating, protected Index $index, protected int $perPage)
     {
     }
@@ -79,11 +81,7 @@ class Blob
         $repository = $this->index->getRepository($repository);
         $blob = $repository->getBlob($commitish);
         $commits = $repository->getCommits($commitish, $page, $perPage);
-        $commitGroups = [];
-
-        foreach ($commits as $commit) {
-            $commitGroups[$commit->getCommitedAt()->format('Y-m-d')][] = $commit;
-        }
+        $commitGroups = $this->groupCommitsByDate($commits);
 
         return new Response($this->templating->render('Blob/history.html.twig', [
             'repository' => $repository,

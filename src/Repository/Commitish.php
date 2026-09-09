@@ -13,7 +13,7 @@ class Commitish
 
     public function __construct(Repository $repository, string $commitish)
     {
-        $this->hash = strtok($commitish, '/');
+        $this->hash = (string) strtok($commitish, '/');
         $revs = [...$repository->getBranches(), ...$repository->getTags()];
 
         foreach ($revs as $rev) {

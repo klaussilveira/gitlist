@@ -65,7 +65,7 @@ class Repository
         $commitish = new Commitish($this, $commitish);
 
         if ($commitish->hasPath()) {
-            return $this->system->getPathTree($this->repository, $commitish->getPath(), $commitish->getHash());
+            return $this->system->getPathTree($this->repository, $commitish->getPath() ?? '', $commitish->getHash());
         }
 
         return $this->system->getTree($this->repository, $commitish->getHash());
@@ -103,7 +103,7 @@ class Repository
 
         try {
             if ($commitish->hasPath()) {
-                return $this->system->getCommitsFromPath($this->repository, $commitish->getPath(), $commitish->getHash(), $page, $perPage);
+                return $this->system->getCommitsFromPath($this->repository, $commitish->getPath() ?? '', $commitish->getHash(), $page, $perPage);
             }
 
             return $this->system->getCommits($this->repository, $commitish->getHash(), $page, $perPage);
@@ -129,7 +129,17 @@ class Repository
     public function getBlame(string $commitish): Blame
     {
         $commitish = new Commitish($this, $commitish);
-        $blame = $this->system->getBlame($this->repository, $commitish->getHash(), $commitish->getPath());
+
+        try {
+            $blame = $this->system->getBlame($this->repository, $commitish->getHash(), $commitish->getPath() ?? '');
+        } catch (CommandException $exception) {
+            if ($exception->isNotFoundException()) {
+                throw new BlobNotFoundException();
+            }
+
+            throw $exception;
+        }
+
         $consolidatedBlame = new Blame($blame->getPath(), $blame->getHash());
 
         $annotatedLines = $blame->getAnnotatedLines();
@@ -138,7 +148,7 @@ class Repository
             $lineAccumulator .= $currentLine->getContents().PHP_EOL;
             $nextLine = $annotatedLines[$index + 1] ?? null;
 
-            if ($nextLine && $currentLine->getCommit() != $nextLine->getCommit()) {
+            if (!$nextLine || $currentLine->getCommit() != $nextLine->getCommit()) {
                 $consolidatedBlame->addAnnotatedLine(new AnnotatedLine($currentLine->getCommit(), $lineAccumulator));
                 $lineAccumulator = '';
             }
@@ -152,7 +162,7 @@ class Repository
         $commitish = new Commitish($this, $commitish);
 
         try {
-            return $this->system->getBlob($this->repository, $commitish->getHash(), $commitish->getPath());
+            return $this->system->getBlob($this->repository, $commitish->getHash(), $commitish->getPath() ?? '');
         } catch (CommandException $exception) {
             if ($exception->isNotFoundException()) {
                 throw new BlobNotFoundException();

@@ -1011,8 +1011,8 @@ class File
 
     public static function createFromBlob(Blob $blob): self
     {
-        $file = new File(basename($blob->getName()));
-        $file->setContents($blob->getContents());
+        $file = new File(basename($blob->getName() ?? ''));
+        $file->setContents($blob->getContents() ?? '');
 
         return $file;
     }

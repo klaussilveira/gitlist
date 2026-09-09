@@ -31,9 +31,9 @@
                   <a href="{{ path('commit_show', { repository: repository.name, commitish: tag.target.hash }) }}">
                     {{ tag.target.shortHash }}
                   </a>
-                  {{ tag.target.subject }}
+                  {{ tag.subject }}
                   <span class="badge text-bg-secondary">
-                    {{ tag.target.commitedAt|date(commit_list_date_format) }}
+                    {{ tag.authoredAt|date(commit_list_date_format) }}
                   </span>
                 </p>
               </li>

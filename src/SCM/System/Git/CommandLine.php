@@ -39,12 +39,12 @@ class CommandLine implements System
 
     public const DEFAULT_BRANCH_CANDIDATES = ['master', 'main', 'trunk'];
 
-    protected ?string $path;
+    protected string $path;
 
     public function __construct(?string $path = null)
     {
         if (!$path) {
-            $path = (new ExecutableFinder())->find('git', '/usr/bin/git');
+            $path = (new ExecutableFinder())->find('git') ?? '/usr/bin/git';
         }
 
         $this->path = $path;
@@ -62,11 +62,11 @@ class CommandLine implements System
         $path = $repository->getPath();
 
         if (file_exists($path.'/description')) {
-            return file_get_contents($path.'/description');
+            return file_get_contents($path.'/description') ?: '';
         }
 
         if (file_exists($path.'/.git/description')) {
-            return file_get_contents($path.'/.git/description');
+            return file_get_contents($path.'/.git/description') ?: '';
         }
 
         return '';
@@ -274,7 +274,10 @@ class CommandLine implements System
             }
 
             $blameParts = [];
-            preg_match('/([a-zA-Z0-9^]{40})\s+.*?([0-9]+)\)\s+(.+)?/', $blameLine, $blameParts);
+
+            if (!preg_match('/([a-zA-Z0-9^]{40})\s+.*?([0-9]+)\)\s+(.+)?/', $blameLine, $blameParts)) {
+                continue;
+            }
 
             $commits[] = $blameParts[1];
             $annotatedLines[] = [
@@ -283,7 +286,7 @@ class CommandLine implements System
             ];
         }
 
-        $blame = new Blame($hash, $path);
+        $blame = new Blame($path, $hash);
         $commits = $this->getSpecificCommits($repository, array_unique($commits));
 
         foreach ($annotatedLines as $annotatedLine) {
@@ -301,6 +304,10 @@ class CommandLine implements System
         $commits = $this->getCommitsFromPath($repository, $path, $hash, 1, 1);
         $commit = reset($commits);
         $blobOutput = $this->run(['show', sprintf('%s:%s', $hash, $path)], $repository);
+
+        if (!$commit) {
+            throw new InvalidCommitException($path);
+        }
 
         $blob = new Blob($repository, $commit->getHash(), $commit->getShortHash());
         $blob->setName($path);
@@ -428,6 +435,10 @@ class CommandLine implements System
 
             $file = preg_split('/[\s]+/', $line, 5);
 
+            if (false === $file) {
+                continue;
+            }
+
             if ('commit' == $file[1]) {
                 // Don't handle submodules yet
                 continue;
@@ -496,12 +507,17 @@ class CommandLine implements System
         return '--pretty=format:'.implode($delimiter, self::COMMIT_FIELDS).$delimiter;
     }
 
+    /**
+     * @return non-empty-string
+     */
     protected function generateSafeCommitDelimiter(): string
     {
         return bin2hex(random_bytes(16));
     }
 
     /**
+     * @param non-empty-string $delimiter
+     *
      * @return array<string, Commit>
      */
     protected function parseCommitsData(Repository $repository, string $input, string $delimiter): array
@@ -523,6 +539,8 @@ class CommandLine implements System
     }
 
     /**
+     * @param non-empty-string $delimiter
+     *
      * @return array{Commit, string}
      */
     protected function parseFirstCommitData(Repository $repository, string $input, string $delimiter): array

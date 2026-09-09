@@ -69,7 +69,7 @@ class Tree extends Item
         $this->name = $name;
     }
 
-    public function getFileName(): ?string
+    public function getFileName(): string
     {
         return basename($this->name ?? '');
     }

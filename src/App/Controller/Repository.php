@@ -99,7 +99,13 @@ class Repository
             throw new NotFoundHttpException();
         }
 
-        $response = new Response(file_get_contents($archive));
+        $contents = file_get_contents($archive);
+
+        if (false === $contents) {
+            throw new NotFoundHttpException();
+        }
+
+        $response = new Response($contents);
         $disposition = $response->headers->makeDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, basename($archive));
         $response->headers->set('Content-Disposition', $disposition);
         $response->headers->set('Content-Type', 'application/octet-stream');

@@ -85,6 +85,10 @@ class Parse
      */
     protected function newFile(string $line, array $context): void
     {
+        if (!$this->currentFile) {
+            return;
+        }
+
         $this->currentFile->setType(File::TYPE_NEW);
     }
 
@@ -93,6 +97,10 @@ class Parse
      */
     protected function deletedFile(string $line, array $context): void
     {
+        if (!$this->currentFile) {
+            return;
+        }
+
         $this->currentFile->setType(File::TYPE_DELETED);
     }
 
@@ -101,6 +109,10 @@ class Parse
      */
     protected function index(string $line, array $context): void
     {
+        if (!$this->currentFile) {
+            return;
+        }
+
         $headerParts = explode(' ', $line);
 
         $this->currentFile->setIndex($headerParts[1]);
@@ -111,6 +123,10 @@ class Parse
      */
     protected function mergeIndex(string $line, array $context): void
     {
+        if (!$this->currentFile) {
+            return;
+        }
+
         $this->currentFile->setIndex($context[2]);
     }
 
@@ -119,6 +135,10 @@ class Parse
      */
     protected function fromFile(string $line, array $context): void
     {
+        if (!$this->currentFile) {
+            return;
+        }
+
         $this->currentFile->setFrom(trim($line, '- '));
     }
 
@@ -127,6 +147,10 @@ class Parse
      */
     protected function toFile(string $line, array $context): void
     {
+        if (!$this->currentFile) {
+            return;
+        }
+
         $this->currentFile->setTo(trim($line, '+ '));
     }
 
@@ -135,7 +159,7 @@ class Parse
      */
     protected function hunk(string $line, array $context): void
     {
-        if ($this->currentHunk) {
+        if ($this->currentHunk && $this->currentFile) {
             $this->currentFile->addHunk($this->currentHunk);
         }
 
@@ -156,6 +180,10 @@ class Parse
      */
     protected function deletedLine(string $line, array $context): void
     {
+        if (!$this->currentHunk || !$this->currentFile) {
+            return;
+        }
+
         $oldNumber = $this->oldCounter + $this->deletedLines;
         $newNumber = $this->newCounter;
 
@@ -169,6 +197,10 @@ class Parse
      */
     protected function addedLine(string $line, array $context): void
     {
+        if (!$this->currentHunk || !$this->currentFile) {
+            return;
+        }
+
         $oldNumber = $this->oldCounter;
         $newNumber = $this->newCounter + $this->addedLines;
 

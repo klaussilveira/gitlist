@@ -143,7 +143,7 @@ class RepositoryTest extends TestCase
         $system = $this->prophesize(System::class);
         $system->getBranches($sourceRepository)->shouldBeCalled()->willReturn([]);
         $system->getTags($sourceRepository)->shouldBeCalled()->willReturn([]);
-        $system->getBlame($sourceRepository, '123', 'foo.php')->shouldBeCalled()->willReturn(new Blame('123', 'foo.php'));
+        $system->getBlame($sourceRepository, '123', 'foo.php')->shouldBeCalled()->willReturn(new Blame('foo.php', '123'));
 
         $repository = new Repository($system->reveal(), $sourceRepository, 'bar');
         $repository->getBlame('123/foo.php');

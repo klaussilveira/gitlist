@@ -12,6 +12,8 @@ use Twig\Environment;
 
 class Commit
 {
+    use CommitGrouping;
+
     public function __construct(protected Environment $templating, protected Index $index, protected int $perPage)
     {
     }
@@ -23,11 +25,7 @@ class Commit
 
         $repository = $this->index->getRepository($repository);
         $commits = $repository->getCommits($commitish, $page, $perPage);
-        $commitGroups = [];
-
-        foreach ($commits as $commit) {
-            $commitGroups[$commit->getCommitedAt()->format('Y-m-d')][] = $commit;
-        }
+        $commitGroups = $this->groupCommitsByDate($commits);
 
         return new Response($this->templating->render('Commit/list.html.twig', [
             'repository' => $repository,

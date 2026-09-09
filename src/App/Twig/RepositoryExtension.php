@@ -68,7 +68,7 @@ class RepositoryExtension
     public function getBreadcrumbs(Blob $blob): array
     {
         $breadcrumbs = [];
-        $parts = explode('/', $blob->getName());
+        $parts = explode('/', $blob->getName() ?? '');
         $previousPart = '';
 
         foreach ($parts as $index => $part) {
@@ -90,8 +90,7 @@ class RepositoryExtension
         }
 
         $units = ['B', 'KB', 'MB', 'GB', 'TB'];
-        $pow = floor(log($value) / log(1024));
-        $pow = min($pow, count($units) - 1);
+        $pow = (int) min(floor(log($value) / log(1024)), count($units) - 1);
         $value /= 1024 ** $pow;
 
         return (string) round($value, 2).' '.$units[$pow];
