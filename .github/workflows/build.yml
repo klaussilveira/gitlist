@@ -84,7 +84,7 @@ jobs:
       - name: Run Cypress acceptance tests
         uses: cypress-io/github-action@v6
         with:
-          start: php -S 0.0.0.0:8880 -t public
+          start: php -S 0.0.0.0:8880 -t public tests/router.php
           wait-on: 'http://0.0.0.0:8880'
         env:
           APP_ENV: prod
