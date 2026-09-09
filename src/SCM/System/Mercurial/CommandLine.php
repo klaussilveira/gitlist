@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GitList\SCM\System\Mercurial;
 
 use Carbon\CarbonImmutable;
+use Exception;
 use GitList\SCM\AnnotatedLine;
 use GitList\SCM\Blame;
 use GitList\SCM\Blob;
@@ -14,12 +15,12 @@ use GitList\SCM\Commit\Criteria;
 use GitList\SCM\Commit\Person;
 use GitList\SCM\Diff\Parse;
 use GitList\SCM\Exception\CommandException;
+use GitList\SCM\Exception\InvalidCommitException;
 use GitList\SCM\Repository;
 use GitList\SCM\Symlink;
 use GitList\SCM\System;
 use GitList\SCM\Tag;
 use GitList\SCM\Tree;
-use SimpleXMLElement;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
@@ -27,17 +28,27 @@ use Symfony\Component\Process\Process;
 class CommandLine implements System
 {
     public const DEFAULT_TIMEOUT = 3600;
-    public const DEFAULT_COMMIT_FORMAT = '-T "<item><hash>{node}</hash><short_hash>{node|short}</short_hash><tree>{p1node}</tree><short_tree>{p1node|short}</short_tree><parent>{p1node}</parent><short_parent>{p1node|short}</short_parent><subject><![CDATA[{desc|firstline}]]></subject><author>{author|person}</author><author_email>{author|email}</author_email><author_date>{date|rfc822date}</author_date><commiter>{author|person}</commiter><commiter_email>{author|email}</commiter_email><commiter_date>{date|rfc822date}</commiter_date><body><![CDATA[{desc}]]></body></item>"';
+
+    public const COMMIT_FIELDS = [
+        '{node}', '{node|short}', '{p1node}', '{p1node|short}', '{p1node}', '{p1node|short}',
+        '{author|person}', '{author|email}', '{date|rfc822date}', '{author|person}', '{author|email}', '{date|rfc822date}',
+        '{desc|firstline}', '{desc}',
+    ];
+
+    public const TAG_FIELDS = [
+        '{tag}', '{node}', '{node|short}',
+        '{author|person}', '{author|email}', '{date|rfc822date}', '{desc|firstline}',
+    ];
 
     // Mercurial does not support ISO 8601 properly
     public const MERCURIAL_DATE_FORMAT = 'Y-m-d H:i:s';
 
-    protected ?string $path;
+    protected string $path;
 
     public function __construct(?string $path = null)
     {
         if (!$path) {
-            $path = (new ExecutableFinder())->find('hg', '/usr/bin/hg');
+            $path = (new ExecutableFinder())->find('hg') ?? '/usr/bin/hg';
         }
 
         $this->path = $path;
@@ -57,7 +68,9 @@ class CommandLine implements System
         if (file_exists($path.'/.hg/hgrc')) {
             $hgrc = parse_ini_file($path.'/.hg/hgrc');
 
-            return $hgrc['description'] ?? '';
+            if (is_array($hgrc) && isset($hgrc['description']) && is_string($hgrc['description'])) {
+                return $hgrc['description'];
+            }
         }
 
         return '';
@@ -73,7 +86,8 @@ class CommandLine implements System
      */
     public function getBranches(Repository $repository): array
     {
-        $output = $this->run(['heads', '-T {bookmarks}||{node}\n'], $repository);
+        $delimiter = $this->generateSafeDelimiter();
+        $output = $this->run(['heads', '-T', sprintf('{bookmarks}%s{node}\n', $delimiter)], $repository);
         $branchData = explode("\n", $output);
         $branches = [];
 
@@ -82,7 +96,12 @@ class CommandLine implements System
                 continue;
             }
 
-            $branchInfo = explode('||', $branchItem);
+            $branchInfo = explode($delimiter, $branchItem);
+
+            if (count($branchInfo) < 2) {
+                continue;
+            }
+
             $commit = $this->getCommit($repository, trim($branchInfo[1]));
             $branches[] = new Branch($repository, trim($branchInfo[0]), $commit);
         }
@@ -95,7 +114,9 @@ class CommandLine implements System
      */
     public function getTags(Repository $repository): array
     {
-        $output = $this->run(['tags', '-T', '{tag}||{node}||{node|short}||{author|person}||{author|email}||{date|rfc822date}||{desc|firstline}\n'], $repository);
+        $delimiter = $this->generateSafeDelimiter();
+        $format = implode($delimiter, self::TAG_FIELDS);
+        $output = $this->run(['tags', '-T', $format.'\n'], $repository);
         $tagData = explode("\n", $output);
         $tags = [];
 
@@ -104,20 +125,17 @@ class CommandLine implements System
                 continue;
             }
 
-            $tagInfo = explode('||', $tagItem);
+            $tagInfo = explode($delimiter, $tagItem);
+
+            if (count($tagInfo) < count(self::TAG_FIELDS)) {
+                continue;
+            }
 
             $author = new Person($tagInfo[3], $tagInfo[4]);
-            $authoredAt = new CarbonImmutable($tagInfo[5]);
+            $authoredAt = $this->parseDate($tagInfo[5]);
             $tag = new Tag($repository, $tagInfo[0], $author, $authoredAt);
-
-            if (isset($tagInfo[1])) {
-                $commit = new Commit($repository, $tagInfo[1], $tagInfo[2] ?? null);
-                $tag->setTarget($commit);
-            }
-
-            if (isset($tagInfo[6])) {
-                $tag->setSubject($tagInfo[6]);
-            }
+            $tag->setTarget(new Commit($repository, $tagInfo[1], $tagInfo[2]));
+            $tag->setSubject($tagInfo[6]);
 
             $tags[] = $tag;
         }
@@ -127,6 +145,7 @@ class CommandLine implements System
 
     public function getTree(Repository $repository, ?string $hash = 'tip'): Tree
     {
+        $hash = $this->resolveHash($hash);
         $output = $this->run(['manifest', '-v', '--debug', '-r', $hash], $repository);
 
         return $this->buildTree($repository, $hash, $output);
@@ -134,6 +153,7 @@ class CommandLine implements System
 
     public function getRecursiveTree(Repository $repository, ?string $hash = 'tip'): Tree
     {
+        $hash = $this->resolveHash($hash);
         $output = $this->run(['manifest', '-v', '--debug', '-r', $hash], $repository);
 
         return $this->buildTree($repository, $hash, $output);
@@ -161,9 +181,15 @@ class CommandLine implements System
 
     public function getCommit(Repository $repository, ?string $hash = 'tip'): Commit
     {
-        $commitOutput = $this->run(['log', self::DEFAULT_COMMIT_FORMAT, '-r', $hash], $repository);
-        $commits = $this->parseCommitDataXml($repository, $commitOutput);
+        $hash = $this->resolveHash($hash);
+        $delimiter = $this->generateSafeDelimiter();
+        $commitOutput = $this->run(['log', '-T', $this->getCommitFormat($delimiter), '-r', $hash], $repository);
+        $commits = $this->parseCommitsData($repository, $commitOutput, $delimiter);
         $commit = reset($commits);
+
+        if (!$commit) {
+            throw new InvalidCommitException($hash);
+        }
 
         $diffOutput = $this->run(['diff', '--change', $hash], $repository);
         $commit->setRawDiffs($diffOutput);
@@ -181,14 +207,16 @@ class CommandLine implements System
     {
         $range = sprintf('limit(branch("%s"), %d, %d)', $hash, $perPage, ($page - 1) * $perPage);
 
+        $delimiter = $this->generateSafeDelimiter();
         $output = $this->run([
             'log',
-            self::DEFAULT_COMMIT_FORMAT,
+            '-T',
+            $this->getCommitFormat($delimiter),
             '-r',
             $range,
         ], $repository);
 
-        return $this->parseCommitDataXml($repository, $output);
+        return $this->parseCommitsData($repository, $output, $delimiter);
     }
 
     /**
@@ -198,15 +226,17 @@ class CommandLine implements System
     {
         $range = sprintf('limit(branch("%s"), %d, %d)', $hash, $perPage, ($page - 1) * $perPage);
 
+        $delimiter = $this->generateSafeDelimiter();
         $output = $this->run([
             'log',
-            self::DEFAULT_COMMIT_FORMAT,
+            '-T',
+            $this->getCommitFormat($delimiter),
             '-r',
             $range,
             $path,
         ], $repository);
 
-        return $this->parseCommitDataXml($repository, $output);
+        return $this->parseCommitsData($repository, $output, $delimiter);
     }
 
     /**
@@ -216,9 +246,10 @@ class CommandLine implements System
      */
     public function getSpecificCommits(Repository $repository, array $hashes): array
     {
-        $output = $this->run(['log', self::DEFAULT_COMMIT_FORMAT, '-r', implode(':', $hashes)], $repository);
+        $delimiter = $this->generateSafeDelimiter();
+        $output = $this->run(['log', '-T', $this->getCommitFormat($delimiter), '-r', implode(':', $hashes)], $repository);
 
-        return $this->parseCommitDataXml($repository, $output);
+        return $this->parseCommitsData($repository, $output, $delimiter);
     }
 
     public function getBlame(Repository $repository, string $hash, string $path): Blame
@@ -243,7 +274,7 @@ class CommandLine implements System
             ];
         }
 
-        $blame = new Blame($hash, $path);
+        $blame = new Blame($path, $hash);
         $commits = $this->getSpecificCommits($repository, array_unique($commits));
 
         foreach ($annotatedLines as $annotatedLine) {
@@ -269,7 +300,8 @@ class CommandLine implements System
      */
     public function searchCommits(Repository $repository, Criteria $criteria, ?string $hash = 'tip'): array
     {
-        $command = ['log', self::DEFAULT_COMMIT_FORMAT];
+        $delimiter = $this->generateSafeDelimiter();
+        $command = ['log', '-T', $this->getCommitFormat($delimiter)];
         $commits = [];
 
         if ($criteria->getFrom() && $criteria->getTo()) {
@@ -304,7 +336,7 @@ class CommandLine implements System
         $command[] = '-r';
         $command[] = sprintf('sort(branch("%s"), -date)', $hash);
         $output = $this->run($command, $repository);
-        $commits += $this->parseCommitDataXml($repository, $output);
+        $commits += $this->parseCommitsData($repository, $output, $delimiter);
 
         return $commits;
     }
@@ -315,6 +347,11 @@ class CommandLine implements System
         $this->run(['archive', '-r', $hash, '-I', $path, $destination], $repository);
 
         return $destination;
+    }
+
+    protected function resolveHash(?string $hash): string
+    {
+        return $hash ?? 'tip';
     }
 
     /**
@@ -340,35 +377,89 @@ class CommandLine implements System
         return $process->getOutput();
     }
 
+    protected function getCommitFormat(string $delimiter): string
+    {
+        return implode($delimiter, self::COMMIT_FIELDS).$delimiter;
+    }
+
     /**
+     * @return non-empty-string
+     */
+    protected function generateSafeDelimiter(): string
+    {
+        return bin2hex(random_bytes(16));
+    }
+
+    /**
+     * @param non-empty-string $delimiter
+     *
      * @return array<string, Commit>
      */
-    protected function parseCommitDataXml(Repository $repository, string $input): array
+    protected function parseCommitsData(Repository $repository, string $input, string $delimiter): array
     {
-        $items = new SimpleXMLElement('<items>'.$input.'</items>');
+        $fieldCount = count(self::COMMIT_FIELDS);
+        $records = array_chunk(explode($delimiter, $input), $fieldCount);
         $commits = [];
 
-        foreach ($items as $item) {
-            $commit = new Commit($repository, (string) $item->hash, (string) $item->short_hash);
-            $commit->setTree(new Tree($repository, (string) $item->tree, (string) $item->short_tree));
-
-            $parents = explode(' ', (string) $item->parent);
-            $shortParents = explode(' ', (string) $item->short_parent);
-            foreach ($parents as $key => $parent) {
-                $commit->addParent(new Commit($repository, $parent, $shortParents[$key] ?? null));
+        foreach ($records as $fields) {
+            if (count($fields) < $fieldCount) {
+                continue;
             }
 
-            $commit->setSubject((string) $item->subject);
-            $commit->setBody((string) $item->body);
-            $commit->setAuthor(new Person((string) $item->author, (string) $item->author_email));
-            $commit->setAuthoredAt(new CarbonImmutable((string) $item->author_date));
-            $commit->setCommiter(new Person((string) $item->commiter, (string) $item->commiter_email));
-            $commit->setCommitedAt(new CarbonImmutable((string) $item->commiter_date));
-
-            $commits[(string) $item->short_hash] = $commit;
+            $commit = $this->buildCommit($repository, $fields);
+            $commits[(string) $commit->getShortHash()] = $commit;
         }
 
         return $commits;
+    }
+
+    /**
+     * @param string[] $fields
+     */
+    protected function buildCommit(Repository $repository, array $fields): Commit
+    {
+        [
+            $hash,
+            $shortHash,
+            $tree,
+            $shortTree,
+            $parents,
+            $shortParents,
+            $author,
+            $authorEmail,
+            $authorDate,
+            $commiter,
+            $commiterEmail,
+            $commiterDate,
+            $subject,
+            $body,
+        ] = $fields;
+
+        $commit = new Commit($repository, $hash, $shortHash);
+        $commit->setTree(new Tree($repository, $tree, $shortTree));
+
+        $shortParents = explode(' ', $shortParents);
+        foreach (explode(' ', $parents) as $key => $parent) {
+            $commit->addParent(new Commit($repository, $parent, $shortParents[$key] ?? null));
+        }
+
+        $commit->setSubject($subject);
+        $commit->setBody($body);
+        $commit->setAuthor(new Person($author, $authorEmail));
+        $commit->setAuthoredAt($this->parseDate($authorDate));
+        $commit->setCommiter(new Person($commiter, $commiterEmail));
+        $commit->setCommitedAt($this->parseDate($commiterDate));
+
+        return $commit;
+    }
+
+    protected function parseDate(string $date): CarbonImmutable
+    {
+        try {
+            return new CarbonImmutable($date);
+        } catch (Exception) {
+            return CarbonImmutable::createFromTimestamp(0);
+        }
     }
 
     protected function buildTree(Repository $repository, string $hash, string $output): Tree
@@ -382,6 +473,10 @@ class CommandLine implements System
             }
 
             $file = preg_split('/[\s]+/', $line, 4);
+
+            if (false === $file) {
+                continue;
+            }
 
             if ('.hgtags' == $file[2]) {
                 continue;
