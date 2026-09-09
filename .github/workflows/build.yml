@@ -81,11 +81,14 @@ jobs:
       - name: Build frontend assets
         run: npm run build
 
-      - name: Run application server
-        run: echo 'deb [trusted=yes] https://repo.symfony.com/apt/ /' | sudo tee /etc/apt/sources.list.d/symfony-cli.list && sudo apt update && sudo apt install symfony-cli && APP_ENV=prod DEFAULT_REPOSITORY_DIR=${{ github.workspace }}/tests/fixtures symfony server:start --port=8880 -d
-
       - name: Run Cypress acceptance tests
         uses: cypress-io/github-action@v6
+        with:
+          start: php -S 0.0.0.0:8880 -t public
+          wait-on: 'http://0.0.0.0:8880'
+        env:
+          APP_ENV: prod
+          DEFAULT_REPOSITORY_DIR: ${{ github.workspace }}/tests/fixtures
 
   release:
     if: startsWith(github.ref, 'refs/tags/')
