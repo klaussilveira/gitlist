@@ -64,7 +64,7 @@ build: # Build application package
 	@APP_ENV=prod php bin/console sass:build
 	@APP_ENV=prod php bin/console asset-map:compile
 	@zip ./build.zip \
-	-r * .[^.]* \
+	-r * .[!.]* \
 	-x '.github/*' \
 	-x 'bin/*' \
 	-x 'docker/*' \
@@ -75,8 +75,7 @@ build: # Build application package
 	-x 'var/sass/*' \
 	-x '.dockerignore' \
 	-x '.editorconfig' \
-	-x '.env' \
-	-x '.env.dist' \
+	-x '.env*' \
 	-x '.git/*' \
 	-x '.gitignore'  \
 	-x '.php-cs-fixer.cache' \
