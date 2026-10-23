@@ -100,6 +100,8 @@ class Repository
         }
 
         $contents = file_get_contents($archive);
+        unlink($archive);
+        rmdir(dirname($archive));
 
         if (false === $contents) {
             throw new NotFoundHttpException();

@@ -16,12 +16,23 @@ class Commitish
         $this->hash = (string) strtok($commitish, '/');
         $revs = [...$repository->getBranches(), ...$repository->getTags()];
 
+        $matched = '';
+
         foreach ($revs as $rev) {
-            if (false === ($pos = strpos($commitish, (string) $rev->getName()))) {
+            $name = (string) $rev->getName();
+
+            if (!str_starts_with($commitish, $name) || strlen($name) <= strlen($matched)) {
                 continue;
             }
 
-            $this->hash = $rev->getName();
+            $boundary = substr($commitish, strlen($name), 1);
+
+            if ('' !== $boundary && !in_array($boundary, ['/', '@', '^', '~'], true)) {
+                continue;
+            }
+
+            $matched = $name;
+            $this->hash = $name;
             $revSuffix = substr($commitish, strlen($this->hash));
 
             if ($revSuffix && ('@' === $revSuffix[0] || '^' === $revSuffix[0] || '~' === $revSuffix[0])) {

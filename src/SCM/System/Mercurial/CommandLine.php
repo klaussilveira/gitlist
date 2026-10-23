@@ -343,10 +343,32 @@ class CommandLine implements System
 
     public function archive(Repository $repository, string $format, string $hash, string $path = ''): string
     {
-        $destination = sprintf('%s/%s.%s', sys_get_temp_dir(), $hash, $format);
-        $this->run(['archive', '-r', $hash, '-I', $path, $destination], $repository);
+        $destination = $this->createArchiveDestination($hash, $format);
+
+        try {
+            $this->run(['archive', '-r', $hash, '-I', $path, $destination], $repository);
+        } catch (CommandException $exception) {
+            if (file_exists($destination)) {
+                unlink($destination);
+            }
+
+            rmdir(dirname($destination));
+
+            throw $exception;
+        }
 
         return $destination;
+    }
+
+    protected function createArchiveDestination(string $hash, string $format): string
+    {
+        $directory = sprintf('%s/gitlist-%s', sys_get_temp_dir(), bin2hex(random_bytes(16)));
+
+        if (!mkdir($directory, 0o700)) {
+            throw new CommandException(sprintf('Unable to create archive directory %s', $directory));
+        }
+
+        return sprintf('%s/%s.%s', $directory, str_replace(['/', '\\'], '-', $hash), $format);
     }
 
     protected function resolveHash(?string $hash): string

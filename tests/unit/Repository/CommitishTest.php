@@ -33,6 +33,17 @@ class CommitishTest extends TestCase
         $this->assertEquals('test/file.php', $commitish->getPath());
     }
 
+    public function testIsNotMatchingRefInsideAnotherRef(): void
+    {
+        $repository = $this->prophesize(Repository::class);
+        $repository->getBranches()->willReturn($this->getFixtureBranches());
+        $repository->getTags()->willReturn($this->getFixtureTags());
+
+        $commitish = new Commitish($repository->reveal(), 'feature/test/foo/v1.2/file.php');
+        $this->assertEquals('feature/test/foo', $commitish->getHash());
+        $this->assertEquals('v1.2/file.php', $commitish->getPath());
+    }
+
     public function testIsDetectingTag(): void
     {
         $repository = $this->prophesize(Repository::class);

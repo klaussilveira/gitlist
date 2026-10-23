@@ -356,9 +356,19 @@ class CommandLine implements System
     {
         $hash = $this->resolveHash($repository, $hash);
 
-        $destination = sprintf('%s/%s.%s', sys_get_temp_dir(), $hash, $format);
+        $destination = $this->createArchiveDestination($hash, $format);
 
-        $this->run(['archive', '--output', $destination, $hash, '--', $path], $repository);
+        try {
+            $this->run(['archive', '--output', $destination, '--', $hash, $path], $repository);
+        } catch (CommandException $exception) {
+            if (file_exists($destination)) {
+                unlink($destination);
+            }
+
+            rmdir(dirname($destination));
+
+            throw $exception;
+        }
 
         return $destination;
     }
@@ -390,8 +400,23 @@ class CommandLine implements System
         return $process->getOutput();
     }
 
+    protected function createArchiveDestination(string $hash, string $format): string
+    {
+        $directory = sprintf('%s/gitlist-%s', sys_get_temp_dir(), bin2hex(random_bytes(16)));
+
+        if (!mkdir($directory, 0o700)) {
+            throw new CommandException(sprintf('Unable to create archive directory %s', $directory));
+        }
+
+        return sprintf('%s/%s.%s', $directory, str_replace(['/', '\\'], '-', $hash), $format);
+    }
+
     protected function resolveHash(Repository $repository, ?string $hash): string
     {
+        if ($hash && str_starts_with($hash, '-')) {
+            throw new InvalidCommitException($hash);
+        }
+
         if ($hash && 'HEAD' !== $hash) {
             return $hash;
         }

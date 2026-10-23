@@ -4,6 +4,9 @@ framework:
     handler_id: ~
   php_errors:
     log: true
+  exceptions:
+    GitList\SCM\Exception\InvalidCommitException:
+      status_code: 404
   cache:
     prefix_seed: gl
   router:

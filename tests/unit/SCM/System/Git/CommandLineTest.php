@@ -9,6 +9,8 @@ use GitList\SCM\Blame;
 use GitList\SCM\Blob;
 use GitList\SCM\Commit\Criteria;
 use GitList\SCM\Commit\Person;
+use GitList\SCM\Exception\CommandException;
+use GitList\SCM\Exception\InvalidCommitException;
 use GitList\SCM\Repository;
 use GitList\SCM\Symlink;
 use GitList\SCM\Tree;
@@ -607,6 +609,7 @@ class CommandLineTest extends TestCase
     {
         $commandLine = new CommandLine();
         $archive = $commandLine->archive(new Repository(self::FIXTURE_REPO), 'zip', 'master');
+        $this->temporaryRepositories[] = dirname($archive);
         $this->assertFileExists($archive);
 
         $zip = new ZipArchive();
@@ -618,6 +621,7 @@ class CommandLineTest extends TestCase
     {
         $commandLine = new CommandLine();
         $archive = $commandLine->archive(new Repository(self::FIXTURE_REPO), 'zip', 'master', 'mm');
+        $this->temporaryRepositories[] = dirname($archive);
         $this->assertFileExists($archive);
 
         $zip = new ZipArchive();
@@ -629,10 +633,59 @@ class CommandLineTest extends TestCase
     {
         $commandLine = new CommandLine();
         $archive = $commandLine->archive(new Repository(self::FIXTURE_REPO), 'tar', 'master');
+        $this->temporaryRepositories[] = dirname($archive);
         $this->assertFileExists($archive);
 
         $archive = $commandLine->archive(new Repository(self::FIXTURE_REPO), 'tar.gz', 'master');
+
+        $this->temporaryRepositories[] = dirname($archive);
         $this->assertFileExists($archive);
+    }
+
+    public function testIsArchivingBranchWithSlashInsideTemporaryDirectory(): void
+    {
+        $commandLine = new CommandLine();
+        $archive = $commandLine->archive(new Repository(self::FIXTURE_REPO), 'zip', 'feature/1.2-dev');
+        $this->temporaryRepositories[] = dirname($archive);
+        $this->assertFileExists($archive);
+        $this->assertEquals('feature-1.2-dev.zip', basename($archive));
+        $this->assertEquals(sys_get_temp_dir(), dirname($archive, 2));
+    }
+
+    public function testIsRemovingArchiveDirectoryWhenArchiveFails(): void
+    {
+        $before = glob(sys_get_temp_dir().'/gitlist-*', GLOB_ONLYDIR) ?: [];
+        $commandLine = new CommandLine();
+
+        try {
+            $commandLine->archive(new Repository(self::FIXTURE_REPO), 'zip', 'does-not-exist');
+            $this->fail('Expected CommandException');
+        } catch (CommandException) {
+        }
+
+        $this->assertEquals($before, glob(sys_get_temp_dir().'/gitlist-*', GLOB_ONLYDIR) ?: []);
+    }
+
+    public function testIsNotInjectingOptionsThroughArchiveHash(): void
+    {
+        $target = sys_get_temp_dir().'/gitlist-archive-injection-'.uniqid();
+        $commandLine = new CommandLine();
+
+        try {
+            $commandLine->archive(new Repository(self::FIXTURE_REPO), 'tar', '-o'.$target);
+            $this->fail('Expected InvalidCommitException');
+        } catch (InvalidCommitException) {
+        }
+
+        $this->assertFileDoesNotExist($target);
+    }
+
+    public function testIsRejectingHashesStartingWithHyphen(): void
+    {
+        $this->expectException(InvalidCommitException::class);
+
+        $commandLine = new CommandLine();
+        $commandLine->getCommits(new Repository(self::FIXTURE_REPO), '--output');
     }
 
     public function testIsParsingCommitsWithMarkupBreakingMetadata(): void

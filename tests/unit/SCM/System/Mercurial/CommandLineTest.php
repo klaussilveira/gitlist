@@ -487,6 +487,7 @@ class CommandLineTest extends TestCase
     {
         $commandLine = new CommandLine();
         $archive = $commandLine->archive(new Repository(self::FIXTURE_REPO), 'zip', 'tip');
+        $this->temporaryRepositories[] = dirname($archive);
         $this->assertFileExists($archive);
 
         $zip = new ZipArchive();
@@ -498,6 +499,7 @@ class CommandLineTest extends TestCase
     {
         $commandLine = new CommandLine();
         $archive = $commandLine->archive(new Repository(self::FIXTURE_REPO), 'zip', 'tip', 'mm');
+        $this->temporaryRepositories[] = dirname($archive);
         $this->assertFileExists($archive);
 
         $zip = new ZipArchive();
@@ -509,10 +511,28 @@ class CommandLineTest extends TestCase
     {
         $commandLine = new CommandLine();
         $archive = $commandLine->archive(new Repository(self::FIXTURE_REPO), 'tar', 'tip');
+        $this->temporaryRepositories[] = dirname($archive);
         $this->assertFileExists($archive);
 
         $archive = $commandLine->archive(new Repository(self::FIXTURE_REPO), 'tar.gz', 'tip');
+
+        $this->temporaryRepositories[] = dirname($archive);
         $this->assertFileExists($archive);
+    }
+
+    public function testIsKeepingArchiveOfTraversingBranchInsideTemporaryDirectory(): void
+    {
+        $path = $this->createTemporaryRepository();
+        $this->hg(['branch', '../escape'], $path);
+        $this->commit($path, 'a.txt', 'A', 'a@example.com', 'init');
+
+        $commandLine = new CommandLine();
+        $archive = $commandLine->archive(new Repository($path), 'zip', '../escape');
+        $this->temporaryRepositories[] = dirname($archive);
+        $this->assertFileExists($archive);
+        $this->assertFileDoesNotExist(dirname(sys_get_temp_dir()).'/escape.zip');
+        $this->assertEquals('..-escape.zip', basename($archive));
+        $this->assertEquals(sys_get_temp_dir(), dirname($archive, 2));
     }
 
     public function testIsParsingCommitsWithMarkupBreakingMetadata(): void
