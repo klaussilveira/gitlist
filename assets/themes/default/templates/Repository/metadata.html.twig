@@ -1,0 +1,234 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+  {{ 'REPOSITORY_MENU_METADATA'|trans }} - {{ repository.name }}
+{% endblock %}
+
+{% block header %}
+  {% include 'page-header.html.twig' with { repository: repository, baseRef: commitish, current: 'metadata' } %}
+{% endblock %}
+
+{% block search %}
+  {% include 'search.html.twig' with { repository: repository, commitish: commitish } %}
+{% endblock %}
+
+{% block body %}
+{% set active = hooks|filter(hook => hook.active) %}
+{% set inactive = hooks|filter(hook => not hook.active) %}
+
+<div class="row module-row">
+  <div class="col-4">
+    {% include 'reflist.html.twig' with { ref: commitish, refPath: '', path: 'repository_metadata', repository: repository } %}
+  </div>
+</div>
+
+<div class="row module-row">
+  <div class="col-8">
+    <div class="card" id="hooks">
+      <div class="card-header">
+        {{ 'REPOSITORY_HOOKS_TITLE'|trans }}
+      </div>
+      {% if active %}
+        <table class="table table-sm mb-0" id="hooks-active">
+          <thead>
+            <tr>
+              <th>{{ 'REPOSITORY_HOOKS_NAME'|trans }}</th>
+              <th>{{ 'REPOSITORY_HOOKS_STATUS'|trans }}</th>
+              <th>{{ 'REPOSITORY_HOOKS_SIZE'|trans }}</th>
+              <th>{{ 'REPOSITORY_HOOKS_CHECKSUM'|trans }}</th>
+              <th>{{ 'REPOSITORY_HOOKS_MODIFIED'|trans }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% include 'Repository/metadata-hooks.html.twig' with { hooks: active, showHookContents: showHookContents } %}
+          </tbody>
+        </table>
+      {% else %}
+        <div class="card-body">
+          {{ 'REPOSITORY_HOOKS_EMPTY'|trans }}
+        </div>
+      {% endif %}
+      {% if inactive %}
+        <details class="border-top" id="hooks-inactive">
+          <summary class="card-body py-2">
+            {{ 'REPOSITORY_HOOKS_INACTIVE'|trans({'%count%': inactive|length}) }}
+          </summary>
+          <table class="table table-sm mb-0">
+            <tbody>
+              {% include 'Repository/metadata-hooks.html.twig' with { hooks: inactive, showHookContents: showHookContents } %}
+            </tbody>
+          </table>
+        </details>
+      {% endif %}
+      {% if not showHookContents %}
+        <div class="card-footer text-muted">
+          {{ 'REPOSITORY_HOOKS_CONTENTS_HIDDEN'|trans }}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="col-4">
+    <div class="card" id="info">
+      <div class="card-header">
+        {{ 'REPOSITORY_INFO_TITLE'|trans }}
+      </div>
+      <table class="table table-sm mb-0" id="info-properties">
+        <tbody>
+          {% for key, value in info.properties %}
+            <tr>
+              <th scope="row">{{ ('REPOSITORY_INFO_' ~ key|upper)|trans }}</th>
+              <td class="info-{{ key }}">
+                {% if value is same as(true) %}
+                  {{ 'REPOSITORY_INFO_YES'|trans }}
+                {% elseif value is same as(false) %}
+                  {{ 'REPOSITORY_INFO_NO'|trans }}
+                {% elseif key ends with '_size' %}
+                  {{ value|formatFileSize }}
+                {% else %}
+                  {{ value }}
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="row module-row">
+  <div class="col-12">
+    <div class="card" id="attributes">
+      <div class="card-header">
+        {{ 'REPOSITORY_ATTRIBUTES_TITLE'|trans }}
+      </div>
+      {% if rules %}
+        <table class="table table-sm mb-0">
+          <thead>
+            <tr>
+              <th>{{ 'REPOSITORY_ATTRIBUTES_PATTERN'|trans }}</th>
+              <th>{{ 'REPOSITORY_ATTRIBUTES_ATTRIBUTES'|trans }}</th>
+              <th>{{ 'REPOSITORY_ATTRIBUTES_SOURCE'|trans }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for rule in rules %}
+              <tr>
+                <td class="attribute-pattern">
+                  <code>{{ rule.pattern }}</code>
+                  {% if rule.macro %}
+                    <span class="badge text-bg-info">{{ 'REPOSITORY_ATTRIBUTES_MACRO'|trans }}</span>
+                  {% endif %}
+                </td>
+                <td class="attribute-states">
+                  {% for name, state in rule.attributes %}
+                    <span class="badge text-bg-secondary">{% include 'Repository/attribute-state.html.twig' with { name: name, state: state } only %}</span>
+                  {% endfor %}
+                </td>
+                <td class="attribute-source">
+                  {% if rule.inTree %}
+                    <a href="{{ path('blob_show', { repository: repository.name, commitish: getCommitish(commitish, rule.source) }) }}">{{ rule.source }}:{{ rule.line }}</a>
+                  {% else %}
+                    {{ rule.source }}:{{ rule.line }}
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <div class="card-body">
+          {{ 'REPOSITORY_ATTRIBUTES_EMPTY'|trans }}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="row module-row">
+  <div class="col-6">
+    <div class="card">
+      <div class="card-header">
+        {{ 'REPOSITORY_INFO_REMOTES'|trans }}
+      </div>
+      {% if info.remotes %}
+        <table class="table table-sm mb-0" id="info-remotes">
+          <tbody>
+            {% for name, url in info.remotes %}
+              <tr>
+                <th scope="row">{{ name }}</th>
+                <td><code>{{ url }}</code></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <div class="card-body">
+          {{ 'REPOSITORY_INFO_NO_REMOTES'|trans }}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="col-6">
+    <div class="card">
+      <div class="card-header">
+        {{ 'REPOSITORY_INFO_CONFIG'|trans }}
+      </div>
+      {% if info.config %}
+        <table class="table table-sm mb-0" id="info-config">
+          <tbody>
+            {% for key, value in info.config %}
+              <tr>
+                <th scope="row"><code>{{ key }}</code></th>
+                <td><code>{{ value }}</code></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <div class="card-body">
+          {{ 'REPOSITORY_INFO_NO_CONFIG'|trans }}
+        </div>
+      {% endif %}
+      <div class="card-footer text-muted">
+        {{ 'REPOSITORY_INFO_CONFIG_HINT'|trans }}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row module-row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        {{ 'REPOSITORY_INFO_SUBMODULES'|trans({'%ref%': commitish}) }}
+      </div>
+      {% if submodules %}
+        <table class="table table-sm mb-0" id="submodules">
+          <tbody>
+            {% for submodule in submodules %}
+              <tr>
+                <th scope="row">{{ submodule.path }}</th>
+                <td><code>{{ submodule.url }}</code></td>
+                <td class="submodule-hash">
+                  {% if submodule.hash %}
+                    <code>{{ submodule.hash }}</code>
+                  {% else %}
+                    {{ 'REPOSITORY_INFO_NOT_PINNED'|trans }}
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <div class="card-body">
+          {{ 'REPOSITORY_INFO_NO_SUBMODULES'|trans }}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

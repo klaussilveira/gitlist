@@ -1,0 +1,295 @@
+{% extends 'base.html.twig' %}
+{% import 'macros.html.twig' as ui %}
+
+{% block title %}
+  {{ 'REPOSITORY_MENU_METADATA'|trans }} - {{ repository.name }}
+{% endblock %}
+
+{% block header %}
+  {% include 'page-header.html.twig' with { repository: repository, baseRef: commitish, current: 'metadata' } %}
+{% endblock %}
+
+{% block search %}
+  {% include 'search.html.twig' with { repository: repository, commitish: commitish } %}
+{% endblock %}
+
+{% block body %}
+{% set properties = info.properties %}
+{% set active = hooks|filter(hook => hook.active) %}
+{% set inactive = hooks|filter(hook => not hook.active) %}
+{% set storage = ['loose_objects', 'loose_size', 'packed_objects', 'packed_size'] %}
+
+<div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+  {% include 'reflist.html.twig' with { ref: commitish, refPath: '', path: 'repository_metadata', repository: repository } %}
+</div>
+
+{% set tiles = [
+  { icon: 'webhook', color: 'green', title: 'REPOSITORY_METADATA_ACTIVE_HOOKS'|trans({'%count%': active|length}), description: 'REPOSITORY_HOOKS_INACTIVE'|trans({'%count%': inactive|length}), href: '#hooks' },
+  { icon: 'adjustments', color: 'azure', title: 'REPOSITORY_METADATA_RULES'|trans({'%count%': rules|length}), description: 'REPOSITORY_METADATA_AT'|trans({'%ref%': commitish}), href: '#attributes' },
+  { icon: 'package', color: 'purple', title: 'REPOSITORY_METADATA_SUBMODULES'|trans({'%count%': submodules|length}), description: 'REPOSITORY_METADATA_AT'|trans({'%ref%': commitish}), href: '#submodules' },
+] %}
+{% if properties.loose_size is defined %}
+  {% set tiles = [{ icon: 'file-zip', color: 'primary', title: (properties.loose_size + properties.packed_size)|formatFileSize, description: 'REPOSITORY_METADATA_OBJECTS'|trans({'%count%': properties.loose_objects + properties.packed_objects}), href: '#info' }]|merge(tiles) %}
+{% endif %}
+
+<div class="row row-cards mb-3">
+  {% for tile in tiles %}
+    <div class="col-sm-6 col-lg">
+      <a href="{{ tile.href }}" class="card card-sm card-link">
+        <div class="card-body">
+          <div class="row align-items-center">
+            <div class="col-auto">
+              <span class="avatar avatar-square bg-{{ tile.color }}-lt">{{ ui.icon(tile.icon) }}</span>
+            </div>
+            <div class="col text-truncate">
+              <div class="fw-medium text-body">{{ tile.title }}</div>
+              <div class="text-secondary text-truncate">{{ tile.description }}</div>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
+  {% endfor %}
+</div>
+
+<div class="row row-cards mb-3">
+  <div class="col-lg-8">
+    <div class="card h-100" id="hooks">
+      <div class="card-header">
+        <h3 class="card-title">{{ ui.icon('webhook', 'me-2') }}{{ 'REPOSITORY_HOOKS_TITLE'|trans }}</h3>
+        <div class="card-actions">
+          <span class="badge bg-green-lt">{{ active|length }}</span>
+        </div>
+      </div>
+      {% if active %}
+        <div class="table-responsive">
+          <table class="table card-table table-vcenter" id="hooks-active">
+            <thead>
+              <tr>
+                <th>{{ 'REPOSITORY_HOOKS_NAME'|trans }}</th>
+                <th>{{ 'REPOSITORY_HOOKS_STATUS'|trans }}</th>
+                <th>{{ 'REPOSITORY_HOOKS_SIZE'|trans }}</th>
+                <th class="d-none d-md-table-cell">{{ 'REPOSITORY_HOOKS_CHECKSUM'|trans }}</th>
+                <th class="d-none d-md-table-cell">{{ 'REPOSITORY_HOOKS_MODIFIED'|trans }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% include 'Repository/metadata-hooks.html.twig' with { hooks: active, prefix: 'active', showHookContents: showHookContents } %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="card-body">
+          {{ ui.empty('REPOSITORY_HOOKS_EMPTY'|trans, '', null, 'webhook') }}
+        </div>
+      {% endif %}
+      {% if inactive %}
+        <div class="accordion accordion-flush border-top" id="hooks-inactive">
+          <div class="accordion-item">
+            <h4 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#hooks-inactive-list" aria-expanded="false" aria-controls="hooks-inactive-list">
+                <span class="text-secondary">{{ 'REPOSITORY_HOOKS_INACTIVE'|trans({'%count%': inactive|length}) }}</span>
+                <span class="accordion-button-toggle">{{ ui.icon('chevron-down') }}</span>
+              </button>
+            </h4>
+            <div id="hooks-inactive-list" class="accordion-collapse collapse">
+              <div class="table-responsive">
+                <table class="table card-table table-vcenter mb-0">
+                  <tbody>
+                    {% include 'Repository/metadata-hooks.html.twig' with { hooks: inactive, prefix: 'inactive', showHookContents: showHookContents } %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+      {% if not showHookContents %}
+        <div class="card-footer text-secondary">
+          {{ ui.icon('shield', 'me-1') }} {{ 'REPOSITORY_HOOKS_CONTENTS_HIDDEN'|trans }}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="card h-100" id="info">
+      <div class="card-header">
+        <h3 class="card-title">{{ ui.icon('info-circle', 'me-2') }}{{ 'REPOSITORY_INFO_TITLE'|trans }}</h3>
+      </div>
+      <div class="card-body">
+        {% if properties.loose_size is defined %}
+          {% set total = properties.loose_size + properties.packed_size %}
+          <div class="subheader mb-2">{{ 'REPOSITORY_METADATA_STORAGE'|trans }}</div>
+          <div class="progress progress-separated progress-sm mb-2" role="img" aria-label="{{ 'REPOSITORY_METADATA_STORAGE'|trans }}">
+            {% if total > 0 %}
+              <div class="progress-bar bg-primary" style="width: {{ (properties.packed_size / total * 100)|round(2) }}%"></div>
+              <div class="progress-bar bg-orange" style="width: {{ (properties.loose_size / total * 100)|round(2) }}%"></div>
+            {% endif %}
+          </div>
+          <div class="legend-list mb-4">
+            <span class="legend legend-blue"><span class="legend-dot"></span> {{ 'REPOSITORY_METADATA_PACKED'|trans }} <span class="legend-value info-packed_size">{{ properties.packed_size|formatFileSize }}</span></span>
+            <span class="legend legend-orange"><span class="legend-dot"></span> {{ 'REPOSITORY_METADATA_LOOSE'|trans }} <span class="legend-value info-loose_size">{{ properties.loose_size|formatFileSize }}</span></span>
+          </div>
+        {% endif %}
+        <div class="datagrid" id="info-properties">
+          {% for key, value in properties|filter((value, key) => key not in storage) %}
+            <div class="datagrid-item">
+              <div class="datagrid-title">{{ ('REPOSITORY_INFO_' ~ key|upper)|trans }}</div>
+              <div class="datagrid-content info-{{ key }}">
+                {% if value is same as(true) %}
+                  <span class="status status-green"><span class="status-dot"></span>{{ 'REPOSITORY_INFO_YES'|trans }}</span>
+                {% elseif value is same as(false) %}
+                  <span class="status status-secondary"><span class="status-dot"></span>{{ 'REPOSITORY_INFO_NO'|trans }}</span>
+                {% elseif key == 'requirements' %}
+                  <div class="badges-list">
+                    {% for requirement in value|split(', ') %}
+                      <span class="badge bg-secondary-lt">{{ requirement }}</span>
+                    {% endfor %}
+                  </div>
+                {% elseif key == 'object_format' %}
+                  <span class="badge bg-primary-lt font-monospace">{{ value }}</span>
+                {% else %}
+                  {{ value }}
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card mb-3" id="attributes">
+  <div class="card-header">
+    <h3 class="card-title">{{ ui.icon('adjustments', 'me-2') }}{{ 'REPOSITORY_ATTRIBUTES_TITLE'|trans }}</h3>
+    <div class="card-actions">
+      <span class="badge bg-azure-lt font-monospace">{{ commitish }}</span>
+    </div>
+  </div>
+  {% if rules %}
+    <div class="table-responsive">
+      <table class="table card-table table-vcenter">
+        <thead>
+          <tr>
+            <th>{{ 'REPOSITORY_ATTRIBUTES_PATTERN'|trans }}</th>
+            <th>{{ 'REPOSITORY_ATTRIBUTES_ATTRIBUTES'|trans }}</th>
+            <th>{{ 'REPOSITORY_ATTRIBUTES_SOURCE'|trans }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for rule in rules %}
+            <tr>
+              <td class="attribute-pattern">
+                <code>{{ rule.pattern }}</code>
+                {% if rule.macro %}
+                  <span class="badge bg-purple-lt ms-1">{{ 'REPOSITORY_ATTRIBUTES_MACRO'|trans }}</span>
+                {% endif %}
+              </td>
+              <td class="attribute-states">
+                <div class="badges-list">
+                  {% for name, state in rule.attributes %}
+                    <span class="badge font-monospace {{ state is same as(false) ? 'bg-red-lt' : (state is same as(true) ? 'bg-green-lt' : (state is null ? 'bg-secondary-lt' : 'bg-azure-lt')) }}">{% include 'Repository/attribute-state.html.twig' with { name: name, state: state } only %}</span>
+                  {% endfor %}
+                </div>
+              </td>
+              <td class="attribute-source text-secondary font-monospace text-nowrap">
+                {% if rule.inTree %}
+                  <a href="{{ path('blob_show', { repository: repository.name, commitish: getCommitish(commitish, rule.source) }) }}">{{ rule.source }}:{{ rule.line }}</a>
+                {% else %}
+                  {{ rule.source }}:{{ rule.line }}
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="card-body">
+      {{ ui.empty('REPOSITORY_ATTRIBUTES_EMPTY'|trans, '', null, 'adjustments') }}
+    </div>
+  {% endif %}
+</div>
+
+<div class="row row-cards">
+  <div class="col-lg-6">
+    <div class="card h-100">
+      <div class="card-header">
+        <h3 class="card-title">{{ ui.icon('world', 'me-2') }}{{ 'REPOSITORY_INFO_REMOTES'|trans }}</h3>
+      </div>
+      {% if info.remotes %}
+        <div class="list-group list-group-flush" id="info-remotes">
+          {% for name, url in info.remotes %}
+            <div class="list-group-item">
+              <div class="row align-items-center">
+                <div class="col-auto">
+                  <span class="badge bg-secondary-lt">{{ name }}</span>
+                </div>
+                <div class="col text-truncate font-monospace" title="{{ url }}">{{ url }}</div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="card-body text-secondary">{{ 'REPOSITORY_INFO_NO_REMOTES'|trans }}</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <div class="card h-100">
+      <div class="card-header">
+        <h3 class="card-title">{{ ui.icon('key', 'me-2') }}{{ 'REPOSITORY_INFO_CONFIG'|trans }}</h3>
+      </div>
+      {% if info.config %}
+        <div class="list-group list-group-flush" id="info-config">
+          {% for key, value in info.config %}
+            <div class="list-group-item d-flex justify-content-between gap-2">
+              <span class="font-monospace text-secondary text-truncate">{{ key }}</span>
+              <span class="font-monospace">{{ value }}</span>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="card-body text-secondary">{{ 'REPOSITORY_INFO_NO_CONFIG'|trans }}</div>
+      {% endif %}
+      <div class="card-footer text-secondary">
+        {{ ui.icon('shield', 'me-1') }} {{ 'REPOSITORY_INFO_CONFIG_HINT'|trans }}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12">
+    <div class="card" id="submodules">
+      <div class="card-header">
+        <h3 class="card-title">{{ ui.icon('package', 'me-2') }}{{ 'REPOSITORY_INFO_SUBMODULES'|trans({'%ref%': commitish}) }}</h3>
+      </div>
+      {% if submodules %}
+        <div class="table-responsive">
+          <table class="table card-table table-vcenter">
+            <tbody>
+              {% for submodule in submodules %}
+                <tr>
+                  <th scope="row" class="font-monospace">{{ ui.icon('folder', 'text-primary me-1', true) }}{{ submodule.path }}</th>
+                  <td class="font-monospace text-break text-secondary">{{ submodule.url }}</td>
+                  <td class="submodule-hash text-end">
+                    {% if submodule.hash %}
+                      <code title="{{ submodule.hash }}">{{ submodule.hash[:12] }}</code>
+                    {% else %}
+                      <span class="status status-yellow"><span class="status-dot"></span>{{ 'REPOSITORY_INFO_NOT_PINNED'|trans }}</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="card-body text-secondary">{{ 'REPOSITORY_INFO_NO_SUBMODULES'|trans }}</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

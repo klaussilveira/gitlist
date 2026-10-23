@@ -21,6 +21,11 @@ services:
       $perPage: '%commits_per_page%'
     tags: ['controller.service_arguments']
 
+  GitList\App\Controller\Introspection:
+    arguments:
+      $showHookContents: '%show_hook_contents%'
+    tags: ['controller.service_arguments']
+
   GitList\Repository\Index:
     arguments:
       $paths: '%repositories%'

@@ -112,5 +112,21 @@
     </div>
   </div>
 
+  {% if notes %}
+    <div class="card mb-3" id="commit-notes">
+      <div class="card-header">
+        <h3 class="card-title">{{ ui.icon('message', 'me-2') }}{{ 'REPOSITORY_COMMIT_NOTES'|trans }}</h3>
+      </div>
+      <div class="list-group list-group-flush">
+        {% for reference, note in notes %}
+          <div class="list-group-item">
+            <span class="badge bg-secondary-lt font-monospace">{{ reference }}</span>
+            <pre class="mb-0 mt-2">{{ note }}</pre>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
   {% include 'Commit/diff.html.twig' with { repository: repository, files: commit.diffs, newRef: commit.hash, newLabel: commit.shortHash, oldRef: commit.firstParent.hash ?? null, oldLabel: commit.firstParent.shortHash ?? null } %}
 {% endblock %}

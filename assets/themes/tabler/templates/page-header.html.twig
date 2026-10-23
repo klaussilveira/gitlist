@@ -5,6 +5,7 @@
   { key: 'graph', icon: 'git-fork', label: 'REPOSITORY_MENU_GRAPH', href: path('repository_graph', { repository: repository.name }) },
   { key: 'branches', icon: 'git-branch', label: 'REPOSITORY_MENU_BRANCHES', href: path('repository_list_branches', { repository: repository.name }) },
   { key: 'tags', icon: 'tags', label: 'REPOSITORY_MENU_TAGS', href: path('repository_list_tags', { repository: repository.name }) },
+  { key: 'metadata', icon: 'info-circle', label: 'REPOSITORY_MENU_METADATA', href: path('repository_metadata', { repository: repository.name, commitish: baseRef }) },
   { key: 'search', icon: 'search', label: 'REPOSITORY_MENU_SEARCH', href: path('repository_search_commits', { repository: repository.name, commitish: baseRef }) },
 ] %}
 <div class="page-header d-print-none">

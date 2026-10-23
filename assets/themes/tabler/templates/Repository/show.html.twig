@@ -21,6 +21,12 @@
         <li class="nav-item">
           <a class="nav-link" href="{{ path('repository_list_tags', { repository: repository.name }) }}">{{ ui.icon('tags', 'me-1') }} <strong class="me-1">{{ repository.tags|length }}</strong> {{ 'REPOSITORY_SUBMENU_TAGS'|trans }}</a>
         </li>
+        {% set activeHooks = repository.hooks|filter(hook => hook.active)|length %}
+        {% if activeHooks > 0 %}
+          <li class="nav-item hooks-count">
+            <a class="nav-link" href="{{ path('repository_metadata', { repository: repository.name, commitish: repository.defaultBranch }) ~ '#hooks' }}">{{ ui.icon('webhook', 'me-1') }} <strong class="me-1">{{ activeHooks }}</strong> {{ 'REPOSITORY_SUBMENU_HOOKS'|trans }}</a>
+          </li>
+        {% endif %}
       </ul>
     </div>
 
@@ -128,6 +134,39 @@
               {% endif %}
               <td class="tree-timestamp">
                 {% if object.firstParent %}
+                  <span title="{{ object.firstParent.commitedAt|date(commit_date_format) }}" data-bs-toggle="tooltip">{{ object.firstParent.commitedAt|ago }}</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+
+          {% for object in tree.children|onlySubmodules %}
+            <tr class="tree-submodule">
+              <th scope="row" class="tree-filename">
+                <span class="tree-truncate">
+                  {{ ui.icon('package', 'text-purple') }}
+                  {% if object.browsable %}
+                    <a href="{{ object.url }}" title="{{ object.url }}" rel="noopener noreferrer">{{ object.fileName }}</a>
+                  {% else %}
+                    <span title="{{ object.url }}">{{ object.fileName }}</span>
+                  {% endif %}
+                  <span class="text-secondary font-monospace ms-1">@ {{ object.shortHash }}</span>
+                </span>
+              </th>
+              {% if tree_show_file_size %}
+                <td class="tree-filesize"></td>
+              {% endif %}
+              {% if tree_show_last_commit %}
+                <td class="tree-commit d-none d-md-table-cell">
+                  {% if object.firstParent.isCommit %}
+                    <span class="tree-truncate">
+                      <a href="{{ path('commit_show', { repository: repository.name, commitish: object.firstParent.hash }) }}" title="{{ object.firstParent.subject }}">{{ object.firstParent.subject }}</a>
+                    </span>
+                  {% endif %}
+                </td>
+              {% endif %}
+              <td class="tree-timestamp">
+                {% if object.firstParent.isCommit %}
                   <span title="{{ object.firstParent.commitedAt|date(commit_date_format) }}" data-bs-toggle="tooltip">{{ object.firstParent.commitedAt|ago }}</span>
                 {% endif %}
               </td>

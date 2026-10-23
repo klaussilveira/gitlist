@@ -145,3 +145,56 @@ REPOSITORY_COMPARE_FILES: '{1} 1 file changed|]1,Inf[ %count% files changed'
 REPOSITORY_BRANCH_FORKED_FROM: 'Forked from %ref% at'
 REPOSITORY_BRANCH_BASED_ON: 'Based on'
 REPOSITORY_BRANCH_BASED_ON_HINT: Best guess. Git does not record which branch a branch was created from, so this is the closest branch at the point where this one diverged.
+REPOSITORY_MENU_METADATA: Metadata
+REPOSITORY_SUBMENU_HOOKS: Hooks
+REPOSITORY_ATTRIBUTES_TITLE: Attributes
+REPOSITORY_ATTRIBUTES_PATTERN: Pattern
+REPOSITORY_ATTRIBUTES_ATTRIBUTES: Attributes
+REPOSITORY_ATTRIBUTES_SOURCE: Source
+REPOSITORY_ATTRIBUTES_MACRO: Macro
+REPOSITORY_ATTRIBUTES_EMPTY: No attributes are defined at this revision.
+REPOSITORY_HOOKS_TITLE: Hooks
+REPOSITORY_HOOKS_NAME: Name
+REPOSITORY_HOOKS_STATUS: Status
+REPOSITORY_HOOKS_SIZE: Size
+REPOSITORY_HOOKS_CHECKSUM: SHA-256
+REPOSITORY_HOOKS_MODIFIED: Modified
+REPOSITORY_HOOKS_ACTIVE: Active
+REPOSITORY_HOOKS_NOT_EXECUTABLE: Not executable
+REPOSITORY_HOOKS_SAMPLE: Sample
+REPOSITORY_HOOKS_INACTIVE: '{0} No inactive hooks|{1} 1 inactive hook|]1,Inf[ %count% inactive hooks'
+REPOSITORY_HOOKS_EMPTY: No active hooks in this repository.
+REPOSITORY_HOOKS_CONTENTS_HIDDEN: Hook contents are hidden. Set show_hook_contents to true in config.yml to view them.
+REPOSITORY_INFO_TITLE: Repository info
+REPOSITORY_INFO_REMOTES: Remotes
+REPOSITORY_INFO_NO_REMOTES: No remotes configured.
+REPOSITORY_INFO_CONFIG: Configuration
+REPOSITORY_INFO_CONFIG_HINT: Only a fixed set of non-sensitive keys is shown.
+REPOSITORY_INFO_NO_CONFIG: None of the listed keys are set.
+REPOSITORY_INFO_SUBMODULES: 'Submodules on %ref%'
+REPOSITORY_INFO_NO_SUBMODULES: No submodules.
+REPOSITORY_INFO_NOT_PINNED: not pinned
+REPOSITORY_INFO_YES: 'Yes'
+REPOSITORY_INFO_NO: 'No'
+REPOSITORY_INFO_OBJECT_FORMAT: Object format
+REPOSITORY_INFO_BARE: Bare
+REPOSITORY_INFO_SHALLOW: Shallow
+REPOSITORY_INFO_LOOSE_OBJECTS: Loose objects
+REPOSITORY_INFO_LOOSE_SIZE: Loose objects size
+REPOSITORY_INFO_PACKED_OBJECTS: Packed objects
+REPOSITORY_INFO_PACKS: Packs
+REPOSITORY_INFO_PACKED_SIZE: Packed size
+REPOSITORY_INFO_GARBAGE: Garbage files
+REPOSITORY_INFO_ALTERNATES: Alternates
+REPOSITORY_INFO_WORKTREES: Worktrees
+REPOSITORY_INFO_REQUIREMENTS: Requirements
+REPOSITORY_BLOB_ATTRIBUTES: Attributes
+REPOSITORY_COMMIT_NOTES: Notes
+REPOSITORY_METADATA_STORAGE: Storage
+REPOSITORY_METADATA_LOOSE: Loose
+REPOSITORY_METADATA_PACKED: Packed
+REPOSITORY_METADATA_OBJECTS: '{0} No objects|{1} 1 object|]1,Inf[ %count% objects'
+REPOSITORY_METADATA_ACTIVE_HOOKS: '{0} No active hooks|{1} 1 active hook|]1,Inf[ %count% active hooks'
+REPOSITORY_METADATA_RULES: '{0} No attribute rules|{1} 1 attribute rule|]1,Inf[ %count% attribute rules'
+REPOSITORY_METADATA_SUBMODULES: '{0} No submodules|{1} 1 submodule|]1,Inf[ %count% submodules'
+REPOSITORY_METADATA_AT: 'at %ref%'

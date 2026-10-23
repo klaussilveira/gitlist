@@ -48,6 +48,13 @@ repository_compare:
     base: '%valid_commitish_format%'
     head: '%valid_commitish_format%'
 
+repository_metadata:
+  path: /{repository}/metadata/{commitish}
+  controller: GitList\App\Controller\Introspection::show
+  requirements:
+    repository: '%valid_repository_name%'
+    commitish: '%valid_commitish_format%'
+
 repository_feed:
   path: /{repository}/feed/{commitish}.{format}
   controller: GitList\App\Controller\Commit::feed

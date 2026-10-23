@@ -1,0 +1,26 @@
+{% for hook in hooks %}
+  <tr>
+    <td class="hook-name">
+      {% if showHookContents %}
+        <details>
+          <summary>{{ hook.name }}</summary>
+          <pre class="hook-contents mb-0 mt-2">{{ hook.contents }}</pre>
+        </details>
+      {% else %}
+        {{ hook.name }}
+      {% endif %}
+    </td>
+    <td class="hook-status">
+      {% if hook.sample %}
+        <span class="badge text-bg-secondary">{{ 'REPOSITORY_HOOKS_SAMPLE'|trans }}</span>
+      {% elseif hook.executable %}
+        <span class="badge text-bg-success">{{ 'REPOSITORY_HOOKS_ACTIVE'|trans }}</span>
+      {% else %}
+        <span class="badge text-bg-warning">{{ 'REPOSITORY_HOOKS_NOT_EXECUTABLE'|trans }}</span>
+      {% endif %}
+    </td>
+    <td>{{ hook.size|formatFileSize }}</td>
+    <td><code>{{ hook.checksum }}</code></td>
+    <td>{{ hook.modifiedAt|date(commit_date_format) }}</td>
+  </tr>
+{% endfor %}

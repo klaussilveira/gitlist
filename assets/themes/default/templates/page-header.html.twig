@@ -19,6 +19,9 @@
         <a class="nav-link{{ current == 'tags' ? ' active' }}" href="{{ path('repository_list_tags', { repository: repository.name }) }}"><svg class="icon"><use href="#i-pricetags"/></svg> {{ 'REPOSITORY_MENU_TAGS'|trans }}</a>
       </li>
       <li class="nav-item">
+        <a class="nav-link{{ current == 'metadata' ? ' active' }}" href="{{ path('repository_metadata', { repository: repository.name, commitish: baseRef }) }}"><svg class="icon"><use href="#i-document"/></svg> {{ 'REPOSITORY_MENU_METADATA'|trans }}</a>
+      </li>
+      <li class="nav-item">
         <a class="nav-link{{ current == 'search' ? ' active' }}" href="{{ path('repository_search_commits', { repository: repository.name, commitish: baseRef }) }}"><svg class="icon"><use href="#i-search"/></svg> {{ 'REPOSITORY_MENU_SEARCH'|trans }}</a>
       </li>
     </ul>

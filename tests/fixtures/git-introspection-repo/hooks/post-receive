@@ -1,0 +1,2 @@
+#!/bin/sh
+echo "Deploying with token $DEPLOY_TOKEN"

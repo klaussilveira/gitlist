@@ -6,6 +6,7 @@ namespace GitList\App\Twig;
 
 use GitList\SCM\Blob;
 use GitList\SCM\Item;
+use GitList\SCM\Submodule;
 use GitList\SCM\Tree;
 use Twig\Attribute\AsTwigFilter;
 use Twig\Attribute\AsTwigFunction;
@@ -31,7 +32,18 @@ class RepositoryExtension
     #[AsTwigFilter('onlyFiles')]
     public function onlyFiles(array $items): array
     {
-        return array_filter($items, fn ($item) => !$this->isTree($item));
+        return array_filter($items, fn ($item) => !$this->isTree($item) && !$item instanceof Submodule);
+    }
+
+    /**
+     * @param Item[] $items
+     *
+     * @return Submodule[]
+     */
+    #[AsTwigFilter('onlySubmodules')]
+    public function onlySubmodules(array $items): array
+    {
+        return array_filter($items, fn ($item) => $item instanceof Submodule);
     }
 
     public function isTree(?Item $value): bool

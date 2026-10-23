@@ -811,6 +811,78 @@ class CommandLineTest extends TestCase
         $this->assertEquals(['master'], $commandLine->getBranchesContaining($repository, 'd471ea0b4d78'));
     }
 
+    public function testIsGettingHooksFromHgrc(): void
+    {
+        $path = $this->createTemporaryRepository();
+        file_put_contents(sprintf('%s/.hg/hgrc', $path), implode("\n", [
+            '[ui]',
+            'username = Test',
+            '[hooks]',
+            'changegroup.notify = python:hgext.notify.hook',
+            '# commented = ignored',
+            'pretxncommit.check = ./check.sh',
+            '  --strict',
+            'priority.changegroup.notify = 10',
+            '[paths]',
+            'default = https://user:secret@example.com/repo',
+            '',
+        ]));
+
+        $hooks = (new CommandLine())->getHooks(new Repository($path));
+
+        $this->assertSame([
+            ['changegroup.notify', 'python:hgext.notify.hook', true],
+            ['pretxncommit.check', "./check.sh\n--strict", true],
+        ], array_map(fn ($hook) => [$hook->getName(), $hook->getContents(), $hook->isActive()], $hooks));
+    }
+
+    public function testIsGettingNoHooksWithoutHgrc(): void
+    {
+        $this->assertSame([], (new CommandLine())->getHooks(new Repository($this->createTemporaryRepository())));
+    }
+
+    public function testIsGettingInfoWithoutSecrets(): void
+    {
+        $path = $this->createTemporaryRepository();
+        file_put_contents(sprintf('%s/.hg/hgrc', $path), "[paths]\ndefault = https://user:secret@example.com/repo\nlocal = /srv/hg/repo\n");
+
+        $info = (new CommandLine())->getInfo(new Repository($path));
+
+        $this->assertSame(['default' => 'https://example.com/repo', 'local' => '/srv/hg/repo'], $info['remotes']);
+        $this->assertSame([], $info['config']);
+        $this->assertSame(['requirements' => 'dotencode, fncache, generaldelta, revlogv1, store'], (new CommandLine())->getInfo(new Repository(self::FIXTURE_REPO))['properties']);
+    }
+
+    public function testIsGettingSubrepos(): void
+    {
+        $path = $this->createTemporaryRepository();
+        mkdir(sprintf('%s/lib', $path));
+        $this->hg(['init', '.'], sprintf('%s/lib', $path));
+        $this->commit(sprintf('%s/lib', $path), 'a.txt', 'Test', 'test@example.com', 'sub');
+
+        $node = new Process(['hg', 'log', '-r', 'tip', '-T', '{node}'], sprintf('%s/lib', $path));
+        $node->mustRun();
+
+        file_put_contents(sprintf('%s/.hgsub', $path), "lib = https://user:secret@example.com/lib\n");
+        $this->hg(['add', '.hgsub'], $path);
+        $this->commit($path, 'b.txt', 'Test', 'test@example.com', 'parent');
+
+        $commandLine = new CommandLine();
+
+        $this->assertSame([
+            ['path' => 'lib', 'url' => 'https://example.com/lib', 'hash' => $node->getOutput()],
+        ], $commandLine->getSubmodules(new Repository($path)));
+        $this->assertSame([], $commandLine->getSubmodules(new Repository(self::FIXTURE_REPO)));
+    }
+
+    public function testIsNotSupportingAttributesOrNotes(): void
+    {
+        $commandLine = new CommandLine();
+
+        $this->assertSame([], $commandLine->getAttributes(new Repository(self::FIXTURE_REPO)));
+        $this->assertSame([], $commandLine->getNotes(new Repository(self::FIXTURE_REPO), 'tip'));
+    }
+
     protected function createTemporaryRepository(): string
     {
         $path = sys_get_temp_dir().'/gitlist-'.uniqid();

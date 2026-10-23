@@ -1,0 +1,1 @@
+{% if state is same as(true) %}{{ name }}{% elseif state is same as(false) %}-{{ name }}{% elseif state is null %}!{{ name }}{% else %}{{ name }}={{ state }}{% endif %}

@@ -96,4 +96,29 @@ interface System
      * @return list<array{type: string, name: string, hash: string}>
      */
     public function getRefs(Repository $repository): array;
+
+    /**
+     * @return Hook[]
+     */
+    public function getHooks(Repository $repository): array;
+
+    /**
+     * @return AttributeRule[]
+     */
+    public function getAttributes(Repository $repository, ?string $hash = null, ?string $path = null): array;
+
+    /**
+     * @return array{properties: array<string, string|int|bool>, remotes: array<string, string>, config: array<string, string>}
+     */
+    public function getInfo(Repository $repository): array;
+
+    /**
+     * @return list<array{path: string, url: string, hash: ?string}>
+     */
+    public function getSubmodules(Repository $repository, ?string $hash = null): array;
+
+    /**
+     * @return array<string, string>
+     */
+    public function getNotes(Repository $repository, string $hash): array;
 }

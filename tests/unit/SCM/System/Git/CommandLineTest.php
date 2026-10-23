@@ -12,6 +12,7 @@ use GitList\SCM\Commit\Person;
 use GitList\SCM\Exception\CommandException;
 use GitList\SCM\Exception\InvalidCommitException;
 use GitList\SCM\Repository;
+use GitList\SCM\Submodule;
 use GitList\SCM\Symlink;
 use GitList\SCM\Tree;
 use PHPUnit\Framework\TestCase;
@@ -956,6 +957,179 @@ class CommandLineTest extends TestCase
         $commandLine->getBlame(new Repository($path), 'HEAD', 'demo.poc');
 
         $this->assertFileDoesNotExist($marker);
+    }
+
+    public function testIsGettingHooks(): void
+    {
+        $path = $this->createTemporaryRepository();
+        $hooks = sprintf('%s/.git/hooks', $path);
+        (new Filesystem())->remove(glob(sprintf('%s/*', $hooks)));
+
+        file_put_contents(sprintf('%s/pre-receive', $hooks), "#!/bin/sh\nexit 0\n");
+        chmod(sprintf('%s/pre-receive', $hooks), 0755);
+        file_put_contents(sprintf('%s/update', $hooks), "#!/bin/sh\n");
+        chmod(sprintf('%s/update', $hooks), 0644);
+        file_put_contents(sprintf('%s/commit-msg.sample', $hooks), "#!/bin/sh\n");
+        chmod(sprintf('%s/commit-msg.sample', $hooks), 0755);
+        mkdir(sprintf('%s/pre-receive.d', $hooks));
+        file_put_contents(sprintf('%s/outside', $path), "secret\n");
+        chmod(sprintf('%s/outside', $path), 0755);
+        symlink(sprintf('%s/outside', $path), sprintf('%s/post-receive', $hooks));
+        symlink(sprintf('%s/pre-receive', $hooks), sprintf('%s/post-update', $hooks));
+
+        $result = (new CommandLine())->getHooks(new Repository($path));
+        $summary = array_map(fn ($hook) => [$hook->getName(), $hook->isActive(), $hook->isExecutable(), $hook->isSample()], $result);
+
+        $this->assertSame([
+            ['commit-msg.sample', false, true, true],
+            ['post-update', true, true, false],
+            ['pre-receive', true, true, false],
+            ['update', false, false, false],
+        ], $summary);
+        $this->assertSame("#!/bin/sh\nexit 0\n", $result[2]->getContents());
+        $this->assertSame(17, $result[2]->getSize());
+        $this->assertSame('306c6ca74075', $result[2]->getChecksum());
+    }
+
+    public function testIsGettingHooksFromHooksPath(): void
+    {
+        $path = $this->createTemporaryRepository();
+        mkdir(sprintf('%s/custom-hooks', $path));
+        file_put_contents(sprintf('%s/custom-hooks/pre-commit', $path), "#!/bin/sh\n");
+        chmod(sprintf('%s/custom-hooks/pre-commit', $path), 0755);
+        $this->git(['config', 'core.hooksPath', 'custom-hooks'], $path);
+
+        $commandLine = new CommandLine();
+        $this->assertSame(['pre-commit'], array_map(fn ($hook) => $hook->getName(), $commandLine->getHooks(new Repository($path))));
+
+        $this->git(['config', 'core.hooksPath', 'missing-hooks'], $path);
+        $this->assertSame([], $commandLine->getHooks(new Repository($path)));
+    }
+
+    public function testIsGettingAttributes(): void
+    {
+        $rules = (new CommandLine())->getAttributes(new Repository(FIXTURE_DIR.'/git-introspection-repo'), 'master');
+
+        $this->assertSame([
+            ['.gitattributes', 1, '*', ['text' => 'auto']],
+            ['.gitattributes', 2, '*.md', ['text' => true, 'eol' => 'lf']],
+            ['.gitattributes', 3, '*.bin', ['filter' => 'lfs', 'diff' => 'lfs', 'merge' => 'lfs', 'text' => false]],
+            ['.gitattributes', 4, '[attr]docs', ['linguist-documentation' => true, 'diff' => false]],
+            ['docs/.gitattributes', 1, '*.md', ['docs' => true]],
+            ['info/attributes', 1, 'docs/guide.md', ['export-ignore' => true]],
+        ], array_map(fn ($rule) => [$rule->getSource(), $rule->getLine(), $rule->getPattern(), $rule->getAttributes()], $rules));
+    }
+
+    public function testIsGettingOnlyAttributesApplyingToPath(): void
+    {
+        $commandLine = new CommandLine();
+        $repository = new Repository(FIXTURE_DIR.'/git-introspection-repo');
+        $describe = fn (array $rules) => array_map(fn ($rule) => sprintf('%s:%d', $rule->getSource(), $rule->getLine()), $rules);
+
+        $this->assertSame(['.gitattributes:1', '.gitattributes:2', '.gitattributes:3', '.gitattributes:4', 'info/attributes:1'], $describe($commandLine->getAttributes($repository, 'master', 'README.md')));
+        $this->assertSame(['.gitattributes:1', '.gitattributes:2', '.gitattributes:3', '.gitattributes:4', 'docs/.gitattributes:1', 'info/attributes:1'], $describe($commandLine->getAttributes($repository, 'master', 'docs/guide.md')));
+        $this->assertSame(['.gitattributes:1', '.gitattributes:2', '.gitattributes:3', '.gitattributes:4', 'info/attributes:1'], $describe($commandLine->getAttributes($repository, 'master', 'docsx/guide.md')));
+    }
+
+    public function testIsListingSubmodulesInTree(): void
+    {
+        $tree = (new CommandLine())->getPathTree(new Repository(FIXTURE_DIR.'/git-introspection-repo'), 'vendor', 'master');
+        [$submodule] = $tree->getChildren();
+
+        $this->assertCount(1, $tree->getChildren());
+        $this->assertInstanceOf(Submodule::class, $submodule);
+        $this->assertSame('vendor/lib', $submodule->getName());
+        $this->assertSame('lib', $submodule->getFileName());
+        $this->assertSame('1111111111111111111111111111111111111111', $submodule->getHash());
+        $this->assertSame('1111111', $submodule->getShortHash());
+        $this->assertSame('https://example.com/lib.git', $submodule->getUrl());
+        $this->assertTrue($submodule->isBrowsable());
+        $this->assertSame('Initial commit.', $submodule->getFirstParent()->getSubject());
+    }
+
+    public function testIsOrderingAttributeFilesByDepth(): void
+    {
+        $path = $this->createTemporaryRepository();
+        mkdir(sprintf('%s/a/-b', $path), 0755, true);
+        file_put_contents(sprintf('%s/.gitattributes', $path), "* root\n");
+        file_put_contents(sprintf('%s/a/.gitattributes', $path), "* parent\n");
+        file_put_contents(sprintf('%s/a/-b/.gitattributes', $path), "* child\n");
+        $this->git(['add', '.'], $path);
+        $this->git(['-c', 'commit.gpgsign=false', '-c', 'user.name=Test', '-c', 'user.email=test@example.com', 'commit', '--quiet', '--message', 'attributes'], $path);
+
+        $rules = (new CommandLine())->getAttributes(new Repository($path));
+
+        $this->assertSame(['.gitattributes', 'a/.gitattributes', 'a/-b/.gitattributes'], array_map(fn ($rule) => $rule->getSource(), $rules));
+    }
+
+    public function testIsGettingNoAttributesWhenAbsent(): void
+    {
+        $this->assertSame([], (new CommandLine())->getAttributes(new Repository(self::FIXTURE_REPO)));
+    }
+
+    public function testIsGettingInfoWithoutSecrets(): void
+    {
+        $info = (new CommandLine())->getInfo(new Repository(FIXTURE_DIR.'/git-introspection-repo'));
+
+        $this->assertSame(['origin' => 'https://example.com/repo.git', 'mirror' => 'git@example.com:mirror.git'], $info['remotes']);
+        $this->assertSame(['core.repositoryformatversion' => '0', 'receive.denynonfastforwards' => 'true'], $info['config']);
+        $this->assertGreaterThan(0, $info['properties']['loose_size']);
+
+        unset($info['properties']['loose_size']);
+
+        $this->assertSame([
+            'object_format' => 'sha1',
+            'bare' => true,
+            'shallow' => false,
+            'loose_objects' => 16,
+            'packed_objects' => 0,
+            'packs' => 0,
+            'packed_size' => 0,
+            'garbage' => 0,
+            'alternates' => 0,
+            'worktrees' => 0,
+        ], $info['properties']);
+    }
+
+    public function testIsGettingInfoForLinkedRepository(): void
+    {
+        $path = $this->createTemporaryRepository();
+        $this->commit($path, 'a.txt', 'Test', 'test@example.com', 'first');
+        $worktree = sprintf('%s-worktree', $path);
+        $clone = sprintf('%s-clone', $path);
+        $this->temporaryRepositories[] = $worktree;
+        $this->temporaryRepositories[] = $clone;
+
+        $this->git(['worktree', 'add', '--quiet', $worktree], $path);
+        file_put_contents(sprintf('%s/.git/objects/info/alternates', $path), sprintf("%s/.git/objects\n", $clone));
+        $this->git(['clone', '--quiet', '--depth', '1', sprintf('file://%s', $path), $clone], sys_get_temp_dir());
+
+        $commandLine = new CommandLine();
+        $info = $commandLine->getInfo(new Repository($path));
+
+        $this->assertFalse($info['properties']['bare']);
+        $this->assertFalse($info['properties']['shallow']);
+        $this->assertSame(1, $info['properties']['worktrees']);
+        $this->assertSame(1, $info['properties']['alternates']);
+        $this->assertTrue($commandLine->getInfo(new Repository($clone))['properties']['shallow']);
+    }
+
+    public function testIsGettingSubmodules(): void
+    {
+        $commandLine = new CommandLine();
+
+        $this->assertSame([
+            ['path' => 'vendor/lib', 'url' => 'https://example.com/lib.git', 'hash' => '1111111111111111111111111111111111111111'],
+        ], $commandLine->getSubmodules(new Repository(FIXTURE_DIR.'/git-introspection-repo'), 'master'));
+        $this->assertSame([], $commandLine->getSubmodules(new Repository(self::FIXTURE_REPO)));
+    }
+
+    public function testIsGettingNotes(): void
+    {
+        $commandLine = new CommandLine();
+
+        $this->assertSame(['commits' => "Reviewed by QA.\n", 'review' => "Ship it.\n"], $commandLine->getNotes(new Repository(FIXTURE_DIR.'/git-introspection-repo'), 'master'));
+        $this->assertSame([], $commandLine->getNotes(new Repository(self::FIXTURE_REPO), 'master'));
     }
 
     protected function createTemporaryRepository(): string

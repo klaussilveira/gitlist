@@ -42,6 +42,9 @@ parameters:
   # Show last commit in tree
   tree_show_last_commit: true
 
+  default_show_hook_contents: false
+  show_hook_contents: '%env(bool:default:default_show_hook_contents:SHOW_HOOK_CONTENTS)%'
+
   # Default binary paths
   git_path: /usr/bin/git
   hg_path: /usr/bin/hg

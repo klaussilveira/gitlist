@@ -7,6 +7,7 @@ namespace GitList\SCM\System\Mercurial;
 use Carbon\CarbonImmutable;
 use Exception;
 use GitList\SCM\AnnotatedLine;
+use GitList\SCM\AttributeRule;
 use GitList\SCM\Blame;
 use GitList\SCM\Blob;
 use GitList\SCM\Branch;
@@ -17,7 +18,9 @@ use GitList\SCM\Diff\File;
 use GitList\SCM\Diff\Parse;
 use GitList\SCM\Exception\CommandException;
 use GitList\SCM\Exception\InvalidCommitException;
+use GitList\SCM\Hook;
 use GitList\SCM\Item;
+use GitList\SCM\RemoteUrl;
 use GitList\SCM\Repository;
 use GitList\SCM\Symlink;
 use GitList\SCM\System;
@@ -479,6 +482,141 @@ class CommandLine implements System
         }
 
         return $refs;
+    }
+
+    /**
+     * @return Hook[]
+     */
+    public function getHooks(Repository $repository): array
+    {
+        $hgrc = sprintf('%s/.hg/hgrc', $repository->getPath());
+        $hooks = [];
+
+        foreach ($this->getConfigSection($hgrc, 'hooks') as $name => $command) {
+            if (str_starts_with($name, 'priority.')) {
+                continue;
+            }
+
+            $hooks[] = new Hook($name, $command, true, false, CarbonImmutable::createFromTimestamp((int) filemtime($hgrc)));
+        }
+
+        return $hooks;
+    }
+
+    /**
+     * @return AttributeRule[]
+     */
+    public function getAttributes(Repository $repository, ?string $hash = 'tip', ?string $path = null): array
+    {
+        return [];
+    }
+
+    /**
+     * @return array{properties: array<string, string|int|bool>, remotes: array<string, string>, config: array<string, string>}
+     */
+    public function getInfo(Repository $repository): array
+    {
+        $requires = sprintf('%s/.hg/requires', $repository->getPath());
+        $remotes = [];
+
+        foreach ($this->getConfigSection(sprintf('%s/.hg/hgrc', $repository->getPath()), 'paths') as $name => $url) {
+            $remotes[$name] = RemoteUrl::redact($url);
+        }
+
+        return [
+            'properties' => [
+                'requirements' => is_file($requires) ? implode(', ', array_filter(file($requires, FILE_IGNORE_NEW_LINES) ?: [])) : '',
+            ],
+            'remotes' => $remotes,
+            'config' => [],
+        ];
+    }
+
+    /**
+     * @return list<array{path: string, url: string, hash: ?string}>
+     */
+    public function getSubmodules(Repository $repository, ?string $hash = 'tip'): array
+    {
+        $hash = $this->resolveHash($hash);
+
+        try {
+            $sources = $this->run(['cat', '-r', $hash, '.hgsub'], $repository);
+            $states = $this->run(['cat', '-r', $hash, '.hgsubstate'], $repository);
+        } catch (CommandException) {
+            return [];
+        }
+
+        $pinned = [];
+
+        foreach (explode("\n", $states) as $line) {
+            if (preg_match('/^([0-9a-f]+) (.+)$/', $line, $matches)) {
+                $pinned[$matches[2]] = $matches[1];
+            }
+        }
+
+        $submodules = [];
+
+        foreach (explode("\n", $sources) as $line) {
+            if (!preg_match('/^([^=#;\[\s][^=]*?)\s*=\s*(.+?)\s*$/', $line, $matches)) {
+                continue;
+            }
+
+            $submodules[] = [
+                'path' => $matches[1],
+                'url' => RemoteUrl::redact($matches[2]),
+                'hash' => $pinned[$matches[1]] ?? null,
+            ];
+        }
+
+        return $submodules;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function getNotes(Repository $repository, string $hash): array
+    {
+        return [];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected function getConfigSection(string $file, string $section): array
+    {
+        if (!is_file($file)) {
+            return [];
+        }
+
+        $entries = [];
+        $current = null;
+        $key = null;
+
+        foreach (file($file, FILE_IGNORE_NEW_LINES) ?: [] as $line) {
+            if (preg_match('/^\[([^\]]+)\]/', $line, $matches)) {
+                $current = trim($matches[1]);
+                $key = null;
+
+                continue;
+            }
+
+            if ($current !== $section || preg_match('/^\s*[#;]/', $line)) {
+                continue;
+            }
+
+            if (null !== $key && preg_match('/^\s+\S/', $line)) {
+                $entries[$key] = sprintf("%s\n%s", $entries[$key], trim($line));
+
+                continue;
+            }
+
+            if (preg_match('/^([^=\s][^=]*?)\s*=\s*(.*)$/', $line, $matches)) {
+                $key = $matches[1];
+                $entries[$key] = $matches[2];
+            }
+        }
+
+        return $entries;
     }
 
     protected function quoteRevision(string $revision): string

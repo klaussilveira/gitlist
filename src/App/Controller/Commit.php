@@ -46,6 +46,7 @@ class Commit
         return new Response($this->templating->render('Commit/show.html.twig', [
             'repository' => $repository,
             'commit' => $commit,
+            'notes' => $repository->getNotes($commit->getHash()),
         ]));
     }
 

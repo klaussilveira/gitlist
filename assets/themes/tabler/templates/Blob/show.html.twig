@@ -54,6 +54,14 @@
         </div>
       </div>
     </div>
+    {% if attributes %}
+      <div class="card-body py-2 border-bottom d-flex flex-wrap align-items-center gap-2" id="blob-attributes">
+        <a href="{{ path('repository_metadata', { repository: repository.name, commitish: blob.hash }) ~ '#attributes' }}" class="text-secondary">{{ ui.icon('adjustments', 'me-1') }}{{ 'REPOSITORY_BLOB_ATTRIBUTES'|trans }}</a>
+        {% for name, state in attributes %}
+          <span class="badge {{ state is same as(false) ? 'bg-red-lt' : 'bg-secondary-lt' }} font-monospace">{% include 'Repository/attribute-state.html.twig' with { name: name, state: state } only %}</span>
+        {% endfor %}
+      </div>
+    {% endif %}
     {% if file.isImage %}
       <div class="card-body text-center">
         <img class="img-fluid" src="{{ path('blob_raw', {repository: repository.name, commitish: getCommitish(commit.hash, blob.name) }) }}" alt="{{ file.name }}" />

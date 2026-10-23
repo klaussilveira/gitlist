@@ -6,8 +6,10 @@ namespace GitList;
 
 use GitList\Exception\BlobNotFoundException;
 use GitList\Exception\CommitNotFoundException;
+use GitList\Repository\Attributes;
 use GitList\Repository\Commitish;
 use GitList\SCM\AnnotatedLine;
+use GitList\SCM\AttributeRule;
 use GitList\SCM\Blame;
 use GitList\SCM\Blob;
 use GitList\SCM\Branch;
@@ -15,6 +17,7 @@ use GitList\SCM\Commit;
 use GitList\SCM\Commit\Criteria;
 use GitList\SCM\Diff\File;
 use GitList\SCM\Exception\CommandException;
+use GitList\SCM\Hook;
 use GitList\SCM\Repository as SourceRepository;
 use GitList\SCM\System;
 use GitList\SCM\Tag;
@@ -245,6 +248,58 @@ class Repository
     public function getRefs(): array
     {
         return $this->system->getRefs($this->repository);
+    }
+
+    /**
+     * @return Hook[]
+     */
+    public function getHooks(): array
+    {
+        return $this->system->getHooks($this->repository);
+    }
+
+    /**
+     * @return AttributeRule[]
+     */
+    public function getAttributes(Commitish $commitish): array
+    {
+        return $this->system->getAttributes($this->repository, $commitish->getHash());
+    }
+
+    /**
+     * @return array<string, string|bool>
+     */
+    public function getFileAttributes(string $commitish): array
+    {
+        $commitish = new Commitish($this, $commitish);
+        $path = $commitish->getPath() ?? '';
+        $rules = $this->system->getAttributes($this->repository, $commitish->getHash(), $path);
+
+        return (new Attributes($rules))->resolve($path);
+    }
+
+    /**
+     * @return array{properties: array<string, string|int|bool>, remotes: array<string, string>, config: array<string, string>}
+     */
+    public function getInfo(): array
+    {
+        return $this->system->getInfo($this->repository);
+    }
+
+    /**
+     * @return list<array{path: string, url: string, hash: ?string}>
+     */
+    public function getSubmodules(Commitish $commitish): array
+    {
+        return $this->system->getSubmodules($this->repository, $commitish->getHash());
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function getNotes(string $hash): array
+    {
+        return $this->system->getNotes($this->repository, $hash);
     }
 
     /**

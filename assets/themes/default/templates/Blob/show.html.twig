@@ -47,6 +47,14 @@
             </a>
           </div>
         </div>
+        {% if attributes %}
+          <div class="card-body py-2 border-bottom" id="blob-attributes">
+            <a href="{{ path('repository_metadata', { repository: repository.name, commitish: blob.hash }) ~ '#attributes' }}">{{ 'REPOSITORY_BLOB_ATTRIBUTES'|trans }}</a>:
+            {% for name, state in attributes %}
+              <span class="badge text-bg-secondary">{% include 'Repository/attribute-state.html.twig' with { name: name, state: state } only %}</span>
+            {% endfor %}
+          </div>
+        {% endif %}
         {% if file.isImage %}
           <div class="card-body text-center">
             <img src="{{ path('blob_raw', {repository: repository.name, commitish: getCommitish(commit.hash, blob.name) }) }}" />

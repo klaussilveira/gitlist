@@ -1,0 +1,34 @@
+{% import 'macros.html.twig' as ui %}
+{% for hook in hooks %}
+  {% set target = 'hook-' ~ prefix ~ '-' ~ loop.index %}
+  <tr>
+    <td class="hook-name font-monospace">
+      {% if showHookContents %}
+        <a href="#{{ target }}" class="text-reset" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="{{ target }}">{{ ui.icon('chevron-down', 'icon-sm text-secondary me-1') }}{{ hook.name }}</a>
+      {% else %}
+        {{ hook.name }}
+      {% endif %}
+    </td>
+    <td class="hook-status">
+      {% if hook.sample %}
+        <span class="status status-secondary"><span class="status-dot"></span>{{ 'REPOSITORY_HOOKS_SAMPLE'|trans }}</span>
+      {% elseif hook.executable %}
+        <span class="status status-green"><span class="status-dot status-dot-animated"></span>{{ 'REPOSITORY_HOOKS_ACTIVE'|trans }}</span>
+      {% else %}
+        <span class="status status-yellow"><span class="status-dot"></span>{{ 'REPOSITORY_HOOKS_NOT_EXECUTABLE'|trans }}</span>
+      {% endif %}
+    </td>
+    <td class="text-secondary text-nowrap">{{ hook.size|formatFileSize }}</td>
+    <td class="d-none d-md-table-cell"><code title="{{ 'REPOSITORY_HOOKS_CHECKSUM'|trans }}">{{ hook.checksum }}</code></td>
+    <td class="text-secondary text-nowrap d-none d-md-table-cell">
+      <span title="{{ hook.modifiedAt|date(commit_date_format) }}" data-bs-toggle="tooltip">{{ hook.modifiedAt|ago }}</span>
+    </td>
+  </tr>
+  {% if showHookContents %}
+    <tr class="collapse" id="{{ target }}">
+      <td colspan="5" class="bg-surface-secondary">
+        <pre class="hook-contents mb-0">{{ hook.contents }}</pre>
+      </td>
+    </tr>
+  {% endif %}
+{% endfor %}

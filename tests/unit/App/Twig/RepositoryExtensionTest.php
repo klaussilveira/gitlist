@@ -6,6 +6,7 @@ namespace GitList\App\Twig;
 
 use GitList\SCM\Blob;
 use GitList\SCM\Repository;
+use GitList\SCM\Submodule;
 use GitList\SCM\Tree;
 use PHPUnit\Framework\TestCase;
 
@@ -17,6 +18,19 @@ class RepositoryExtensionTest extends TestCase
         $this->assertFalse($extension->isTree(null));
         $this->assertFalse($extension->isTree(new Blob(new Repository('foo'), '123')));
         $this->assertTrue($extension->isTree(new Tree(new Repository('foo'), '123')));
+    }
+
+    public function testIsSeparatingSubmodulesFromFiles(): void
+    {
+        $extension = new RepositoryExtension();
+        $blob = new Blob(new Repository('foo'), '123');
+        $tree = new Tree(new Repository('foo'), '456');
+        $submodule = new Submodule(new Repository('foo'), '789', 'lib');
+        $items = [$blob, $tree, $submodule];
+
+        $this->assertSame([0 => $blob], $extension->onlyFiles($items));
+        $this->assertSame([1 => $tree], $extension->onlyTrees($items));
+        $this->assertSame([2 => $submodule], $extension->onlySubmodules($items));
     }
 
     public function testIsFormattingFileSizeWithInvalidInput(): void

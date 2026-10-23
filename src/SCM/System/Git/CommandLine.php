@@ -8,6 +8,7 @@ use Carbon\CarbonImmutable;
 use DateTime;
 use Exception;
 use GitList\SCM\AnnotatedLine;
+use GitList\SCM\AttributeRule;
 use GitList\SCM\Blame;
 use GitList\SCM\Blob;
 use GitList\SCM\Branch;
@@ -19,8 +20,11 @@ use GitList\SCM\Diff\File;
 use GitList\SCM\Diff\Parse;
 use GitList\SCM\Exception\CommandException;
 use GitList\SCM\Exception\InvalidCommitException;
+use GitList\SCM\Hook;
 use GitList\SCM\Item;
+use GitList\SCM\RemoteUrl;
 use GitList\SCM\Repository;
+use GitList\SCM\Submodule;
 use GitList\SCM\Symlink;
 use GitList\SCM\System;
 use GitList\SCM\Tag;
@@ -40,6 +44,18 @@ class CommandLine implements System
     ];
 
     public const DEFAULT_BRANCH_CANDIDATES = ['master', 'main', 'trunk'];
+
+    public const INFO_CONFIG_KEYS = [
+        'core.repositoryformatversion',
+        'core.sharedrepository',
+        'core.logallrefupdates',
+        'receive.denynonfastforwards',
+        'receive.denydeletes',
+        'receive.fsckobjects',
+        'transfer.fsckobjects',
+        'uploadpack.allowfilter',
+        'uploadpack.allowanysha1inwant',
+    ];
 
     protected string $path;
 
@@ -529,6 +545,216 @@ class CommandLine implements System
     }
 
     /**
+     * @return Hook[]
+     */
+    public function getHooks(Repository $repository): array
+    {
+        $directory = realpath($this->getGitPath($repository, 'hooks'));
+
+        if (false === $directory || !is_dir($directory)) {
+            return [];
+        }
+
+        $hooks = [];
+
+        foreach (scandir($directory) ?: [] as $name) {
+            $file = realpath(sprintf('%s/%s', $directory, $name));
+
+            if (false === $file || !is_file($file) || dirname($file) !== $directory) {
+                continue;
+            }
+
+            $hooks[] = new Hook(
+                $name,
+                (string) file_get_contents($file),
+                is_executable($file),
+                str_ends_with($name, '.sample'),
+                CarbonImmutable::createFromTimestamp((int) filemtime($file)),
+            );
+        }
+
+        return $hooks;
+    }
+
+    /**
+     * @return AttributeRule[]
+     */
+    public function getAttributes(Repository $repository, ?string $hash = 'HEAD', ?string $path = null): array
+    {
+        $hash = $this->resolveHash($repository, $hash);
+
+        $command = null === $path ? ['ls-tree', '-r', '-z', '--name-only', $hash] : [...['ls-tree', '-z', '--name-only', $hash, '--'], ...$this->getAttributeCandidates($path)];
+        $output = $this->run($command, $repository);
+        $files = array_values(array_filter(explode("\0", $output), fn (string $file): bool => '.gitattributes' === basename($file)));
+        usort($files, fn (string $first, string $second): int => substr_count($first, '/') <=> substr_count($second, '/'));
+
+        $rules = [];
+
+        foreach ($files as $file) {
+            $contents = $this->run(['cat-file', 'blob', sprintf('%s:%s', $hash, $file)], $repository);
+            $rules = [...$rules, ...AttributeRule::parse($file, $contents)];
+        }
+
+        $info = $this->getGitPath($repository, 'info/attributes');
+
+        if (is_file($info)) {
+            $rules = [...$rules, ...AttributeRule::parse('info/attributes', (string) file_get_contents($info))];
+        }
+
+        return $rules;
+    }
+
+    /**
+     * @return array{properties: array<string, string|int|bool>, remotes: array<string, string>, config: array<string, string>}
+     */
+    public function getInfo(Repository $repository): array
+    {
+        $state = explode("\n", trim($this->run(['rev-parse', '--show-object-format', '--is-bare-repository', '--is-shallow-repository'], $repository)));
+        $objects = [];
+
+        foreach (explode("\n", trim($this->run(['count-objects', '-v'], $repository))) as $line) {
+            [$key, $value] = explode(':', $line, 2) + [1 => ''];
+            $objects[$key] = (int) trim($value);
+        }
+
+        $alternates = $this->getGitPath($repository, 'objects/info/alternates');
+        $worktrees = glob(sprintf('%s/*', $this->getGitPath($repository, 'worktrees')), GLOB_ONLYDIR) ?: [];
+
+        $remotes = [];
+        $config = [];
+
+        foreach (array_filter(explode("\0", $this->run(['config', '--local', '--list', '-z'], $repository))) as $entry) {
+            [$key, $value] = explode("\n", $entry, 2) + [1 => ''];
+
+            if (preg_match('/^remote\.(.+)\.url$/', $key, $matches)) {
+                $remotes[$matches[1]] = RemoteUrl::redact($value);
+            }
+
+            if (in_array($key, self::INFO_CONFIG_KEYS, true)) {
+                $config[$key] = $value;
+            }
+        }
+
+        return [
+            'properties' => [
+                'object_format' => $state[0],
+                'bare' => 'true' === ($state[1] ?? ''),
+                'shallow' => 'true' === ($state[2] ?? ''),
+                'loose_objects' => $objects['count'] ?? 0,
+                'loose_size' => ($objects['size'] ?? 0) * 1024,
+                'packed_objects' => $objects['in-pack'] ?? 0,
+                'packs' => $objects['packs'] ?? 0,
+                'packed_size' => ($objects['size-pack'] ?? 0) * 1024,
+                'garbage' => $objects['garbage'] ?? 0,
+                'alternates' => is_file($alternates) ? count(array_filter(file($alternates, FILE_IGNORE_NEW_LINES) ?: [])) : 0,
+                'worktrees' => count($worktrees),
+            ],
+            'remotes' => $remotes,
+            'config' => $config,
+        ];
+    }
+
+    /**
+     * @return list<array{path: string, url: string, hash: ?string}>
+     */
+    public function getSubmodules(Repository $repository, ?string $hash = 'HEAD'): array
+    {
+        $hash = $this->resolveHash($repository, $hash);
+
+        try {
+            $output = $this->run(['config', '--blob', sprintf('%s:.gitmodules', $hash), '-z', '--get-regexp', '^submodule\..*\.(path|url)$'], $repository);
+        } catch (CommandException) {
+            return [];
+        }
+
+        $modules = [];
+
+        foreach (array_filter(explode("\0", $output)) as $entry) {
+            [$key, $value] = explode("\n", $entry, 2) + [1 => ''];
+
+            if (preg_match('/^submodule\.(.+)\.(path|url)$/', $key, $matches)) {
+                $modules[$matches[1]][$matches[2]] = $value;
+            }
+        }
+
+        $paths = array_values(array_filter(array_column($modules, 'path')));
+
+        if (!$paths) {
+            return [];
+        }
+
+        $gitlinks = [];
+
+        foreach (array_filter(explode("\0", $this->run([...['ls-tree', '-z', $hash, '--'], ...$paths], $repository))) as $line) {
+            if (preg_match('/^160000 commit ([0-9a-f]+)\t(.+)$/s', $line, $matches)) {
+                $gitlinks[$matches[2]] = $matches[1];
+            }
+        }
+
+        $submodules = [];
+
+        foreach ($modules as $module) {
+            if (empty($module['path'])) {
+                continue;
+            }
+
+            $submodules[] = [
+                'path' => $module['path'],
+                'url' => RemoteUrl::redact($module['url'] ?? ''),
+                'hash' => $gitlinks[$module['path']] ?? null,
+            ];
+        }
+
+        return $submodules;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function getNotes(Repository $repository, string $hash): array
+    {
+        $hash = $this->resolveHash($repository, $hash);
+        $notes = [];
+
+        foreach (array_filter(explode("\n", $this->run(['for-each-ref', '--format=%(refname)', 'refs/notes'], $repository))) as $reference) {
+            try {
+                $notes[substr($reference, strlen('refs/notes/'))] = $this->run(['notes', sprintf('--ref=%s', $reference), 'show', $hash], $repository);
+            } catch (CommandException) {
+                continue;
+            }
+        }
+
+        return $notes;
+    }
+
+    /**
+     * @return string[]
+     */
+    protected function getAttributeCandidates(string $path): array
+    {
+        $candidates = ['.gitattributes'];
+        $directory = '';
+
+        foreach (array_slice(explode('/', $path), 0, -1) as $segment) {
+            $directory = '' === $directory ? $segment : sprintf('%s/%s', $directory, $segment);
+            $candidates[] = sprintf('%s/.gitattributes', $directory);
+        }
+
+        return $candidates;
+    }
+
+    protected function getGitPath(Repository $repository, string $path): string
+    {
+        $gitPath = trim($this->run(['rev-parse', '--git-path', $path], $repository));
+
+        if (str_starts_with($gitPath, '/')) {
+            return $gitPath;
+        }
+
+        return sprintf('%s/%s', $repository->getPath(), $gitPath);
+    }
+
+    /**
      * @param string[] $command
      */
     protected function run(array $command, ?Repository $repository = null): string
@@ -607,6 +833,7 @@ class CommandLine implements System
     {
         $lines = explode("\0", $output);
         $root = new Tree($repository, $hash);
+        $submoduleUrls = null;
 
         foreach ($lines as $line) {
             if (empty($line)) {
@@ -620,7 +847,18 @@ class CommandLine implements System
             }
 
             if ('commit' == $file[1]) {
-                // Don't handle submodules yet
+                $submoduleUrls ??= array_column($this->getSubmodules($repository, $hash), 'url', 'path');
+                $submodule = new Submodule($repository, $file[2], $file[4], $submoduleUrls[$file[4]] ?? '');
+
+                if ($fetchCommitInfo) {
+                    try {
+                        $submodule->addParent($this->getLatestCommitFromPath($repository, $file[4], $hash));
+                    } catch (InvalidCommitException) {
+                    }
+                }
+
+                $root->addChild($submodule);
+
                 continue;
             }
 

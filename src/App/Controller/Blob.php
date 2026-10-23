@@ -40,6 +40,7 @@ class Blob
             'commit' => $commit,
             'blob' => $blob,
             'file' => $file,
+            'attributes' => $repository->getFileAttributes($commitish),
         ]));
     }
 
