@@ -2,6 +2,7 @@
 {% set tabs = [
   { key: 'code', icon: 'code', label: 'REPOSITORY_MENU_CODE', href: path('repository_show', { repository: repository.name }) },
   { key: 'commits', icon: 'git-commit', label: 'REPOSITORY_MENU_COMMITS', href: path('commit_list', { repository: repository.name, commitish: baseRef }) },
+  { key: 'graph', icon: 'git-fork', label: 'REPOSITORY_MENU_GRAPH', href: path('repository_graph', { repository: repository.name }) },
   { key: 'branches', icon: 'git-branch', label: 'REPOSITORY_MENU_BRANCHES', href: path('repository_list_branches', { repository: repository.name }) },
   { key: 'tags', icon: 'tags', label: 'REPOSITORY_MENU_TAGS', href: path('repository_list_tags', { repository: repository.name }) },
   { key: 'search', icon: 'search', label: 'REPOSITORY_MENU_SEARCH', href: path('repository_search_commits', { repository: repository.name, commitish: baseRef }) },

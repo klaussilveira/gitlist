@@ -1,0 +1,86 @@
+{% extends 'base.html.twig' %}
+{% import 'macros.html.twig' as ui %}
+
+{% block title %}
+  {{ 'REPOSITORY_GRAPH_TITLE'|trans }} - {{ repository.name }}
+{% endblock %}
+
+{% block header %}
+  {% include 'page-header.html.twig' with { repository: repository, baseRef: repository.defaultBranch, current: 'graph' } %}
+{% endblock %}
+
+{% block search %}
+  {% include 'search.html.twig' with { repository: repository, commitish: repository.defaultBranch } %}
+{% endblock %}
+
+{% block body %}
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">{{ ui.icon('git-fork', 'me-2 text-secondary') }}{{ 'REPOSITORY_GRAPH_TITLE'|trans }}</h3>
+      <div class="card-actions">
+        <a href="{{ path('repository_list_branches', { repository: repository.name }) }}" class="btn btn-sm">
+          {{ ui.icon('git-compare') }} {{ 'REPOSITORY_COMPARE_BRANCHES'|trans }}
+        </a>
+      </div>
+    </div>
+    {% if rows %}
+      <div class="table-responsive">
+        <table class="table card-table table-hover graph-table">
+          <tbody>
+            {% for row in rows %}
+              {% set commit = row.commit %}
+              <tr>
+                <td class="graph-cell">
+                  {% include 'Repository/graph-lanes.html.twig' with { row: row, width: width } %}
+                </td>
+                <td class="graph-subject">
+                  <div class="d-flex align-items-center gap-1 text-truncate">
+                    {% for ref in refs[commit.hash] ?? [] %}
+                      {% if ref.type == 'branch' %}
+                        <a href="{{ path('repository_tree', { repository: repository.name, commitish: ref.name }) }}" class="badge {{ ref.name == repository.defaultBranch ? 'bg-primary text-primary-fg' : 'bg-blue-lt' }}">{{ ui.icon('git-branch') }} {{ ref.name }}</a>
+                      {% else %}
+                        <a href="{{ path('repository_tree', { repository: repository.name, commitish: ref.name }) }}" class="badge bg-green-lt">{{ ui.icon('tag') }} {{ ref.name }}</a>
+                      {% endif %}
+                    {% endfor %}
+                    <a href="{{ path('commit_show', { repository: repository.name, commitish: commit.hash }) }}" class="text-reset text-truncate" title="{{ commit.subject }}">{{ commit.subject }}</a>
+                  </div>
+                </td>
+                <td class="d-none d-md-table-cell text-secondary text-nowrap">
+                  {{ ui.avatar(commit.author, 'xs', 'me-1') }} {{ commit.author.name }}
+                </td>
+                <td class="d-none d-lg-table-cell text-secondary text-nowrap">
+                  <span title="{{ commit.commitedAt|date(commit_list_date_format) }}" data-bs-toggle="tooltip">{{ commit.commitedAt|ago }}</span>
+                </td>
+                <td class="text-end text-nowrap">
+                  <a href="{{ path('commit_show', { repository: repository.name, commitish: commit.hash }) }}" class="btn btn-sm font-monospace">{{ commit.shortHash }}</a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="card-body">
+        {{ ui.empty('THEME_NO_COMMITS'|trans, 'THEME_NO_COMMITS_HINT'|trans, 'not-found') }}
+      </div>
+    {% endif %}
+  </div>
+
+  <nav class="mt-3" aria-label="{{ 'REPOSITORY_COMMITS_NAV_TITLE'|trans }}">
+    <ul class="pagination justify-content-center">
+      <li class="page-item{{ page == 1 ? ' disabled' }}">
+        <a class="page-link" href="{{ path('repository_graph', { repository: repository.name, page: previousPage }) }}">
+          {{ ui.icon('chevron-left') }} {{ 'REPOSITORY_COMMITS_NAV_NEWER'|trans }}
+        </a>
+      </li>
+      <li class="page-item active" aria-current="page">
+        <span class="page-link">{{ page }}</span>
+      </li>
+      <li class="page-item{{ not hasMore ? ' disabled' }}">
+        <a class="page-link" href="{{ path('repository_graph', { repository: repository.name, page: nextPage }) }}">
+          {{ 'REPOSITORY_COMMITS_NAV_OLDER'|trans }} {{ ui.icon('chevron-right') }}
+        </a>
+      </li>
+    </ul>
+  </nav>
+{% endblock %}

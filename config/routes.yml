@@ -28,6 +28,26 @@ repository_list_tags:
   requirements:
     repository: '%valid_repository_name%'
 
+repository_graph:
+  path: /{repository}/graph
+  controller: GitList\App\Controller\Graph::show
+  requirements:
+    repository: '%valid_repository_name%'
+
+repository_compare_form:
+  path: /{repository}/compare
+  controller: GitList\App\Controller\Graph::compareForm
+  requirements:
+    repository: '%valid_repository_name%'
+
+repository_compare:
+  path: /{repository}/compare/{base}...{head}
+  controller: GitList\App\Controller\Graph::compare
+  requirements:
+    repository: '%valid_repository_name%'
+    base: '%valid_commitish_format%'
+    head: '%valid_commitish_format%'
+
 repository_feed:
   path: /{repository}/feed/{commitish}.{format}
   controller: GitList\App\Controller\Commit::feed

@@ -749,6 +749,143 @@ class CommandLineTest extends TestCase
         $this->assertEquals('2016-11-23 13:17:29', $initial->getAuthoredAt()->format('Y-m-d H:i:s'));
     }
 
+    public function testIsGettingGraphOfAllBranches(): void
+    {
+        $commandLine = new CommandLine();
+        $commits = $commandLine->getGraph(new Repository(self::FIXTURE_REPO), 20);
+
+        $graph = array_map(fn ($commit) => [$commit->getShortHash(), array_map(fn ($parent) => $parent->getShortHash(), $commit->getParents())], array_values($commits));
+
+        $this->assertEquals([
+            ['a003d30', ['5570c14']],
+            ['5570c14', ['85e6568']],
+            ['85e6568', ['0e3ddf0']],
+            ['859f67f', ['9d78a8c']],
+            ['9d78a8c', ['0e3ddf0']],
+            ['0e3ddf0', ['b064e71']],
+            ['b064e71', []],
+        ], $graph);
+    }
+
+    public function testIsLimitingGraph(): void
+    {
+        $commandLine = new CommandLine();
+        $commits = $commandLine->getGraph(new Repository(self::FIXTURE_REPO), 2);
+
+        $this->assertEquals(['a003d30', '5570c14'], array_map(fn ($commit) => $commit->getShortHash(), array_values($commits)));
+    }
+
+    public function testIsGettingAheadBehind(): void
+    {
+        $repository = new Repository(self::FIXTURE_REPO);
+        $commandLine = new CommandLine();
+
+        $this->assertEquals([2, 3], $commandLine->getAheadBehind($repository, 'master', 'feature/1.2-dev'));
+        $this->assertEquals([3, 2], $commandLine->getAheadBehind($repository, 'feature/1.2-dev', 'master'));
+        $this->assertEquals([0, 0], $commandLine->getAheadBehind($repository, 'master', 'master'));
+    }
+
+    public function testIsRejectingUnknownRevisionInAheadBehind(): void
+    {
+        $this->expectException(InvalidCommitException::class);
+
+        $commandLine = new CommandLine();
+        $commandLine->getAheadBehind(new Repository(self::FIXTURE_REPO), 'master', 'does-not-exist');
+    }
+
+    public function testIsGettingMergeBase(): void
+    {
+        $commandLine = new CommandLine();
+
+        $this->assertEquals('0e3ddf0c6d39e7a300bef61b99a914a86ce5e267', $commandLine->getMergeBase(new Repository(self::FIXTURE_REPO), 'master', 'feature/1.2-dev'));
+    }
+
+    public function testIsGettingNoMergeBaseForUnrelatedHistories(): void
+    {
+        $path = $this->createTemporaryRepository();
+        $this->commit($path, 'a.txt', 'Test', 'test@example.com', "first\n");
+        $this->git(['checkout', '--quiet', '--orphan', 'unrelated'], $path);
+        $this->commit($path, 'b.txt', 'Test', 'test@example.com', "unrelated\n");
+
+        $commandLine = new CommandLine();
+
+        $this->assertNull($commandLine->getMergeBase(new Repository($path), 'master', 'unrelated'));
+    }
+
+    public function testIsGettingCommitsBetween(): void
+    {
+        $repository = new Repository(self::FIXTURE_REPO);
+        $commandLine = new CommandLine();
+
+        $ahead = $commandLine->getCommitsBetween($repository, 'master', 'feature/1.2-dev', 10);
+        $behind = $commandLine->getCommitsBetween($repository, 'feature/1.2-dev', 'master', 10);
+
+        $this->assertEquals(['Added symlink.', 'Added new config.'], array_map(fn ($commit) => $commit->getSubject(), array_values($ahead)));
+        $this->assertEquals(['Fixed mm.', 'Added mm.', 'Added symlink.'], array_map(fn ($commit) => $commit->getSubject(), array_values($behind)));
+        $this->assertCount(1, $commandLine->getCommitsBetween($repository, 'master', 'feature/1.2-dev', 1));
+    }
+
+    public function testIsGettingDiffBetween(): void
+    {
+        $commandLine = new CommandLine();
+        $files = $commandLine->getDiffBetween(new Repository(self::FIXTURE_REPO), 'master', 'feature/1.2-dev');
+
+        $this->assertEquals(['new.json', 'old.json'], array_map(fn ($file) => $file->getName(), $files));
+    }
+
+    public function testIsNotExecutingRepositoryControlledExternalDiff(): void
+    {
+        $path = $this->createTemporaryRepository();
+        $marker = sprintf('%s/gitlist-external-diff-%s', sys_get_temp_dir(), uniqid());
+        $this->temporaryRepositories[] = $marker;
+
+        file_put_contents(sprintf('%s/rce.sh', $path), sprintf("#!/bin/sh\ntouch %s\n", escapeshellarg($marker)));
+        chmod(sprintf('%s/rce.sh', $path), 0755);
+        $this->git(['config', 'diff.external', './rce.sh'], $path);
+
+        $this->commit($path, 'a.txt', 'Test', 'test@example.com', "first\n");
+        $this->git(['checkout', '--quiet', '-b', 'feature'], $path);
+        file_put_contents(sprintf('%s/a.txt', $path), "changed\n");
+        $this->git(['-c', 'commit.gpgsign=false', '-c', 'user.name=Test', '-c', 'user.email=test@example.com', 'commit', '--quiet', '--all', '--message', 'change'], $path);
+
+        $commandLine = new CommandLine();
+        $files = $commandLine->getDiffBetween(new Repository($path), 'master', 'feature');
+
+        $this->assertFileDoesNotExist($marker);
+        $this->assertEquals(['a.txt'], array_map(fn ($file) => $file->getName(), $files));
+    }
+
+    public function testIsGettingForkPoint(): void
+    {
+        $repository = new Repository(self::FIXTURE_REPO);
+        $commandLine = new CommandLine();
+
+        $this->assertEquals('0e3ddf0c6d39e7a300bef61b99a914a86ce5e267', $commandLine->getForkPoint($repository, 'feature/1.2-dev', ['master']));
+        $this->assertEquals('0e3ddf0c6d39e7a300bef61b99a914a86ce5e267', $commandLine->getForkPoint($repository, 'master', ['feature/1.2-dev']));
+        $this->assertNull($commandLine->getForkPoint($repository, 'feature/1.2-dev', []));
+        $this->assertNull($commandLine->getForkPoint($repository, 'feature/1.2-dev', ['feature/1.2-dev']));
+    }
+
+    public function testIsGettingRefsWithPeeledTags(): void
+    {
+        $commandLine = new CommandLine();
+
+        $this->assertEquals([
+            ['type' => 'branch', 'name' => 'feature/1.2-dev', 'hash' => '859f67f18fc4522a4da5b784bce6cb9ada034a16'],
+            ['type' => 'branch', 'name' => 'master', 'hash' => 'a003d30bc7a355f55bf28479e62134186bae1aed'],
+            ['type' => 'tag', 'name' => '1.2', 'hash' => '9d78a8cbc59caa98aebaf4ca9d6ee63cca241c4d'],
+        ], $commandLine->getRefs(new Repository(self::FIXTURE_REPO)));
+    }
+
+    public function testIsGettingBranchesContainingCommit(): void
+    {
+        $repository = new Repository(self::FIXTURE_REPO);
+        $commandLine = new CommandLine();
+
+        $this->assertEquals(['feature/1.2-dev', 'master'], $commandLine->getBranchesContaining($repository, '0e3ddf0c6d39e7a300bef61b99a914a86ce5e267'));
+        $this->assertEquals(['master'], $commandLine->getBranchesContaining($repository, 'a003d30bc7a355f55bf28479e62134186bae1aed'));
+    }
+
     public function testIsReportingSignatureStatus(): void
     {
         if (empty(shell_exec('which ssh-keygen 2> /dev/null'))) {
@@ -756,17 +893,17 @@ class CommandLineTest extends TestCase
         }
 
         $path = $this->createTemporaryRepository();
-        $keys = $path.'/.keys';
+        $keys = sprintf('%s/.keys', $path);
         mkdir($keys);
-        (new Process(['ssh-keygen', '-q', '-t', 'ed25519', '-N', '', '-C', 'trusted', '-f', $keys.'/trusted']))->mustRun();
-        (new Process(['ssh-keygen', '-q', '-t', 'ed25519', '-N', '', '-C', 'stranger', '-f', $keys.'/stranger']))->mustRun();
-        file_put_contents($keys.'/allowed', 'test@example.com '.file_get_contents($keys.'/trusted.pub'));
+        (new Process(['ssh-keygen', '-q', '-t', 'ed25519', '-N', '', '-C', 'trusted', '-f', sprintf('%s/trusted', $keys)]))->mustRun();
+        (new Process(['ssh-keygen', '-q', '-t', 'ed25519', '-N', '', '-C', 'stranger', '-f', sprintf('%s/stranger', $keys)]))->mustRun();
+        file_put_contents(sprintf('%s/allowed', $keys), sprintf('test@example.com %s', file_get_contents(sprintf('%s/trusted.pub', $keys))));
 
         $this->git(['config', 'gpg.format', 'ssh'], $path);
-        $this->git(['config', 'gpg.ssh.allowedSignersFile', $keys.'/allowed'], $path);
+        $this->git(['config', 'gpg.ssh.allowedSignersFile', sprintf('%s/allowed', $keys)], $path);
 
-        $this->signedCommit($path, 'a.txt', $keys.'/trusted.pub', "trusted\n");
-        $this->signedCommit($path, 'b.txt', $keys.'/stranger.pub', "stranger\n");
+        $this->signedCommit($path, 'a.txt', sprintf('%s/trusted.pub', $keys), "trusted\n");
+        $this->signedCommit($path, 'b.txt', sprintf('%s/stranger.pub', $keys), "stranger\n");
         $this->commit($path, 'c.txt', 'Test', 'test@example.com', "unsigned\n");
 
         $forged = new Process(['sh', '-c', 'git cat-file commit HEAD~2 | sed "s/^trusted$/forged/" | git hash-object -t commit -w --stdin'], $path);
@@ -849,10 +986,10 @@ class CommandLineTest extends TestCase
 
     protected function signedCommit(string $path, string $file, string $key, string $message): void
     {
-        file_put_contents($path.'/'.$file, "contents\n");
+        file_put_contents(sprintf('%s/%s', $path, $file), "contents\n");
 
         $this->git(['add', $file], $path);
-        $this->git(['-c', 'user.signingkey='.$key, 'commit', '--quiet', '-S', '--cleanup=verbatim', '--file', '-'], $path, [
+        $this->git(['-c', sprintf('user.signingkey=%s', $key), 'commit', '--quiet', '-S', '--cleanup=verbatim', '--file', '-'], $path, [
             'GIT_AUTHOR_NAME' => 'Test',
             'GIT_AUTHOR_EMAIL' => 'test@example.com',
             'GIT_AUTHOR_DATE' => self::COMMIT_DATE,

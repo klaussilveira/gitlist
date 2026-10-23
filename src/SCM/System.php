@@ -59,4 +59,41 @@ interface System
     public function searchCommits(Repository $repository, Criteria $criteria, ?string $hash = null): array;
 
     public function archive(Repository $repository, string $format, string $hash, string $path): string;
+
+    /**
+     * @return array<string, Commit>
+     */
+    public function getGraph(Repository $repository, int $limit): array;
+
+    /**
+     * @return array{int, int}
+     */
+    public function getAheadBehind(Repository $repository, string $base, string $head): array;
+
+    public function getMergeBase(Repository $repository, string $base, string $head): ?string;
+
+    /**
+     * @return array<string, Commit>
+     */
+    public function getCommitsBetween(Repository $repository, string $base, string $head, int $limit): array;
+
+    /**
+     * @return Diff\File[]
+     */
+    public function getDiffBetween(Repository $repository, string $base, string $head): array;
+
+    /**
+     * @param string[] $excluded
+     */
+    public function getForkPoint(Repository $repository, string $head, array $excluded): ?string;
+
+    /**
+     * @return string[]
+     */
+    public function getBranchesContaining(Repository $repository, string $hash): array;
+
+    /**
+     * @return list<array{type: string, name: string, hash: string}>
+     */
+    public function getRefs(Repository $repository): array;
 }

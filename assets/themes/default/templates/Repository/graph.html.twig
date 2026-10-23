@@ -1,0 +1,76 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+  {{ 'REPOSITORY_GRAPH_TITLE'|trans }} - {{ repository.name }}
+{% endblock %}
+
+{% block header %}
+  {% include 'page-header.html.twig' with { repository: repository, baseRef: repository.defaultBranch, current: 'graph' } %}
+{% endblock %}
+
+{% block search %}
+  {% include 'search.html.twig' with { repository: repository, commitish: repository.defaultBranch } %}
+{% endblock %}
+
+{% block body %}
+<div class="row module-row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        {{ 'REPOSITORY_GRAPH_TITLE'|trans }}
+        <a href="{{ path('repository_list_branches', { repository: repository.name }) }}" class="btn btn-sm btn-secondary">
+          <svg class="icon"><use href="#i-git-compare"/></svg> {{ 'REPOSITORY_COMPARE_BRANCHES'|trans }}
+        </a>
+      </div>
+      <div class="card-body p-0 table-responsive">
+        <table class="table table-hover graph-table">
+          <tbody>
+            {% for row in rows %}
+              {% set commit = row.commit %}
+              <tr>
+                <td class="graph-cell">
+                  {% include 'Repository/graph-lanes.html.twig' with { row: row, width: width } %}
+                </td>
+                <td class="graph-subject">
+                  <div class="d-flex align-items-center text-truncate">
+                    {% for ref in refs[commit.hash] ?? [] %}
+                      {% if ref.type == 'branch' %}
+                        <a href="{{ path('repository_tree', { repository: repository.name, commitish: ref.name }) }}" class="badge text-bg-primary me-1"><svg class="icon"><use href="#i-git-branch"/></svg>{{ ref.name }}</a>
+                      {% else %}
+                        <a href="{{ path('repository_tree', { repository: repository.name, commitish: ref.name }) }}" class="badge text-bg-success me-1"><svg class="icon"><use href="#i-pricetag"/></svg>{{ ref.name }}</a>
+                      {% endif %}
+                    {% endfor %}
+                    <a href="{{ path('commit_show', { repository: repository.name, commitish: commit.hash }) }}" class="text-truncate" title="{{ commit.subject }}">{{ commit.subject }}</a>
+                  </div>
+                </td>
+                <td class="d-none d-md-table-cell text-muted text-nowrap">{{ commit.author.name }}</td>
+                <td class="d-none d-lg-table-cell text-muted text-nowrap">{{ commit.commitedAt|date(commit_list_date_format) }}</td>
+                <td class="text-end text-nowrap">
+                  <a href="{{ path('commit_show', { repository: repository.name, commitish: commit.hash }) }}" class="btn btn-sm btn-secondary">{{ commit.shortHash }}</a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<nav aria-label="{{ 'REPOSITORY_COMMITS_NAV_TITLE'|trans }}">
+  <ul class="pagination justify-content-center">
+    <li class="page-item{{ page == 1 ? ' disabled' }}">
+      <a class="page-link" href="{{ path('repository_graph', { repository: repository.name, page: previousPage }) }}" aria-label="{{ 'REPOSITORY_COMMITS_NAV_NEWER'|trans }}">
+        <span aria-hidden="true">&laquo;</span>
+        <span>{{ 'REPOSITORY_COMMITS_NAV_NEWER'|trans }}</span>
+      </a>
+    </li>
+    <li class="page-item{{ not hasMore ? ' disabled' }}">
+      <a class="page-link" href="{{ path('repository_graph', { repository: repository.name, page: nextPage }) }}" aria-label="{{ 'REPOSITORY_COMMITS_NAV_OLDER'|trans }}">
+        <span>{{ 'REPOSITORY_COMMITS_NAV_OLDER'|trans }}</span>
+        <span aria-hidden="true">&raquo;</span>
+      </a>
+    </li>
+  </ul>
+</nav>
+{% endblock %}

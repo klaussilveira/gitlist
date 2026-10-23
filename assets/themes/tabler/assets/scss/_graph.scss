@@ -1,0 +1,65 @@
+$graph-lane-colors: (
+  0: var(--tblr-blue),
+  1: var(--tblr-green),
+  2: var(--tblr-orange),
+  3: var(--tblr-purple),
+  4: var(--tblr-red),
+  5: var(--tblr-cyan),
+  6: var(--tblr-pink),
+  7: var(--tblr-yellow),
+);
+
+.graph-table {
+  margin-bottom: 0;
+
+  tr {
+    height: 44px;
+  }
+
+  td {
+    padding-top: 0;
+    padding-bottom: 0;
+    vertical-align: middle;
+    border: 0;
+  }
+
+  .graph-cell {
+    width: 1%;
+    padding-right: 0.5rem;
+    line-height: 0;
+  }
+
+  .graph-subject {
+    width: 100%;
+    max-width: 0;
+  }
+
+  .badge {
+    flex-shrink: 0;
+  }
+}
+
+.graph-lanes {
+  display: block;
+  overflow: visible;
+}
+
+.graph-line {
+  fill: none;
+  stroke-width: 2;
+}
+
+.graph-node {
+  stroke: var(--tblr-bg-surface);
+  stroke-width: 2;
+}
+
+@each $index, $color in $graph-lane-colors {
+  .graph-line.graph-lane-#{$index} {
+    stroke: $color;
+  }
+
+  .graph-node.graph-lane-#{$index} {
+    fill: $color;
+  }
+}

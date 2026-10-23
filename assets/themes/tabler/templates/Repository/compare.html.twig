@@ -1,0 +1,100 @@
+{% extends 'base.html.twig' %}
+{% import 'macros.html.twig' as ui %}
+
+{% block title %}
+  {{ 'REPOSITORY_COMPARE_TITLE'|trans }} {{ base }}...{{ head }} - {{ repository.name }}
+{% endblock %}
+
+{% block header %}
+  {% include 'page-header.html.twig' with { repository: repository, baseRef: repository.defaultBranch, current: 'branches' } %}
+{% endblock %}
+
+{% block search %}
+  {% include 'search.html.twig' with { repository: repository, commitish: head } %}
+{% endblock %}
+
+{% block body %}
+  <form class="card mb-3" method="get" action="{{ path('repository_compare_form', { repository: repository.name }) }}">
+    <div class="card-body">
+      <div class="row g-2 align-items-end">
+        {% for field in [{ name: 'base', value: base, label: 'REPOSITORY_COMPARE_BASE' }, { name: 'head', value: head, label: 'REPOSITORY_COMPARE_HEAD' }] %}
+          <div class="col-12 col-md">
+            <label class="form-label" for="compare-{{ field.name }}">{{ field.label|trans }}</label>
+            <select class="form-select" id="compare-{{ field.name }}" name="{{ field.name }}">
+              <optgroup label="{{ 'REPOSITORY_REFLIST_BRANCHES'|trans }}">
+                {% for branch in repository.branches %}
+                  <option value="{{ branch.name }}"{{ branch.name == field.value ? ' selected' }}>{{ branch.name }}</option>
+                {% endfor %}
+              </optgroup>
+              <optgroup label="{{ 'REPOSITORY_REFLIST_TAGS'|trans }}">
+                {% for tag in repository.tags %}
+                  <option value="{{ tag.name }}"{{ tag.name == field.value ? ' selected' }}>{{ tag.name }}</option>
+                {% endfor %}
+              </optgroup>
+            </select>
+          </div>
+          {% if loop.first %}
+            <div class="col-auto">
+              <a href="{{ path('repository_compare', { repository: repository.name, base: head, head: base }) }}" class="btn btn-icon" aria-label="{{ 'REPOSITORY_COMPARE_SWAP'|trans }}" title="{{ 'REPOSITORY_COMPARE_SWAP'|trans }}" data-bs-toggle="tooltip">{{ ui.icon('arrows-exchange') }}</a>
+            </div>
+          {% endif %}
+        {% endfor %}
+        <div class="col-12 col-md-auto">
+          <button type="submit" class="btn btn-primary w-100">{{ ui.icon('git-compare') }} {{ 'REPOSITORY_COMPARE_TITLE'|trans }}</button>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer d-flex flex-wrap align-items-center gap-3 compare-summary">
+      <span class="badge bg-green-lt">{{ ui.icon('arrow-up') }} {{ 'REPOSITORY_COMPARE_AHEAD'|trans({ '%count%': ahead }) }}</span>
+      <span class="badge bg-red-lt">{{ ui.icon('arrow-down') }} {{ 'REPOSITORY_COMPARE_BEHIND'|trans({ '%count%': behind }) }}</span>
+      {% if mergeBase %}
+        <span class="text-secondary">
+          {{ 'REPOSITORY_COMPARE_MERGE_BASE'|trans }}
+          <a href="{{ path('commit_show', { repository: repository.name, commitish: mergeBase.hash }) }}" class="font-monospace">{{ mergeBase.shortHash }}</a>
+          {{ mergeBase.subject }}
+          <span title="{{ mergeBase.commitedAt|date(commit_list_date_format) }}" data-bs-toggle="tooltip">({{ mergeBase.commitedAt|ago }})</span>
+        </span>
+      {% endif %}
+    </div>
+  </form>
+
+  {% if not mergeBase %}
+    <div class="alert alert-warning" role="alert">
+      <div class="alert-icon">{{ ui.icon('alert-circle') }}</div>
+      <div>{{ 'REPOSITORY_COMPARE_UNRELATED'|trans({ '%base%': base, '%head%': head }) }}</div>
+    </div>
+  {% endif %}
+
+  {% if ahead == 0 and behind == 0 %}
+    <div class="card">
+      <div class="card-body">
+        {{ ui.empty('REPOSITORY_COMPARE_IDENTICAL'|trans({ '%base%': base, '%head%': head }), 'REPOSITORY_COMPARE_IDENTICAL_HINT'|trans) }}
+      </div>
+    </div>
+  {% else %}
+    {% for section in [{ id: 'ahead', commits: aheadCommits, count: ahead, title: 'REPOSITORY_COMPARE_ONLY_IN', ref: head, other: base }, { id: 'behind', commits: behindCommits, count: behind, title: 'REPOSITORY_COMPARE_ONLY_IN', ref: base, other: head }] %}
+      {% if section.count > 0 %}
+        <div class="card mb-3 compare-{{ section.id }}">
+          <div class="card-header">
+            <h3 class="card-title">{{ section.title|trans({ '%ref%': section.ref, '%other%': section.other }) }}</h3>
+            <div class="card-actions">
+              <span class="badge">{{ section.count }}</span>
+            </div>
+          </div>
+          {% include 'Commit/list-items.html.twig' with { repository: repository, commits: section.commits } %}
+          {% if section.count > limit %}
+            <div class="card-footer text-secondary">
+              {{ 'REPOSITORY_COMPARE_TRUNCATED'|trans({ '%limit%': limit, '%count%': section.count }) }}
+              <a href="{{ path('commit_list', { repository: repository.name, commitish: section.ref }) }}">{{ 'REPOSITORY_MENU_COMMITS'|trans }}</a>
+            </div>
+          {% endif %}
+        </div>
+      {% endif %}
+    {% endfor %}
+
+    {% if diffs %}
+      <h3 class="mt-4 mb-3">{{ 'REPOSITORY_COMPARE_FILES'|trans({ '%count%': diffs|length }) }}</h3>
+      {% include 'Commit/diff.html.twig' with { repository: repository, files: diffs, newRef: head, newLabel: head, oldRef: mergeBase.hash, oldLabel: mergeBase.shortHash } %}
+    {% endif %}
+  {% endif %}
+{% endblock %}

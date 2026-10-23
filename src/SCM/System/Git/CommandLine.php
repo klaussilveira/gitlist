@@ -15,9 +15,11 @@ use GitList\SCM\Commit;
 use GitList\SCM\Commit\Criteria;
 use GitList\SCM\Commit\Person;
 use GitList\SCM\Commit\Signature;
+use GitList\SCM\Diff\File;
 use GitList\SCM\Diff\Parse;
 use GitList\SCM\Exception\CommandException;
 use GitList\SCM\Exception\InvalidCommitException;
+use GitList\SCM\Item;
 use GitList\SCM\Repository;
 use GitList\SCM\Symlink;
 use GitList\SCM\System;
@@ -371,6 +373,159 @@ class CommandLine implements System
         }
 
         return $destination;
+    }
+
+    /**
+     * @return array<string, Commit>
+     */
+    public function getGraph(Repository $repository, int $limit): array
+    {
+        $delimiter = $this->generateSafeCommitDelimiter();
+        $output = $this->run([
+            'log',
+            '--branches',
+            '--tags',
+            '--topo-order',
+            '--max-count',
+            (string) $limit,
+            $this->getCommitFormat($delimiter),
+        ], $repository);
+        $commits = $this->parseCommitsData($repository, $output, $delimiter);
+
+        foreach ($commits as $commit) {
+            $parents = array_filter($commit->getParents(), fn (Item $parent): bool => '' !== $parent->getHash());
+            $commit->clearParents();
+
+            foreach ($parents as $parent) {
+                $commit->addParent($parent);
+            }
+        }
+
+        return $commits;
+    }
+
+    /**
+     * @return array{int, int}
+     */
+    public function getAheadBehind(Repository $repository, string $base, string $head): array
+    {
+        $base = $this->resolveHash($repository, $base);
+        $head = $this->resolveHash($repository, $head);
+
+        try {
+            $output = $this->run(['rev-list', '--left-right', '--count', sprintf('%s...%s', $base, $head)], $repository);
+        } catch (CommandException) {
+            throw new InvalidCommitException(sprintf('%s...%s', $base, $head));
+        }
+
+        [$behind, $ahead] = explode("\t", trim($output));
+
+        return [(int) $ahead, (int) $behind];
+    }
+
+    public function getMergeBase(Repository $repository, string $base, string $head): ?string
+    {
+        $base = $this->resolveHash($repository, $base);
+        $head = $this->resolveHash($repository, $head);
+
+        try {
+            $output = trim($this->run(['merge-base', $base, $head], $repository));
+        } catch (CommandException) {
+            return null;
+        }
+
+        return '' === $output ? null : $output;
+    }
+
+    /**
+     * @return array<string, Commit>
+     */
+    public function getCommitsBetween(Repository $repository, string $base, string $head, int $limit): array
+    {
+        $base = $this->resolveHash($repository, $base);
+        $head = $this->resolveHash($repository, $head);
+
+        $delimiter = $this->generateSafeCommitDelimiter();
+        $output = $this->run([
+            'log',
+            '--max-count',
+            (string) $limit,
+            $this->getCommitFormat($delimiter),
+            $head,
+            '--not',
+            $base,
+        ], $repository);
+
+        return $this->parseCommitsData($repository, $output, $delimiter);
+    }
+
+    /**
+     * @return File[]
+     */
+    public function getDiffBetween(Repository $repository, string $base, string $head): array
+    {
+        $base = $this->resolveHash($repository, $base);
+        $head = $this->resolveHash($repository, $head);
+
+        $output = $this->run(['diff', '--no-ext-diff', '--no-textconv', '--ignore-blank-lines', '-w', '-b', sprintf('%s...%s', $base, $head)], $repository);
+
+        return (new Parse())->fromRawBlock($output);
+    }
+
+    /**
+     * @param string[] $excluded
+     */
+    public function getForkPoint(Repository $repository, string $head, array $excluded): ?string
+    {
+        $head = $this->resolveHash($repository, $head);
+        $command = ['rev-list', '--topo-order', '--parents', $head];
+
+        foreach ($excluded as $branch) {
+            $command[] = sprintf('^%s', $this->resolveHash($repository, $branch));
+        }
+
+        $lines = array_filter(explode("\n", trim($this->run($command, $repository))));
+
+        if (!$lines) {
+            return null;
+        }
+
+        $oldest = explode(' ', (string) end($lines));
+
+        return $oldest[1] ?? null;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getBranchesContaining(Repository $repository, string $hash): array
+    {
+        $hash = $this->resolveHash($repository, $hash);
+        $output = $this->run(['for-each-ref', '--contains', $hash, '--format=%(refname:short)', 'refs/heads'], $repository);
+
+        return array_values(array_filter(explode("\n", trim($output))));
+    }
+
+    /**
+     * @return list<array{type: string, name: string, hash: string}>
+     */
+    public function getRefs(Repository $repository): array
+    {
+        $output = $this->run(['for-each-ref', '--format=%(refname)%00%(objectname)%00%(*objectname)', 'refs/heads', 'refs/tags'], $repository);
+        $refs = [];
+
+        foreach (array_filter(explode("\n", $output)) as $line) {
+            [$reference, $object, $peeled] = explode("\0", $line);
+            $type = str_starts_with($reference, 'refs/tags/') ? 'tag' : 'branch';
+
+            $refs[] = [
+                'type' => $type,
+                'name' => substr($reference, strlen('tag' === $type ? 'refs/tags/' : 'refs/heads/')),
+                'hash' => $peeled ?: $object,
+            ];
+        }
+
+        return $refs;
     }
 
     /**

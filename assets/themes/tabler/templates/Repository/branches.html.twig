@@ -10,7 +10,6 @@
 {% endblock %}
 
 {% block body %}
-{% set defaultBranch = repository.defaultBranch %}
 <div class="card">
   <div class="card-header">
     <h3 class="card-title">{{ 'REPOSITORY_BRANCH_TITLE'|trans }}</h3>
@@ -34,12 +33,35 @@
               <a href="{{ path('commit_show', { repository: repository.name, commitish: branch.target.hash }) }}" class="font-monospace me-1">{{ branch.target.shortHash }}</a>
               {{ branch.target.subject }}
             </div>
+            {% set comparison = comparisons[branch.name] ?? null %}
+            {% if comparison %}
+              <div class="d-flex flex-wrap align-items-center gap-2 mt-1 small branch-comparison">
+                <a href="{{ path('repository_compare', { repository: repository.name, base: defaultBranch, head: branch.name }) }}" class="badge bg-green-lt">{{ ui.icon('arrow-up') }} {{ 'REPOSITORY_COMPARE_AHEAD_OF'|trans({ '%count%': comparison.ahead, '%ref%': defaultBranch }) }}</a>
+                <a href="{{ path('repository_compare', { repository: repository.name, base: branch.name, head: defaultBranch }) }}" class="badge bg-red-lt">{{ ui.icon('arrow-down') }} {{ 'REPOSITORY_COMPARE_BEHIND_OF'|trans({ '%count%': comparison.behind, '%ref%': defaultBranch }) }}</a>
+                {% if comparison.forkPoint %}
+                  <span class="text-secondary">
+                    {{ 'REPOSITORY_BRANCH_FORKED_FROM'|trans({ '%ref%': defaultBranch }) }}
+                    <a href="{{ path('commit_show', { repository: repository.name, commitish: comparison.forkPoint.hash }) }}" class="font-monospace">{{ comparison.forkPoint.shortHash }}</a>
+                    <span title="{{ comparison.forkPoint.commitedAt|date(commit_list_date_format) }}" data-bs-toggle="tooltip">{{ comparison.forkPoint.commitedAt|ago }}</span>
+                  </span>
+                {% endif %}
+                {% if comparison.parent %}
+                  <span class="text-secondary branch-parent" title="{{ 'REPOSITORY_BRANCH_BASED_ON_HINT'|trans }}" data-bs-toggle="tooltip">
+                    {{ ui.icon('git-fork') }} {{ 'REPOSITORY_BRANCH_BASED_ON'|trans }}
+                    <a href="{{ path('repository_compare', { repository: repository.name, base: comparison.parent, head: branch.name }) }}">{{ comparison.parent }}</a>
+                  </span>
+                {% endif %}
+              </div>
+            {% endif %}
           </div>
           <div class="col-auto text-secondary d-none d-md-block">
             <span title="{{ branch.target.authoredAt|date(commit_list_date_format) }}" data-bs-toggle="tooltip">{{ ui.icon('clock', 'me-1') }} {{ branch.target.authoredAt|ago }}</span>
           </div>
           <div class="col-auto">
             <div class="btn-list flex-nowrap">
+              {% if branch.name != defaultBranch %}
+                <a href="{{ path('repository_compare', { repository: repository.name, base: comparison.parent ?? defaultBranch, head: branch.name }) }}" class="btn btn-icon btn-ghost-secondary" aria-label="{{ 'REPOSITORY_COMPARE_TITLE'|trans }}" data-bs-toggle="tooltip" title="{{ 'REPOSITORY_COMPARE_TITLE'|trans }}">{{ ui.icon('git-compare') }}</a>
+              {% endif %}
               <a href="{{ path('commit_list', { repository: repository.name, commitish: branch.name }) }}" class="btn btn-icon btn-ghost-secondary" aria-label="{{ 'REPOSITORY_MENU_COMMITS'|trans }}" data-bs-toggle="tooltip" title="{{ 'REPOSITORY_MENU_COMMITS'|trans }}">{{ ui.icon('history') }}</a>
               <a href="{{ path('repository_tree', { repository: repository.name, commitish: branch.name }) }}" class="btn btn-icon btn-ghost-secondary" aria-label="{{ 'REPOSITORY_MENU_CODE'|trans }}" data-bs-toggle="tooltip" title="{{ 'REPOSITORY_MENU_CODE'|trans }}">{{ ui.icon('code') }}</a>
             </div>

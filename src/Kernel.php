@@ -66,18 +66,20 @@ class Kernel extends BaseKernel
 
     private function configureThemes(ContainerConfigurator $container, ContainerBuilder $builder): void
     {
-        $themesDir = $this->getProjectDir().'/assets/themes';
+        $themesDir = sprintf('%s/assets/themes', $this->getProjectDir());
         $builder->addResource(new GlobResource($themesDir, '/*/assets', false));
 
         $paths = [];
         $rootSass = [];
 
-        foreach (glob($themesDir.'/*/assets', \GLOB_ONLYDIR) ?: [] as $assetsDir) {
+        foreach (glob(sprintf('%s/*/assets', $themesDir), \GLOB_ONLYDIR) ?: [] as $assetsDir) {
             $theme = basename(dirname($assetsDir));
-            $paths[$assetsDir] = 'themes/'.$theme;
+            $paths[$assetsDir] = sprintf('themes/%s', $theme);
 
-            if (is_file($assetsDir.'/scss/'.$theme.'.scss')) {
-                $rootSass[] = $assetsDir.'/scss/'.$theme.'.scss';
+            $entry = sprintf('%s/scss/%s.scss', $assetsDir, $theme);
+
+            if (is_file($entry)) {
+                $rootSass[] = $entry;
             }
         }
 

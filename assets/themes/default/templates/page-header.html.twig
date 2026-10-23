@@ -10,6 +10,9 @@
         <a class="nav-link{{ current == 'commits' ? ' active' }}" href="{{ path('commit_list', { repository: repository.name, commitish: baseRef }) }}"><svg class="icon"><use href="#i-git-commit"/></svg> {{ 'REPOSITORY_MENU_COMMITS'|trans }}</a>
       </li>
       <li class="nav-item">
+        <a class="nav-link{{ current == 'graph' ? ' active' }}" href="{{ path('repository_graph', { repository: repository.name }) }}"><svg class="icon"><use href="#i-git-merge"/></svg> {{ 'REPOSITORY_MENU_GRAPH'|trans }}</a>
+      </li>
+      <li class="nav-item">
         <a class="nav-link{{ current == 'branches' ? ' active' }}" href="{{ path('repository_list_branches', { repository: repository.name }) }}"><svg class="icon"><use href="#i-git-branch"/></svg> {{ 'REPOSITORY_MENU_BRANCHES'|trans }}</a>
       </li>
       <li class="nav-item">

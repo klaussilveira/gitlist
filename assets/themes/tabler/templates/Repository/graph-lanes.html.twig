@@ -1,0 +1,19 @@
+{% set laneWidth = 16 %}
+{% set height = 44 %}
+{% set offset = 10 %}
+{% set ys = { top: 0, middle: height / 2, bottom: height } %}
+<svg class="graph-lanes" width="{{ width * laneWidth + offset }}" height="{{ height }}" viewBox="0 0 {{ width * laneWidth + offset }} {{ height }}" aria-hidden="true" focusable="false">
+  {% for line in row.lines %}
+    {% set x1 = line.from * laneWidth + offset %}
+    {% set x2 = line.to * laneWidth + offset %}
+    {% set y1 = ys[line.start] %}
+    {% set y2 = ys[line.end] %}
+    {% set color = line.start == 'middle' ? line.to : line.from %}
+    {% if x1 == x2 %}
+      <line class="graph-line graph-lane-{{ color % 8 }}" x1="{{ x1 }}" y1="{{ y1 }}" x2="{{ x2 }}" y2="{{ y2 }}"/>
+    {% else %}
+      <path class="graph-line graph-lane-{{ color % 8 }}" d="M{{ x1 }} {{ y1 }} C{{ x1 }} {{ (y1 + y2) / 2 }} {{ x2 }} {{ (y1 + y2) / 2 }} {{ x2 }} {{ y2 }}"/>
+    {% endif %}
+  {% endfor %}
+  <circle class="graph-node graph-lane-{{ row.lane % 8 }}" cx="{{ row.lane * laneWidth + offset }}" cy="{{ height / 2 }}" r="5"/>
+</svg>

@@ -33,6 +33,23 @@
                   {{ branch.target.authoredAt|date(commit_list_date_format) }}
                 </span>
               </p>
+              {% set comparison = comparisons[branch.name] ?? null %}
+              {% if comparison %}
+                <p class="branch-comparison">
+                  <a href="{{ path('repository_compare', { repository: repository.name, base: defaultBranch, head: branch.name }) }}" class="badge text-bg-success">{{ 'REPOSITORY_COMPARE_AHEAD_OF'|trans({ '%count%': comparison.ahead, '%ref%': defaultBranch }) }}</a>
+                  <a href="{{ path('repository_compare', { repository: repository.name, base: branch.name, head: defaultBranch }) }}" class="badge text-bg-danger">{{ 'REPOSITORY_COMPARE_BEHIND_OF'|trans({ '%count%': comparison.behind, '%ref%': defaultBranch }) }}</a>
+                  {% if comparison.forkPoint %}
+                    {{ 'REPOSITORY_BRANCH_FORKED_FROM'|trans({ '%ref%': defaultBranch }) }}
+                    <a href="{{ path('commit_show', { repository: repository.name, commitish: comparison.forkPoint.hash }) }}">{{ comparison.forkPoint.shortHash }}</a>
+                  {% endif %}
+                  {% if comparison.parent %}
+                    <span class="branch-parent" title="{{ 'REPOSITORY_BRANCH_BASED_ON_HINT'|trans }}">
+                      {{ 'REPOSITORY_BRANCH_BASED_ON'|trans }}
+                      <a href="{{ path('repository_compare', { repository: repository.name, base: comparison.parent, head: branch.name }) }}">{{ comparison.parent }}</a>
+                    </span>
+                  {% endif %}
+                </p>
+              {% endif %}
             </li>
           {% endfor %}
         </ul>

@@ -13,9 +13,11 @@ use GitList\SCM\Branch;
 use GitList\SCM\Commit;
 use GitList\SCM\Commit\Criteria;
 use GitList\SCM\Commit\Person;
+use GitList\SCM\Diff\File;
 use GitList\SCM\Diff\Parse;
 use GitList\SCM\Exception\CommandException;
 use GitList\SCM\Exception\InvalidCommitException;
+use GitList\SCM\Item;
 use GitList\SCM\Repository;
 use GitList\SCM\Symlink;
 use GitList\SCM\System;
@@ -191,7 +193,7 @@ class CommandLine implements System
             throw new InvalidCommitException($hash);
         }
 
-        $diffOutput = $this->run(['diff', '--change', $hash], $repository);
+        $diffOutput = $this->run(['diff', '--git', '--change', $hash], $repository);
         $commit->setRawDiffs($diffOutput);
 
         $fileDiffs = (new Parse())->fromRawBlock($diffOutput);
@@ -205,7 +207,7 @@ class CommandLine implements System
      */
     public function getCommits(Repository $repository, ?string $hash = 'tip', int $page = 1, int $perPage = 10): array
     {
-        $range = sprintf('limit(branch("%s"), %d, %d)', $hash, $perPage, ($page - 1) * $perPage);
+        $range = sprintf('limit(branch(%s), %d, %d)', $this->quoteRevision((string) $hash), $perPage, ($page - 1) * $perPage);
 
         $delimiter = $this->generateSafeDelimiter();
         $output = $this->run([
@@ -224,7 +226,7 @@ class CommandLine implements System
      */
     public function getCommitsFromPath(Repository $repository, string $path, ?string $hash = 'tip', int $page = 1, int $perPage = 10): array
     {
-        $range = sprintf('limit(branch("%s"), %d, %d)', $hash, $perPage, ($page - 1) * $perPage);
+        $range = sprintf('limit(branch(%s), %d, %d)', $this->quoteRevision((string) $hash), $perPage, ($page - 1) * $perPage);
 
         $delimiter = $this->generateSafeDelimiter();
         $output = $this->run([
@@ -247,7 +249,7 @@ class CommandLine implements System
     public function getSpecificCommits(Repository $repository, array $hashes): array
     {
         $delimiter = $this->generateSafeDelimiter();
-        $output = $this->run(['log', '-T', $this->getCommitFormat($delimiter), '-r', implode(':', $hashes)], $repository);
+        $output = $this->run(['log', '-T', $this->getCommitFormat($delimiter), '-r', implode(' + ', array_map(fn (string $hash): string => $this->quoteRevision($hash), $hashes))], $repository);
 
         return $this->parseCommitsData($repository, $output, $delimiter);
     }
@@ -334,7 +336,7 @@ class CommandLine implements System
         }
 
         $command[] = '-r';
-        $command[] = sprintf('sort(branch("%s"), -date)', $hash);
+        $command[] = sprintf('sort(branch(%s), -date)', $this->quoteRevision((string) $hash));
         $output = $this->run($command, $repository);
         $commits += $this->parseCommitsData($repository, $output, $delimiter);
 
@@ -358,6 +360,130 @@ class CommandLine implements System
         }
 
         return $destination;
+    }
+
+    /**
+     * @return array<string, Commit>
+     */
+    public function getGraph(Repository $repository, int $limit): array
+    {
+        $fields = self::COMMIT_FIELDS;
+        $fields[4] = '{p1node} {p2node}';
+        $fields[5] = '{p1node|short} {p2node|short}';
+
+        $delimiter = $this->generateSafeDelimiter();
+        $output = $this->run(['log', '-l', (string) $limit, '-T', sprintf('%s%s', implode($delimiter, $fields), $delimiter)], $repository);
+        $commits = $this->parseCommitsData($repository, $output, $delimiter);
+
+        foreach ($commits as $commit) {
+            $parents = array_filter($commit->getParents(), fn (Item $parent): bool => '' !== trim($parent->getHash(), '0'));
+            $commit->clearParents();
+
+            foreach ($parents as $parent) {
+                $commit->addParent($parent);
+            }
+        }
+
+        return $commits;
+    }
+
+    /**
+     * @return array{int, int}
+     */
+    public function getAheadBehind(Repository $repository, string $base, string $head): array
+    {
+        $base = $this->quoteRevision($base);
+        $head = $this->quoteRevision($head);
+
+        try {
+            $ahead = $this->run(['log', '-r', sprintf('only(%s, %s)', $head, $base), '-T', '.'], $repository);
+            $behind = $this->run(['log', '-r', sprintf('only(%s, %s)', $base, $head), '-T', '.'], $repository);
+        } catch (CommandException) {
+            throw new InvalidCommitException(sprintf('%s...%s', $base, $head));
+        }
+
+        return [strlen($ahead), strlen($behind)];
+    }
+
+    public function getMergeBase(Repository $repository, string $base, string $head): ?string
+    {
+        $revision = sprintf('ancestor(%s, %s)', $this->quoteRevision($base), $this->quoteRevision($head));
+        $output = trim($this->run(['log', '-r', $revision, '-T', '{node}'], $repository));
+
+        return '' === $output ? null : $output;
+    }
+
+    /**
+     * @return array<string, Commit>
+     */
+    public function getCommitsBetween(Repository $repository, string $base, string $head, int $limit): array
+    {
+        $revision = sprintf('reverse(only(%s, %s))', $this->quoteRevision($head), $this->quoteRevision($base));
+
+        $delimiter = $this->generateSafeDelimiter();
+        $output = $this->run(['log', '-l', (string) $limit, '-T', $this->getCommitFormat($delimiter), '-r', $revision], $repository);
+
+        return $this->parseCommitsData($repository, $output, $delimiter);
+    }
+
+    /**
+     * @return File[]
+     */
+    public function getDiffBetween(Repository $repository, string $base, string $head): array
+    {
+        $head = $this->quoteRevision($head);
+        $from = sprintf('ancestor(%s, %s)', $this->quoteRevision($base), $head);
+
+        $output = $this->run(['diff', '--git', '-r', $from, '-r', $head], $repository);
+
+        return (new Parse())->fromRawBlock($output);
+    }
+
+    /**
+     * @param string[] $excluded
+     */
+    public function getForkPoint(Repository $repository, string $head, array $excluded): ?string
+    {
+        $head = $this->quoteRevision($head);
+        $excluded = array_map(fn (string $branch): string => $this->quoteRevision($branch), array_filter($excluded));
+        $unique = $excluded ? sprintf('only(%s, %s)', $head, implode(' + ', $excluded)) : sprintf('::%s', $head);
+
+        $output = trim($this->run(['log', '-r', sprintf('p1(min(%s))', $unique), '-T', '{node}'], $repository));
+
+        return '' === $output ? null : $output;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getBranchesContaining(Repository $repository, string $hash): array
+    {
+        $revision = sprintf('head() and bookmark() and descendants(%s)', $this->quoteRevision($hash));
+        $output = $this->run(['log', '-r', $revision, '-T', "{join(bookmarks, '\\n')}\\n"], $repository);
+
+        return array_values(array_filter(explode("\n", trim($output))));
+    }
+
+    /**
+     * @return list<array{type: string, name: string, hash: string}>
+     */
+    public function getRefs(Repository $repository): array
+    {
+        $refs = [];
+
+        foreach (['branch' => ['bookmarks', '{bookmark}\0{node}\n'], 'tag' => ['tags', '{tag}\0{node}\n']] as $type => [$command, $template]) {
+            foreach (array_filter(explode("\n", $this->run([$command, '-T', $template], $repository))) as $line) {
+                [$name, $hash] = explode("\0", $line);
+                $refs[] = ['type' => $type, 'name' => $name, 'hash' => $hash];
+            }
+        }
+
+        return $refs;
+    }
+
+    protected function quoteRevision(string $revision): string
+    {
+        return sprintf('"%s"', addcslashes($revision, '\\"'));
     }
 
     protected function createArchiveDestination(string $hash, string $format): string

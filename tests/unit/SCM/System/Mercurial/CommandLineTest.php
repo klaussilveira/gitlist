@@ -9,6 +9,7 @@ use GitList\SCM\Blame;
 use GitList\SCM\Blob;
 use GitList\SCM\Commit\Criteria;
 use GitList\SCM\Commit\Person;
+use GitList\SCM\Exception\InvalidCommitException;
 use GitList\SCM\Repository;
 use GitList\SCM\Symlink;
 use PHPUnit\Framework\TestCase;
@@ -336,6 +337,43 @@ class CommandLineTest extends TestCase
         $this->assertEquals('2016-11-24 10:28:56', $commit2->getCommitedAt()->format('Y-m-d H:i:s'));
     }
 
+    public function testIsGettingOnlyTheRequestedSpecificCommits(): void
+    {
+        $commandLine = new CommandLine();
+        $commits = $commandLine->getSpecificCommits(new Repository(self::FIXTURE_REPO), [
+            'e88dc2aa0e74b10445f92de34d2a61d274a919fe',
+            '4447d3262dcd2ec2a122813ae6dcb64b4941a305',
+            '7bc72b056e7c13b3d7a2f8fdb2d3fbb5556a7ec2',
+        ]);
+
+        $this->assertEqualsCanonicalizing(['e88dc2aa0e74', '4447d3262dcd', '7bc72b056e7c'], array_keys($commits));
+    }
+
+    public function testIsGettingFileNamesInCommitDiffs(): void
+    {
+        $commandLine = new CommandLine();
+        $commit = $commandLine->getCommit(new Repository(self::FIXTURE_REPO), 'd471ea0b4d78');
+
+        $this->assertEquals(['mm/cma.c'], array_map(fn ($file) => $file->getName(), $commit->getDiffs()));
+    }
+
+    public function testIsTreatingBranchNamesAsLiteralInCommits(): void
+    {
+        $path = $this->createTemporaryRepository();
+        $this->commit($path, 'a.txt', 'Test', 'test@example.com', "first\n");
+        $this->hg(['branch', '--quiet', 'we"ird) or all() or ("x'], $path);
+        $this->commit($path, 'b.txt', 'Test', 'test@example.com', "second\n");
+
+        $repository = new Repository($path);
+        $commandLine = new CommandLine();
+        $branch = 'we"ird) or all() or ("x';
+        $subjects = fn (array $commits): array => array_map(fn ($commit) => trim($commit->getSubject()), array_values($commits));
+
+        $this->assertEquals(['second'], $subjects($commandLine->getCommits($repository, $branch)));
+        $this->assertEquals(['second'], $subjects($commandLine->getCommitsFromPath($repository, 'b.txt', $branch)));
+        $this->assertEquals(['second'], $subjects($commandLine->searchCommits($repository, new Criteria(), $branch)));
+    }
+
     public function testIsGettingBlame(): void
     {
         $repository = new Repository(self::FIXTURE_REPO);
@@ -568,7 +606,7 @@ class CommandLineTest extends TestCase
         $this->assertEquals('init & <item> ]]> </item>', $commit->getSubject());
         $this->assertEquals('A & B ]]', $commit->getAuthor()->getName());
         $this->assertCount(1, $commit->getDiffs());
-        $this->assertMatchesRegularExpression('/^diff -r/m', $commit->getRawDiffs());
+        $this->assertMatchesRegularExpression('/^diff --git a\/a.txt b\/a.txt/m', $commit->getRawDiffs());
     }
 
     public function testIsParsingCommitsWithMetadataCarryingFieldDelimiters(): void
@@ -643,6 +681,134 @@ class CommandLineTest extends TestCase
         $this->assertCount(1, $branches);
         $this->assertEquals('a||b', $branches[0]->getName());
         $this->assertEquals('Initial commit.', $branches[0]->getTarget()->getSubject());
+    }
+
+    public function testIsGettingGraphOfAllBranches(): void
+    {
+        $commandLine = new CommandLine();
+        $commits = $commandLine->getGraph(new Repository(self::FIXTURE_REPO), 20);
+
+        $graph = array_map(fn ($commit) => [$commit->getShortHash(), array_map(fn ($parent) => $parent->getShortHash(), $commit->getParents())], array_values($commits));
+
+        $this->assertEquals([
+            ['5ea48553c4df', ['d471ea0b4d78']],
+            ['d471ea0b4d78', ['4447d3262dcd']],
+            ['4447d3262dcd', ['828cda676385']],
+            ['828cda676385', ['bf6c7defa0f2']],
+            ['7bc72b056e7c', ['8acbca7fcefa']],
+            ['8acbca7fcefa', ['bf6c7defa0f2']],
+            ['bf6c7defa0f2', ['e88dc2aa0e74']],
+            ['e88dc2aa0e74', []],
+        ], $graph);
+    }
+
+    public function testIsGettingBothParentsOfMergeInGraph(): void
+    {
+        $path = $this->createTemporaryRepository();
+        $this->commit($path, 'a.txt', 'Test', 'test@example.com', "first\n");
+        $this->commit($path, 'b.txt', 'Test', 'test@example.com', "second\n");
+        $this->hg(['update', '--quiet', '0'], $path);
+        $this->commit($path, 'c.txt', 'Test', 'test@example.com', "third\n");
+        $this->hg(['merge', '--quiet', '1'], $path);
+        $this->hg(['--config', 'ui.username=Test <test@example.com>', 'commit', '--message', 'merge'], $path);
+
+        $commandLine = new CommandLine();
+        $commits = array_values($commandLine->getGraph(new Repository($path), 10));
+
+        $this->assertEquals('merge', $commits[0]->getSubject());
+        $this->assertEquals(['third', 'second'], array_map(fn ($parent) => trim($commandLine->getCommit(new Repository($path), $parent->getHash())->getSubject()), $commits[0]->getParents()));
+    }
+
+    public function testIsGettingAheadBehind(): void
+    {
+        $repository = new Repository(self::FIXTURE_REPO);
+        $commandLine = new CommandLine();
+
+        $this->assertEquals([2, 4], $commandLine->getAheadBehind($repository, 'master', 'feature/1.2-dev'));
+        $this->assertEquals([4, 2], $commandLine->getAheadBehind($repository, 'feature/1.2-dev', 'master'));
+        $this->assertEquals([0, 0], $commandLine->getAheadBehind($repository, 'master', 'master'));
+    }
+
+    public function testIsRejectingUnknownRevisionInAheadBehind(): void
+    {
+        $this->expectException(InvalidCommitException::class);
+
+        $commandLine = new CommandLine();
+        $commandLine->getAheadBehind(new Repository(self::FIXTURE_REPO), 'master', 'does-not-exist');
+    }
+
+    public function testIsTreatingRevisionsAsLiteralNames(): void
+    {
+        $path = $this->createTemporaryRepository();
+        $this->commit($path, 'a.txt', 'Test', 'test@example.com', "first\n");
+        $this->commit($path, 'b.txt', 'Test', 'test@example.com', "second\n");
+        $this->hg(['bookmark', '--rev', '0', 'base'], $path);
+        $this->hg(['bookmark', '--rev', '1', 'we"ird) or all() or ("x'], $path);
+
+        $commandLine = new CommandLine();
+        $commits = $commandLine->getCommitsBetween(new Repository($path), 'base', 'we"ird) or all() or ("x', 10);
+
+        $this->assertEquals(['second'], array_map(fn ($commit) => trim($commit->getSubject()), array_values($commits)));
+    }
+
+    public function testIsGettingMergeBase(): void
+    {
+        $commandLine = new CommandLine();
+
+        $this->assertEquals('bf6c7defa0f269df1389cef460c98ea18e007a8d', $commandLine->getMergeBase(new Repository(self::FIXTURE_REPO), 'master', 'feature/1.2-dev'));
+    }
+
+    public function testIsGettingCommitsBetween(): void
+    {
+        $repository = new Repository(self::FIXTURE_REPO);
+        $commandLine = new CommandLine();
+
+        $ahead = $commandLine->getCommitsBetween($repository, 'master', 'feature/1.2-dev', 10);
+        $behind = $commandLine->getCommitsBetween($repository, 'feature/1.2-dev', 'master', 10);
+
+        $this->assertEquals(['Added symlink.', 'Added new config.'], array_map(fn ($commit) => $commit->getSubject(), array_values($ahead)));
+        $this->assertEquals(['update tags', 'Fixed mm.', 'Added mm.', 'Added symlink.'], array_map(fn ($commit) => $commit->getSubject(), array_values($behind)));
+        $this->assertCount(1, $commandLine->getCommitsBetween($repository, 'master', 'feature/1.2-dev', 1));
+    }
+
+    public function testIsGettingDiffBetween(): void
+    {
+        $commandLine = new CommandLine();
+        $files = $commandLine->getDiffBetween(new Repository(self::FIXTURE_REPO), 'master', 'feature/1.2-dev');
+
+        $this->assertEquals(['new.json', 'old.json'], array_map(fn ($file) => $file->getName(), $files));
+    }
+
+    public function testIsGettingForkPoint(): void
+    {
+        $repository = new Repository(self::FIXTURE_REPO);
+        $commandLine = new CommandLine();
+
+        $this->assertEquals('bf6c7defa0f269df1389cef460c98ea18e007a8d', $commandLine->getForkPoint($repository, 'feature/1.2-dev', ['master']));
+        $this->assertEquals('bf6c7defa0f269df1389cef460c98ea18e007a8d', $commandLine->getForkPoint($repository, 'master', ['feature/1.2-dev']));
+        $this->assertNull($commandLine->getForkPoint($repository, 'feature/1.2-dev', []));
+        $this->assertNull($commandLine->getForkPoint($repository, 'feature/1.2-dev', ['feature/1.2-dev']));
+    }
+
+    public function testIsGettingRefs(): void
+    {
+        $commandLine = new CommandLine();
+
+        $this->assertEquals([
+            ['type' => 'branch', 'name' => 'feature/1.2-dev', 'hash' => '7bc72b056e7c13b3d7a2f8fdb2d3fbb5556a7ec2'],
+            ['type' => 'branch', 'name' => 'master', 'hash' => '5ea48553c4dfbba5ee51189bb5a145f75db4b425'],
+            ['type' => 'tag', 'name' => 'tip', 'hash' => '5ea48553c4dfbba5ee51189bb5a145f75db4b425'],
+            ['type' => 'tag', 'name' => '1.2', 'hash' => '8acbca7fcefa3029c29d6a3eb4a676e607a73c81'],
+        ], $commandLine->getRefs(new Repository(self::FIXTURE_REPO)));
+    }
+
+    public function testIsGettingBranchesContainingCommit(): void
+    {
+        $repository = new Repository(self::FIXTURE_REPO);
+        $commandLine = new CommandLine();
+
+        $this->assertEquals(['feature/1.2-dev', 'master'], $commandLine->getBranchesContaining($repository, 'bf6c7defa0f269df1389cef460c98ea18e007a8d'));
+        $this->assertEquals(['master'], $commandLine->getBranchesContaining($repository, 'd471ea0b4d78'));
     }
 
     protected function createTemporaryRepository(): string

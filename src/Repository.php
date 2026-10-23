@@ -13,6 +13,7 @@ use GitList\SCM\Blob;
 use GitList\SCM\Branch;
 use GitList\SCM\Commit;
 use GitList\SCM\Commit\Criteria;
+use GitList\SCM\Diff\File;
 use GitList\SCM\Exception\CommandException;
 use GitList\SCM\Repository as SourceRepository;
 use GitList\SCM\System;
@@ -191,5 +192,97 @@ class Repository
         $commitish = new Commitish($this, $commitish);
 
         return $this->system->archive($this->repository, $format, $commitish->getHash(), $commitish->getPath() ?? '.');
+    }
+
+    /**
+     * @return array<string, Commit>
+     */
+    public function getGraph(int $limit): array
+    {
+        return $this->system->getGraph($this->repository, $limit);
+    }
+
+    /**
+     * @return array{int, int}
+     */
+    public function getAheadBehind(string $base, string $head): array
+    {
+        return $this->system->getAheadBehind($this->repository, $base, $head);
+    }
+
+    public function getMergeBase(string $base, string $head): ?Commit
+    {
+        $hash = $this->system->getMergeBase($this->repository, $base, $head);
+
+        if (!$hash) {
+            return null;
+        }
+
+        $commits = $this->system->getSpecificCommits($this->repository, [$hash]);
+
+        return reset($commits) ?: null;
+    }
+
+    /**
+     * @return array<string, Commit>
+     */
+    public function getCommitsBetween(string $base, string $head, int $limit): array
+    {
+        return $this->system->getCommitsBetween($this->repository, $base, $head, $limit);
+    }
+
+    /**
+     * @return File[]
+     */
+    public function getDiffBetween(string $base, string $head): array
+    {
+        return $this->system->getDiffBetween($this->repository, $base, $head);
+    }
+
+    /**
+     * @return list<array{type: string, name: string, hash: string}>
+     */
+    public function getRefs(): array
+    {
+        return $this->system->getRefs($this->repository);
+    }
+
+    /**
+     * @param string[] $branches
+     */
+    public function guessParentBranch(string $branch, array $branches): ?string
+    {
+        $descendants = $this->system->getBranchesContaining($this->repository, $branch);
+        $others = array_values(array_filter($branches, fn (string $name): bool => '' !== $name && $name !== $branch && !in_array($name, $descendants, true)));
+
+        if (!$others) {
+            return null;
+        }
+
+        $forkPoint = $this->system->getForkPoint($this->repository, $branch, $others);
+
+        if (!$forkPoint) {
+            return null;
+        }
+
+        $candidates = array_values(array_intersect($this->system->getBranchesContaining($this->repository, $forkPoint), $others));
+
+        if (in_array($this->getDefaultBranch(), $candidates, true)) {
+            return $this->getDefaultBranch();
+        }
+
+        $closest = null;
+        $distance = PHP_INT_MAX;
+
+        foreach ($candidates as $candidate) {
+            [$ahead] = $this->system->getAheadBehind($this->repository, $forkPoint, $candidate);
+
+            if ($ahead < $distance) {
+                $closest = $candidate;
+                $distance = $ahead;
+            }
+        }
+
+        return $closest;
     }
 }

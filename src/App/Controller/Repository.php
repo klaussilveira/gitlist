@@ -72,10 +72,30 @@ class Repository
     {
         $repository = $this->index->getRepository($repository);
         $branches = $repository->getBranches();
+        $defaultBranch = $repository->getDefaultBranch();
+        $names = array_map(fn ($branch) => (string) $branch->getName(), $branches);
+        $comparisons = [];
+
+        foreach ($names as $name) {
+            if ('' === $name || $name === $defaultBranch) {
+                continue;
+            }
+
+            [$ahead, $behind] = $repository->getAheadBehind($defaultBranch, $name);
+
+            $comparisons[$name] = [
+                'ahead' => $ahead,
+                'behind' => $behind,
+                'forkPoint' => $repository->getMergeBase($defaultBranch, $name),
+                'parent' => $repository->guessParentBranch($name, $names),
+            ];
+        }
 
         return new Response($this->templating->render('Repository/branches.html.twig', [
             'repository' => $repository,
             'branches' => $branches,
+            'defaultBranch' => $defaultBranch,
+            'comparisons' => $comparisons,
         ]));
     }
 

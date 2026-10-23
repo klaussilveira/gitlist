@@ -1,0 +1,71 @@
+<div class="row module-row">
+  <div class="col-12">
+    <ul class="list-group list-group-flush">
+      {% for file in files %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <span><svg class="icon"><use href="#i-document"/></svg> <a href="#diff-{{ loop.index }}">{{ file.name }}</a></span>
+          <span class="badge text-bg-secondary rounded-pill">{{ file.index }}</span>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+
+{% for file in files %}
+  <div class="row module-row">
+    <div class="col-12">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <a id="diff-{{ loop.index }}"><svg class="icon"><use href="#i-document"/></svg> {{ file.name }}</a>
+            <div class="btn-group" role="group">
+              {% if file.type == 'deleted' %}
+                <a href="{{ path('blob_show', { repository: repository.name, commitish: getCommitish(oldRef, file.name) }) }}" class="btn btn-secondary">
+                  {{ 'REPOSITORY_COMMIT_VIEW_FILE_AT'|trans }} {{ oldLabel }}
+                </a>
+              {% else %}
+                <a href="{{ path('blob_show', { repository: repository.name, commitish: getCommitish(newRef, file.name) }) }}" class="btn btn-secondary">
+                  {{ 'REPOSITORY_COMMIT_VIEW_FILE_AT'|trans }} {{ newLabel }}
+                </a>
+              {% endif %}
+            </div>
+          </div>
+          <div class="card-body card-body-diff">
+            <table class="table table-responsive diff-lines">
+              {% for hunk in file.hunks %}
+                <tr>
+                  <td class="line-number">
+                    ...
+                  </td>
+                  <td class="line-number">
+                    ...
+                  </td>
+                  <td class="line">
+                    <pre class="hunk">{{ hunk.contents }}</pre>
+                  </td>
+                </tr>
+                {% for line in hunk.lines %}
+                  <tr>
+                    <td class="line-number {{ line.type }}">
+                      {% if line.type != 'add' %}
+                        <a name="L{{ loop.index }}R{{ line.oldNumber }}"></a>
+                        <a href="#L{{ loop.index }}R{{ line.oldNumber }}">{{ line.oldNumber }}</a>
+                      {% endif %}
+                    </td>
+                    <td class="line-number {{ line.type }}">
+                      {% if line.type != 'delete' %}
+                        <a name="L{{ loop.index }}L{{ line.newNumber }}"></a>
+                        <a href="#L{{ loop.index }}L{{ line.newNumber }}">{{ line.newNumber }}</a>
+                      {% endif %}
+                    </td>
+                    <td class="line">
+                      <pre class="{{ line.type }}">{{ line.contents }}</pre>
+                    </td>
+                  </tr>
+                {% endfor %}
+              {% endfor %}
+            </table>
+          </div>
+        </div>
+    </div>
+  </div>
+{% endfor %}

@@ -120,3 +120,24 @@ THEME_STYLE_ATTACHED: Attached
 THEME_STYLE_FLOATING: Floating
 THEME_RESET: Reset
 THEME_DONE: Done
+REPOSITORY_MENU_GRAPH: Graph
+REPOSITORY_GRAPH_TITLE: Branch graph
+REPOSITORY_COMPARE_BRANCHES: Compare branches
+REPOSITORY_COMPARE_TITLE: Compare
+REPOSITORY_COMPARE_BASE: Base
+REPOSITORY_COMPARE_HEAD: Compare
+REPOSITORY_COMPARE_SWAP: Swap base and compare
+REPOSITORY_COMPARE_AHEAD: '{0} No commits ahead|{1} 1 commit ahead|]1,Inf[ %count% commits ahead'
+REPOSITORY_COMPARE_BEHIND: '{0} No commits behind|{1} 1 commit behind|]1,Inf[ %count% commits behind'
+REPOSITORY_COMPARE_AHEAD_OF: '{0} No commits ahead of %ref%|{1} 1 commit ahead of %ref%|]1,Inf[ %count% commits ahead of %ref%'
+REPOSITORY_COMPARE_BEHIND_OF: '{0} No commits behind %ref%|{1} 1 commit behind %ref%|]1,Inf[ %count% commits behind %ref%'
+REPOSITORY_COMPARE_MERGE_BASE: 'Common ancestor:'
+REPOSITORY_COMPARE_UNRELATED: '%base% and %head% have no common history.'
+REPOSITORY_COMPARE_IDENTICAL: '%base% and %head% are identical'
+REPOSITORY_COMPARE_IDENTICAL_HINT: Pick a different base or compare ref above.
+REPOSITORY_COMPARE_ONLY_IN: 'Commits in %ref% that are not in %other%'
+REPOSITORY_COMPARE_TRUNCATED: 'Showing the latest %limit% of %count% commits.'
+REPOSITORY_COMPARE_FILES: '{1} 1 file changed|]1,Inf[ %count% files changed'
+REPOSITORY_BRANCH_FORKED_FROM: 'Forked from %ref% at'
+REPOSITORY_BRANCH_BASED_ON: 'Based on'
+REPOSITORY_BRANCH_BASED_ON_HINT: Best guess. Git does not record which branch a branch was created from, so this is the closest branch at the point where this one diverged.
