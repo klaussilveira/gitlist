@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace GitList\App\Controller;
 
+use GitList\Repository as SourceRepository;
 use GitList\Repository\Index;
 use GitList\SCM\File;
+use GitList\SCM\Tree;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -33,18 +35,12 @@ class Repository
         $repository = $this->index->getRepository($repository);
         $tree = $repository->getTree();
         $lastCommit = $repository->getCommit($tree->getHash());
-        $readme = $tree->getReadme();
-
-        if ($readme) {
-            $blob = $repository->getBlob($tree->getHash().'/'.$readme->getName());
-            $readme = File::createFromBlob($blob);
-        }
 
         return new Response($this->templating->render('Repository/show.html.twig', [
             'repository' => $repository,
             'tree' => $tree,
             'lastCommit' => $lastCommit,
-            'readme' => $readme,
+            'documents' => $this->getDocuments($repository, $tree),
         ]));
     }
 
@@ -53,18 +49,12 @@ class Repository
         $repository = $this->index->getRepository($repository);
         $tree = $repository->getTree($commitish);
         $lastCommit = $repository->getCommit($tree->getHash());
-        $readme = $tree->getReadme();
-
-        if ($readme) {
-            $blob = $repository->getBlob($tree->getHash().'/'.$readme->getName());
-            $readme = File::createFromBlob($blob);
-        }
 
         return new Response($this->templating->render('Repository/show.html.twig', [
             'repository' => $repository,
             'tree' => $tree,
             'lastCommit' => $lastCommit,
-            'readme' => $readme,
+            'documents' => $this->getDocuments($repository, $tree),
         ]));
     }
 
@@ -133,5 +123,23 @@ class Repository
         $response->headers->set('Content-Type', 'application/octet-stream');
 
         return $response;
+    }
+
+    /**
+     * @return array<string, array{file: File, markdown: bool}>
+     */
+    private function getDocuments(SourceRepository $repository, Tree $tree): array
+    {
+        $documents = [];
+
+        foreach ($tree->getDocuments() as $type => $document) {
+            $blob = $repository->getBlob(sprintf('%s/%s', $tree->getHash(), $document->getName()));
+            $documents[$type] = [
+                'file' => File::createFromBlob($blob),
+                'markdown' => $document->isMarkdown(),
+            ];
+        }
+
+        return $documents;
     }
 }

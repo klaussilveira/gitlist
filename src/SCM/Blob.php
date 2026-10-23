@@ -6,6 +6,16 @@ namespace GitList\SCM;
 
 class Blob extends Item
 {
+    public const DOCUMENT_TYPES = [
+        'readme' => 'readme',
+        'contributing' => 'contributing',
+        'license' => 'license',
+        'copying' => 'license',
+        'security' => 'security',
+    ];
+
+    public const DOCUMENT_EXTENSIONS = ['', 'md', 'txt'];
+
     protected ?string $mode = null;
     protected ?string $name = null;
     protected ?int $size = null;
@@ -38,9 +48,25 @@ class Blob extends Item
 
     public function isReadme(): bool
     {
+        return 'readme' == $this->getDocumentType();
+    }
+
+    public function getDocumentType(): ?string
+    {
         $fileName = strtolower($this->getFileName());
 
-        return 'readme.md' == $fileName || 'readme.txt' == $fileName;
+        if (!in_array(pathinfo($fileName, PATHINFO_EXTENSION), self::DOCUMENT_EXTENSIONS, true)) {
+            return null;
+        }
+
+        return self::DOCUMENT_TYPES[pathinfo($fileName, PATHINFO_FILENAME)] ?? null;
+    }
+
+    public function isMarkdown(): bool
+    {
+        $fileName = strtolower($this->getFileName());
+
+        return str_ends_with($fileName, '.md') || 'readme.txt' == $fileName;
     }
 
     public function getSize(): ?int

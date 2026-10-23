@@ -166,13 +166,35 @@
     </div>
   </div>
 
-  {% if readme %}
+  {% if documents %}
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">{{ ui.icon('book', 'me-2') }} {{ readme.name }}</h3>
+        {% if documents|length > 1 %}
+          <ul class="nav nav-tabs card-header-tabs" id="documents" role="tablist">
+            {% for type, document in documents %}
+              <li class="nav-item" role="presentation">
+                <button class="nav-link{% if loop.first %} active{% endif %}" id="doc-{{ type }}-tab" data-bs-toggle="tab" data-bs-target="#doc-{{ type }}" type="button" role="tab" aria-controls="doc-{{ type }}" aria-selected="{{ loop.first ? 'true' : 'false' }}">{{ ('REPOSITORY_DOCUMENT_' ~ type|upper)|trans }}</button>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <h3 class="card-title">{{ ui.icon('book', 'me-2') }} {{ (documents|first).file.name }}</h3>
+        {% endif %}
       </div>
-      <div class="card-body markdown">
-        {{ readme.contents|markdown|raw }}
+      <div class="tab-content">
+        {% for type, document in documents %}
+          <div class="tab-pane{% if loop.first %} active{% endif %}" id="doc-{{ type }}" role="tabpanel" aria-labelledby="doc-{{ type }}-tab">
+            {% if document.markdown %}
+              <div class="card-body markdown">
+                {{ document.file.contents|markdown|raw }}
+              </div>
+            {% else %}
+              <div class="card-body">
+                <pre class="mb-0">{{ document.file.contents }}</pre>
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
       </div>
     </div>
   {% endif %}

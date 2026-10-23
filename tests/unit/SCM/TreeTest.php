@@ -103,34 +103,39 @@ class TreeTest extends TestCase
         $this->assertTrue($root->hasChildren());
     }
 
-    public function testIsGettingReadme(): void
+    public function testIsGettingDocumentsInFixedOrder(): void
     {
         $root = $this->createTree();
-        $child1 = $this->createTree();
-        $child2 = $this->createTree();
-        $child3 = new Blob(new Repository('/my/repo'), sha1((string) random_int(0, mt_getrandmax())));
-        $child4 = new Blob(new Repository('/my/repo'), sha1((string) random_int(0, mt_getrandmax())));
-        $child4->setName('/var/foo/README.md');
+        $security = new Blob(new Repository('/my/repo'), sha1((string) random_int(0, mt_getrandmax())));
+        $security->setName('SECURITY.md');
+        $license = new Blob(new Repository('/my/repo'), sha1((string) random_int(0, mt_getrandmax())));
+        $license->setName('LICENSE');
+        $copying = new Blob(new Repository('/my/repo'), sha1((string) random_int(0, mt_getrandmax())));
+        $copying->setName('COPYING');
+        $readme = new Blob(new Repository('/my/repo'), sha1((string) random_int(0, mt_getrandmax())));
+        $readme->setName('README.md');
+        $other = new Blob(new Repository('/my/repo'), sha1((string) random_int(0, mt_getrandmax())));
+        $other->setName('main.c');
 
-        $root->addChild($child1);
-        $root->addChild($child2);
-        $root->addChild($child3);
-        $root->addChild($child4);
+        $root->addChild($security);
+        $root->addChild($this->createTree());
+        $root->addChild($license);
+        $root->addChild($copying);
+        $root->addChild($other);
+        $root->addChild($readme);
 
-        $this->assertEquals($child4, $root->getReadme());
+        $this->assertSame(['readme' => $readme, 'license' => $license, 'security' => $security], $root->getDocuments());
     }
 
-    public function testIsNotGettingReadme(): void
+    public function testIsNotGettingDocuments(): void
     {
         $root = $this->createTree();
-        $child1 = $this->createTree();
-        $child2 = $this->createTree();
-        $child3 = new Blob(new Repository('/my/repo'), sha1((string) random_int(0, mt_getrandmax())));
+        $other = new Blob(new Repository('/my/repo'), sha1((string) random_int(0, mt_getrandmax())));
+        $other->setName('main.c');
 
-        $root->addChild($child1);
-        $root->addChild($child2);
-        $root->addChild($child3);
+        $root->addChild($this->createTree());
+        $root->addChild($other);
 
-        $this->assertNull($root->getReadme());
+        $this->assertSame([], $root->getDocuments());
     }
 }

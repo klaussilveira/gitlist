@@ -84,19 +84,26 @@ class Tree extends Item
         $this->mode = $mode;
     }
 
-    public function getReadme(): ?Blob
+    /**
+     * @return array<string, Blob>
+     */
+    public function getDocuments(): array
     {
+        $documents = array_fill_keys(array_unique(Blob::DOCUMENT_TYPES), null);
+
         foreach ($this->children as $child) {
             if (!$child instanceof Blob) {
                 continue;
             }
 
-            if ($child->isReadme()) {
-                return $child;
+            $type = $child->getDocumentType();
+
+            if (null !== $type && null === $documents[$type]) {
+                $documents[$type] = $child;
             }
         }
 
-        return null;
+        return array_filter($documents);
     }
 
     public function isCommit(): bool
