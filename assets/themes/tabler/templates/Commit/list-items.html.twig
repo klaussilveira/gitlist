@@ -1,0 +1,47 @@
+{% import 'macros.html.twig' as ui %}
+<div class="list-group list-group-flush list-group-hoverable">
+  {% for commit in commits %}
+    <div class="list-group-item">
+      <div class="row align-items-center g-3">
+        <div class="col-auto">
+          {{ ui.avatar(commit.author, 'md') }}
+        </div>
+        <div class="col text-truncate">
+          <div class="d-flex align-items-center gap-2">
+            <div class="me-auto text-truncate">
+              <a href="{{ path('commit_show', { repository: repository.name, commitish: commit.hash }) }}" class="text-reset fw-medium">{{ commit.subject }}</a>
+            </div>
+          </div>
+          <div class="text-secondary text-truncate">
+            <a href="mailto:{{ commit.author.email }}" class="text-secondary" title="{{ commit.author.email }}">{{ commit.author.name }}</a>
+            {{ 'REPOSITORY_COMMIT_AUTHORED'|trans }}
+            <span title="{{ commit.commitedAt|date(commit_list_date_format) }}" data-bs-toggle="tooltip">{{ commit.commitedAt|ago }}</span>
+          </div>
+        </div>
+        <div class="col-auto d-flex align-items-center gap-2">
+          {{ ui.signature(commit) }}
+          {% if commit.body %}
+            <button type="button" class="btn btn-sm btn-icon btn-ghost-secondary" data-bs-toggle="collapse" data-bs-target="#commit-body-{{ commit.hash }}" aria-expanded="false" aria-controls="commit-body-{{ commit.hash }}" aria-label="{{ 'THEME_COMMIT_BODY'|trans }}" title="{{ 'THEME_COMMIT_BODY'|trans }}">
+              {{ ui.icon('dots') }}
+            </button>
+          {% else %}
+            <span class="btn btn-sm btn-icon btn-ghost-secondary invisible" aria-hidden="true">{{ ui.icon('dots') }}</span>
+          {% endif %}
+          <div class="btn-group">
+            <a href="{{ path('commit_show', { repository: repository.name, commitish: commit.hash }) }}" class="btn btn-sm font-monospace" title="{{ 'THEME_VIEW_COMMIT'|trans }}">
+              {{ ui.icon('git-commit') }} {{ commit.shortHash }}
+            </a>
+            <a href="{{ path('repository_tree', { repository: repository.name, commitish: commit.hash }) }}" class="btn btn-sm btn-icon" title="{{ 'REPOSITORY_BROWSE_AT_COMMIT'|trans }} {{ commit.shortHash }}" aria-label="{{ 'REPOSITORY_BROWSE_AT_COMMIT'|trans }} {{ commit.shortHash }}">
+              {{ ui.icon('code') }}
+            </a>
+          </div>
+        </div>
+      </div>
+      {% if commit.body %}
+        <div class="collapse" id="commit-body-{{ commit.hash }}">
+          <pre class="commit-body mt-3 mb-0">{{ commit.body }}</pre>
+        </div>
+      {% endif %}
+    </div>
+  {% endfor %}
+</div>

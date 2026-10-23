@@ -749,6 +749,50 @@ class CommandLineTest extends TestCase
         $this->assertEquals('2016-11-23 13:17:29', $initial->getAuthoredAt()->format('Y-m-d H:i:s'));
     }
 
+    public function testIsReportingSignatureStatus(): void
+    {
+        if (empty(shell_exec('which ssh-keygen 2> /dev/null'))) {
+            $this->markTestSkipped('ssh-keygen is not available.');
+        }
+
+        $path = $this->createTemporaryRepository();
+        $keys = $path.'/.keys';
+        mkdir($keys);
+        (new Process(['ssh-keygen', '-q', '-t', 'ed25519', '-N', '', '-C', 'trusted', '-f', $keys.'/trusted']))->mustRun();
+        (new Process(['ssh-keygen', '-q', '-t', 'ed25519', '-N', '', '-C', 'stranger', '-f', $keys.'/stranger']))->mustRun();
+        file_put_contents($keys.'/allowed', 'test@example.com '.file_get_contents($keys.'/trusted.pub'));
+
+        $this->git(['config', 'gpg.format', 'ssh'], $path);
+        $this->git(['config', 'gpg.ssh.allowedSignersFile', $keys.'/allowed'], $path);
+
+        $this->signedCommit($path, 'a.txt', $keys.'/trusted.pub', "trusted\n");
+        $this->signedCommit($path, 'b.txt', $keys.'/stranger.pub', "stranger\n");
+        $this->commit($path, 'c.txt', 'Test', 'test@example.com', "unsigned\n");
+
+        $forged = new Process(['sh', '-c', 'git cat-file commit HEAD~2 | sed "s/^trusted$/forged/" | git hash-object -t commit -w --stdin'], $path);
+        $forged->mustRun();
+        $this->git(['update-ref', 'refs/heads/forged', trim($forged->getOutput())], $path);
+
+        $repository = new Repository($path);
+        $commandLine = new CommandLine();
+        $commits = $commandLine->getCommits($repository);
+        [$unsigned, $stranger, $trusted] = array_values($commits);
+
+        $this->assertNull($unsigned->getSignature());
+
+        $this->assertTrue($trusted->getSignature()->isValid());
+        $this->assertFalse($trusted->getSignature()->isBad());
+
+        $this->assertFalse($stranger->getSignature()->isValid());
+        $this->assertFalse($stranger->getSignature()->isBad());
+        $this->assertSame('U', $stranger->getSignature()->getStatus());
+
+        $forgedCommit = $commandLine->getCommit($repository, 'forged');
+        $this->assertSame('forged', $forgedCommit->getSubject());
+        $this->assertFalse($forgedCommit->getSignature()->isValid());
+        $this->assertTrue($forgedCommit->getSignature()->isBad());
+    }
+
     public function testIsNotExecutingRepositoryControlledTextconvHelper(): void
     {
         $path = $this->createTemporaryRepository();
@@ -799,6 +843,21 @@ class CommandLineTest extends TestCase
             'GIT_AUTHOR_DATE' => self::COMMIT_DATE,
             'GIT_COMMITTER_NAME' => $name,
             'GIT_COMMITTER_EMAIL' => $email,
+            'GIT_COMMITTER_DATE' => self::COMMIT_DATE,
+        ], $message);
+    }
+
+    protected function signedCommit(string $path, string $file, string $key, string $message): void
+    {
+        file_put_contents($path.'/'.$file, "contents\n");
+
+        $this->git(['add', $file], $path);
+        $this->git(['-c', 'user.signingkey='.$key, 'commit', '--quiet', '-S', '--cleanup=verbatim', '--file', '-'], $path, [
+            'GIT_AUTHOR_NAME' => 'Test',
+            'GIT_AUTHOR_EMAIL' => 'test@example.com',
+            'GIT_AUTHOR_DATE' => self::COMMIT_DATE,
+            'GIT_COMMITTER_NAME' => 'Test',
+            'GIT_COMMITTER_EMAIL' => 'test@example.com',
             'GIT_COMMITTER_DATE' => self::COMMIT_DATE,
         ], $message);
     }

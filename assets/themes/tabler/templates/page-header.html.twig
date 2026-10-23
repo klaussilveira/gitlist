@@ -1,0 +1,43 @@
+{% import 'macros.html.twig' as ui %}
+{% set tabs = [
+  { key: 'code', icon: 'code', label: 'REPOSITORY_MENU_CODE', href: path('repository_show', { repository: repository.name }) },
+  { key: 'commits', icon: 'git-commit', label: 'REPOSITORY_MENU_COMMITS', href: path('commit_list', { repository: repository.name, commitish: baseRef }) },
+  { key: 'branches', icon: 'git-branch', label: 'REPOSITORY_MENU_BRANCHES', href: path('repository_list_branches', { repository: repository.name }) },
+  { key: 'tags', icon: 'tags', label: 'REPOSITORY_MENU_TAGS', href: path('repository_list_tags', { repository: repository.name }) },
+  { key: 'search', icon: 'search', label: 'REPOSITORY_MENU_SEARCH', href: path('repository_search_commits', { repository: repository.name, commitish: baseRef }) },
+] %}
+<div class="page-header d-print-none">
+  <div class="container-xl">
+    <div class="row g-2 align-items-center">
+      <div class="col-auto">
+        <span class="avatar avatar-md bg-primary-lt">{{ repository.name|first|upper }}</span>
+      </div>
+      <div class="col">
+        <div class="page-pretitle">{{ 'THEME_REPOSITORY'|trans }}</div>
+        <h1 class="page-title">{{ repository.name }}</h1>
+        {% if repository.description %}
+          <div class="text-secondary mt-1 repository-description">{{ repository.description }}</div>
+        {% endif %}
+      </div>
+      <div class="col-auto ms-auto d-print-none">
+        <div class="btn-list">
+          <a href="{{ path('repository_feed', { repository: repository.name, commitish: baseRef, format: 'rss' }) }}" class="btn btn-icon" aria-label="{{ 'REPOSITORY_TOOLBAR_FEED_RSS'|trans }}" data-bs-toggle="tooltip" title="{{ 'REPOSITORY_TOOLBAR_FEED_RSS'|trans }}">
+            {{ ui.icon('rss') }}
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <nav class="nav-overflow mt-3" aria-label="{{ repository.name }}">
+      <ul class="nav nav-bordered">
+        {% for tab in tabs %}
+          <li class="nav-item">
+            <a class="nav-link{{ current == tab.key ? ' active' }}" href="{{ tab.href }}"{{ current == tab.key ? ' aria-current="page"' }}>
+              {{ ui.icon(tab.icon, 'me-2') }} {{ tab.label|trans }}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </nav>
+  </div>
+</div>

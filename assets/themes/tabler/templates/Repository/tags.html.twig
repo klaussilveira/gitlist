@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+{% import 'macros.html.twig' as ui %}
+
+{% block header %}
+  {% include 'page-header.html.twig' with { repository: repository, baseRef: repository.defaultBranch, current: 'tags' } %}
+{% endblock %}
+
+{% block search %}
+  {% include 'search.html.twig' with { repository: repository, commitish: repository.defaultBranch } %}
+{% endblock %}
+
+{% block body %}
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">{{ 'REPOSITORY_TAGS_TITLE'|trans }}</h3>
+  </div>
+  {% if tags %}
+    <div class="list-group list-group-flush list-group-hoverable">
+      {% for tag in tags %}
+        <div class="list-group-item">
+          <div class="row align-items-center">
+            <div class="col-auto">
+              <span class="avatar avatar-md bg-green-lt">{{ ui.icon('tag') }}</span>
+            </div>
+            <div class="col text-truncate">
+              <h5 class="h4 mb-1">
+                <a href="{{ path('repository_tree', {repository: repository.name, commitish: tag.name }) }}" title="{{ tag.name }}">{{ tag.name }}</a>
+              </h5>
+              <div class="text-secondary text-truncate">
+                <a href="{{ path('commit_show', { repository: repository.name, commitish: tag.target.hash }) }}" class="font-monospace me-1">{{ tag.target.shortHash }}</a>
+                {{ tag.subject }}
+              </div>
+            </div>
+            <div class="col-auto text-secondary d-none d-md-block">
+              {% if tag.author.name %}
+                {{ ui.avatar(tag.author, 'xs', 'me-1') }} {{ tag.author.name }}
+              {% endif %}
+            </div>
+            <div class="col-auto text-secondary d-none d-md-block">
+              <span title="{{ tag.authoredAt|date(commit_list_date_format) }}" data-bs-toggle="tooltip">{{ ui.icon('calendar', 'me-1') }} {{ tag.authoredAt|date(commit_list_date_format) }}</span>
+            </div>
+            <div class="col-auto">
+              <div class="dropdown">
+                <button type="button" class="btn btn-icon btn-ghost-secondary" data-bs-toggle="dropdown" aria-expanded="false" aria-label="{{ 'REPOSITORY_TOOLBAR_DOWNLOAD'|trans }}">{{ ui.icon('download') }}</button>
+                <div class="dropdown-menu dropdown-menu-end">
+                  <a class="dropdown-item" href="{{ path('repository_archive', { repository: repository.name, commitish: tag.name, format: 'zip' }) }}">{{ ui.icon('file-zip', 'dropdown-item-icon') }} {{ 'REPOSITORY_TOOLBAR_DOWNLOAD_ZIP'|trans }}</a>
+                  <a class="dropdown-item" href="{{ path('repository_archive', { repository: repository.name, commitish: tag.name, format: 'tar.gz' }) }}">{{ ui.icon('package', 'dropdown-item-icon') }} {{ 'REPOSITORY_TOOLBAR_DOWNLOAD_TAR_GZ'|trans }}</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="card-body">
+      {{ ui.empty('REPOSITORY_TAGS_NO_TAGS_AVAILABLE'|trans, '', null, 'tags') }}
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

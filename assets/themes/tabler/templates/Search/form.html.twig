@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+{% form_theme form 'bootstrap_5_layout.html.twig' %}
+{% import 'macros.html.twig' as ui %}
+
+{% block title %}
+  {{ 'REPOSITORY_SEARCH_FORM_TITLE'|trans }} - {{ repository.name }}
+{% endblock %}
+
+{% block header %}
+  {% include 'page-header.html.twig' with { repository: repository, baseRef: repository.defaultBranch, current: 'search' } %}
+{% endblock %}
+
+{% block search %}
+  {% include 'search.html.twig' with { repository: repository, commitish: commitish } %}
+{% endblock %}
+
+{% block body %}
+  {{ form_start(form, { attr: { class: 'card' } }) }}
+    <div class="card-header">
+      <h3 class="card-title">{{ ui.icon('adjustments', 'me-2 text-secondary') }}{{ 'THEME_ADVANCED_SEARCH'|trans }}</h3>
+    </div>
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label" for="{{ form.from.vars.id }}">{{ 'THEME_SEARCH_FROM'|trans }}</label>
+          {{ form_widget(form.from) }}
+        </div>
+        <div class="col-md-6">
+          <label class="form-label" for="{{ form.to.vars.id }}">{{ 'THEME_SEARCH_TO'|trans }}</label>
+          {{ form_widget(form.to) }}
+        </div>
+        <div class="col-md-4">
+          <label class="form-label" for="{{ form.author.vars.id }}">{{ 'THEME_SEARCH_AUTHOR'|trans }}</label>
+          <div class="input-icon">
+            <span class="input-icon-addon">{{ ui.icon('user') }}</span>
+            {{ form_widget(form.author) }}
+          </div>
+        </div>
+        <div class="col-md-8">
+          <label class="form-label" for="{{ form.message.vars.id }}">{{ 'THEME_SEARCH_MESSAGE'|trans }}</label>
+          <div class="input-icon">
+            <span class="input-icon-addon">{{ ui.icon('message') }}</span>
+            {{ form_widget(form.message) }}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer text-end">
+      {{ form_widget(form.submit, { label: 'REPOSITORY_MENU_SEARCH', attr: { class: 'btn btn-primary' } }) }}
+    </div>
+  {{ form_end(form) }}
+{% endblock %}

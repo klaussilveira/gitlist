@@ -41,3 +41,82 @@ REPOSITORY_COMMIT_PARENT: Parent
 REPOSITORY_COMMIT_CHANGE_STATS: Showing %changed% changed files, with %additions% additions and %deletions% deletions.
 REPOSITORY_COMMIT_VIEW_FILE_AT: View file @
 REPOSITORY_BLOB_HISTORY_FOR: History for
+REPOSITORY_COMMIT_VERIFIED: Verified
+REPOSITORY_COMMIT_SIGNED: Signed
+REPOSITORY_COMMIT_UNVERIFIED_HINT: The key is not trusted or not available, so the signature could not be verified.
+REPOSITORY_COMMIT_BAD_SIGNATURE: Bad signature
+REPOSITORY_COMMIT_BAD_SIGNATURE_HINT: The signature does not match this commit.
+REPOSITORY_COMMIT_SIGNED_BY: Signed by
+THEME_SKIP_TO_CONTENT: Skip to main content
+THEME_TOGGLE_NAVIGATION: Toggle navigation
+THEME_ENABLE_DARK: Enable dark mode
+THEME_ENABLE_LIGHT: Enable light mode
+THEME_CLOSE: Close
+THEME_COPY: Copy
+THEME_REPOSITORY: Repository
+THEME_REPOSITORY_COUNT: '{0} No repositories|{1} 1 repository|]1,Inf[ %count% repositories'
+THEME_REPOSITORY_FILTER: Filter repositories...
+THEME_REPOSITORY_FILTER_EMPTY: No matching repositories
+THEME_REPOSITORY_FILTER_EMPTY_HINT: Try a different name or description.
+THEME_REPOSITORY_EMPTY: No repositories found
+THEME_REPOSITORY_EMPTY_HINT: Check the repositories setting in config.yml.
+THEME_REPOSITORY_NO_DESCRIPTION: No description
+THEME_DEFAULT_BRANCH: default
+THEME_CLONE_URL: Clone URL
+THEME_ARCHIVE: Archive
+THEME_FEEDS: Feeds
+THEME_VIEW_COMMIT: View commit details
+THEME_COMMIT_BODY: Show commit message
+THEME_COMMITTED: committed
+THEME_COMMIT_HASH: Commit
+THEME_COMMIT_AUTHOR: Author
+THEME_COMMIT_COMMITTER: Committer
+THEME_COMMIT_DATE: Authored
+THEME_COMMIT_PARENTS: Parents
+THEME_COMMIT_CHANGES: Changes
+THEME_COMMIT_SIGNATURE: Signature
+THEME_FILE_ADDED: added
+THEME_FILE_DELETED: deleted
+THEME_TOGGLE_DIFF: Toggle diff
+THEME_NO_COMMITS: No commits
+THEME_NO_COMMITS_HINT: There are no more commits to show.
+THEME_BLOB_BLAME: Blame
+THEME_BLOB_HISTORY: History
+THEME_BLOB_RAW: Raw
+THEME_ADVANCED_SEARCH: Advanced search
+THEME_SEARCH_FROM: Commits ranging from
+THEME_SEARCH_TO: To
+THEME_SEARCH_AUTHOR: Author
+THEME_SEARCH_MESSAGE: Message contains
+THEME_SEARCH_EMPTY: No commits found
+THEME_SEARCH_EMPTY_HINT: Try a different search term, or use the advanced search.
+THEME_ERROR_NOT_FOUND: Page not found
+THEME_ERROR_NOT_FOUND_HINT: The repository, file or commit you are looking for does not exist.
+THEME_ERROR_HINT: Something went wrong while handling your request.
+THEME_ERROR_BACK: Back to repositories
+THEME_APPEARANCE: Appearance
+THEME_APPEARANCE_HINT: Your choices are saved in this browser.
+THEME_SECTION_APPEARANCE: Appearance
+THEME_SECTION_LAYOUT: Layout
+THEME_SCHEME: Color scheme
+THEME_SCHEME_AUTO: Auto
+THEME_SCHEME_LIGHT: Light
+THEME_SCHEME_DARK: Dark
+THEME_SCHEME_DARK_NAV: Dark nav
+THEME_SCHEME_COLORED: Colored
+THEME_ACCENT_COLOR: Accent color
+THEME_FONT_FAMILY: Font family
+THEME_BASE: Theme base
+THEME_CORNER_RADIUS: Corner radius
+THEME_CONTAINER_WIDTH: Container width
+THEME_WIDTH_DEFAULT: Default
+THEME_WIDTH_FLUID: Fluid
+THEME_WIDTH_BOXED: Boxed
+THEME_NAVBAR: Navbar
+THEME_NAVBAR_DEFAULT: Default
+THEME_NAVBAR_STICKY: Sticky
+THEME_NAVBAR_STYLE: Navbar style
+THEME_STYLE_ATTACHED: Attached
+THEME_STYLE_FLOATING: Floating
+THEME_RESET: Reset
+THEME_DONE: Done

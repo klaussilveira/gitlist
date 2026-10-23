@@ -1,0 +1,81 @@
+.card-body-diff {
+  padding: 0;
+  overflow-x: auto;
+}
+
+.diff-toggle .icon {
+  transition: transform 0.2s ease;
+}
+
+.diff-toggle.collapsed .icon {
+  transform: rotate(-90deg);
+}
+
+.diff-lines {
+  margin: 0;
+  border-spacing: 0;
+  font-family: var(--tblr-font-monospace);
+  font-size: 0.8125rem;
+
+  td {
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+
+  pre {
+    margin: 0;
+    padding: 0 0.75rem;
+    overflow: visible;
+    font-size: inherit;
+    line-height: 1.6;
+    color: var(--tblr-body-color);
+    background: transparent;
+    border-radius: 0;
+  }
+
+  tr:hover pre {
+    background-color: var(--tblr-yellow-lt);
+  }
+
+  .line {
+    width: 100%;
+  }
+
+  .line-number {
+    min-width: 3.5rem;
+    padding: 0 0.5rem;
+    color: var(--tblr-secondary);
+    text-align: right;
+    white-space: nowrap;
+    user-select: none;
+    border-right: 1px solid var(--tblr-border-color);
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+  }
+
+  .hunk,
+  .hunk-number {
+    color: var(--tblr-secondary);
+    background-color: var(--tblr-primary-lt);
+  }
+
+  pre.add {
+    background-color: var(--tblr-green-lt);
+  }
+
+  pre.delete {
+    background-color: var(--tblr-red-lt);
+  }
+
+  .line-number.add {
+    background-color: color-mix(in oklab, var(--tblr-green) 20%, transparent);
+  }
+
+  .line-number.delete {
+    background-color: color-mix(in oklab, var(--tblr-red) 20%, transparent);
+  }
+}

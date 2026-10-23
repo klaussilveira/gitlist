@@ -1,0 +1,199 @@
+{% extends 'base.html.twig' %}
+{% import 'macros.html.twig' as ui %}
+
+{% block title %}
+  {{ commit.subject }} ({{ commit.shortHash }}) - {{ repository.name }}
+{% endblock %}
+
+{% block header %}
+  {% include 'page-header.html.twig' with { repository: repository, baseRef: commit.hash, current: 'commits' } %}
+{% endblock %}
+
+{% block search %}
+  {% include 'search.html.twig' with { repository: repository, commitish: commit.hash } %}
+{% endblock %}
+
+{% block body %}
+  {% set changes = commit.additions + commit.deletions %}
+
+  <div class="card mb-3">
+    <div class="card-header">
+      <h3 class="card-title text-truncate">{{ commit.subject }}</h3>
+      <div class="card-actions btn-list flex-nowrap">
+        {% if commit.firstParent %}
+          <a href="{{ path('commit_show', { repository: repository.name, commitish: commit.firstParent.hash }) }}" class="btn">
+            {{ ui.icon('git-commit') }} {{ 'REPOSITORY_COMMIT_PARENT'|trans }} {{ commit.firstParent.shortHash }}
+          </a>
+        {% endif %}
+        <a href="{{ path('repository_tree', { repository: repository.name, commitish: commit.hash }) }}" class="btn btn-icon" aria-label="{{ 'REPOSITORY_BROWSE_AT_COMMIT'|trans }} {{ commit.shortHash }}" title="{{ 'REPOSITORY_BROWSE_AT_COMMIT'|trans }} {{ commit.shortHash }}" data-bs-toggle="tooltip">{{ ui.icon('code') }}</a>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="d-flex align-items-center mb-3">
+        {{ ui.avatar(commit.author, 'md', 'me-3', 'div') }}
+        <p class="card-text">
+          <a href="mailto:{{ commit.author.email }}" title="{{ commit.author.name }}">{{ commit.author.name }}</a> {{ 'REPOSITORY_COMMIT_COMMITED_ON'|trans }} {{ commit.commitedAt|date(commit_list_date_format) }}<br />
+          {{ 'REPOSITORY_COMMIT_CHANGE_STATS'|trans({'%changed%': commit.diffs|length, '%additions%': commit.additions,'%deletions%': commit.deletions}) }}
+        </p>
+      </div>
+
+      {% if changes > 0 %}
+        <div class="progress progress-stacked progress-sm mb-3" role="img" aria-label="{{ commit.additions }} / {{ commit.deletions }}">
+          <div class="progress-bar bg-green" style="width: {{ (commit.additions / changes * 100)|round(2) }}%"></div>
+          <div class="progress-bar bg-red" style="width: {{ (commit.deletions / changes * 100)|round(2) }}%"></div>
+        </div>
+      {% endif %}
+
+      <div class="datagrid">
+        <div class="datagrid-item">
+          <div class="datagrid-title">{{ 'THEME_COMMIT_HASH'|trans }}</div>
+          <div class="datagrid-content d-flex align-items-center gap-1">
+            <code id="commit-hash" class="text-truncate">{{ commit.hash }}</code>
+            <button type="button" class="btn btn-sm btn-icon btn-ghost-secondary" data-bs-toggle="clipboard" data-bs-target="#commit-hash" aria-label="{{ 'THEME_COPY'|trans }}">
+              {{ ui.icon('clipboard', 'clipboard-label') }}
+              {{ ui.icon('check', 'clipboard-feedback text-green') }}
+              <span class="clipboard-feedback visually-hidden">{{ 'REPOSITORY_TOOLBAR_CLONE_COPIED'|trans }}</span>
+            </button>
+          </div>
+        </div>
+        <div class="datagrid-item">
+          <div class="datagrid-title">{{ 'THEME_COMMIT_AUTHOR'|trans }}</div>
+          <div class="datagrid-content">
+            <div class="d-flex align-items-center">
+              {{ ui.avatar(commit.author, 'xs', 'me-2') }}
+              {{ commit.author.name }}
+            </div>
+          </div>
+        </div>
+        {% if commit.commiter and commit.commiter.email != commit.author.email %}
+          <div class="datagrid-item">
+            <div class="datagrid-title">{{ 'THEME_COMMIT_COMMITTER'|trans }}</div>
+            <div class="datagrid-content">
+              <div class="d-flex align-items-center">
+                {{ ui.avatar(commit.commiter, 'xs', 'me-2') }}
+                {{ commit.commiter.name }}
+              </div>
+            </div>
+          </div>
+        {% endif %}
+        <div class="datagrid-item">
+          <div class="datagrid-title">{{ 'THEME_COMMIT_DATE'|trans }}</div>
+          <div class="datagrid-content">{{ commit.authoredAt|date(commit_list_date_format) }}</div>
+        </div>
+        <div class="datagrid-item">
+          <div class="datagrid-title">{{ 'THEME_COMMIT_PARENTS'|trans }}</div>
+          <div class="datagrid-content">
+            {% for parent in commit.parents %}
+              <a href="{{ path('commit_show', { repository: repository.name, commitish: parent.hash }) }}" class="font-monospace me-1">{{ parent.shortHash }}</a>
+            {% else %}
+              <span class="text-secondary">-</span>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="datagrid-item">
+          <div class="datagrid-title">{{ 'THEME_COMMIT_CHANGES'|trans }}</div>
+          <div class="datagrid-content">
+            <span class="badge bg-green-lt">+{{ commit.additions }}</span>
+            <span class="badge bg-red-lt">-{{ commit.deletions }}</span>
+          </div>
+        </div>
+        {% if commit.signature %}
+          <div class="datagrid-item">
+            <div class="datagrid-title">{{ 'THEME_COMMIT_SIGNATURE'|trans }}</div>
+            <div class="datagrid-content">{{ ui.signature(commit) }}</div>
+          </div>
+        {% endif %}
+      </div>
+
+      {% if commit.body %}
+        <hr />
+        <pre class="commit-body mb-0">{{ commit.body }}</pre>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="card mb-3">
+    <div class="list-group list-group-flush list-group-hoverable">
+      {% for file in commit.diffs %}
+        <a href="#diff-{{ loop.index }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center gap-3">
+          <span class="text-truncate">
+            {% if file.type == 'new' %}
+              {{ ui.icon('file-plus', 'text-green me-2') }}
+            {% elseif file.type == 'deleted' %}
+              {{ ui.icon('file-minus', 'text-red me-2') }}
+            {% else %}
+              {{ ui.icon('file-diff', 'text-secondary me-2') }}
+            {% endif %}
+            {{ file.name }}
+          </span>
+          <span class="text-nowrap">
+            <span class="badge bg-green-lt">+{{ file.additions }}</span>
+            <span class="badge bg-red-lt">-{{ file.deletions }}</span>
+          </span>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+
+  {% for file in commit.diffs %}
+    <div class="card mb-3">
+      <div class="card-header">
+        <button type="button" class="btn btn-sm btn-icon btn-ghost-secondary me-2 diff-toggle" data-bs-toggle="collapse" data-bs-target="#diff-body-{{ loop.index }}" aria-expanded="true" aria-controls="diff-body-{{ loop.index }}" aria-label="{{ 'THEME_TOGGLE_DIFF'|trans }}">
+          {{ ui.icon('chevron-down') }}
+        </button>
+        <a id="diff-{{ loop.index }}" class="card-title text-truncate text-reset font-monospace" href="#diff-{{ loop.index }}">{{ file.name }}</a>
+        {% if file.type == 'new' %}
+          <span class="badge bg-green-lt ms-2">{{ 'THEME_FILE_ADDED'|trans }}</span>
+        {% elseif file.type == 'deleted' %}
+          <span class="badge bg-red-lt ms-2">{{ 'THEME_FILE_DELETED'|trans }}</span>
+        {% endif %}
+        <div class="card-actions btn-list flex-nowrap align-items-center">
+          <span class="text-secondary font-monospace small d-none d-lg-inline">{{ file.index }}</span>
+          {% if file.type == 'deleted' %}
+            <a href="{{ path('blob_show', { repository: repository.name, commitish: getCommitish(commit.firstParent.hash, file.name) }) }}" class="btn btn-sm">
+              {{ ui.icon('eye') }} {{ 'REPOSITORY_COMMIT_VIEW_FILE_AT'|trans }} {{ commit.firstParent.shortHash }}
+            </a>
+          {% else %}
+            <a href="{{ path('blob_show', { repository: repository.name, commitish: getCommitish(commit.hash, file.name) }) }}" class="btn btn-sm">
+              {{ ui.icon('eye') }} {{ 'REPOSITORY_COMMIT_VIEW_FILE_AT'|trans }} {{ commit.shortHash }}
+            </a>
+          {% endif %}
+        </div>
+      </div>
+      <div class="collapse show" id="diff-body-{{ loop.index }}">
+        <div class="card-body card-body-diff">
+          <table class="table diff-lines">
+            {% for hunk in file.hunks %}
+              <tr>
+                <td class="line-number hunk-number">...</td>
+                <td class="line-number hunk-number">...</td>
+                <td class="line">
+                  <pre class="hunk">{{ hunk.contents }}</pre>
+                </td>
+              </tr>
+              {% for line in hunk.lines %}
+                <tr>
+                  <td class="line-number {{ line.type }}">
+                    {% if line.type != 'add' %}
+                      <a name="L{{ loop.index }}R{{ line.oldNumber }}"></a>
+                      <a href="#L{{ loop.index }}R{{ line.oldNumber }}">{{ line.oldNumber }}</a>
+                    {% endif %}
+                  </td>
+                  <td class="line-number {{ line.type }}">
+                    {% if line.type != 'delete' %}
+                      <a name="L{{ loop.index }}L{{ line.newNumber }}"></a>
+                      <a href="#L{{ loop.index }}L{{ line.newNumber }}">{{ line.newNumber }}</a>
+                    {% endif %}
+                  </td>
+                  <td class="line">
+                    <pre class="{{ line.type }}">{{ line.contents }}</pre>
+                  </td>
+                </tr>
+              {% endfor %}
+            {% endfor %}
+          </table>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+{% endblock %}

@@ -1,0 +1,177 @@
+{% import 'macros.html.twig' as ui %}
+
+{% macro scheme_tile(first, second, navbar) -%}
+  {% set page = { light: 'var(--tblr-gray-50)', dark: 'var(--tblr-gray-900)' } %}
+  {% set bar = { light: 'var(--tblr-white)', dark: 'var(--tblr-gray-800)', primary: 'var(--tblr-primary)' } %}
+  {% set line = { light: 'var(--tblr-gray-300)', dark: 'var(--tblr-gray-700)' } %}
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 64" class="form-imagecheck-image w-100" aria-hidden="true" focusable="false">
+    <path d="M6.5 0.5h41.5v63h-41.5a6 6 0 0 1 -6 -6v-51a6 6 0 0 1 6 -6z" fill="{{ page[first] }}"/>
+    <path d="M48 0.5h41.5a6 6 0 0 1 6 6v51a6 6 0 0 1 -6 6h-41.5z" fill="{{ page[second] }}"/>
+    <path d="M6.5 0.5h41.5v19.5h-47.5v-13.5a6 6 0 0 1 6 -6z" fill="{{ bar[navbar ?: first] }}"/>
+    <path d="M48 0.5h41.5a6 6 0 0 1 6 6v13.5h-47.5z" fill="{{ bar[navbar ?: second] }}"/>
+    <rect x="12" y="30" width="46" height="5" rx="2.5" fill="{{ line[first] }}"/>
+    <rect x="12" y="41" width="72" height="5" rx="2.5" fill="{{ line[first] }}"/>
+    <rect x="12" y="52" width="30" height="5" rx="2.5" fill="{{ line[first] }}"/>
+    <rect x="0.5" y="0.5" width="95" height="63" rx="6" fill="none" stroke="var(--tblr-border-color)"/>
+  </svg>
+{%- endmacro %}
+
+{% set schemes = [
+  { value: 'auto', label: 'THEME_SCHEME_AUTO', first: 'light', second: 'dark', navbar: null },
+  { value: 'light', label: 'THEME_SCHEME_LIGHT', first: 'light', second: 'light', navbar: null },
+  { value: 'dark', label: 'THEME_SCHEME_DARK', first: 'dark', second: 'dark', navbar: null },
+  { value: 'dark-nav', label: 'THEME_SCHEME_DARK_NAV', first: 'light', second: 'light', navbar: 'dark' },
+  { value: 'colored', label: 'THEME_SCHEME_COLORED', first: 'light', second: 'light', navbar: 'primary' },
+] %}
+{% set colors = ['blue', 'azure', 'indigo', 'purple', 'pink', 'red', 'orange', 'yellow', 'lime', 'green', 'teal', 'cyan', 'inverted'] %}
+{% set fonts = { 'sans-serif': 'Sans-serif', 'serif': 'Serif', 'monospace': 'Monospace', 'comic': 'Comic' } %}
+{% set bases = ['neutral', 'slate', 'gray', 'zinc', 'stone', 'mist'] %}
+{% set radiuses = ['0', '0.5', '1', '1.5', '2'] %}
+
+<form class="offcanvas offcanvas-end" tabindex="-1" id="offcanvas-appearance" role="dialog" aria-modal="true" aria-labelledby="offcanvas-appearance-title" data-appearance>
+  <div class="offcanvas-header">
+    <h2 class="offcanvas-title" id="offcanvas-appearance-title">{{ 'THEME_APPEARANCE'|trans }}</h2>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="{{ 'THEME_CLOSE'|trans }}"></button>
+  </div>
+
+  <div class="offcanvas-body p-0">
+    <p class="text-secondary px-4 pt-3 mb-0">{{ 'THEME_APPEARANCE_HINT'|trans }}</p>
+
+    <section class="p-4 border-bottom">
+      <h3 class="subheader mb-3">{{ 'THEME_SECTION_APPEARANCE'|trans }}</h3>
+
+      <div class="space-y-4">
+        <div role="group" aria-labelledby="appearance-scheme">
+          <div class="form-label mb-2" id="appearance-scheme">{{ 'THEME_SCHEME'|trans }}</div>
+          <div class="row g-2">
+            {% for scheme in schemes %}
+              <div class="col-4">
+                <label class="form-imagecheck">
+                  <input type="radio" name="scheme" value="{{ scheme.value }}" class="form-imagecheck-input"{{ loop.first ? ' checked' }}>
+                  <span class="form-imagecheck-figure p-1">
+                    {{ _self.scheme_tile(scheme.first, scheme.second, scheme.navbar) }}
+                    <span class="form-imagecheck-caption">{{ scheme.label|trans }}</span>
+                  </span>
+                </label>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div role="group" aria-labelledby="appearance-primary">
+          <div class="form-label mb-2" id="appearance-primary">{{ 'THEME_ACCENT_COLOR'|trans }}</div>
+          <div class="row g-2">
+            {% for color in colors %}
+              <div class="col-auto">
+                <label class="form-colorinput">
+                  <input type="radio" name="theme-primary" value="{{ color }}" class="form-colorinput-input" aria-label="{{ color|capitalize }}"{{ loop.first ? ' checked' }}>
+                  <span class="form-colorinput-color bg-{{ color }}"></span>
+                </label>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div role="group" aria-labelledby="appearance-font">
+          <div class="form-label mb-2" id="appearance-font">{{ 'THEME_FONT_FAMILY'|trans }}</div>
+          <div class="row g-2">
+            {% for value, label in fonts %}
+              <div class="col-3">
+                <label class="form-imagecheck d-block">
+                  <input type="radio" name="theme-font" value="{{ value }}" class="form-imagecheck-input"{{ loop.first ? ' checked' }}>
+                  <span class="form-imagecheck-figure p-1">
+                    <span class="form-imagecheck-image text-center py-2 display-6 fw-medium lh-1 font-{{ value }}" aria-hidden="true">Aa</span>
+                    <span class="form-imagecheck-caption">{{ label }}</span>
+                  </span>
+                </label>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div role="group" aria-labelledby="appearance-base">
+          <div class="form-label mb-2" id="appearance-base">{{ 'THEME_BASE'|trans }}</div>
+          <div class="row g-2">
+            {% for base in bases %}
+              <div class="col-4">
+                <label class="form-imagecheck">
+                  <input type="radio" name="theme-base" value="{{ base }}" class="form-imagecheck-input"{{ loop.first ? ' checked' }}>
+                  <span class="form-imagecheck-figure p-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 64" class="form-imagecheck-image w-100" aria-hidden="true" focusable="false" data-bs-theme-base="{{ base }}">
+                      <rect x="0.5" y="0.5" width="95" height="63" rx="6" fill="var(--tblr-bg-surface)" stroke="var(--tblr-border-color)"/>
+                      {% for shade in [100, 300, 500, 700, 900] %}
+                        <rect x="{{ 10 + loop.index0 * 16 }}" y="24" width="12" height="16" rx="3" fill="var(--tblr-gray-{{ shade }})"/>
+                      {% endfor %}
+                    </svg>
+                    <span class="form-imagecheck-caption">{{ base|capitalize }}</span>
+                  </span>
+                </label>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div role="group" aria-labelledby="appearance-radius">
+          <div class="form-label mb-2" id="appearance-radius">{{ 'THEME_CORNER_RADIUS'|trans }}</div>
+          <div class="form-selectgroup">
+            {% for radius in radiuses %}
+              <label class="form-selectgroup-item">
+                <input type="radio" name="theme-radius" value="{{ radius }}" class="form-selectgroup-input"{{ radius == '1' ? ' checked' }}>
+                <span class="form-selectgroup-label">{{ radius }}</span>
+              </label>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="p-4">
+      <h3 class="subheader mb-3">{{ 'THEME_SECTION_LAYOUT'|trans }}</h3>
+
+      <div class="space-y-4">
+        <div role="group" aria-labelledby="appearance-layout">
+          <div class="form-label mb-2" id="appearance-layout">{{ 'THEME_CONTAINER_WIDTH'|trans }}</div>
+          <div class="form-selectgroup">
+            {% for value, label in { default: 'THEME_WIDTH_DEFAULT', fluid: 'THEME_WIDTH_FLUID', boxed: 'THEME_WIDTH_BOXED' } %}
+              <label class="form-selectgroup-item">
+                <input type="radio" name="layout" value="{{ value }}" class="form-selectgroup-input"{{ loop.first ? ' checked' }}>
+                <span class="form-selectgroup-label">{{ label|trans }}</span>
+              </label>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div role="group" aria-labelledby="appearance-navbar">
+          <div class="form-label mb-2" id="appearance-navbar">{{ 'THEME_NAVBAR'|trans }}</div>
+          <div class="form-selectgroup">
+            {% for value, label in { default: 'THEME_NAVBAR_DEFAULT', sticky: 'THEME_NAVBAR_STICKY' } %}
+              <label class="form-selectgroup-item">
+                <input type="radio" name="navbar" value="{{ value }}" class="form-selectgroup-input"{{ loop.first ? ' checked' }}>
+                <span class="form-selectgroup-label">{{ label|trans }}</span>
+              </label>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div role="group" aria-labelledby="appearance-navbar-style">
+          <div class="form-label mb-2" id="appearance-navbar-style">{{ 'THEME_NAVBAR_STYLE'|trans }}</div>
+          <div class="form-selectgroup">
+            {% for value, label in { default: 'THEME_STYLE_ATTACHED', floating: 'THEME_STYLE_FLOATING' } %}
+              <label class="form-selectgroup-item">
+                <input type="radio" name="navbar-style" value="{{ value }}" class="form-selectgroup-input"{{ loop.first ? ' checked' }}>
+                <span class="form-selectgroup-label">{{ label|trans }}</span>
+              </label>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="offcanvas-footer border-top d-flex gap-2 p-3">
+    <button type="button" class="btn flex-fill" data-appearance-reset>
+      {{ ui.icon('rotate') }} {{ 'THEME_RESET'|trans }}
+    </button>
+    <button type="button" class="btn btn-primary flex-fill" data-bs-dismiss="offcanvas">{{ 'THEME_DONE'|trans }}</button>
+  </div>
+</form>

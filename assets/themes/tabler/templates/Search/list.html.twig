@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+{% import 'macros.html.twig' as ui %}
+
+{% block title %}
+  {{ 'REPOSITORY_SEARCH_RESULTS_TITLE'|trans }} - {{ repository.name }}
+{% endblock %}
+
+{% block header %}
+  {% include 'page-header.html.twig' with { repository: repository, baseRef: repository.defaultBranch, current: 'search' } %}
+{% endblock %}
+
+{% block search %}
+  {% include 'search.html.twig' with { repository: repository, commitish: commitish } %}
+{% endblock %}
+
+{% block body %}
+  <div class="d-flex align-items-center mb-3">
+    <h2 class="mb-0">{{ 'REPOSITORY_SEARCH_RESULTS_TITLE'|trans }}</h2>
+    <a href="{{ path('repository_search_commits', { repository: repository.name, commitish: commitish }) }}" class="btn ms-auto">
+      {{ ui.icon('adjustments') }} {{ 'THEME_ADVANCED_SEARCH'|trans }}
+    </a>
+  </div>
+
+  {% for commitGroup, commits in commitGroups %}
+    <div class="card mb-3">
+      <div class="card-header">
+        <h3 class="card-title">{{ ui.icon('calendar', 'me-2 text-secondary') }}{{ commitGroup|date(commit_group_date_format) }}</h3>
+      </div>
+      {% include 'Commit/list-items.html.twig' with { repository: repository, commits: commits } %}
+    </div>
+  {% else %}
+    <div class="card">
+      <div class="card-body">
+        {{ ui.empty('THEME_SEARCH_EMPTY'|trans, 'THEME_SEARCH_EMPTY_HINT'|trans, 'not-found') }}
+      </div>
+    </div>
+  {% endfor %}
+{% endblock %}

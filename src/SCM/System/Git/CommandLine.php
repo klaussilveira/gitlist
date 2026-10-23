@@ -624,13 +624,7 @@ class CommandLine implements System
         $commit->setCommitedAt($this->parseDate($commiterDate));
 
         if ('N' != $signatureStatus) {
-            $signature = new Signature($signer, $signerKey);
-
-            if ('B' == $signatureStatus) {
-                $signature->validate();
-            }
-
-            $commit->setSignature($signature);
+            $commit->setSignature(new Signature($signer, $signerKey, $signatureStatus));
         }
 
         return $commit;

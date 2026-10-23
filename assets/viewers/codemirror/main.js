@@ -17,4 +17,15 @@ window.addEventListener('load', function () {
   if (editor.dataset.mode) {
     window.CodeMirror.autoLoadMode(instance, editor.dataset.mode);
   }
+
+  var applyTheme = function () {
+    var dark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+    instance.setOption('theme', dark ? 'tomorrow-night-eighties' : 'default');
+  };
+
+  applyTheme();
+  new MutationObserver(applyTheme).observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['data-bs-theme'],
+  });
 });

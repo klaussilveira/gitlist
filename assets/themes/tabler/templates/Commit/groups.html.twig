@@ -1,0 +1,15 @@
+{% import 'macros.html.twig' as ui %}
+{% for commitGroup, commits in commitGroups %}
+  <div class="card mb-3">
+    <div class="card-header">
+      <h3 class="card-title">{{ ui.icon('calendar', 'me-2 text-secondary') }}{{ commitGroup|date(commit_group_date_format) }}</h3>
+    </div>
+    {% include 'Commit/list-items.html.twig' with { repository: repository, commits: commits } %}
+  </div>
+{% else %}
+  <div class="card">
+    <div class="card-body">
+      {{ ui.empty('THEME_NO_COMMITS'|trans, 'THEME_NO_COMMITS_HINT'|trans, 'not-found') }}
+    </div>
+  </div>
+{% endfor %}

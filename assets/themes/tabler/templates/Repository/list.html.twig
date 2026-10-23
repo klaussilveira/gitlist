@@ -1,0 +1,84 @@
+{% extends 'base.html.twig' %}
+{% import 'macros.html.twig' as ui %}
+
+{% block title %}
+  {{ 'REPOSITORY_LIST_TITLE'|trans }}
+{% endblock %}
+
+{% block header %}
+<div class="page-header d-print-none">
+  <div class="container-xl">
+    <div class="row g-2 align-items-center">
+      <div class="col">
+        <div class="page-pretitle">{{ title }}</div>
+        <h2 class="page-title">{{ 'REPOSITORY_LIST_TITLE'|trans }}</h2>
+        <div class="text-secondary mt-1">{{ 'THEME_REPOSITORY_COUNT'|trans({ '%count%': repositories|length }) }}</div>
+      </div>
+      {% if repositories|length > 0 %}
+        <div class="col-12 col-md-auto ms-auto d-print-none">
+          <div class="input-icon">
+            <span class="input-icon-addon">{{ ui.icon('filter') }}</span>
+            <input type="search" class="form-control" placeholder="{{ 'THEME_REPOSITORY_FILTER'|trans }}" aria-label="{{ 'THEME_REPOSITORY_FILTER'|trans }}" data-repository-filter>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block body %}
+<div class="row row-cards">
+  {% for repository in repositories %}
+    <div class="col-sm-6 col-lg-4" data-repository="{{ repository.name|lower }} {{ repository.description|lower }}">
+      <div class="card card-link-pop h-100">
+        <div class="card-header">
+          <span class="avatar bg-primary-lt me-3">{{ repository.name|first|upper }}</span>
+          <h3 class="card-title text-truncate">
+            <a href="{{ path('repository_show', { repository: repository.name }) }}" class="text-reset">{{ repository.name }}</a>
+          </h3>
+          <div class="card-actions">
+            <a href="{{ path('repository_feed', { repository: repository.name, commitish: repository.defaultBranch, format: 'rss' }) }}" class="btn btn-icon btn-ghost-secondary btn-sm" aria-label="{{ 'REPOSITORY_TOOLBAR_FEED_RSS'|trans }}" data-bs-toggle="tooltip" title="{{ 'REPOSITORY_TOOLBAR_FEED_RSS'|trans }}">
+              {{ ui.icon('rss') }}
+            </a>
+          </div>
+        </div>
+        <div class="card-body">
+          {% if repository.description %}
+            <p class="text-secondary mb-0">{{ repository.description }}</p>
+          {% else %}
+            <p class="text-secondary fst-italic mb-0">{{ 'THEME_REPOSITORY_NO_DESCRIPTION'|trans }}</p>
+          {% endif %}
+        </div>
+        <div class="card-footer">
+          <div class="btn-list">
+            <a href="{{ path('repository_show', { repository: repository.name }) }}" class="btn btn-sm">
+              {{ ui.icon('code') }} {{ 'REPOSITORY_MENU_CODE'|trans }}
+            </a>
+            <a href="{{ path('commit_list', { repository: repository.name, commitish: repository.defaultBranch }) }}" class="btn btn-sm">
+              {{ ui.icon('git-commit') }} {{ 'REPOSITORY_MENU_COMMITS'|trans }}
+            </a>
+            <span class="badge bg-secondary-lt ms-auto align-self-center" title="{{ 'THEME_DEFAULT_BRANCH'|trans }}">{{ ui.icon('git-branch') }} {{ repository.defaultBranch }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          {{ ui.empty('THEME_REPOSITORY_EMPTY'|trans, 'THEME_REPOSITORY_EMPTY_HINT'|trans, 'not-found') }}
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+
+  <div class="col-12 d-none" data-repository-filter-empty>
+    <div class="card">
+      <div class="card-body">
+        {{ ui.empty('THEME_REPOSITORY_FILTER_EMPTY'|trans, 'THEME_REPOSITORY_FILTER_EMPTY_HINT'|trans, null, 'search') }}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

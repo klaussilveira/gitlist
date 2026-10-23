@@ -1,0 +1,43 @@
+{% macro icon(name, class = '', filled = false) -%}
+  {%- if filled -%}
+    <svg class="icon icon-filled{{ class ? ' ' ~ class }}" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true" focusable="false"><use href="#tabler-{{ name }}-filled"/></svg>
+  {%- else -%}
+    <svg class="icon{{ class ? ' ' ~ class }}" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="#tabler-{{ name }}"/></svg>
+  {%- endif -%}
+{%- endmacro %}
+
+{% macro avatar(person, size = 'sm', class = '', tag = 'span') -%}
+  {%- set url = getAvatar(person.email, 96) -%}
+  {%- if url -%}
+    <{{ tag }} class="avatar avatar-{{ size }}{{ class ? ' ' ~ class }}" style="background-image: url({{ url }})" title="{{ person.name }}"></{{ tag }}>
+  {%- else -%}
+    <{{ tag }} class="avatar avatar-{{ size }}{{ class ? ' ' ~ class }}" title="{{ person.name }}">{{ person.name|split(' ')|slice(0, 2)|map(part => part|first)|join|upper }}</{{ tag }}>
+  {%- endif -%}
+{%- endmacro %}
+
+{% macro empty(title, subtitle = '', illustration = null, icon = null) -%}
+  <div class="empty">
+    {% if illustration %}
+      <div class="empty-img">{% include 'illustrations/' ~ illustration ~ '.svg.twig' %}</div>
+    {% elseif icon %}
+      <div class="empty-icon">{{ _self.icon(icon) }}</div>
+    {% endif %}
+    <p class="empty-title">{{ title }}</p>
+    {% if subtitle %}
+      <p class="empty-subtitle text-secondary">{{ subtitle }}</p>
+    {% endif %}
+  </div>
+{%- endmacro %}
+
+{% macro signature(commit) -%}
+  {% if commit.signature %}
+    {% set signer = commit.signature.signer ?: commit.signature.key %}
+    {% if commit.signature.valid %}
+      <span class="badge bg-green-lt" data-bs-toggle="tooltip" title="{{ 'REPOSITORY_COMMIT_SIGNED_BY'|trans }} {{ signer }}">{{ _self.icon('shield-check') }} {{ 'REPOSITORY_COMMIT_VERIFIED'|trans }}</span>
+    {% elseif commit.signature.bad %}
+      <span class="badge bg-red-lt" data-bs-toggle="tooltip" title="{{ 'REPOSITORY_COMMIT_BAD_SIGNATURE_HINT'|trans }}">{{ _self.icon('shield-x') }} {{ 'REPOSITORY_COMMIT_BAD_SIGNATURE'|trans }}</span>
+    {% else %}
+      <span class="badge bg-secondary-lt" data-bs-toggle="tooltip" title="{{ 'REPOSITORY_COMMIT_SIGNED_BY'|trans }} {{ signer }}. {{ 'REPOSITORY_COMMIT_UNVERIFIED_HINT'|trans }}">{{ _self.icon('shield') }} {{ 'REPOSITORY_COMMIT_SIGNED'|trans }}</span>
+    {% endif %}
+  {% endif %}
+{%- endmacro %}

@@ -4,9 +4,11 @@ set -eu
 
 ACE_VERSION=1.44.0
 CODEMIRROR_VERSION=5.65.21
+TABLER_VERSION=1.7.1
 
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 VENDOR="$ROOT/public/vendor"
+TABLER="$ROOT/assets/themes/tabler/assets/vendor/tabler"
 WORK=$(mktemp -d)
 trap 'rm -rf "$WORK"' EXIT
 
@@ -18,22 +20,33 @@ fetch() {
 
 fetch "https://registry.npmjs.org/ace-builds/-/ace-builds-$ACE_VERSION.tgz" ace-builds
 fetch "https://registry.npmjs.org/codemirror/-/codemirror-$CODEMIRROR_VERSION.tgz" codemirror
+fetch "https://registry.npmjs.org/@tabler/core/-/core-$TABLER_VERSION.tgz" tabler
 
-rm -rf "$VENDOR/ace" "$VENDOR/codemirror"
-mkdir -p "$VENDOR/ace" "$VENDOR/codemirror/mode"
+rm -rf "$VENDOR/ace" "$VENDOR/codemirror" "$TABLER"
+mkdir -p "$VENDOR/ace" "$VENDOR/codemirror/mode" "$VENDOR/codemirror/theme" "$TABLER/css" "$TABLER/js"
 
 cp "$WORK/ace-builds/src-min-noconflict/ace.js" "$VENDOR/ace/"
 cp "$WORK/ace-builds/src-min-noconflict/theme-textmate.js" "$VENDOR/ace/"
+cp "$WORK/ace-builds/src-min-noconflict/theme-tomorrow_night_eighties.js" "$VENDOR/ace/"
 cp "$WORK"/ace-builds/src-min-noconflict/mode-*.js "$VENDOR/ace/"
 cp "$WORK/ace-builds/LICENSE" "$VENDOR/ace/"
 
 cp "$WORK/codemirror/lib/codemirror.js" "$VENDOR/codemirror/"
 cp "$WORK/codemirror/lib/codemirror.css" "$VENDOR/codemirror/"
 cp "$WORK/codemirror/addon/mode/loadmode.js" "$VENDOR/codemirror/"
+cp "$WORK/codemirror/theme/tomorrow-night-eighties.css" "$VENDOR/codemirror/theme/"
 cp -R "$WORK"/codemirror/mode/. "$VENDOR/codemirror/mode/"
 cp "$WORK/codemirror/LICENSE" "$VENDOR/codemirror/"
 
 find "$VENDOR/codemirror/mode" -type f ! -name '*.js' -delete
 find "$VENDOR/codemirror/mode" -name '*test*.js' -delete
 
+for file in tabler.min.css tabler-themes.min.css; do
+  sed '/sourceMappingURL/d' "$WORK/tabler/dist/css/$file" > "$TABLER/css/$file"
+done
+for file in tabler.esm.min.js tabler-theme.min.js; do
+  sed '/sourceMappingURL/d' "$WORK/tabler/dist/js/$file" > "$TABLER/js/$file"
+done
+
 echo "Wrote $VENDOR"
+echo "Wrote $TABLER"

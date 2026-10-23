@@ -1,0 +1,21 @@
+{% import 'macros.html.twig' as ui %}
+<div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+  {% include 'reflist.html.twig' with { ref: blob.shortHash, refPath: blob.name, path: 'blob_show', repository: repository } %}
+
+  <nav aria-label="breadcrumb" class="text-truncate">
+    <ol class="breadcrumb breadcrumb-arrows">
+      <li class="breadcrumb-item">
+        <a href="{{ path('repository_tree', {repository: repository.name, commitish: blob.hash }) }}">{{ ui.icon('folder', 'me-1', true) }}{{ repository.name }}</a>
+      </li>
+      {% for breadcrumb in getBreadcrumbs(blob) %}
+        {% if loop.last %}
+          <li class="breadcrumb-item active" aria-current="page">{{ breadcrumb.name }}</li>
+        {% else %}
+          <li class="breadcrumb-item">
+            <a href="{{ path('repository_tree', {repository: repository.name, commitish: breadcrumb.commitish }) }}">{{ breadcrumb.name }}</a>
+          </li>
+        {% endif %}
+      {% endfor %}
+    </ol>
+  </nav>
+</div>

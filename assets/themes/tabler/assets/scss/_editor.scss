@@ -1,0 +1,22 @@
+.card .ace_editor {
+  border-radius: 0 0 var(--tblr-card-border-radius) var(--tblr-card-border-radius);
+}
+
+.card .CodeMirror {
+  background: var(--tblr-bg-surface);
+  border-radius: 0 0 var(--tblr-card-border-radius) var(--tblr-card-border-radius);
+}
+
+.card .CodeMirror-gutters {
+  background: var(--tblr-bg-surface-secondary);
+  border-right: 1px solid var(--tblr-border-color);
+}
+
+[data-bs-theme='dark'] .card .ace_editor,
+[data-bs-theme='dark'] .card .ace_gutter {
+  background-color: var(--tblr-bg-surface);
+}
+
+[data-bs-theme='dark'] .card .ace_gutter {
+  background-color: var(--tblr-bg-surface-secondary);
+}

@@ -5,15 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>{% block title %}{{ 'REPOSITORY_LIST_TITLE'|trans }}{% endblock %} &middot; {{ title }}</title>
     {% block stylesheets %}{% endblock %}
-    <link rel="stylesheet" href="{{ asset('theme/scss/main.scss') }}">
+    <link rel="stylesheet" href="{{ asset('themes/' ~ theme ~ '/scss/' ~ theme ~ '.scss') }}">
 
     {% block javascripts %}{% endblock %}
-    {{ importmap('theme/js/main.js') }}
+    {{ importmap('themes/' ~ theme ~ '/js/main.js') }}
 
     {% if default_blob_viewer == 'ace' %}
       <link rel="stylesheet" href="{{ asset('viewers/ace/main.css') }}">
       <script defer src="{{ asset('vendor/ace/ace.js') }}"></script>
       <script type="module" src="{{ asset('viewers/ace/main.js') }}"></script>
+      <noscript><style>textarea#ace-editor { visibility: visible; }</style></noscript>
     {% elseif default_blob_viewer == 'codemirror' %}
       <link rel="stylesheet" href="{{ asset('vendor/codemirror/codemirror.css') }}">
       <link rel="stylesheet" href="{{ asset('viewers/codemirror/main.css') }}">

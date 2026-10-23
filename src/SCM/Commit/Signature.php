@@ -6,9 +6,11 @@ namespace GitList\SCM\Commit;
 
 class Signature
 {
-    protected bool $valid = false;
+    public const STATUS_GOOD = 'G';
+    public const STATUS_BAD = 'B';
+    public const STATUS_UNKNOWN = 'U';
 
-    public function __construct(protected string $signer, protected string $key)
+    public function __construct(protected string $signer, protected string $key, protected string $status = self::STATUS_UNKNOWN)
     {
     }
 
@@ -22,13 +24,18 @@ class Signature
         return $this->key;
     }
 
-    public function isValid(): bool
+    public function getStatus(): string
     {
-        return $this->valid;
+        return $this->status;
     }
 
-    public function validate(): void
+    public function isValid(): bool
     {
-        $this->valid = true;
+        return self::STATUS_GOOD === $this->status;
+    }
+
+    public function isBad(): bool
+    {
+        return self::STATUS_BAD === $this->status;
     }
 }

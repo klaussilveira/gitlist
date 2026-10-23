@@ -1,0 +1,4 @@
+{% set lines = max(10, min(50, file.contents|split("\n")|length)) %}
+<div class="card-body p-0">
+  <textarea id="ace-editor" style="--ace-lines: {{ lines }}" data-mode="{{ file.language.aceMode ?? '' }}" data-base-path="{{ asset('vendor/ace') }}">{{ file.contents }}</textarea>
+</div>

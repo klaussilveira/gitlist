@@ -1,0 +1,75 @@
+{% extends 'base.html.twig' %}
+{% import 'macros.html.twig' as ui %}
+
+{% block title %}
+  {{ blob.name }} ({{ blob.shortHash }}) - {{ repository.name }}
+{% endblock %}
+
+{% block header %}
+  {% include 'page-header.html.twig' with { repository: repository, baseRef: blob.hash, current: 'code' } %}
+{% endblock %}
+
+{% block search %}
+  {% include 'search.html.twig' with { repository: repository, commitish: blob.hash } %}
+{% endblock %}
+
+{% block body %}
+  {% include 'Blob/breadcrumb.html.twig' with { repository: repository, blob: blob } %}
+
+  <div class="card mb-3">
+    <div class="card-body">
+      <div class="row align-items-center g-3">
+        <div class="col-auto">
+          {{ ui.avatar(commit.author, 'md', '', 'div') }}
+        </div>
+        <div class="col text-truncate">
+          <h5 class="h3 mb-1"><a href="{{ path('commit_show', { repository: repository.name, commitish: commit.hash }) }}" class="text-reset">{{ commit.subject }}</a></h5>
+          <div class="text-secondary">
+            <strong>{{ commit.author.name }}</strong> {{ 'THEME_COMMITTED'|trans }}
+            <a href="{{ path('commit_show', { repository: repository.name, commitish: commit.hash }) }}" class="font-monospace">{{ commit.shortHash }}</a>
+            <span title="{{ commit.commitedAt|date(commit_date_format) }}" data-bs-toggle="tooltip">{{ commit.commitedAt|ago }}</span>
+          </div>
+        </div>
+        <div class="col-auto">
+          {{ ui.signature(commit) }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title text-truncate font-monospace">{{ ui.icon('file', 'me-2 text-secondary') }}{{ file.name }}</h3>
+      <div class="card-actions">
+        <div class="btn-group" role="group">
+          <a href="{{ path('blob_blame', { repository: repository.name, commitish: getCommitish(commit.hash, blob.name) }) }}" class="btn btn-sm">
+            {{ ui.icon('git-merge') }} {{ 'THEME_BLOB_BLAME'|trans }}
+          </a>
+          <a href="{{ path('blob_history', { repository: repository.name, commitish: getCommitish(commit.hash, blob.name) }) }}" class="btn btn-sm">
+            {{ ui.icon('history') }} {{ 'THEME_BLOB_HISTORY'|trans }}
+          </a>
+          <a href="{{ path('blob_raw', { repository: repository.name, commitish: getCommitish(commit.hash, blob.name) }) }}" class="btn btn-sm">
+            {{ ui.icon('file-download') }} {{ 'THEME_BLOB_RAW'|trans }}
+          </a>
+        </div>
+      </div>
+    </div>
+    {% if file.isImage %}
+      <div class="card-body text-center">
+        <img class="img-fluid" src="{{ path('blob_raw', {repository: repository.name, commitish: getCommitish(commit.hash, blob.name) }) }}" alt="{{ file.name }}" />
+      </div>
+    {% elseif file.isAudio %}
+      <div class="card-body">
+        <audio class="w-100" controls src="{{ path('blob_raw', {repository: repository.name, commitish: getCommitish(commit.hash, blob.name) }) }}"></audio>
+      </div>
+    {% elseif file.isVideo %}
+      <div class="card-body p-0">
+        <video class="w-100" controls>
+          <source type="{{ file.mimeType }}" src="{{ path('blob_raw', {repository: repository.name, commitish: getCommitish(commit.hash, blob.name) }) }}">
+        </video>
+      </div>
+    {% else %}
+      {% include 'Blob/viewer/' ~ default_blob_viewer ~ '.html.twig' with { repository: repository, commitish: blob.hash } %}
+    {% endif %}
+  </div>
+{% endblock %}

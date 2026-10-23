@@ -1,0 +1,45 @@
+.blame-lines {
+  margin: 0;
+  border-spacing: 0;
+
+  tr {
+    border-bottom: 1px solid var(--tblr-border-color);
+  }
+
+  td {
+    padding: 0;
+    border: 0;
+    vertical-align: top;
+    background: transparent;
+  }
+
+  .author-info {
+    width: 18rem;
+    max-width: 18rem;
+    padding: 0.5rem 0.75rem;
+    border-right: 1px solid var(--tblr-border-color);
+
+    p {
+      margin: 0;
+    }
+  }
+
+  .line {
+    width: 100%;
+  }
+
+  pre {
+    margin: 0;
+    padding: 0.5rem 0.75rem;
+    overflow: visible;
+    font-size: 0.8125rem;
+    line-height: 1.6;
+    color: var(--tblr-body-color);
+    background: transparent;
+    border-radius: 0;
+  }
+
+  tr:hover pre {
+    background-color: var(--tblr-yellow-lt);
+  }
+}

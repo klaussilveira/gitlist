@@ -1,0 +1,39 @@
+.icon use {
+  pointer-events: none;
+}
+
+.skip-link {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 1100;
+}
+
+.navbar .nav-link[data-theme-toggle],
+.navbar .nav-link[data-bs-toggle='offcanvas'] {
+  background: none;
+  border: 0;
+}
+
+.commit-body {
+  color: var(--tblr-body-color);
+  background: var(--tblr-bg-surface-secondary);
+  border: 1px solid var(--tblr-border-color);
+  white-space: pre-wrap;
+}
+
+.card-body pre:not(.commit-body) code {
+  white-space: pre;
+}
+
+.empty-img svg {
+  max-width: 100%;
+}
+
+:root {
+  --tblr-dark-mode-border-color-translucent: color-mix(in oklab, var(--tblr-gray-500) 14%, transparent);
+  --tblr-border-color-translucent: light-dark(
+    color-mix(in oklab, var(--tblr-gray-800) 11.9%, transparent),
+    var(--tblr-dark-mode-border-color-translucent)
+  );
+}

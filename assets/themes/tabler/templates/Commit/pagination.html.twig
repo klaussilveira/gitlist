@@ -1,0 +1,18 @@
+{% import 'macros.html.twig' as ui %}
+<nav aria-label="{{ 'REPOSITORY_COMMITS_NAV_TITLE'|trans }}">
+  <ul class="pagination justify-content-center">
+    <li class="page-item{{ page == 1 ? ' disabled' }}">
+      <a class="page-link" href="{{ path(route, { repository: repository.name, commitish: commitish, page: previousPage }) }}" aria-label="{{ 'REPOSITORY_COMMITS_NAV_NEWER'|trans }}">
+        {{ ui.icon('chevron-left') }} {{ 'REPOSITORY_COMMITS_NAV_NEWER'|trans }}
+      </a>
+    </li>
+    <li class="page-item active" aria-current="page">
+      <span class="page-link">{{ page }}</span>
+    </li>
+    <li class="page-item{{ commitGroups|length == 0 ? ' disabled' }}">
+      <a class="page-link" href="{{ path(route, { repository: repository.name, commitish: commitish, page: nextPage }) }}" aria-label="{{ 'REPOSITORY_COMMITS_NAV_OLDER'|trans }}">
+        {{ 'REPOSITORY_COMMITS_NAV_OLDER'|trans }} {{ ui.icon('chevron-right') }}
+      </a>
+    </li>
+  </ul>
+</nav>

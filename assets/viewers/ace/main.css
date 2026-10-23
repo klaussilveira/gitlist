@@ -1,3 +1,14 @@
 .ace_editor {
   margin-bottom: 0;
 }
+
+textarea#ace-editor {
+  display: block;
+  width: 100%;
+  height: calc(var(--ace-lines, 10) * 19px);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  resize: none;
+  visibility: hidden;
+}

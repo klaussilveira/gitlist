@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+{% import 'macros.html.twig' as ui %}
+
+{% block header %}
+  {% include 'page-header.html.twig' with { repository: repository, baseRef: repository.defaultBranch, current: 'branches' } %}
+{% endblock %}
+
+{% block search %}
+  {% include 'search.html.twig' with { repository: repository, commitish: repository.defaultBranch } %}
+{% endblock %}
+
+{% block body %}
+{% set defaultBranch = repository.defaultBranch %}
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">{{ 'REPOSITORY_BRANCH_TITLE'|trans }}</h3>
+  </div>
+  <div class="list-group list-group-flush list-group-hoverable">
+    {% for branch in branches %}
+      <div class="list-group-item">
+        <div class="row align-items-center">
+          <div class="col-auto">
+            {{ ui.avatar(branch.target.author, 'md') }}
+          </div>
+          <div class="col text-truncate">
+            <h5 class="h4 mb-1 d-flex align-items-center gap-2">
+              {{ ui.icon('git-branch', 'text-secondary') }}
+              <a href="{{ path('repository_tree', {repository: repository.name, commitish: branch.name }) }}" title="{{ branch.name }}">{{ branch.name }}</a>
+              {% if branch.name == defaultBranch %}
+                <span class="badge bg-primary-lt">{{ 'THEME_DEFAULT_BRANCH'|trans }}</span>
+              {% endif %}
+            </h5>
+            <div class="text-secondary text-truncate">
+              <a href="{{ path('commit_show', { repository: repository.name, commitish: branch.target.hash }) }}" class="font-monospace me-1">{{ branch.target.shortHash }}</a>
+              {{ branch.target.subject }}
+            </div>
+          </div>
+          <div class="col-auto text-secondary d-none d-md-block">
+            <span title="{{ branch.target.authoredAt|date(commit_list_date_format) }}" data-bs-toggle="tooltip">{{ ui.icon('clock', 'me-1') }} {{ branch.target.authoredAt|ago }}</span>
+          </div>
+          <div class="col-auto">
+            <div class="btn-list flex-nowrap">
+              <a href="{{ path('commit_list', { repository: repository.name, commitish: branch.name }) }}" class="btn btn-icon btn-ghost-secondary" aria-label="{{ 'REPOSITORY_MENU_COMMITS'|trans }}" data-bs-toggle="tooltip" title="{{ 'REPOSITORY_MENU_COMMITS'|trans }}">{{ ui.icon('history') }}</a>
+              <a href="{{ path('repository_tree', { repository: repository.name, commitish: branch.name }) }}" class="btn btn-icon btn-ghost-secondary" aria-label="{{ 'REPOSITORY_MENU_CODE'|trans }}" data-bs-toggle="tooltip" title="{{ 'REPOSITORY_MENU_CODE'|trans }}">{{ ui.icon('code') }}</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

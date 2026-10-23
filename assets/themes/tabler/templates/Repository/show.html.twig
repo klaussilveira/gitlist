@@ -1,0 +1,179 @@
+{% extends 'base.html.twig' %}
+{% import 'macros.html.twig' as ui %}
+
+{% block header %}
+  {% include 'page-header.html.twig' with { repository: repository, baseRef: repository.defaultBranch, current: 'code' } %}
+{% endblock %}
+
+{% block search %}
+  {% include 'search.html.twig' with { repository: repository, commitish: tree.hash } %}
+{% endblock %}
+
+{% block body %}
+  <div class="row g-2 align-items-center mb-3">
+    <div class="col-12 col-md d-flex flex-wrap align-items-center gap-2">
+      {% include 'reflist.html.twig' with { ref: tree.hash, refPath: '', path: 'repository_tree', repository: repository } %}
+
+      <ul class="nav repository-stats">
+        <li class="nav-item">
+          <a class="nav-link" href="{{ path('repository_list_branches', { repository: repository.name }) }}">{{ ui.icon('git-branch', 'me-1') }} <strong class="me-1">{{ repository.branches|length }}</strong> {{ 'REPOSITORY_SUBMENU_BRANCHES'|trans }}</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ path('repository_list_tags', { repository: repository.name }) }}">{{ ui.icon('tags', 'me-1') }} <strong class="me-1">{{ repository.tags|length }}</strong> {{ 'REPOSITORY_SUBMENU_TAGS'|trans }}</a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="col-12 col-md-auto d-flex flex-wrap gap-2">
+      <div class="input-group clone-input flex-fill">
+        <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" data-toggle="clone-input" aria-expanded="false">
+          {{ 'REPOSITORY_TOOLBAR_CLONE_SSH'|trans }}
+        </button>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="#" data-clone-url="{{ ssh_clone_url|format(repository.name) }}">
+            {{ ui.icon('key', 'dropdown-item-icon') }} {{ 'REPOSITORY_TOOLBAR_CLONE_SSH'|trans }}
+          </a>
+          <a class="dropdown-item" href="#" data-clone-url="{{ https_clone_url|format(repository.name) }}">
+            {{ ui.icon('world', 'dropdown-item-icon') }} {{ 'REPOSITORY_TOOLBAR_CLONE_HTTPS'|trans }}
+          </a>
+        </div>
+        <input type="text" id="clone-url" class="form-control" readonly value="{{ ssh_clone_url|format(repository.name) }}" aria-label="{{ 'THEME_CLONE_URL'|trans }}">
+        <button class="btn btn-icon" type="button" data-bs-toggle="clipboard" data-bs-target="#clone-url" aria-label="{{ 'THEME_COPY'|trans }}" title="{{ 'THEME_COPY'|trans }}">
+          {{ ui.icon('clipboard', 'clipboard-label') }}
+          {{ ui.icon('check', 'clipboard-feedback text-green') }}
+          <span class="clipboard-feedback visually-hidden">{{ 'REPOSITORY_TOOLBAR_CLONE_COPIED'|trans }}</span>
+        </button>
+      </div>
+
+      <div class="dropdown">
+        <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+          {{ ui.icon('download') }} {{ 'REPOSITORY_TOOLBAR_DOWNLOAD'|trans }}
+        </button>
+        <div class="dropdown-menu dropdown-menu-end">
+          <span class="dropdown-header">{{ 'THEME_ARCHIVE'|trans }}</span>
+          <a class="dropdown-item" href="{{ path('repository_archive', { repository: repository.name, commitish: tree.hash, format: 'zip' }) }}">
+            {{ ui.icon('file-zip', 'dropdown-item-icon') }} {{ 'REPOSITORY_TOOLBAR_DOWNLOAD_ZIP'|trans }}
+          </a>
+          <a class="dropdown-item" href="{{ path('repository_archive', { repository: repository.name, commitish: tree.hash, format: 'tar' }) }}">
+            {{ ui.icon('package', 'dropdown-item-icon') }} {{ 'REPOSITORY_TOOLBAR_DOWNLOAD_TAR'|trans }}
+          </a>
+          <a class="dropdown-item" href="{{ path('repository_archive', { repository: repository.name, commitish: tree.hash, format: 'tar.gz' }) }}">
+            {{ ui.icon('package', 'dropdown-item-icon') }} {{ 'REPOSITORY_TOOLBAR_DOWNLOAD_TAR_GZ'|trans }}
+          </a>
+          <div class="dropdown-divider"></div>
+          <span class="dropdown-header">{{ 'THEME_FEEDS'|trans }}</span>
+          <a class="dropdown-item" href="{{ path('repository_feed', { repository: repository.name, commitish: tree.hash, format: 'rss' }) }}">
+            {{ ui.icon('rss', 'dropdown-item-icon') }} {{ 'REPOSITORY_TOOLBAR_FEED_RSS'|trans }}
+          </a>
+          <a class="dropdown-item" href="{{ path('repository_feed', { repository: repository.name, commitish: tree.hash, format: 'atom' }) }}">
+            {{ ui.icon('rss', 'dropdown-item-icon') }} {{ 'REPOSITORY_TOOLBAR_FEED_ATOM'|trans }}
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mb-3">
+    <div class="card-header flex-wrap gap-2">
+      {{ ui.avatar(lastCommit.author, 'xs', 'me-2', 'div') }}
+      <span class="text-truncate">
+        <strong>{{ lastCommit.author.name }}</strong>
+        <a href="{{ path('commit_show', { repository: repository.name, commitish: lastCommit.hash }) }}" class="text-reset">{{ lastCommit.subject }}</a>
+      </span>
+      <div class="card-actions text-secondary text-nowrap ms-auto">
+        {{ ui.signature(lastCommit) }}
+        <a href="{{ path('commit_show', { repository: repository.name, commitish: lastCommit.hash }) }}" class="ms-2 float-end text-secondary font-monospace">{{ lastCommit.shortHash }} @ {{ lastCommit.commitedAt|date(commit_date_format) }}</a>
+      </div>
+    </div>
+    <div class="table-responsive">
+      <table class="table card-table table-vcenter table-hover table-tree">
+        <tbody>
+          {% if tree.name %}
+            <tr>
+              <th scope="row" class="tree-filename">
+                <span class="tree-truncate">
+                  {{ ui.icon('corner-left-up', 'text-secondary') }}
+                  <a href="{{ path('repository_tree', {repository: repository.name, commitish: getCommitish(tree.hash, getParent(tree.name)) }) }}">..</a>
+                </span>
+              </th>
+              {% if tree_show_file_size %}
+                <td></td>
+              {% endif %}
+              {% if tree_show_last_commit %}
+                <td class="d-none d-md-table-cell"></td>
+              {% endif %}
+              <td></td>
+            </tr>
+          {% endif %}
+
+          {% for object in tree.children|onlyTrees %}
+            <tr>
+              <th scope="row" class="tree-filename">
+                <span class="tree-truncate">
+                  {{ ui.icon('folder', 'text-primary', true) }}
+                  <a href="{{ path('repository_tree', {repository: repository.name, commitish: getCommitish(tree.hash, object.name) }) }}" title="{{ object.fileName }}">{{ object.fileName }}</a>
+                </span>
+              </th>
+              {% if tree_show_file_size %}
+                <td class="tree-filesize"></td>
+              {% endif %}
+              {% if tree_show_last_commit %}
+                <td class="tree-commit d-none d-md-table-cell">
+                  {% if object.firstParent.isCommit %}
+                    <span class="tree-truncate">
+                      <a href="{{ path('commit_show', { repository: repository.name, commitish: object.firstParent.hash }) }}" title="{{ object.firstParent.subject }}">{{ object.firstParent.subject }}</a>
+                    </span>
+                  {% endif %}
+                </td>
+              {% endif %}
+              <td class="tree-timestamp">
+                {% if object.firstParent %}
+                  <span title="{{ object.firstParent.commitedAt|date(commit_date_format) }}" data-bs-toggle="tooltip">{{ object.firstParent.commitedAt|ago }}</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+
+          {% for object in tree.children|onlyFiles %}
+            <tr>
+              <th scope="row" class="tree-filename">
+                <span class="tree-truncate">
+                  {{ ui.icon(object.isReadme ? 'book' : 'file', 'text-secondary') }}
+                  <a href="{{ path('blob_show', {repository: repository.name, commitish: getCommitish(tree.hash, object.name) }) }}" title="{{ object.fileName }}">{{ object.fileName }}</a>
+                </span>
+              </th>
+              {% if tree_show_file_size %}
+                <td class="tree-filesize">{{ object.size|formatFileSize }}</td>
+              {% endif %}
+              {% if tree_show_last_commit %}
+                <td class="tree-commit d-none d-md-table-cell">
+                  {% if object.firstParent.isCommit %}
+                    <span class="tree-truncate">
+                      <a href="{{ path('commit_show', { repository: repository.name, commitish: object.firstParent.hash }) }}" title="{{ object.firstParent.subject }}">{{ object.firstParent.subject }}</a>
+                    </span>
+                  {% endif %}
+                </td>
+              {% endif %}
+              <td class="tree-timestamp">
+                {% if object.firstParent.isCommit %}
+                  <span title="{{ object.firstParent.commitedAt|date(commit_date_format) }}" data-bs-toggle="tooltip">{{ object.firstParent.commitedAt|ago }}</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {% if readme %}
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">{{ ui.icon('book', 'me-2') }} {{ readme.name }}</h3>
+      </div>
+      <div class="card-body markdown">
+        {{ readme.contents|markdown|raw }}
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}

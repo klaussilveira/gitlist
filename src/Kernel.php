@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Bundle\MonologBundle\MonologBundle;
 use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
+use Symfony\Component\Config\Resource\GlobResource;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;
@@ -59,6 +60,29 @@ class Kernel extends BaseKernel
         $loader->load($confDir.'/config.yml');
         $loader->load($confDir.'/framework.yml');
         $loader->load($confDir.'/services.yml');
+
+        $this->configureThemes($container, $builder);
+    }
+
+    private function configureThemes(ContainerConfigurator $container, ContainerBuilder $builder): void
+    {
+        $themesDir = $this->getProjectDir().'/assets/themes';
+        $builder->addResource(new GlobResource($themesDir, '/*/assets', false));
+
+        $paths = [];
+        $rootSass = [];
+
+        foreach (glob($themesDir.'/*/assets', \GLOB_ONLYDIR) ?: [] as $assetsDir) {
+            $theme = basename(dirname($assetsDir));
+            $paths[$assetsDir] = 'themes/'.$theme;
+
+            if (is_file($assetsDir.'/scss/'.$theme.'.scss')) {
+                $rootSass[] = $assetsDir.'/scss/'.$theme.'.scss';
+            }
+        }
+
+        $container->extension('framework', ['asset_mapper' => ['paths' => $paths]]);
+        $container->extension('symfonycasts_sass', ['root_sass' => $rootSass]);
     }
 
     private function configureRoutes(RoutingConfigurator $routes): void

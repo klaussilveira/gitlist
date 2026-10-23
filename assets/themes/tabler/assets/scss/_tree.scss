@@ -1,0 +1,58 @@
+.table-tree {
+  margin-bottom: 0;
+
+  tr:last-child th {
+    border-bottom-width: 0;
+  }
+
+  .tree-truncate {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    a {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .tree-filename {
+    max-width: 16rem;
+    font-weight: var(--tblr-font-weight-normal, 400);
+
+    a {
+      color: var(--tblr-body-color);
+      text-decoration: none;
+
+      &:hover {
+        color: var(--tblr-primary);
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .tree-commit {
+    max-width: 24rem;
+
+    a {
+      color: var(--tblr-secondary);
+      text-decoration: none;
+
+      &:hover {
+        color: var(--tblr-body-color);
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .tree-timestamp,
+  .tree-filesize {
+    color: var(--tblr-secondary);
+    text-align: right;
+    white-space: nowrap;
+  }
+}

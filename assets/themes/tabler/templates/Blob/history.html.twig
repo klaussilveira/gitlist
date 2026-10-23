@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+  {{ blob.name }} ({{ blob.shortHash }}) - {{ repository.name }}
+{% endblock %}
+
+{% block header %}
+  {% include 'page-header.html.twig' with { repository: repository, baseRef: blob.hash, current: 'code' } %}
+{% endblock %}
+
+{% block search %}
+  {% include 'search.html.twig' with { repository: repository, commitish: blob.hash } %}
+{% endblock %}
+
+{% block body %}
+  {% include 'Blob/breadcrumb.html.twig' with { repository: repository, blob: blob } %}
+
+  {% include 'Commit/groups.html.twig' with { repository: repository, commitGroups: commitGroups } %}
+  {% include 'Commit/pagination.html.twig' with { route: 'blob_history' } %}
+{% endblock %}

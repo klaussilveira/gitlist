@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+{% import 'macros.html.twig' as ui %}
+
+{% block title %}
+  {{ status_code }} {{ status_text }}
+{% endblock %}
+
+{% block body %}
+  <div class="container-tight py-4">
+    <div class="empty">
+      <div class="empty-img">
+        {% include 'illustrations/' ~ (status_code == 404 ? 'not-found' : '500') ~ '.svg.twig' %}
+      </div>
+      <div class="empty-header">{{ status_code }}</div>
+      <p class="empty-title">{{ status_code == 404 ? 'THEME_ERROR_NOT_FOUND'|trans : status_text }}</p>
+      <p class="empty-subtitle text-secondary">{{ (status_code == 404 ? 'THEME_ERROR_NOT_FOUND_HINT' : 'THEME_ERROR_HINT')|trans }}</p>
+      <div class="empty-action">
+        <a href="{{ path('repository_list') }}" class="btn btn-primary">
+          {{ ui.icon('arrow-left') }} {{ 'THEME_ERROR_BACK'|trans }}
+        </a>
+      </div>
+    </div>
+  </div>
+{% endblock %}

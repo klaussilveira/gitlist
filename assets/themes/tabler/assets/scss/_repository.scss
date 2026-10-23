@@ -1,0 +1,43 @@
+.repository-stats {
+  .nav-link {
+    color: var(--tblr-secondary);
+    padding: 0.5rem 0.75rem;
+
+    &:hover {
+      color: var(--tblr-body-color);
+    }
+
+    strong {
+      color: var(--tblr-body-color);
+    }
+  }
+}
+
+.ref-list {
+  width: 20rem;
+  max-width: calc(100vw - 2rem);
+
+  .tab-content {
+    max-height: 16rem;
+    overflow-y: auto;
+  }
+}
+
+.clone-input {
+  width: auto;
+  flex-wrap: nowrap;
+
+  .form-control {
+    min-width: 0;
+    font-family: var(--tblr-font-monospace);
+    font-size: 0.8125rem;
+
+    &[readonly] {
+      background-color: var(--tblr-bg-surface);
+    }
+
+    @media (min-width: 768px) {
+      min-width: 19rem;
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+  {{ 'REPOSITORY_COMMITS_TITLE'|trans }} - {{ repository.name }}
+{% endblock %}
+
+{% block header %}
+  {% include 'page-header.html.twig' with { repository: repository, baseRef: repository.defaultBranch, current: 'commits' } %}
+{% endblock %}
+
+{% block search %}
+  {% include 'search.html.twig' with { repository: repository, commitish: commitish } %}
+{% endblock %}
+
+{% block body %}
+  <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+    {% include 'reflist.html.twig' with { ref: commitish, refPath: '', path: 'commit_list', repository: repository } %}
+  </div>
+
+  {% include 'Commit/groups.html.twig' with { repository: repository, commitGroups: commitGroups } %}
+  {% include 'Commit/pagination.html.twig' with { route: 'commit_list' } %}
+{% endblock %}

@@ -1,0 +1,139 @@
+{% import 'macros.html.twig' as ui %}
+<!doctype html>
+<html lang="{{ app.request.locale }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="color-scheme" content="light dark">
+    <title>{% block title %}{{ 'REPOSITORY_LIST_TITLE'|trans }}{% endblock %} &middot; {{ title }}</title>
+
+    <script src="{{ asset('themes/' ~ theme ~ '/vendor/tabler/js/tabler-theme.min.js') }}"></script>
+
+    <link rel="stylesheet" href="{{ asset('themes/' ~ theme ~ '/vendor/tabler/css/tabler.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('themes/' ~ theme ~ '/vendor/tabler/css/tabler-themes.min.css') }}">
+    {% block stylesheets %}{% endblock %}
+    <link rel="stylesheet" href="{{ asset('themes/' ~ theme ~ '/scss/' ~ theme ~ '.scss') }}">
+
+    {% block javascripts %}{% endblock %}
+    {{ importmap('themes/' ~ theme ~ '/js/main.js') }}
+
+    {% if default_blob_viewer == 'ace' %}
+      <link rel="stylesheet" href="{{ asset('viewers/ace/main.css') }}">
+      <script defer src="{{ asset('vendor/ace/ace.js') }}"></script>
+      <script type="module" src="{{ asset('viewers/ace/main.js') }}"></script>
+      <noscript><style>textarea#ace-editor { visibility: visible; }</style></noscript>
+    {% elseif default_blob_viewer == 'codemirror' %}
+      <link rel="stylesheet" href="{{ asset('vendor/codemirror/codemirror.css') }}">
+      <link rel="stylesheet" href="{{ asset('vendor/codemirror/theme/tomorrow-night-eighties.css') }}">
+      <link rel="stylesheet" href="{{ asset('viewers/codemirror/main.css') }}">
+      <script defer src="{{ asset('vendor/codemirror/codemirror.js') }}"></script>
+      <script defer src="{{ asset('vendor/codemirror/loadmode.js') }}"></script>
+      <script type="module" src="{{ asset('viewers/codemirror/main.js') }}"></script>
+    {% endif %}
+  </head>
+  <body>
+    <a href="#content" class="visually-hidden-focusable skip-link">{{ 'THEME_SKIP_TO_CONTENT'|trans }}</a>
+    {% include 'icons.html.twig' %}
+
+    <div class="page">
+      <header class="navbar navbar-expand-md d-print-none">
+        <div class="container-xl">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="{{ 'THEME_TOGGLE_NAVIGATION'|trans }}">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+
+          <div class="navbar-brand navbar-brand-autodark pe-0 pe-md-3">
+            <a href="{{ path('repository_list') }}" class="d-flex align-items-center gap-2 text-reset text-decoration-none">
+              <span class="avatar avatar-sm bg-primary text-primary-fg">{{ ui.icon('git-merge') }}</span>
+              {{ title }}
+            </a>
+          </div>
+
+          <div class="navbar-nav flex-row align-items-center gap-3 order-md-last ms-md-3">
+            <div class="nav-item">
+              <button type="button" class="nav-link px-0 hide-theme-dark" data-theme-toggle="dark" title="{{ 'THEME_ENABLE_DARK'|trans }}" aria-label="{{ 'THEME_ENABLE_DARK'|trans }}" data-bs-toggle="tooltip" data-bs-placement="bottom">
+                {{ ui.icon('moon') }}
+              </button>
+              <button type="button" class="nav-link px-0 hide-theme-light" data-theme-toggle="light" title="{{ 'THEME_ENABLE_LIGHT'|trans }}" aria-label="{{ 'THEME_ENABLE_LIGHT'|trans }}" data-bs-toggle="tooltip" data-bs-placement="bottom">
+                {{ ui.icon('sun') }}
+              </button>
+            </div>
+            <div class="nav-item">
+              <button type="button" class="nav-link px-0" data-bs-toggle="offcanvas" data-bs-target="#offcanvas-appearance" aria-controls="offcanvas-appearance" aria-label="{{ 'THEME_APPEARANCE'|trans }}">
+                <span data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{ 'THEME_APPEARANCE'|trans }}">{{ ui.icon('brush') }}</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="collapse navbar-collapse" id="navbar-menu">
+            <div class="d-flex flex-column flex-md-row flex-fill align-items-stretch align-items-md-center">
+              <ul class="navbar-nav">
+                <li class="nav-item active">
+                  <a class="nav-link" href="{{ path('repository_list') }}">
+                    <span class="nav-link-icon">{{ ui.icon('books') }}</span>
+                    <span class="nav-link-title">{{ 'REPOSITORY_LIST_TITLE'|trans }}</span>
+                  </a>
+                </li>
+                {% for item in navigation %}
+                  <li class="nav-item">
+                    <a class="nav-link" href="{{ item.target }}" rel="noopener">
+                      <span class="nav-link-icon">{{ ui.icon('external-link') }}</span>
+                      <span class="nav-link-title">{{ item.label }}</span>
+                    </a>
+                  </li>
+                {% endfor %}
+              </ul>
+
+              {% block search %}
+              {% endblock %}
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="page-wrapper">
+        <main id="content" class="d-flex flex-column flex-fill">
+          {% block header %}{% endblock %}
+
+          <div class="page-body">
+            <div class="container-xl">
+              {% for label, messages in app.flashes() %}
+                {% for message in messages %}
+                  <div class="alert alert-{{ label }} alert-dismissible" role="alert">
+                    <div class="alert-icon">{{ ui.icon(label == 'danger' ? 'alert-circle' : (label == 'success' ? 'check' : 'info-circle')) }}</div>
+                    <div>{{ message }}</div>
+                    <a class="btn-close" data-bs-dismiss="alert" aria-label="{{ 'THEME_CLOSE'|trans }}"></a>
+                  </div>
+                {% endfor %}
+              {% endfor %}
+
+              {% block body %}{% endblock %}
+            </div>
+          </div>
+        </main>
+
+        <footer class="footer footer-transparent d-print-none">
+          <div class="container-xl">
+            <div class="row text-center align-items-center flex-row-reverse">
+              <div class="col-lg-auto ms-lg-auto">
+                <ul class="list-inline list-inline-dots mb-0">
+                  {% for item in navigation %}
+                    <li class="list-inline-item"><a href="{{ item.target }}" class="link-secondary" rel="noopener">{{ item.label }}</a></li>
+                  {% endfor %}
+                </ul>
+              </div>
+              <div class="col-12 col-lg-auto mt-3 mt-lg-0">
+                <ul class="list-inline list-inline-dots mb-0">
+                  <li class="list-inline-item">&copy; 2012 - {{ 'now'|date('Y') }} Powered by <a href="https://gitlist.org" class="link-secondary">GitList.org</a></li>
+                  <li class="list-inline-item">Design by <a href="https://github.com/tabler/tabler" class="link-secondary" rel="noopener">Tabler</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    {% include 'appearance.html.twig' %}
+  </body>
+</html>
