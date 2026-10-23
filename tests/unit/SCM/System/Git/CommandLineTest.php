@@ -508,6 +508,28 @@ class CommandLineTest extends TestCase
         $this->assertFileExists($archive);
     }
 
+    public function testIsArchivingRefWithSlashInName(): void
+    {
+        $commandLine = new CommandLine();
+        $archive = $commandLine->archive(new Repository(self::FIXTURE_REPO), 'tar', 'feature/1.2-dev');
+        $this->assertFileExists($archive);
+    }
+
+    public function testIsNotInjectingOutputOptionViaArchiveHash(): void
+    {
+        $injected = sprintf('%s/gitlist-archive-injection-%s.tar', sys_get_temp_dir(), uniqid());
+        $this->assertFileDoesNotExist($injected);
+
+        $commandLine = new CommandLine();
+
+        try {
+            $commandLine->archive(new Repository(self::FIXTURE_REPO), 'tar', sprintf('-o%s', $injected));
+        } catch (\Exception $exception) {
+        }
+
+        $this->assertFileDoesNotExist($injected);
+    }
+
     public function testIsParsingCommitsWithMarkupBreakingMetadata(): void
     {
         $path = $this->createTemporaryRepository();

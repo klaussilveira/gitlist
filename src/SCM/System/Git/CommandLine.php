@@ -310,9 +310,9 @@ class CommandLine implements System
 
     public function archive(Repository $repository, string $format, string $hash, string $path = '.'): string
     {
-        $destination = sprintf('%s/%s.%s', sys_get_temp_dir(), $hash, $format);
+        $destination = sprintf('%s/%s.%s', sys_get_temp_dir(), str_replace('/', '-', $hash), $format);
 
-        $this->run(['archive', '--output', $destination, $hash, '--', $path], $repository);
+        $this->run(['archive', '--output', $destination, '--', $hash, $path], $repository);
 
         return $destination;
     }

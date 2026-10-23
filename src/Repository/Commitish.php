@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GitList\Repository;
 
+use GitList\Exception\InvalidCommitishException;
 use GitList\Repository;
 
 class Commitish
@@ -17,7 +18,7 @@ class Commitish
         $revs = [...$repository->getBranches(), ...$repository->getTags()];
 
         foreach ($revs as $rev) {
-            if (false === ($pos = strpos($commitish, (string) $rev->getName()))) {
+            if (false === strpos($commitish, (string) $rev->getName())) {
                 continue;
             }
 
@@ -27,6 +28,10 @@ class Commitish
             if ($revSuffix && ('@' === $revSuffix[0] || '^' === $revSuffix[0] || '~' === $revSuffix[0])) {
                 $this->hash .= strtok($revSuffix, '/');
             }
+        }
+
+        if (str_starts_with($this->hash, '-')) {
+            throw new InvalidCommitishException($commitish);
         }
 
         if ($this->hash != $commitish) {

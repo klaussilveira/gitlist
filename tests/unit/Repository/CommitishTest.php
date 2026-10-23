@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GitList\Repository;
 
 use Carbon\Carbon;
+use GitList\Exception\InvalidCommitishException;
 use GitList\Repository;
 use GitList\SCM\Branch;
 use GitList\SCM\Commit;
@@ -83,6 +84,33 @@ class CommitishTest extends TestCase
         $commitish = new Commitish($repository->reveal(), 'bugfix/bar^{14f8d0b69fa61d2d6daa2acc5b38c9956973206b}/test/file.php');
         $this->assertEquals('bugfix/bar^{14f8d0b69fa61d2d6daa2acc5b38c9956973206b}', $commitish->getHash());
         $this->assertEquals('test/file.php', $commitish->getPath());
+    }
+
+    public function testIsRejectingCommitishBeginningWithDash(): void
+    {
+        $repository = $this->prophesize(Repository::class);
+        $repository->getBranches()->willReturn($this->getFixtureBranches());
+        $repository->getTags()->willReturn($this->getFixtureTags());
+
+        $this->expectException(InvalidCommitishException::class);
+
+        new Commitish($repository->reveal(), '-oProc/self/environ');
+    }
+
+    public function testIsRejectingBranchNameBeginningWithDash(): void
+    {
+        $sourceRepository = new SourceRepository('/repo');
+        $malicious = '-o/var/www/gitlist/var/cache/prod/GitList_KernelProdContainer.php';
+
+        $repository = $this->prophesize(Repository::class);
+        $repository->getBranches()->willReturn([
+            new Branch($sourceRepository, $malicious, new Commit($sourceRepository, $malicious)),
+        ]);
+        $repository->getTags()->willReturn([]);
+
+        $this->expectException(InvalidCommitishException::class);
+
+        new Commitish($repository->reveal(), $malicious);
     }
 
     protected function getFixtureBranches(): array
