@@ -397,6 +397,32 @@ class CommandLineTest extends TestCase
         $this->assertMatchesRegularExpression('/#ifdef CONFIG_CMA_DEBUGFS/', $blob->getContents());
     }
 
+    public function testIsNotSwitchingRepositoryThroughOptionLikePath(): void
+    {
+        $public = $this->createTemporaryRepository();
+        $this->commit($public, 'a.txt', 'Public', 'public@example.com', "public history\n");
+        $secret = $this->createTemporaryRepository();
+        $this->commit($secret, 'a.txt', 'Secret', 'secret@example.com', "secret history\n");
+
+        $commandLine = new CommandLine();
+
+        $this->assertSame([], $commandLine->getCommitsFromPath(new Repository($public), sprintf('-R%s', $secret), 'default'));
+    }
+
+    public function testIsReadingFileWithOptionLikeName(): void
+    {
+        $path = $this->createTemporaryRepository();
+        file_put_contents(sprintf('%s/-q', $path), "dashed\n");
+        $this->hg(['add', '--', '-q'], $path);
+        $this->hg(['commit', '--config', 'ui.username=A <a@example.com>', '-m', 'dashed file'], $path);
+
+        $repository = new Repository($path);
+        $commandLine = new CommandLine();
+
+        $this->assertEquals("dashed\n", $commandLine->getBlob($repository, 'tip', '-q')->getContents());
+        $this->assertEquals('dashed', $commandLine->getBlame($repository, 'tip', '-q')->getAnnotatedLines()[0]->getContents());
+    }
+
     public function testIsSearchingCommitsFromDate(): void
     {
         $repository = new Repository(self::FIXTURE_REPO);

@@ -238,6 +238,7 @@ class CommandLine implements System
             $this->getCommitFormat($delimiter),
             '-r',
             $range,
+            '--',
             $path,
         ], $repository);
 
@@ -259,7 +260,7 @@ class CommandLine implements System
 
     public function getBlame(Repository $repository, string $hash, string $path): Blame
     {
-        $output = $this->run(['annotate', '-cv', '-r', $hash, $path], $repository);
+        $output = $this->run(['annotate', '-cv', '-r', $hash, '--', $path], $repository);
         $blameLines = explode(PHP_EOL, $output);
         $annotatedLines = [];
         $commits = [];
@@ -292,7 +293,7 @@ class CommandLine implements System
 
     public function getBlob(Repository $repository, string $hash, string $path): Blob
     {
-        $output = $this->run(['cat', '-r', $hash, $path], $repository);
+        $output = $this->run(['cat', '-r', $hash, '--', $path], $repository);
         $blob = new Blob($repository, $hash);
         $blob->setName(basename($path));
         $blob->setContents($output);
